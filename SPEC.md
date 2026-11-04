@@ -130,6 +130,69 @@ Site, Espace, Meuble, Settings, AiUsage(mois, coût)
 
 ---
 
+## 6 bis. Onglet Dégustations (v1.5)
+
+Le journal unique de toutes les dégustations : bouteilles de la cave, et vins bus ailleurs (bouteille achetée et bue tout de suite, restaurant, salon, domaine…).
+
+### Navigation
+- **Barre d'onglets** : Cave · Dégustations · **+** · À boire · Sommelier.
+- **Réglages** : l'ancien onglet « Plus » devient une icône engrenage, en haut à droite de la page Cave.
+- **Bouton « + »** : il s'adapte à l'onglet. Depuis Dégustations, il ouvre « Nouvelle dégustation » ; depuis les autres onglets, « Ajouter une bouteille ».
+
+### Vin dégusté hors de la cave
+- **Fiche sans bouteille** : une dégustation hors cave crée une fiche vin ordinaire, mais sans bouteille. Elle n'apparaît ni dans le plan, ni dans le stock, ni dans la valeur de la cave.
+- **Achat ultérieur** : le bouton « Ajouter à la cave » réutilise cette fiche, et l'historique des dégustations est conservé.
+- **Saisie du vin**, dans cet ordre :
+  1. photo de l'étiquette (lue par l'IA) ;
+  2. recherche parmi les vins connus (en cave, ou déjà dégustés) ;
+  3. saisie manuelle.
+- **Vin de la cave bu ailleurs** : la dégustation se rattache à la fiche existante. Une case « Une bouteille de ma cave » permet en plus de la sortir du stock (motif « bue »).
+- **Spiritueux** : si l'option est activée, on peut aussi déguster un spiritueux hors cave, avec sa propre roue d'arômes.
+
+### Contenu d'une dégustation
+- **Type de dégustation**, facultatif : Restaurant, Séance œnologie, Salon du vin, Au domaine, Plaisir.
+- **Lieu** (texte libre, ex. nom du restaurant), **date**, **convives**.
+- **Prix payé** et **lieu d'achat**, facultatifs, pour pouvoir racheter le vin.
+- **Provenance du vin**, facultative : d'où vient la bouteille (achetée chez…, offerte par…, apportée par…, carte du restaurant…).
+- **Photo** : celle de l'étiquette, rattachée à la fiche vin, plus une photo libre facultative (plat, tablée), réduite à environ 100 Ko.
+- **Plat**, et une **appréciation de l'accord**, facultative : raté, correct, parfait. Le sommelier s'en sert pour apprendre ce qui fonctionne chez toi.
+- **Fiche** : exactement la même que pour les bouteilles de la cave, en mode rapide (note sur 20 et commentaire) ou complet (œil, nez avec la roue des arômes, bouche, évolution, potentiel).
+
+### Séances
+- **Principe** : une séance, facultative, regroupe plusieurs vins sous une même date, un même lieu et un même type (salon, verticale, soirée…).
+- **Saisie** : on enchaîne les vins sans ressaisir le contexte. Une fiche de séance affiche les vins dégustés et leur classement par note.
+- **Dégustation seule** : elle reste possible sans séance.
+
+### Historique
+- **Liste chronologique** : date, vin, note, type et lieu. Les séances apparaissent comme un bloc dépliable.
+- **Recherche et filtres** : note minimale, couleur, région, type de dégustation, « de ma cave » ou « hors cave ».
+- **Vue par vin** : toutes les dégustations d'un même vin et d'un même millésime, pour suivre son évolution dans le temps.
+- **Reprise de l'existant** : les dégustations déjà saisies pour les bouteilles de la cave y apparaissent aussi.
+- **Actions** : modifier ou supprimer une dégustation.
+
+### Liste d'envies
+- **Depuis une dégustation** : le bouton « Je veux en acheter » met le vin dans la liste d'envies, avec le prix et le lieu d'achat s'ils sont connus.
+- **Où la trouver** : dans les réglages et sur la fiche du vin.
+- **Une fois acheté** : le bouton « Acheté » ouvre l'ajout en cave et retire le vin de la liste.
+
+### Lien avec le sommelier
+- Le sommelier tient compte des dégustations hors cave (notes, commentaires, accords réussis ou ratés) pour comprendre tes goûts et pour ses suggestions d'achat.
+- La liste d'envies lui est aussi transmise. Les vins des amis restent exclus.
+
+### Plus tard (v2)
+- Partager une fiche de dégustation, en image ou en texte.
+
+### Modèle de données
+```js
+Tasting { …existant, type:'restaurant'|'oeno'|'salon'|'domaine'|'plaisir'|null, lieu, convives, prix, achatLieu, provenance,
+          accord:'rate'|'correct'|'parfait'|null, photoLibre, sessionId, horsCave:boolean }
+Session { id, date, type, lieu, convives, titre }
+Wish    { id, wineId, at, prix, lieu, note }
+Wine    : peut n'avoir aucune bouteille (vin seulement dégusté)
+```
+
+---
+
 ## 7. Agents IA
 
 Un même modèle, avec un rôle et des instructions dédiés pour chaque agent. Un contexte de cave compact est mis en cache : la liste des vins disponibles avec stock, emplacement, apogée et notes passées. Les vins des amis en sont exclus.
@@ -196,7 +259,7 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
 ---
 
 ## 8. Interface
-- **Quatre onglets** :
+- **Quatre onglets** (v1 ; en v1.5, l'onglet Dégustations s'ajoute et « Plus » devient une icône engrenage, voir §6 bis) :
   - **Cave** : le plan, avec une bascule vers la liste ;
   - **Sommelier** ;
   - **À boire** ;
@@ -232,7 +295,7 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
 **v1.5**
 - Conseils de logistique entre sites et de réassort de la cuisine (§7.3).
 - Réévaluation des apogées après dégustation.
-- Onglet **Dégustations** : noter des vins bus hors de la cave (restaurant, chez des amis, salon…) et conserver tout l’historique des dégustations. Spécification détaillée à venir.
+- Onglet **Dégustations**, séances et liste d’envies (§6 bis).
 
 **v2**
 - Sauvegarde automatique Google Drive.
