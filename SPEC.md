@@ -388,6 +388,7 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
     - les photos gardent une hauteur réservée pour ne plus décaler la page en se chargeant ;
     - même vérification pour les écrans principaux. L'audit n'y montre pas de saut aujourd'hui, mais ils resteront couverts.
   - **Contrôle** : `tests/t9.cjs` est ajouté à `tests/run.sh` et doit afficher 0 défaut sur l'ensemble des actions.
+- [ ] **Réglages › Contenu** : supprimer la ligne « Vins · Toujours actif », qui n'apporte rien. Il reste « Spiritueux » et, quand les spiritueux sont activés, « Cocktails ».
 
 **v2**
 - Sauvegarde automatique Google Drive.
