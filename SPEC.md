@@ -340,7 +340,7 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
     - **Coût** : un appel court, moins d’un centime, uniquement quand il y avait des hypothèses ; on peut aussi le demander à la main.
 
 **v1.6** (release intermédiaire avant la v2 ; en cours de définition, rien n'est développé)
-- [ ] **Suivi d'utilisation**, sur le modèle de Patrimoine, pour améliorer l'expérience à partir des retours des bêta-testeurs. Proposition à valider :
+- [ ] **Suivi d'utilisation**, sur le modèle de Patrimoine, pour améliorer l'expérience à partir des retours des bêta-testeurs (validé) :
   - **Ce qui est noté**, en local uniquement :
     - les écrans affichés et le temps passé sur chacun ;
     - les boutons touchés (nom de l'action dans le code) ;
@@ -349,11 +349,16 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
     - les erreurs rencontrées (message technique) et les appels IA (type, durée, succès ou échec, coût), sans leur contenu.
   - **Ce qui n'est jamais noté** : noms de vins, domaines, notes de dégustation, commentaires, prix, lieux, convives, questions au sommelier, clé API.
   - **Stockage** : journal chiffré avec la clé du coffre, plafonné à 20 000 événements (les plus anciens sont effacés), jamais envoyé automatiquement.
-  - **Activation** : interrupteur dans Réglages › Aide, désactivé par défaut.
+  - **Activation** : interrupteur dans Réglages › Aide, désactivé par défaut. La présentation du premier lancement le mentionne et indique où l'activer.
   - **Synthèse dans l'app** : ouvertures, durée médiane, gestes les plus fréquents, écrans les plus consultés, tâches accomplies avec le nombre de gestes pour y arriver (ajouter un vin, sortir une bouteille, déguster, demander au sommelier…), chemins les plus empruntés.
-  - **Rapport à envoyer** : bouton « Exporter le rapport », un fichier JSON partagé par la feuille de partage iOS (Mail, Messages, AirDrop…).
-    - Le fichier contient la synthèse, le journal brut, une légende des champs, la version et l'empreinte du code, la taille d'écran et des indicateurs de contexte sans contenu (nombre de références, de sites, options activées).
+  - **Rapport à envoyer** : bouton « Exporter le rapport », un fichier **JSON uniquement**, partagé par la feuille de partage iOS (Mail, Messages, AirDrop…). Le fichier n'a pas besoin d'être lisible : l'analyse des rapports reçus se fait avec Claude.
+    - Contenu : la synthèse, le journal brut, une légende des champs, la version et l'empreinte du code, la taille d'écran, et des indicateurs de contexte sans contenu (nombre de références, de sites, options activées).
+    - **Avis libre** : au moment de l'export, un champ facultatif « Ton avis » (ce qui plaît, ce qui gêne, ce qui manque), inclus tel quel dans le rapport. C'est le seul texte libre du rapport, et il est écrit volontairement par le testeur.
     - Le nom du fichier inclut la date.
+  - **Signaler un problème** : un bouton dans Réglages › Aide, et un raccourci dans le message affiché quand une erreur survient.
+    - Il demande une description courte du problème (obligatoire).
+    - Il exporte un rapport ciblé : la description, les 15 dernières minutes du journal, les dernières erreurs techniques, l'écran affiché et le contexte. Même format JSON et même partage iOS.
+    - Il fonctionne même si le suivi est désactivé : seuls le contexte et les erreurs récentes sont joints, et l'app l'indique.
   - **Effacement** : bouton « Effacer le journal ».
 
 **v2**
