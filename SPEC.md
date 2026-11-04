@@ -232,6 +232,7 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
 **v1.5**
 - Conseils de logistique entre sites et de réassort de la cuisine (§7.3).
 - Réévaluation des apogées après dégustation.
+- Onglet **Dégustations** : noter des vins bus hors de la cave (restaurant, chez des amis, salon…) et conserver tout l’historique des dégustations. Spécification détaillée à venir.
 
 **v2**
 - Sauvegarde automatique Google Drive.
