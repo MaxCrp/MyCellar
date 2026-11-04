@@ -19,6 +19,7 @@ function vPlus() {
       ${isMulti() ? setRow('transferSheet', 'Transfert entre sites', S.transfer.ids.length ? plural(S.transfer.ids.length, 'bouteille en préparation', 'bouteilles en préparation') : 'Préparer les bouteilles à emporter') : ''}
       ${setRow('primeursSheet', 'Primeurs', prim ? plural(prim, 'bouteille attendue', 'bouteilles attendues') : 'Aucun primeur en attente')}
       ${setRow('friendsSheet', 'Vins gardés pour des amis', friends.length ? plural(friends.reduce((t, w) => t + wineBottles(w.id).length, 0), 'bouteille', 'bouteilles') : 'Aucun')}
+      ${setRow('wishSheet', 'Liste d’envies', S.wishes.length ? plural(S.wishes.length, 'vin à acheter', 'vins à acheter') : 'Vins repérés en dégustation')}
       ${setRow('journalSheet', 'Journal des mouvements', 'Entrées, sorties, déplacements')}
       ${setRow('importPloc', 'Importer depuis Ploc', 'À partir du PDF de ta cave')}
     </div>

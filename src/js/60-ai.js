@@ -136,7 +136,15 @@ function caveContext(allSites) {
   const top = [...S.tastings].filter(t => t.note != null).sort((a, b) => b.note - a.note);
   const liked = top.slice(0, 6).map(t => `${wineTitle(wine(t.wineId) || {})} ${numFr(t.note)}/20`).filter(x => !x.startsWith('undefined'));
   const disliked = top.filter(t => t.note < 12).slice(-4).map(t => `${wineTitle(wine(t.wineId) || {})} ${numFr(t.note)}/20`);
+  const tw = t => wine(t.wineId) || {};
+  const outside = S.tastings.filter(t => !t.bottleId && wine(t.wineId) && !isFriend(tw(t))).sort((a, b) => (b.at || '').localeCompare(a.at || '')).slice(0, 15)
+    .map(t => `${wineTitle(tw(t))} (${[COLORS[tw(t).couleur]?.label, tw(t).region].filter(Boolean).join(', ')}) ${t.note != null ? numFr(t.note) + '/20' : ''}${t.type ? ', ' + TASTE_TYPES[t.type].toLowerCase() : ''}${t.comment ? ' « ' + t.comment.slice(0, 70) + ' »' : ''}`);
+  const accords = S.tastings.filter(t => t.accord && t.plat && wine(t.wineId)).slice(-12).map(t => `${t.plat} + ${wineTitle(tw(t))} : ${ACCORDS[t.accord].toLowerCase()}`);
+  const wishes = S.wishes.map(x => wine(x.wineId)).filter(Boolean).map(wineTitle);
   return `Date du jour : ${today()} (année ${y}).
+${outside.length ? `Vins dégustés hors de la cave (récents) : ${outside.join(' ; ')}.` : ''}
+${accords.length ? `Accords déjà essayés par l’utilisateur : ${accords.join(' ; ')}.` : ''}
+${wishes.length ? `Liste d’envies (vins qu’il veut acheter) : ${wishes.join(' ; ')}.` : ''}
 ${multi ? `Sites : ${sites}.${allSites ? ' Bouteilles de tous les sites.' : ' Liste limitée au site actuel.'}` : ''}
 ${liked.length ? `Vins les mieux notés par l’utilisateur : ${liked.join(' ; ')}.` : ''}${disliked.length ? `\nVins peu appréciés : ${disliked.join(' ; ')}.` : ''}
 Cave disponible (${lines.length} références) :
@@ -151,7 +159,7 @@ Règles :
 - Évite de proposer un vin « trop tôt » ou « en déclin » sauf demande explicite ou faute de mieux (et dis-le).
 - Propose en général 3 bouteilles au plus, la meilleure en premier. Un vin par plat uniquement si on te demande un menu complet ; indique alors le plat dans « plat ».
 - Pour chaque recommandation : raison de l’accord en une ou deux phrases concrètes, température de service (ex. « 16 °C »), carafage (ex. « Carafe 30 min » ou « Sans carafe »).
-- Tiens compte des notes et commentaires passés pour les goûts de l’utilisateur.
+- Tiens compte des notes et commentaires passés, y compris des vins dégustés hors de la cave, pour les goûts de l’utilisateur. Appuie-toi sur les accords qu’il a jugés parfaits, évite de reproduire ceux qu’il a jugés ratés. Pour les suggestions d’achat, pense à sa liste d’envies.
 - Si la liste est limitée au site actuel et qu’une bouteille idéale est sur l’autre site, tu peux le mentionner dans le message.
 ${spiritsOn() ? `- La cave contient aussi des spiritueux (marqués SPIRITUEUX) : propose-les pour un digestif, une dégustation ou un accord (chocolat, fromage, dessert, cigare).${S.settings.cocktails ? ' Tu peux suggérer un cocktail réalisable avec un spiritueux de la cave, recette courte dans le message.' : ' Ne propose pas de cocktails.'}` : '- Ne propose pas de spiritueux ni de cocktails.'}
 - « message » : réponse courte et chaleureuse, en français, en tutoyant, 80 mots maximum, sans markdown. « relances » : 2 ou 3 suggestions de questions de suivi très courtes (moins de 6 mots).`;
@@ -321,9 +329,11 @@ async function onPhoto(file) {
   let big, small;
   try { big = await shrinkImage(file, 1280, 0.8); small = await shrinkImage(file, 640, 0.72); }
   catch { return toast('Image illisible'); }
+  const forTaste = labelFor; labelFor = null;
   const go = fields => {
     newDraft(fields.kind === 'spirit' && spiritsOn() ? 'spirit' : 'vin', fields);
     draft.photo = small; draft.photoUrl = URL.createObjectURL(small);
+    if (forTaste) draft.forTaste = forTaste;
     showSheet(wineFormSheet, { full: true });
   };
   if (!aiReady() || !aiClaude()) { closeSheet(); go({}); return toast(aiReady() ? 'Lecture d’étiquette : Claude uniquement' : 'Sans clé IA : saisie manuelle'); }
@@ -407,3 +417,32 @@ function plocReview() {
       <span class="qty">×${x.quantite || 1}</span><span class="chev">${x.skip ? '' : ICON.check}</span></button>`).join('')}</div>
     <button class="btn primary wide" style="margin-top:14px;position:sticky;bottom:0" data-act="plocGo">Importer ${plural(n, 'bouteille', 'bouteilles')}</button>`;
 }
+
+/* ---------- Réévaluation de la fenêtre après une dégustation ---------- */
+const REEVAL_SCHEMA = { type: 'object', additionalProperties: false, required: ['changer', 'debut', 'pic', 'fin', 'justification'], properties: {
+  changer: { type: 'boolean' }, debut: { type: 'integer' }, pic: { type: 'integer' }, fin: { type: 'integer' }, justification: { type: 'string' } } };
+async function reevaluate(w, rec) {
+  const a = w.apogee, left = wineBottles(w.id).length;
+  const F = rec.full || {};
+  const note = [`Dégustation du ${rec.at} : ${rec.note != null ? numFr(rec.note) + '/20' : 'sans note'}`, rec.comment && `commentaire « ${rec.comment} »`,
+    F.evolution && `évolution jugée : ${({ jeune: 'jeune', apoint: 'à point', declin: 'sur le déclin' })[F.evolution]}`, F.potentiel && `potentiel restant estimé : ${F.potentiel}`,
+    F.aromes?.length && `arômes : ${F.aromes.join(', ')}`].filter(Boolean).join(' ; ');
+  try {
+    const r = await aiCall({ system: APO_SYS.replace(/Si un outil[\s\S]*?conclure\.\n/, '').replace(/Termine ta réponse[\s\S]*$/, '') +
+      `\nOn vient de déguster ce vin. Dis s'il faut modifier sa fenêtre actuelle (${a?.fin ? `${a.debut || '?'}–${a.fin}, apogée ${a.pic || '?'}` : 'inconnue'}) pour les ${left} bouteille(s) restantes. Ne la change que si la dégustation l'apporte vraiment (changer = false sinon, et recopie la fenêtre actuelle). Justification en une ou deux phrases, en français, en tutoyant.`,
+      content: wineBrief(w) + '\n' + note, schema: REEVAL_SCHEMA, maxTokens: 2000, effort: 'low' });
+    const j = r.json;
+    if (!j.changer || !yearOk(j.fin, w) || (a && j.fin === a.fin && j.debut === a.debut && j.pic === a.pic)) return;
+    const prop = { debut: yearOk(j.debut, w) && j.debut <= j.fin ? j.debut : null, pic: yearOk(j.pic, w) && j.pic <= j.fin ? j.pic : null, fin: j.fin };
+    showSheet(() => `${head('Le sommelier')}
+      <div class="card" style="background:var(--green-soft);border-color:#C9DCCF"><p style="margin:0 0 6px"><b>${esc(wineTitle(w))}</b> · ${plural(left, 'bouteille restante', 'bouteilles restantes')}</p>
+        <p style="margin:0">${esc(j.justification)}</p>
+        <p class="small" style="margin:8px 0 0">Fenêtre actuelle : ${esc(windowLabel(a))}<br>Proposée : <b style="color:var(--green)">${esc(windowLabel(prop))}</b></p></div>
+      <div class="btns2" style="margin-top:12px"><button class="btn green" data-act="applyReeval" data-w="${w.id}" data-deb="${prop.debut || ''}" data-pic="${prop.pic || ''}" data-fin="${prop.fin}">Mettre à jour</button><button class="btn ghost" data-act="close">Garder</button></div>`);
+  } catch (e) { /* silencieux : la dégustation est enregistrée, la réévaluation est un bonus */ }
+}
+ACT.applyReeval = async t => {
+  const w = wine(t.dataset.w);
+  w.apogee = { ...(w.apogee || {}), debut: int(t.dataset.deb), pic: int(t.dataset.pic), fin: int(t.dataset.fin), src: 'ia', why: 'Réévaluée après dégustation.', at: Date.now() };
+  await save(); closeSheet(); render(); toast('Fenêtre mise à jour');
+};

@@ -25,6 +25,8 @@ const UNIT_TYPES = {
 const MOTIFS = {
   bue: 'Bue', offerte: 'Offerte', cassee: 'Cassée', bouchonnee: 'Bouchonnée', vendue: 'Vendue', rendue: 'Rendue à son propriétaire', terminee: 'Terminée',
 };
+const TASTE_TYPES = { restaurant: 'Restaurant', oeno: 'Séance œnologie', salon: 'Salon du vin', domaine: 'Au domaine', plaisir: 'Plaisir' };
+const ACCORDS = { rate: 'Raté', correct: 'Correct', parfait: 'Parfait' };
 const STATUS = {
   prio: { label: 'À boire en priorité', short: 'Priorité', c: 'var(--st-prio)', hex: '#6E1E2F', tag: 'b' },
   apogee: { label: 'Prêt à boire', short: 'Apogée', c: 'var(--st-apogee)', hex: '#2F5240', tag: 'g' },
@@ -94,13 +96,13 @@ const emptyData = () => ({
     lockMin: 5, stay: false, lastExport: null, aromas: {}, rate: 0.92,
   },
   sites: [], spaces: [], units: [], wines: [], bottles: [], moves: [], tastings: [],
-  transfer: { ids: [], to: null }, chat: [], usage: {}, dismissed: {},
+  transfer: { ids: [], to: null }, chat: [], usage: {}, dismissed: {}, sessions: [], wishes: [],
 });
 function normalize(d) {
   const e = emptyData();
   d.settings = { ...e.settings, ...(d.settings || {}) };
   d.settings.ai = { ...e.settings.ai, ...(d.settings.ai || {}) };
-  for (const k of ['sites', 'spaces', 'units', 'wines', 'bottles', 'moves', 'tastings', 'chat']) d[k] = Array.isArray(d[k]) ? d[k] : [];
+  for (const k of ['sites', 'spaces', 'units', 'wines', 'bottles', 'moves', 'tastings', 'chat', 'sessions', 'wishes']) d[k] = Array.isArray(d[k]) ? d[k] : [];
   d.transfer = { ...e.transfer, ...(d.transfer || {}) };
   d.usage = d.usage || {}; d.dismissed = d.dismissed || {};
   if (!d.sites.length) d.sites.push({ id: uid(), name: 'Site 1', role: 'conso' });

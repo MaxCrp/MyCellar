@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#F7F3EC">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-nC6rEUbtLlxV7TdCwPDWILe2rq+Z+os6wnSoO6xGA0I='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-V/ff9EfvpDJkeAh4W/ue+kexupoSouNsnCOumfRVlgg='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>MyCellar</title>
@@ -289,6 +289,13 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 
 @media (min-width:700px){ .pile{grid-template-columns:repeat(3,1fr)} }
 
+.gear{border:1px solid var(--line);background:var(--surface);border-radius:50%;width:38px;height:38px}
+.gear svg{width:20px;height:20px}
+.rank{width:22px;height:22px;border-radius:50%;background:var(--sunk);font-size:12px;font-weight:700;display:grid;place-items:center;flex:none}
+.li:first-of-type > .rank, .card > .li:nth-child(2) > .rank{background:var(--gold);color:#fff}
+.empty .btn{margin-top:12px}
+.card.tap > svg,.card.row > svg{width:22px;height:22px;flex:none;color:var(--bx)}
+
 </style>
 </head>
 <body>
@@ -297,6 +304,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 <div id="layer"></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <input type="file" id="f-photo" accept="image/*" capture="environment" hidden>
+<input type="file" id="f-photo2" accept="image/*" hidden>
 <input type="file" id="f-pdf" accept="application/pdf,.pdf" hidden>
 <input type="file" id="f-backup" accept="application/json,.json" hidden>
 <script>
@@ -632,6 +640,8 @@ const UNIT_TYPES = {
 const MOTIFS = {
   bue: 'Bue', offerte: 'Offerte', cassee: 'Cassée', bouchonnee: 'Bouchonnée', vendue: 'Vendue', rendue: 'Rendue à son propriétaire', terminee: 'Terminée',
 };
+const TASTE_TYPES = { restaurant: 'Restaurant', oeno: 'Séance œnologie', salon: 'Salon du vin', domaine: 'Au domaine', plaisir: 'Plaisir' };
+const ACCORDS = { rate: 'Raté', correct: 'Correct', parfait: 'Parfait' };
 const STATUS = {
   prio: { label: 'À boire en priorité', short: 'Priorité', c: 'var(--st-prio)', hex: '#6E1E2F', tag: 'b' },
   apogee: { label: 'Prêt à boire', short: 'Apogée', c: 'var(--st-apogee)', hex: '#2F5240', tag: 'g' },
@@ -701,13 +711,13 @@ const emptyData = () => ({
     lockMin: 5, stay: false, lastExport: null, aromas: {}, rate: 0.92,
   },
   sites: [], spaces: [], units: [], wines: [], bottles: [], moves: [], tastings: [],
-  transfer: { ids: [], to: null }, chat: [], usage: {}, dismissed: {},
+  transfer: { ids: [], to: null }, chat: [], usage: {}, dismissed: {}, sessions: [], wishes: [],
 });
 function normalize(d) {
   const e = emptyData();
   d.settings = { ...e.settings, ...(d.settings || {}) };
   d.settings.ai = { ...e.settings.ai, ...(d.settings.ai || {}) };
-  for (const k of ['sites', 'spaces', 'units', 'wines', 'bottles', 'moves', 'tastings', 'chat']) d[k] = Array.isArray(d[k]) ? d[k] : [];
+  for (const k of ['sites', 'spaces', 'units', 'wines', 'bottles', 'moves', 'tastings', 'chat', 'sessions', 'wishes']) d[k] = Array.isArray(d[k]) ? d[k] : [];
   d.transfer = { ...e.transfer, ...(d.transfer || {}) };
   d.usage = d.usage || {}; d.dismissed = d.dismissed || {};
   if (!d.sites.length) d.sites.push({ id: uid(), name: 'Site 1', role: 'conso' });
@@ -918,6 +928,7 @@ const ICON = {
   info: sv('<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/>'),
   star: sv('<path d="M12 4l2.4 5 5.4.6-4 3.7 1.1 5.4L12 16l-4.9 2.7L8.2 13.3l-4-3.7 5.4-.6z"/>'),
   face: sv('<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M9 9v1.5M15 9v1.5M12 9v4h-1M9 16c1.6 1.2 4.4 1.2 6 0"/>'),
+  notes: sv('<path d="M6 3h10a2 2 0 0 1 2 2v16l-3-2-3 2-3-2-3 2V5a2 2 0 0 1 2-2z"/><path d="M9 8h6M9 12h6M9 16h3"/>'),
   glass: sv('<path d="M7 3h10l-.8 7a4.2 4.2 0 0 1-8.4 0z"/><path d="M12 14.5V20M8.5 21h7"/>'),
 };
 const LOGO = `<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#6E1E2F"/><path d="M22 14h20l-1.6 13a8.4 8.4 0 0 1-16.8 0z" fill="#F7F3EC"/><path d="M23.2 22h17.6l-.6 5a8.2 8.2 0 0 1-16.4 0z" fill="#B8424F"/><path d="M32 36v11M25 49h14" stroke="#F7F3EC" stroke-width="3" stroke-linecap="round"/></svg>`;
@@ -1019,17 +1030,18 @@ function banners() {
 }
 function render() {
   if (mode !== 'app' && mode !== 'demo') return;
-  const views = { cave: ['Cave', vCave], somm: ['Sommelier', vSomm], boire: ['À boire', vBoire], plus: ['Plus', vPlus] };
+  const views = { cave: ['Cave', vCave], deg: ['Dégustations', vDeg], somm: ['Sommelier', vSomm], boire: ['À boire', vBoire], plus: ['Réglages', vPlus] };
   const [title, fn] = views[view];
   const tab = (v, l, i) => `<button class="tab${view === v ? ' on' : ''}" data-act="go" data-v="${v}" aria-label="${l}">${i}${l}</button>`;
   const body = fn();
   app.innerHTML = `
-    <header class="top"><div class="top-row"><h1>${title}</h1>${view === 'cave' || view === 'somm' ? sitePill() : ''}</div>${view === 'cave' ? caveTools() : ''}</header>
+    <header class="top"><div class="top-row">${view === 'plus' ? `<button class="icon-btn" data-act="go" data-v="cave" aria-label="Retour" style="margin-left:-8px">${ICON.back}</button>` : ''}<h1>${title}</h1>${view === 'cave' || view === 'somm' ? sitePill() : ''}
+      ${view !== 'plus' ? `<button class="icon-btn gear" data-act="go" data-v="plus" aria-label="Réglages">${ICON.gear}</button>` : ''}</div>${view === 'cave' ? caveTools() : view === 'deg' ? degTools() : ''}</header>
     <main class="view${view === 'somm' ? ' chat' : ''}">${banners()}${body}</main>
     ${view === 'somm' ? composer() : ''}
-    <nav class="tabs" aria-label="Navigation">${tab('cave', 'Cave', ICON.cave)}${tab('somm', 'Sommelier', ICON.somm)}
-      <button class="tab plus" data-act="add" aria-label="Ajouter une bouteille"><span>${ICON.add}</span></button>
-      ${tab('boire', 'À boire', ICON.boire)}${tab('plus', 'Plus', ICON.plus)}</nav>`;
+    <nav class="tabs" aria-label="Navigation">${tab('cave', 'Cave', ICON.cave)}${tab('deg', 'Dégustations', ICON.notes)}
+      <button class="tab plus" data-act="add" aria-label="${view === 'deg' ? 'Nouvelle dégustation' : 'Ajouter une bouteille'}"><span>${ICON.add}</span></button>
+      ${tab('boire', 'À boire', ICON.boire)}${tab('somm', 'Sommelier', ICON.somm)}</nav>`;
   paintPhotos(app);
   for (const r of $$('input[type=range]', app)) setRangeFill(r);
   afterRender();
@@ -1369,7 +1381,8 @@ function wineFormSheet() {
       <div class="grid2"><label class="check"><input type="checkbox" name="bruteDeFut" ${w.bruteDeFut ? 'checked' : ''}> Brut de fût</label><label class="check"><input type="checkbox" name="singleCask" ${w.singleCask ? 'checked' : ''}> Single cask</label></div>
       <div class="grid2"><label>Embouteilleur indépendant<input name="independant" value="${v('independant')}" autocomplete="off"></label><label>N° de fût ou bouteille<input name="numero" value="${v('numero')}" autocomplete="off"></label></div>
     </div>`;
-  const stock = editing ? '' : `
+  const ft = d.forTaste;
+  const stock = editing || ft ? '' : `
     <div class="fieldset"><div class="ft">Bouteilles</div>
       <div class="grid2"><label>Quantité<input name="qty" inputmode="numeric" value="${d.qty}" required></label>
         <label>État<select name="state" data-ch="draftState"><option value="cave" ${d.state === 'cave' ? 'selected' : ''}>En cave</option><option value="primeur" ${d.state === 'primeur' ? 'selected' : ''}>Primeur, pas encore livré</option></select></label></div>
@@ -1378,12 +1391,12 @@ function wineFormSheet() {
       ${addTarget ? `<p class="tiny" style="margin:0">La première bouteille ira à la place que tu as touchée.</p>` : ''}
     </div>`;
   const friends = uniq(x => x.owner).concat(S.settings.friends || []);
-  return `${head(editing ? 'Modifier' : sp ? 'Nouveau spiritueux' : 'Nouveau vin')}
+  return `${head(editing ? 'Modifier' : ft ? 'Quel vin ?' : sp ? 'Nouveau spiritueux' : 'Nouveau vin')}
     <form class="form" data-form="wine">
       ${d.photo || (editing && w.photo) ? `<img class="photo" ${d.photo ? `src="${d.photoUrl}"` : `data-photo="${w.id}" hidden`} alt="Étiquette">` : ''}
       ${sp ? spiritFields : vinFields}
       ${stock}
-      <div class="fieldset"><div class="ft">Achat</div>
+      ${ft ? '' : `<div class="fieldset"><div class="ft">Achat</div>
         <div class="grid2"><label>Prix unitaire (€)<input name="prix" inputmode="decimal" value="${esc(numFr(w.achat?.prix, 2))}"></label><label>Date<input type="date" name="adate" value="${esc(w.achat?.date || (editing ? '' : today()))}"></label></div>
         <label>Lieu d’achat<input name="lieu" value="${esc(w.achat?.lieu || '')}" list="dl-lieu" autocomplete="off"></label>
         <label>Offert par<input name="offertPar" value="${esc(w.cadeau?.de || '')}" placeholder="Si c’est un cadeau" autocomplete="off"></label>
@@ -1391,14 +1404,14 @@ function wineFormSheet() {
       <div class="fieldset"><div class="ft">Propriétaire</div>
         <label>À qui appartiennent ces bouteilles ?<input name="owner" value="${esc(w.owner || '')}" list="dl-friends" placeholder="Vide = à moi · sinon prénom de l’ami" autocomplete="off"></label>
         <p class="tiny" style="margin:0">Les bouteilles gardées pour un ami ne sont jamais proposées par le sommelier.</p>
-      </div>
+      </div>`}
       <details class="fieldset"><summary class="ft" style="cursor:pointer">Plus de détails</summary>
         ${sp ? '' : `<div class="grid3"><label>Début<input name="adeb" inputmode="numeric" value="${esc(w.apogee?.debut || '')}"></label><label>Apogée<input name="apic" inputmode="numeric" value="${esc(w.apogee?.pic || '')}"></label><label>Fin<input name="afin" inputmode="numeric" value="${esc(w.apogee?.fin || '')}"></label></div>
         <p class="tiny" style="margin:0">Fenêtre de dégustation. Laisse vide : le sommelier l’estimera.</p>`}
         <div class="grid2"><label>Nom court (plan)<input name="short" value="${v('short')}" placeholder="${esc(shortName({ ...w, short: '' }))}"></label><label>Abréviation (rack)<input name="abbr" value="${v('abbr')}" placeholder="${esc(abbr({ ...w, abbr: '' }))}" maxlength="3"></label></div>
         <label>Notes<textarea name="notes">${esc(w.notes || '')}</textarea></label>
       </details>
-      <button class="btn primary wide" type="submit">${editing ? 'Enregistrer' : 'Ajouter à la cave'}</button>
+      <button class="btn primary wide" type="submit">${editing ? 'Enregistrer' : ft ? 'Continuer vers la dégustation' : 'Ajouter à la cave'}</button>
     </form>
     ${dl('dl-dom', uniq(x => x.domaine))}${dl('dl-app', uniq(x => x.appellation))}${dl('dl-reg', uniq(x => x.region))}${dl('dl-lieu', uniq(x => x.achat?.lieu))}${dl('dl-friends', [...new Set(friends)])}`;
 }
@@ -1429,6 +1442,16 @@ FORMS.wine = async (f, d) => {
   }
   const w = { id: uid(), ...dr.w, createdAt: Date.now() };
   readWineForm(d, w);
+  // Vin dégusté hors cave : une fiche sans bouteille (ou la fiche existante), puis la dégustation
+  if (dr.forTaste) {
+    const same = S.wines.find(x => x.kind === w.kind && norm(x.domaine) === norm(w.domaine) && norm(x.cuvee) === norm(w.cuvee) && norm(x.appellation) === norm(w.appellation) && (x.millesime || null) === w.millesime);
+    const target = same || w;
+    if (!same) { delete w.achat; S.wines.push(w); }
+    if (dr.photo && !target.photo) { await photoSave(target.id, dr.photo); target.photo = true; }
+    await save(); draft = null; closeSheet();
+    if (target.kind === 'vin' && !target.apogee?.fin && aiReady() && S.settings.ai.auto && !same) estimateApogee(target.id, { quiet: true });
+    return startTaste(target.id, null, 'quick', { sessionId: dr.forTaste.sessionId });
+  }
   const qty = clamp(int(d.qty) || 1, 1, 500);
   const same = S.wines.find(x => x.kind === w.kind && norm(x.domaine) === norm(w.domaine) && norm(x.cuvee) === norm(w.cuvee) && norm(x.appellation) === norm(w.appellation) && (x.millesime || null) === w.millesime && (x.owner || null) === w.owner && x.format === w.format);
   let target = w;
@@ -1498,7 +1521,7 @@ function placeToggle(unitId, r, c) {
   refreshSheet();
 }
 Object.assign(ACT, {
-  add: t => { addTarget = t.dataset?.u ? { unitId: t.dataset.u, r: +t.dataset.r, c: +t.dataset.c } : null; if (addTarget) closeSheet(); showSheet(addSheet); },
+  add: t => { if (view === 'deg' && !t.dataset?.u) return ACT.newTaste(t); addTarget = t.dataset?.u ? { unitId: t.dataset.u, r: +t.dataset.r, c: +t.dataset.c } : null; if (addTarget) closeSheet(); showSheet(addSheet); },
   newWine: t => { newDraft(t.dataset.kind); showSheet(wineFormSheet, { full: true }); },
   rebuyList: () => showSheet(() => `${head('Racheter un vin')}<div class="list">${[...S.wines].filter(kindOn).sort((a, b) => wineName(a).localeCompare(wineName(b), 'fr')).map(w => `<button class="li" data-act="rebuy" data-id="${w.id}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(wineSub(w))} · ${wineBottles(w.id).length} en cave</small></div></button>`).join('')}</div>`),
   rebuy: t => showSheet(() => addBottlesSheet(t.dataset.id)),
@@ -1559,6 +1582,7 @@ FORMS.addBottles = async (f, d) => {
   const w = wine(f.dataset.w), qty = clamp(int(d.qty) || 1, 1, 500);
   if (num(d.prix) != null) w.achat = { ...(w.achat || {}), prix: num(d.prix), date: d.adate || w.achat?.date };
   const ids = createBottles(w, qty, d.state === 'primeur' ? { state: 'primeur', delivery: { date: d.delivery || null, spaceId: d.spaceId } } : { spaceId: d.spaceId });
+  S.wishes = S.wishes.filter(x => x.wineId !== w.id);   // acheté : il sort de la liste d'envies
   await save(); afterAdd(w, ids, d.state === 'primeur');
 };
 
@@ -1585,8 +1609,9 @@ function wineSheet(id) {
       <div class="btns2" style="margin-top:10px"><button class="btn small" data-act="estimate" data-id="${id}">${ICON.spark} ${a?.fin ? 'Réestimer' : 'Estimer'}</button><button class="btn small" data-act="editWine" data-id="${id}">Saisir</button></div>
     </div>`}
     <h3>En cave · ${bs.length}${pr.length ? ` <span class="small">+ ${pr.length} en primeur</span>` : ''}</h3>
-    ${bs.length || pr.length ? `<div class="list">${[...bs, ...pr].map(b => `<button class="li" data-act="bottle" data-b="${b.id}"><span class="chev">${ICON.pin}</span><div class="it"><b style="font-weight:500;font-size:14px">${esc(locLabel(b))}</b>${b.state === 'open' ? `<small>Ouverte · niveau ${b.level ?? 100} %</small>` : ''}</div><span class="chev">${ICON.chev}</span></button>`).join('')}</div>` : '<p class="muted small">Plus aucune bouteille en cave.</p>'}
-    <div class="btns2" style="margin-top:10px"><button class="btn" data-act="rebuy" data-id="${id}">${ICON.add} Ajouter</button><button class="btn" data-act="taste" data-w="${id}">${ICON.star} Déguster</button></div>
+    ${bs.length || pr.length ? `<div class="list">${[...bs, ...pr].map(b => `<button class="li" data-act="bottle" data-b="${b.id}"><span class="chev">${ICON.pin}</span><div class="it"><b style="font-weight:500;font-size:14px">${esc(locLabel(b))}</b>${b.state === 'open' ? `<small>Ouverte · niveau ${b.level ?? 100} %</small>` : ''}</div><span class="chev">${ICON.chev}</span></button>`).join('')}</div>` : `<p class="muted small">${S.tastings.some(t => t.wineId === id) && !S.bottles.some(b => b.wineId === id) ? 'Vin dégusté, jamais en cave.' : 'Plus aucune bouteille en cave.'}</p>`}
+    <div class="btns2" style="margin-top:10px"><button class="btn" data-act="rebuy" data-id="${id}">${ICON.add} ${bs.length ? 'Ajouter' : 'Ajouter à la cave'}</button><button class="btn" data-act="taste" data-w="${id}">${ICON.star} Déguster</button></div>
+    <button class="btn wide ${isWished(id) ? 'outline' : 'ghost'}" style="margin-top:8px" data-act="wishToggle" data-w="${id}">${isWished(id) ? '♥ Dans ma liste d’envies' : '♥ Ajouter à ma liste d’envies'}</button>
     <h3>Fiche</h3>
     <dl class="kv">${dlrow(sp ? 'Distillerie' : 'Domaine', w.domaine)}${dlrow(sp ? 'Expression' : 'Cuvée', w.cuvee)}${dlrow('Appellation', w.appellation)}${dlrow('Région', [w.region, w.pays].filter(Boolean).join(', '))}
       ${dlrow('Cépages', w.cepages)}${dlrow(sp ? 'Distillé en' : 'Millésime', w.millesime)}${dlrow('Âge', w.age ? w.age + ' ans' : '')}${dlrow('Embouteillé en', w.bottled)}${dlrow('Fût', w.fut)}
@@ -1732,12 +1757,40 @@ const SLIDERS_VIN = [['sucre', 'Sucre', 1, 5], ['acidite', 'Acidité', 1, 5], ['
 const SLIDERS_SPIRIT = [['douceur', 'Douceur', 1, 5], ['puissance', 'Puissance', 1, 5], ['corps', 'Corps', 1, 5], ['longueur', 'Finale', 1, 5]];
 const sliderOut = (k, v, kind = draft?.taste?.kind) => k === 'longueur' && kind !== 'spirit' ? `${v} s` : `${v}/5`;
 
-function startTaste(wineId, bottleId, m) {
+// ctx : { sessionId } pour une dégustation dans une séance
+function startTaste(wineId, bottleId, m, ctx = {}) {
   const w = wine(wineId);
   const prev = S.dismissed.rate?.bottleId === bottleId ? S.dismissed.rate : null;
-  draft = { taste: { wineId, bottleId: bottleId || null, kind: w.kind, mode: m === 'full' ? 'full' : 'quick', note: 14, comment: '', at: today(), plat: prev?.plat || '', full: { aromes: [] } } };
+  const sess = ctx.sessionId && byId(S.sessions, ctx.sessionId);
+  draft = { taste: { wineId, bottleId: bottleId || null, kind: w.kind, mode: m === 'full' ? 'full' : 'quick', note: 14, comment: '', at: sess?.date || today(), plat: prev?.plat || '',
+    type: sess?.type || null, lieu: sess?.lieu || '', convives: sess?.convives || '', prix: '', achatLieu: '', provenance: '', accord: null, sessionId: sess?.id || null, fromCave: false, full: { aromes: [] } } };
   wheelState = { active: null };
   showSheet(tasteSheet, { full: true });
+}
+function editTaste(id) {
+  const r = byId(S.tastings, id), w = wine(r.wineId);
+  draft = { taste: { ...r, kind: w.kind, mode: r.full ? 'full' : 'quick', prix: r.prix != null ? numFr(r.prix, 2) : '', full: { aromes: [], ...(structuredClone(r.full || {})) }, editId: id } };
+  wheelState = { active: null };
+  showSheet(tasteSheet, { full: true });
+}
+function tasteContext(t, w) {
+  const sess = t.sessionId && byId(S.sessions, t.sessionId);
+  const ch = (k, obj) => `<div class="chips wrap" style="margin-top:0">${Object.entries(obj).map(([v, l]) => `<button type="button" class="chip soft${t[k] === v ? ' on' : ''}" data-act="tctx" data-k="${k}" data-v="${v}">${l}</button>`).join('')}</div>`;
+  const f = (k, label, ph = '', mode = '') => `<label>${label}<input value="${esc(t[k] ?? '')}" data-in="tf" data-k="${k}" placeholder="${esc(ph)}" autocomplete="off" ${mode ? `inputmode="${mode}"` : ''}></label>`;
+  const canCave = !t.bottleId && !t.editId && wineBottles(w.id).length > 0;
+  return `<div class="card form">
+    ${sess ? `<p class="small" style="margin:0">Séance <b style="color:var(--ink)">${esc(sess.titre)}</b> · ${esc(fmtDate(sess.date))}${sess.lieu ? ' · ' + esc(sess.lieu) : ''}</p>`
+      : `<div><div class="lbl" style="margin-top:0">Type de dégustation</div>${ch('type', TASTE_TYPES)}</div>
+      <div class="grid2">${f('lieu', 'Lieu', 'Restaurant, salon…')}<label>Date<input type="date" value="${esc(t.at)}" data-in="tf" data-k="at"></label></div>
+      ${f('convives', 'Convives', 'Avec qui ?')}`}
+    ${t.bottleId ? '' : `<div class="grid2">${f('prix', 'Prix payé (€)', '', 'decimal')}${f('achatLieu', 'Lieu d’achat', 'Facultatif')}</div>
+      ${f('provenance', 'Provenance', 'Carte du restaurant, offerte par…')}`}
+    ${f('plat', 'Plat')}
+    <div><div class="lbl" style="margin-top:0">Accord</div>${ch('accord', ACCORDS)}</div>
+    ${canCave ? `<label class="check"><input type="checkbox" data-ch="tcave" ${t.fromCave ? 'checked' : ''}> Une bouteille de ma cave : la sortir du stock</label>` : ''}
+    <div>${t.photoUrl || (t.photo && t.editId) ? `<img class="photo" ${t.photoUrl ? `src="${t.photoUrl}"` : `data-photo="t-${t.editId}" hidden`} alt="Photo">` : ''}
+      <button type="button" class="btn small" style="margin-top:6px" data-act="tphoto">${ICON.camera} ${t.photoUrl || t.photo ? 'Changer la photo' : 'Ajouter une photo'}</button></div>
+  </div>`;
 }
 function tasteSheet() {
   const t = draft?.taste; if (!t) return null;
@@ -1767,14 +1820,14 @@ function tasteSheet() {
       ${sp ? '' : `<div class="lbl">Évolution</div>${chips('evolution', T_CHIPS.evolution)}<div class="lbl">Potentiel restant</div>${chips('potentiel', T_CHIPS.potentiel)}`}
     </div>` : '';
   return `${head('Dégustation', `<button class="link" data-act="tasteSave">OK</button>`)}
-    <div class="card" style="margin-top:0"><div class="rn">${esc(wineTitle(w))}</div><div class="rs">${esc(wineSub(w))}</div>
+    <div class="card" style="margin-top:0"><div class="row"><div class="grow"><div class="rn">${esc(wineTitle(w))}</div><div class="rs">${esc(wineSub(w))}</div></div>${t.bottleId || t.fromCave ? '<span class="tag g">De ma cave</span>' : '<span class="tag o">Hors cave</span>'}</div>
       <div class="seg"><button class="${t.mode === 'quick' ? 'on' : ''}" data-act="tmode" data-m="quick">Rapide</button><button class="${t.mode === 'full' ? 'on' : ''}" data-act="tmode" data-m="full">Complète</button></div></div>
+    ${tasteContext(t, w)}
     <div class="card"><div class="score" id="t-score">${numFr(t.note)}<small> / 20</small></div>
       <input type="range" min="0" max="20" step="0.5" value="${t.note}" data-in="tnote" aria-label="Note sur 20"></div>
     ${full}
     <div class="card form">
       <label>Commentaire<textarea data-in="tf" data-k="comment" placeholder="Tes impressions…">${esc(t.comment)}</textarea></label>
-      <div class="grid2"><label>Date<input type="date" value="${esc(t.at)}" data-in="tf" data-k="at"></label><label>Plat<input value="${esc(t.plat)}" data-in="tf" data-k="plat" autocomplete="off"></label></div>
     </div>
     <button class="btn primary wide" style="margin-top:12px" data-act="tasteSave">Enregistrer la dégustation</button>`;
 }
@@ -1835,18 +1888,40 @@ Object.assign(ACT, {
     if (!t.full.aromes.includes(name)) t.full.aromes.push(name);
     await save(); paintWheel();
   },
+  tctx: t => { const k = t.dataset.k; draft.taste[k] = draft.taste[k] === t.dataset.v ? null : t.dataset.v; refreshSheet(); },
+  tphoto: () => { const i = $('#f-photo2'); i.value = ''; i.click(); },
   tasteSave: async () => {
     const t = draft.taste, w = wine(t.wineId);
-    const rec = { id: uid(), wineId: t.wineId, bottleId: t.bottleId, at: t.at || today(), note: t.note, comment: t.comment, plat: t.plat };
-    if (t.mode === 'full') rec.full = { ...t.full };
-    S.tastings.push(rec);
-    if (S.dismissed.rate && (S.dismissed.rate.bottleId === t.bottleId || S.dismissed.rate.wineId === t.wineId)) delete S.dismissed.rate;
-    await save(); draft = null; closeSheet(); render(); toast('Dégustation enregistrée');
-    const sugg = tastingAdvice(w, rec);
-    if (sugg) showSheet(() => sugg);
+    const fields = { at: t.at || today(), note: t.note, comment: t.comment, plat: t.plat, type: t.type || null, lieu: t.lieu, convives: t.convives,
+      prix: num(t.prix), achatLieu: t.achatLieu, provenance: t.provenance, accord: t.accord || null, sessionId: t.sessionId || null };
+    let rec;
+    if (t.editId) { rec = byId(S.tastings, t.editId); Object.assign(rec, fields); if (t.mode === 'full') rec.full = { ...t.full }; else delete rec.full; }
+    else {
+      rec = { id: uid(), wineId: t.wineId, bottleId: t.bottleId, ...fields };
+      if (t.mode === 'full') rec.full = { ...t.full };
+      // « Une bouteille de ma cave » : on la sort du stock
+      if (t.fromCave && !t.bottleId) {
+        const b = pickBottle(w);
+        if (b) { const from = locOf(b); b.state = 'out'; b.outAt = rec.at; logMove(b, 'out', { motif: 'bue', at: rec.at, from, plat: rec.plat, who: rec.convives }); rec.bottleId = b.id; S.transfer.ids = S.transfer.ids.filter(id => id !== b.id); }
+      }
+      S.tastings.push(rec);
+    }
+    rec.horsCave = !rec.bottleId;
+    if (t.photoBlob) { await photoSave('t-' + rec.id, t.photoBlob); rec.photo = true; }
+    if (S.dismissed.rate && (S.dismissed.rate.bottleId === rec.bottleId || S.dismissed.rate.wineId === rec.wineId)) delete S.dismissed.rate;
+    await save(); draft = null;
+    const sid = rec.sessionId;
+    closeSheet(); render(); toast(t.editId ? 'Dégustation modifiée' : 'Dégustation enregistrée');
+    if (sid && !t.editId) showSheet(() => sessionSheet(sid));
+    if (!t.editId) afterTasting(w, rec);
   },
   tasteView: t => showSheet(() => tasteView(t.dataset.id)),
-  delTaste: async t => { if (!confirm('Supprimer cette dégustation ?')) return; S.tastings = S.tastings.filter(x => x.id !== t.dataset.id); await save(); sheetBack(); refreshSheet(); },
+  tasteEdit: t => editTaste(t.dataset.id),
+  delTaste: async t => {
+    if (!confirm('Supprimer cette dégustation ?')) return;
+    const r = byId(S.tastings, t.dataset.id); if (r?.photo) await photoDel('t-' + r.id);
+    S.tastings = S.tastings.filter(x => x.id !== t.dataset.id); await save(); sheetBack(); refreshSheet(); render();
+  },
   rateLater: async () => { delete S.dismissed.rate; await save(); render(); },
   rateNow: () => { const r = S.dismissed.rate; startTaste(r.wineId, r.bottleId, 'quick'); },
   applyAdvice: async t => {
@@ -1872,19 +1947,225 @@ function tastingAdvice(w, rec) {
 }
 function tasteView(id) {
   const t = byId(S.tastings, id); if (!t) return null;
-  const w = wine(t.wineId), F = t.full || {};
+  const w = wine(t.wineId), F = t.full || {}, sess = t.sessionId && byId(S.sessions, t.sessionId), wished = isWished(w.id);
   const row = (k, v) => v != null && v !== '' ? `<dt>${k}</dt><dd>${esc(v)}</dd>` : '';
   const sl = k => F[k] != null ? sliderOut(k, F[k], w.kind) : null;
-  return `${head('Dégustation', `<button class="icon-btn" data-act="delTaste" data-id="${id}" aria-label="Supprimer">${ICON.trash}</button>`)}
-    <p class="small" style="margin-top:-6px">${esc(wineTitle(w))} · ${esc(fmtDate(t.at))}</p>
-    <div class="score">${t.note != null ? numFr(t.note) : '–'}<small> / 20</small></div>
+  return `${head('Dégustation', `<button class="icon-btn" data-act="tasteEdit" data-id="${id}" aria-label="Modifier">${ICON.edit}</button><button class="icon-btn" data-act="delTaste" data-id="${id}" aria-label="Supprimer">${ICON.trash}</button>`)}
+    <p class="small" style="margin-top:-6px"><b style="color:var(--ink)">${esc(wineTitle(w))}</b> · ${esc(fmtDate(t.at))}</p>
+    <div class="tags">${t.type ? `<span class="tag o">${TASTE_TYPES[t.type]}</span>` : ''}${t.bottleId ? '<span class="tag g">De ma cave</span>' : '<span class="tag">Hors cave</span>'}${t.accord ? `<span class="tag ${t.accord === 'parfait' ? 'g' : t.accord === 'rate' ? 'r' : ''}">Accord ${ACCORDS[t.accord].toLowerCase()}</span>` : ''}</div>
+    <div class="score" style="margin-top:8px">${t.note != null ? numFr(t.note) : '–'}<small> / 20</small></div>
     ${t.comment ? `<p style="white-space:pre-wrap">${esc(t.comment)}</p>` : ''}
+    ${t.photo ? `<img class="photo" data-photo="t-${t.id}" alt="Photo" hidden>` : ''}
     ${F.aromes?.length ? `<div class="lbl">Arômes</div><div class="chips wrap">${F.aromes.map(a => `<span class="chip soft on">${esc(a)}</span>`).join('')}</div>` : ''}
-    <dl class="kv" style="margin-top:12px">${row('Plat', t.plat)}${row('Teinte', F.teinte)}${row('Intensité (œil)', sl('oeil'))}${row('Limpidité', F.limpidite)}${row('Bulles', F.bulles)}
+    <dl class="kv" style="margin-top:12px">${row('Séance', sess?.titre)}${row('Lieu', t.lieu)}${row('Convives', t.convives)}${row('Plat', t.plat)}
+      ${row('Prix payé', t.prix != null ? fmtE2.format(t.prix) : '')}${row('Lieu d’achat', t.achatLieu)}${row('Provenance', t.provenance)}
+      ${row('Teinte', F.teinte)}${row('Intensité (œil)', sl('oeil'))}${row('Limpidité', F.limpidite)}${row('Bulles', F.bulles)}
       ${row('Intensité (nez)', sl('nez'))}${row('Ouverture', F.ouverture)}${row('Service', F.eau)}${row('Attaque', F.attaque)}
       ${(w.kind === 'spirit' ? SLIDERS_SPIRIT : SLIDERS_VIN).map(([k, l]) => row(l, sl(k))).join('')}${row('Tanins', F.texture)}${row('Équilibre', F.equilibre)}
-      ${row('Évolution', ({ jeune: 'Jeune', apoint: 'À point', declin: 'Sur le déclin' })[F.evolution])}${row('Potentiel', F.potentiel)}</dl>`;
+      ${row('Évolution', ({ jeune: 'Jeune', apoint: 'À point', declin: 'Sur le déclin' })[F.evolution])}${row('Potentiel', F.potentiel)}</dl>
+    <div class="btns" style="margin-top:14px">
+      <div class="btns2"><button class="btn ${wished ? 'outline' : 'green'}" data-act="wishToggle" data-w="${w.id}" data-t="${id}">${wished ? '♥ Dans mes envies' : '♥ Je veux en acheter'}</button><button class="btn" data-act="rebuy" data-id="${w.id}">${ICON.add} Ajouter à la cave</button></div>
+      ${sess ? `<button class="btn ghost wide" data-act="session" data-id="${sess.id}">Voir la séance</button>` : ''}
+      <button class="btn ghost wide" data-act="wine" data-id="${w.id}">Voir la fiche du vin</button>
+    </div>`;
 }
+// Après une dégustation : réévaluation de la fenêtre par le sommelier, ou règle simple sans IA
+function afterTasting(w, rec) {
+  if (w.kind === 'spirit' || !wineBottles(w.id).length) return;
+  if (aiReady() && (rec.comment || rec.full?.evolution || rec.full?.potentiel)) return reevaluate(w, rec);
+  const sugg = tastingAdvice(w, rec); if (sugg) showSheet(() => sugg);
+}
+CHANGES.tcave = el => { draft.taste.fromCave = el.checked; refreshSheet(); };
+async function onTastePhoto(file) {
+  if (!file || !draft?.taste) return;
+  try { const blob = await shrinkImage(file, 900, 0.72); draft.taste.photoBlob = blob; draft.taste.photoUrl = URL.createObjectURL(blob); refreshSheet(); }
+  catch { toast('Image illisible'); }
+}
+
+
+/* ===== 55-deg.js ===== */
+/* ---------- Onglet Dégustations ----------
+   Le journal unique de toutes les dégustations : bouteilles de la cave et vins bus ailleurs.
+   Un vin dégusté hors cave est une fiche vin ordinaire, sans bouteille. */
+let degMode = 'journal', degQuery = '', degF = { min: false, src: 'all', type: null, color: null }, labelFor = null;
+
+function degTastings() {
+  const m = matcher(degQuery), f = degF;
+  const q = norm(degQuery);
+  return S.tastings.filter(t => {
+    const w = wine(t.wineId); if (!w || !kindOn(w)) return false;
+    if (f.min && !(t.note >= 16)) return false;
+    if (f.src === 'hors' && t.bottleId) return false;
+    if (f.src === 'cave' && !t.bottleId) return false;
+    if (f.type && t.type !== f.type) return false;
+    if (f.color && w.couleur !== f.color) return false;
+    if (m && !m(w) && !norm([t.lieu, t.comment, t.plat, t.convives, byId(S.sessions, t.sessionId)?.titre].join(' ')).includes(q)) return false;
+    return true;
+  }).sort((a, b) => (b.at || '').localeCompare(a.at || '') || (b.note ?? 0) - (a.note ?? 0));
+}
+function degTools() {
+  const f = degF, ch = (act, v, on, l) => `<button class="chip soft${on ? ' on' : ''}" data-act="${act}" data-v="${v}">${l}</button>`;
+  const colors = [...new Set(S.tastings.map(t => wine(t.wineId)?.couleur).filter(Boolean))];
+  return `<div class="search">${ICON.search}<input type="search" placeholder="Rechercher un vin, un lieu, un plat…" value="${esc(degQuery)}" data-in="degSearch" autocomplete="off" enterkeyhint="search"></div>
+    <div class="seg"><button class="${degMode === 'journal' ? 'on' : ''}" data-act="degMode" data-m="journal">Journal</button><button class="${degMode === 'vin' ? 'on' : ''}" data-act="degMode" data-m="vin">Par vin</button></div>
+    <div class="chips">${ch('dfMin', '1', f.min, '16 et plus')}${ch('dfSrc', 'hors', f.src === 'hors', 'Hors cave')}${ch('dfSrc', 'cave', f.src === 'cave', 'De ma cave')}
+      ${Object.entries(TASTE_TYPES).map(([k, l]) => ch('dfType', k, f.type === k, l)).join('')}
+      ${colors.map(c => ch('dfColor', c, f.color === c, `<span class="dot" style="background:${COLORS[c]?.c}"></span>${COLORS[c]?.label}`)).join('')}</div>`;
+}
+const noteBadge = n => `<span class="qty" style="color:var(--bx);background:var(--bx-soft)">${n != null ? numFr(n) : '–'}</span>`;
+function tasteRow(t, rank) {
+  const w = wine(t.wineId);
+  const sub = [w.domaine && !nameIsDomaine(w) ? w.domaine : w.appellation, t.type ? TASTE_TYPES[t.type] : '', t.lieu, t.bottleId ? 'de ma cave' : 'hors cave', isWished(w.id) ? '♥ envie' : ''].filter(Boolean).join(' · ');
+  return `<button class="li" data-act="tasteView" data-id="${t.id}">${rank ? `<span class="rank">${rank}</span>` : `<span class="dot" style="background:${wineColor(w)}"></span>`}
+    <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(sub)}</small>${t.plat || t.accord ? `<small class="ell">${t.accord ? 'Accord ' + ACCORDS[t.accord].toLowerCase() : ''}${t.accord && t.plat ? ' · ' : ''}${esc(t.plat || '')}</small>` : ''}</div>${noteBadge(t.note)}</button>`;
+}
+const monthLabel = s => s ? cap(new Date(s.slice(0, 7) + '-15').toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })) : 'Sans date';
+function vDeg() {
+  if (!S.tastings.length) return `<div class="empty">${ICON.notes}<p>Aucune dégustation pour l’instant.</p><p class="small">Note les vins de ta cave, ou ceux bus au restaurant, chez des amis, dans un salon.</p>
+    <button class="btn primary" data-act="newTaste">${ICON.add} Nouvelle dégustation</button></div>`;
+  const ts = degTastings();
+  if (!ts.length) return '<div class="empty">Aucune dégustation ne correspond.</div>';
+  if (degMode === 'vin') return vDegByWine(ts);
+  // Journal : les dégustations d'une séance forment un bloc, daté par la séance
+  const items = [], seen = new Set();
+  for (const t of ts) {
+    if (t.sessionId && byId(S.sessions, t.sessionId)) {
+      if (seen.has(t.sessionId)) continue; seen.add(t.sessionId);
+      const s = byId(S.sessions, t.sessionId);
+      items.push({ at: s.date || t.at, s, ts: ts.filter(x => x.sessionId === s.id).sort((a, b) => (b.note ?? -1) - (a.note ?? -1)) });
+    } else items.push({ at: t.at, t });
+  }
+  items.sort((a, b) => (b.at || '').localeCompare(a.at || ''));
+  let out = '', month = null, open = false;
+  for (const it of items) {
+    const m = monthLabel(it.at);
+    if (m !== month) { if (open) out += '</div>'; out += `<div class="sect">${esc(m)}</div>`; month = m; open = false; }
+    if (it.s) {
+      if (open) { out += '</div>'; open = false; }
+      const n = S.tastings.filter(x => x.sessionId === it.s.id).length;
+      out += `<div class="card" style="padding:0;overflow:hidden"><button class="row" style="padding:12px;background:var(--gold-soft);width:100%;border:0;text-align:left" data-act="session" data-id="${it.s.id}">
+        <span style="color:var(--bx)">${ICON.glass}</span><div class="grow"><b style="font-size:14.5px">${esc(it.s.titre)}</b><div class="small">Séance${it.s.type ? ' · ' + TASTE_TYPES[it.s.type] : ''}${it.s.lieu ? ' · ' + esc(it.s.lieu) : ''} · ${esc(fmtDate(it.s.date))} · ${plural(n, 'vin', 'vins')}</div></div><span class="chev">${ICON.chev}</span></button>
+        ${it.ts.slice(0, 3).map((t, i) => tasteRow(t, i + 1)).join('')}
+        ${n > 3 ? `<button class="li" style="justify-content:center;color:var(--bx);font-weight:600;font-size:13.5px" data-act="session" data-id="${it.s.id}">Voir les ${n} vins</button>` : ''}</div>`;
+    } else {
+      if (!open) { out += '<div class="list">'; open = true; }
+      out += tasteRow(it.t);
+    }
+  }
+  if (open) out += '</div>';
+  return `<p class="small" style="margin:10px 4px 0">${plural(ts.length, 'dégustation', 'dégustations')}</p>${out}`;
+}
+function vDegByWine(ts) {
+  const by = new Map();
+  for (const t of ts) by.set(t.wineId, [...(by.get(t.wineId) || []), t]);
+  const rows = [...by].map(([wid, l]) => ({ w: wine(wid), l, avg: l.filter(t => t.note != null).reduce((n, t, _, a) => n + t.note / a.length, 0) }))
+    .sort((a, b) => (b.l[0].at || '').localeCompare(a.l[0].at || ''));
+  return `<p class="small" style="margin:10px 4px 0">${plural(rows.length, 'vin', 'vins')}</p><div class="list">${rows.map(({ w, l, avg }) => `<button class="li" data-act="wine" data-id="${w.id}"><span class="dot" style="background:${wineColor(w)}"></span>
+    <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${plural(l.length, 'dégustation', 'dégustations')} · dernière le ${esc(fmtDate(l[0].at))}${wineBottles(w.id).length ? ` · ${wineBottles(w.id).length} en cave` : ''}</small>
+    ${l.length > 1 ? `<small class="ell">${l.slice(0, 6).map(t => `${numFr(t.note)}`).reverse().join(' → ')}</small>` : ''}</div>${noteBadge(Math.round(avg * 2) / 2)}</button>`).join('')}</div>`;
+}
+INPUTS.degSearch = el => { degQuery = el.value; const v = $('.view'); if (v) { v.innerHTML = banners() + vDeg(); paintPhotos(v); } };
+
+/* ---------- Nouvelle dégustation ---------- */
+function newTasteSheet(sessionId) {
+  const s = sessionId && byId(S.sessions, sessionId);
+  return `${head(s ? 'Ajouter un vin' : 'Nouvelle dégustation')}
+    ${s ? `<p class="small" style="margin-top:-6px">Séance « ${esc(s.titre)} »</p>` : ''}
+    <div class="big-actions">
+      <button class="big-action" data-act="scanTaste" data-session="${sessionId || ''}">${ICON.camera}<div><b>Photo de l’étiquette</b><small>${aiReady() && aiClaude() ? 'Le sommelier reconnaît le vin.' : 'Sans clé Claude, la photo est gardée et tu remplis la fiche.'}</small></div></button>
+      <div class="card" style="margin:0"><div class="search" style="margin:0">${ICON.search}<input type="search" placeholder="Un vin déjà connu (cave, dégustations)…" data-in="tasteFind" data-session="${sessionId || ''}" autocomplete="off"></div><div id="taste-find"></div></div>
+      <button class="big-action" data-act="newTasteWine" data-kind="vin" data-session="${sessionId || ''}">${ICON.edit}<div><b>Saisie manuelle</b><small>Domaine, cuvée, millésime.</small></div></button>
+      ${spiritsOn() ? `<button class="big-action" data-act="newTasteWine" data-kind="spirit" data-session="${sessionId || ''}">${ICON.bottle}<div><b>Un spiritueux</b><small>Whisky, rhum, cognac…</small></div></button>` : ''}
+      ${s ? '' : `<button class="big-action" style="border-color:var(--bx)" data-act="newSession">${ICON.glass}<div><b>Démarrer une séance</b><small>Salon, verticale, soirée : plusieurs vins, un seul contexte.</small></div></button>`}
+    </div>`;
+}
+INPUTS.tasteFind = el => {
+  const m = matcher(el.value), box = $('#taste-find'); if (!box) return;
+  if (!m) { box.innerHTML = ''; return; }
+  const ws = S.wines.filter(w => kindOn(w) && m(w)).slice(0, 8);
+  box.innerHTML = ws.length ? `<div class="list" style="margin-top:8px">${ws.map(w => {
+    const n = wineBottles(w.id).length, last = S.tastings.filter(t => t.wineId === w.id).sort((a, b) => (b.at || '').localeCompare(a.at || ''))[0];
+    return `<button class="li" data-act="tasteWine" data-w="${w.id}" data-session="${el.dataset.session}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small>${[n ? n + ' en cave' : '', last ? 'déjà dégusté · ' + numFr(last.note) + '/20' : ''].filter(Boolean).join(' · ') || esc(wineSub(w))}</small></div></button>`;
+  }).join('')}</div>` : '<p class="small" style="margin:8px 4px 0">Aucun vin connu : utilise la photo ou la saisie manuelle.</p>';
+};
+Object.assign(ACT, {
+  newTaste: t => showSheet(() => newTasteSheet(t.dataset?.session || null)),
+  tasteWine: t => { closeSheet(); startTaste(t.dataset.w, null, 'quick', { sessionId: t.dataset.session || null }); },
+  newTasteWine: t => { newDraft(t.dataset.kind); draft.forTaste = { sessionId: t.dataset.session || null }; showSheet(wineFormSheet, { full: true }); },
+  scanTaste: t => { labelFor = { sessionId: t.dataset.session || null }; const i = $('#f-photo'); i.value = ''; i.click(); },
+  degMode: t => { degMode = t.dataset.m; render(); },
+  dfMin: () => { degF.min = !degF.min; render(); },
+  dfSrc: t => { degF.src = degF.src === t.dataset.v ? 'all' : t.dataset.v; render(); },
+  dfType: t => { degF.type = degF.type === t.dataset.v ? null : t.dataset.v; render(); },
+  dfColor: t => { degF.color = degF.color === t.dataset.v ? null : t.dataset.v; render(); },
+});
+
+/* ---------- Séances ---------- */
+function sessionForm(id) {
+  const s = id ? byId(S.sessions, id) : { titre: '', type: 'salon', lieu: '', date: today(), convives: '' };
+  return `${head(id ? 'Modifier la séance' : 'Nouvelle séance')}
+    <form class="form" data-form="session" data-id="${id || ''}">
+      <label>Titre<input name="titre" value="${esc(s.titre)}" required placeholder="Salon des vins de Loire, verticale de Morgon…" autocomplete="off"></label>
+      <label>Type<select name="type">${Object.entries(TASTE_TYPES).map(([k, l]) => `<option value="${k}" ${s.type === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+      <div class="grid2"><label>Lieu<input name="lieu" value="${esc(s.lieu || '')}" autocomplete="off"></label><label>Date<input type="date" name="date" value="${esc(s.date || today())}"></label></div>
+      <label>Convives<input name="convives" value="${esc(s.convives || '')}" autocomplete="off"></label>
+      <button class="btn primary wide" type="submit">${id ? 'Enregistrer' : 'Démarrer la séance'}</button>
+      ${id ? `<button class="btn danger wide" type="button" data-act="delSession" data-id="${id}">Supprimer la séance</button>` : ''}
+    </form>`;
+}
+FORMS.session = async (f, d) => {
+  const id = f.dataset.id, o = { titre: d.titre, type: d.type, lieu: d.lieu, date: d.date || today(), convives: d.convives };
+  if (id) {
+    Object.assign(byId(S.sessions, id), o);
+    for (const t of S.tastings) if (t.sessionId === id) Object.assign(t, { at: o.date, type: o.type, lieu: o.lieu, convives: o.convives });
+    await save(); sheetBack(); refreshSheet(); render();
+  } else {
+    const s = { id: uid(), ...o }; S.sessions.push(s);
+    await save(); render(); showSheet(() => sessionSheet(s.id), { replace: true });
+  }
+};
+function sessionSheet(id) {
+  const s = byId(S.sessions, id); if (!s) return null;
+  const ts = S.tastings.filter(t => t.sessionId === id).sort((a, b) => (b.note ?? -1) - (a.note ?? -1));
+  return `${head(esc(s.titre), `<button class="icon-btn" data-act="editSession" data-id="${id}" aria-label="Modifier">${ICON.edit}</button>`)}
+    <p class="small" style="margin-top:-6px">${s.type ? `<span class="tag o">${TASTE_TYPES[s.type]}</span> ` : ''}${[s.lieu, fmtDate(s.date), s.convives && 'avec ' + s.convives].filter(Boolean).map(esc).join(' · ')}</p>
+    ${ts.length ? `<div class="sect">Classement de la séance</div><div class="list">${ts.map((t, i) => tasteRow(t, i + 1)).join('')}</div>` : '<p class="muted">Aucun vin pour l’instant.</p>'}
+    <button class="btn primary wide" style="margin-top:12px" data-act="newTaste" data-session="${id}">${ICON.add} Ajouter un vin à la séance</button>`;
+}
+Object.assign(ACT, {
+  newSession: () => showSheet(() => sessionForm(null), { replace: true }),
+  editSession: t => showSheet(() => sessionForm(t.dataset.id)),
+  session: t => showSheet(() => sessionSheet(t.dataset.id)),
+  delSession: async t => {
+    if (!confirm('Supprimer cette séance ? Ses dégustations sont conservées, sans séance.')) return;
+    for (const x of S.tastings) if (x.sessionId === t.dataset.id) x.sessionId = null;
+    S.sessions = S.sessions.filter(s => s.id !== t.dataset.id);
+    await save(); closeSheet(); render();
+  },
+});
+
+/* ---------- Liste d'envies ---------- */
+const isWished = wid => S.wishes.some(x => x.wineId === wid);
+function wishSheet() {
+  const ws = [...S.wishes].sort((a, b) => (b.at || '').localeCompare(a.at || '')).filter(x => wine(x.wineId));
+  return `${head('Liste d’envies')}
+    ${ws.length ? `<div class="list">${ws.map(x => { const w = wine(x.wineId), best = S.tastings.filter(t => t.wineId === w.id && t.note != null).sort((a, b) => b.note - a.note)[0];
+      return `<div class="li"><span class="dot" style="background:${wineColor(w)}"></span><button class="it" style="background:none;border:0;padding:0;text-align:left" data-act="wine" data-id="${w.id}"><b class="ell">${esc(wineTitle(w))}</b>
+        <small>${[best ? `dégusté ${numFr(best.note)}/20${best.lieu ? ' · ' + best.lieu : ''}` : '', x.prix != null ? '~' + eur(x.prix) : '', x.lieu].filter(Boolean).map(esc).join(' · ')}</small></button>
+        <button class="btn small primary" data-act="wishBought" data-w="${w.id}">Acheté</button><button class="icon-btn" data-act="wishToggle" data-w="${w.id}" aria-label="Retirer">${ICON.close}</button></div>`; }).join('')}</div>
+      <p class="tiny">« Acheté » ouvre l’ajout en cave sur la même fiche, avec son historique de dégustation.</p>`
+    : '<p class="muted">Ta liste est vide. Après une dégustation, touche « Je veux en acheter ».</p>'}`;
+}
+Object.assign(ACT, {
+  wishSheet: () => showSheet(wishSheet),
+  wishToggle: async t => {
+    const wid = t.dataset.w;
+    if (isWished(wid)) { S.wishes = S.wishes.filter(x => x.wineId !== wid); toast('Retiré de la liste d’envies'); }
+    else { const ts = t.dataset.t && byId(S.tastings, t.dataset.t); S.wishes.push({ id: uid(), wineId: wid, at: today(), prix: ts?.prix ?? null, lieu: ts?.achatLieu || '' }); toast('Ajouté à la liste d’envies'); }
+    await save(); refreshSheet(); render();
+  },
+  wishBought: t => showSheet(() => addBottlesSheet(t.dataset.w)),
+});
 
 
 /* ===== 60-ai.js ===== */
@@ -2026,7 +2307,15 @@ function caveContext(allSites) {
   const top = [...S.tastings].filter(t => t.note != null).sort((a, b) => b.note - a.note);
   const liked = top.slice(0, 6).map(t => `${wineTitle(wine(t.wineId) || {})} ${numFr(t.note)}/20`).filter(x => !x.startsWith('undefined'));
   const disliked = top.filter(t => t.note < 12).slice(-4).map(t => `${wineTitle(wine(t.wineId) || {})} ${numFr(t.note)}/20`);
+  const tw = t => wine(t.wineId) || {};
+  const outside = S.tastings.filter(t => !t.bottleId && wine(t.wineId) && !isFriend(tw(t))).sort((a, b) => (b.at || '').localeCompare(a.at || '')).slice(0, 15)
+    .map(t => `${wineTitle(tw(t))} (${[COLORS[tw(t).couleur]?.label, tw(t).region].filter(Boolean).join(', ')}) ${t.note != null ? numFr(t.note) + '/20' : ''}${t.type ? ', ' + TASTE_TYPES[t.type].toLowerCase() : ''}${t.comment ? ' « ' + t.comment.slice(0, 70) + ' »' : ''}`);
+  const accords = S.tastings.filter(t => t.accord && t.plat && wine(t.wineId)).slice(-12).map(t => `${t.plat} + ${wineTitle(tw(t))} : ${ACCORDS[t.accord].toLowerCase()}`);
+  const wishes = S.wishes.map(x => wine(x.wineId)).filter(Boolean).map(wineTitle);
   return `Date du jour : ${today()} (année ${y}).
+${outside.length ? `Vins dégustés hors de la cave (récents) : ${outside.join(' ; ')}.` : ''}
+${accords.length ? `Accords déjà essayés par l’utilisateur : ${accords.join(' ; ')}.` : ''}
+${wishes.length ? `Liste d’envies (vins qu’il veut acheter) : ${wishes.join(' ; ')}.` : ''}
 ${multi ? `Sites : ${sites}.${allSites ? ' Bouteilles de tous les sites.' : ' Liste limitée au site actuel.'}` : ''}
 ${liked.length ? `Vins les mieux notés par l’utilisateur : ${liked.join(' ; ')}.` : ''}${disliked.length ? `\nVins peu appréciés : ${disliked.join(' ; ')}.` : ''}
 Cave disponible (${lines.length} références) :
@@ -2041,7 +2330,7 @@ Règles :
 - Évite de proposer un vin « trop tôt » ou « en déclin » sauf demande explicite ou faute de mieux (et dis-le).
 - Propose en général 3 bouteilles au plus, la meilleure en premier. Un vin par plat uniquement si on te demande un menu complet ; indique alors le plat dans « plat ».
 - Pour chaque recommandation : raison de l’accord en une ou deux phrases concrètes, température de service (ex. « 16 °C »), carafage (ex. « Carafe 30 min » ou « Sans carafe »).
-- Tiens compte des notes et commentaires passés pour les goûts de l’utilisateur.
+- Tiens compte des notes et commentaires passés, y compris des vins dégustés hors de la cave, pour les goûts de l’utilisateur. Appuie-toi sur les accords qu’il a jugés parfaits, évite de reproduire ceux qu’il a jugés ratés. Pour les suggestions d’achat, pense à sa liste d’envies.
 - Si la liste est limitée au site actuel et qu’une bouteille idéale est sur l’autre site, tu peux le mentionner dans le message.
 ${spiritsOn() ? `- La cave contient aussi des spiritueux (marqués SPIRITUEUX) : propose-les pour un digestif, une dégustation ou un accord (chocolat, fromage, dessert, cigare).${S.settings.cocktails ? ' Tu peux suggérer un cocktail réalisable avec un spiritueux de la cave, recette courte dans le message.' : ' Ne propose pas de cocktails.'}` : '- Ne propose pas de spiritueux ni de cocktails.'}
 - « message » : réponse courte et chaleureuse, en français, en tutoyant, 80 mots maximum, sans markdown. « relances » : 2 ou 3 suggestions de questions de suivi très courtes (moins de 6 mots).`;
@@ -2211,9 +2500,11 @@ async function onPhoto(file) {
   let big, small;
   try { big = await shrinkImage(file, 1280, 0.8); small = await shrinkImage(file, 640, 0.72); }
   catch { return toast('Image illisible'); }
+  const forTaste = labelFor; labelFor = null;
   const go = fields => {
     newDraft(fields.kind === 'spirit' && spiritsOn() ? 'spirit' : 'vin', fields);
     draft.photo = small; draft.photoUrl = URL.createObjectURL(small);
+    if (forTaste) draft.forTaste = forTaste;
     showSheet(wineFormSheet, { full: true });
   };
   if (!aiReady() || !aiClaude()) { closeSheet(); go({}); return toast(aiReady() ? 'Lecture d’étiquette : Claude uniquement' : 'Sans clé IA : saisie manuelle'); }
@@ -2298,6 +2589,35 @@ function plocReview() {
     <button class="btn primary wide" style="margin-top:14px;position:sticky;bottom:0" data-act="plocGo">Importer ${plural(n, 'bouteille', 'bouteilles')}</button>`;
 }
 
+/* ---------- Réévaluation de la fenêtre après une dégustation ---------- */
+const REEVAL_SCHEMA = { type: 'object', additionalProperties: false, required: ['changer', 'debut', 'pic', 'fin', 'justification'], properties: {
+  changer: { type: 'boolean' }, debut: { type: 'integer' }, pic: { type: 'integer' }, fin: { type: 'integer' }, justification: { type: 'string' } } };
+async function reevaluate(w, rec) {
+  const a = w.apogee, left = wineBottles(w.id).length;
+  const F = rec.full || {};
+  const note = [`Dégustation du ${rec.at} : ${rec.note != null ? numFr(rec.note) + '/20' : 'sans note'}`, rec.comment && `commentaire « ${rec.comment} »`,
+    F.evolution && `évolution jugée : ${({ jeune: 'jeune', apoint: 'à point', declin: 'sur le déclin' })[F.evolution]}`, F.potentiel && `potentiel restant estimé : ${F.potentiel}`,
+    F.aromes?.length && `arômes : ${F.aromes.join(', ')}`].filter(Boolean).join(' ; ');
+  try {
+    const r = await aiCall({ system: APO_SYS.replace(/Si un outil[\s\S]*?conclure\.\n/, '').replace(/Termine ta réponse[\s\S]*$/, '') +
+      `\nOn vient de déguster ce vin. Dis s'il faut modifier sa fenêtre actuelle (${a?.fin ? `${a.debut || '?'}–${a.fin}, apogée ${a.pic || '?'}` : 'inconnue'}) pour les ${left} bouteille(s) restantes. Ne la change que si la dégustation l'apporte vraiment (changer = false sinon, et recopie la fenêtre actuelle). Justification en une ou deux phrases, en français, en tutoyant.`,
+      content: wineBrief(w) + '\n' + note, schema: REEVAL_SCHEMA, maxTokens: 2000, effort: 'low' });
+    const j = r.json;
+    if (!j.changer || !yearOk(j.fin, w) || (a && j.fin === a.fin && j.debut === a.debut && j.pic === a.pic)) return;
+    const prop = { debut: yearOk(j.debut, w) && j.debut <= j.fin ? j.debut : null, pic: yearOk(j.pic, w) && j.pic <= j.fin ? j.pic : null, fin: j.fin };
+    showSheet(() => `${head('Le sommelier')}
+      <div class="card" style="background:var(--green-soft);border-color:#C9DCCF"><p style="margin:0 0 6px"><b>${esc(wineTitle(w))}</b> · ${plural(left, 'bouteille restante', 'bouteilles restantes')}</p>
+        <p style="margin:0">${esc(j.justification)}</p>
+        <p class="small" style="margin:8px 0 0">Fenêtre actuelle : ${esc(windowLabel(a))}<br>Proposée : <b style="color:var(--green)">${esc(windowLabel(prop))}</b></p></div>
+      <div class="btns2" style="margin-top:12px"><button class="btn green" data-act="applyReeval" data-w="${w.id}" data-deb="${prop.debut || ''}" data-pic="${prop.pic || ''}" data-fin="${prop.fin}">Mettre à jour</button><button class="btn ghost" data-act="close">Garder</button></div>`);
+  } catch (e) { /* silencieux : la dégustation est enregistrée, la réévaluation est un bonus */ }
+}
+ACT.applyReeval = async t => {
+  const w = wine(t.dataset.w);
+  w.apogee = { ...(w.apogee || {}), debut: int(t.dataset.deb), pic: int(t.dataset.pic), fin: int(t.dataset.fin), src: 'ia', why: 'Réévaluée après dégustation.', at: Date.now() };
+  await save(); closeSheet(); render(); toast('Fenêtre mise à jour');
+};
+
 
 /* ===== 70-boire.js ===== */
 /* ---------- À boire ---------- */
@@ -2320,6 +2640,7 @@ function vBoire() {
   return `${nUrgent ? `<div class="banner bx"><b>${plural(nUrgent, 'bouteille', 'bouteilles')} à boire d’ici la fin de ${y}</b>
       <div class="small" style="color:rgba(255,255,255,.88);margin-top:3px">${away.length ? `Dont ${away.length} sur ton site de stockage : pense à les rapatrier au prochain passage.` : 'Elles arrivent en fin de fenêtre de dégustation.'}</div>
       ${away.length ? `<button class="btn small" data-act="awayTransfer">${ICON.truck} Préparer le transfert</button>` : ''}</div>` : ''}
+    ${(() => { const n = moveAdvice().reduce((t, x) => t + x.ids.length, 0); return n ? `<button class="card tap row" style="width:100%;text-align:left" data-act="adviceSheet">${ICON.move}<div class="grow"><b style="font-size:14px">Conseils de rangement</b><div class="small">${plural(n, 'bouteille à déplacer', 'bouteilles à déplacer')}</div></div><span class="chev">${ICON.chev}</span></button>` : ''; })()}
     <div class="kpis">${['prio', 'apogee', 'tot', 'declin'].map(k => `<button class="kpi${boireCat === k ? ' on' : ''}" data-act="boireCat" data-k="${k}"><b style="color:${STATUS[k].hex}">${cnt(k)}</b><span>${STATUS[k].short}</span></button>`).join('')}</div>
     ${unknown.length ? `<div class="card row"><div class="grow"><b style="font-size:14px">${plural(unknown.length, 'vin sans fenêtre', 'vins sans fenêtre')}</b><div class="small">Le sommelier peut les estimer en une fois.</div></div><button class="btn small" data-act="estimateMissing">${ICON.spark} Estimer</button></div>` : ''}
     <div class="sect">${STATUS[boireCat].label}</div>
@@ -2353,6 +2674,73 @@ Object.assign(ACT, {
   },
 });
 
+/* ---------- Conseils de rangement (v1.5) ----------
+   Trois règles, sans IA :
+   1. « Rapatrier » : un vin à boire en priorité qui dort dans un espace de garde → vers un espace de consommation ;
+   2. « Mettre en garde » : un vin de longue garde dans un espace de consommation, ou dans une cave de moindre qualité
+      qu'une autre disponible → vers le meilleur espace de garde ;
+   3. « Réassort » : un espace de consommation avec un nombre de places cible, en dessous de sa cible
+      → on le complète avec les vins prêts à boire des espaces de garde (les plus urgents d'abord). */
+function moveAdvice() {
+  const y = thisYear(), out = [], taken = new Set();
+  const sps = S.spaces.map(s => ({ s, q: spaceQuality(s), site: site(s.siteId), known: Object.keys(s.q || {}).length > 0 }));
+  const conso = sps.filter(o => o.s.use === 'conso'), garde = sps.filter(o => o.s.use !== 'conso');
+  const bestConso = () => conso.sort((a, b) => (b.site?.role === 'conso') - (a.site?.role === 'conso') || (b.s.siteId === S.settings.site) - (a.s.siteId === S.settings.site))[0];
+  const bestGarde = () => garde.filter(o => o.known).sort((a, b) => b.q - a.q)[0] || garde[0];
+  const push = (kind, w, bs, to, why) => { if (!bs.length || !to) return; bs.forEach(b => taken.add(b.id)); out.push({ kind, w, ids: bs.map(b => b.id), from: bs[0].spaceId, to: to.s.id, why }); };
+  const groups = new Map();
+  for (const b of S.bottles) if (b.state === 'cave' && b.spaceId && !S.transfer.ids.includes(b.id)) { const k = b.wineId + '|' + b.spaceId; groups.set(k, [...(groups.get(k) || []), b]); }
+  for (const [, bs] of groups) {
+    const w = wine(bs[0].wineId); if (!w || w.kind === 'spirit') continue;
+    const sp = sps.find(o => o.s.id === bs[0].spaceId); if (!sp) continue;
+    const st = status(w), a = w.apogee;
+    if (!isFriend(w) && st === 'prio' && sp.s.use !== 'conso') { const to = bestConso(); push('rapatrier', w, bs, to, `À boire avant fin ${a.fin}`); continue; }
+    const longue = st === 'tot' || (a?.fin && a.fin - y >= 6);
+    if (longue) {
+      const to = bestGarde();
+      if (to && to.s.id !== sp.s.id && (sp.s.use === 'conso' || (sp.known && to.q > sp.q + 1)))
+        push('garde', w, bs, to, sp.s.use === 'conso' ? `Vin de garde (jusqu’en ${a?.fin || '?'}) rangé dans un espace de consommation` : `Cave plus adaptée à la garde (qualité ${qualityLabel(to.q).toLowerCase()})`);
+    }
+  }
+  // Réassort des espaces de consommation qui ont une cible
+  for (const c of conso) {
+    const target = c.s.target; if (!target) continue;
+    const have = S.bottles.filter(b => inCave(b) && b.spaceId === c.s.id).length + out.filter(o => o.to === c.s.id).reduce((n, o) => n + o.ids.length, 0);
+    let missing = target - have; if (missing <= 0) continue;
+    const cands = S.bottles.filter(b => b.state === 'cave' && !taken.has(b.id) && !S.transfer.ids.includes(b.id) && garde.some(g => g.s.id === b.spaceId))
+      .map(b => ({ b, w: wine(b.wineId) })).filter(o => o.w && !isFriend(o.w) && o.w.kind === 'vin' && ['prio', 'apogee'].includes(status(o.w)))
+      .sort((p, q) => (p.w.apogee?.fin || 9999) - (q.w.apogee?.fin || 9999));
+    const by = new Map();
+    for (const { b, w } of cands) { if (missing <= 0) break; const k = w.id + '|' + b.spaceId; by.set(k, [...(by.get(k) || []), b]); missing--; }
+    for (const [, bs] of by) push('reassort', wine(bs[0].wineId), bs, c, `Réassort de « ${c.s.name} » (cible ${target} bouteilles)`);
+  }
+  return out;
+}
+const ADVICE_KIND = { rapatrier: 'À rapprocher', garde: 'À mettre en garde', reassort: 'Réassort' };
+function adviceSheet() {
+  const adv = moveAdvice();
+  const where = id => { const sp = space(id); return sp ? (isMulti() ? site(sp.siteId)?.name + ' › ' : '') + sp.name : '?'; };
+  return `${head('Conseils de rangement')}
+    <p class="small" style="margin-top:-6px">Selon les fenêtres de dégustation, l’usage de chaque espace et ses conditions de stockage${S.spaces.some(s => s.target) ? ', et les places cibles des espaces de consommation' : ''}.</p>
+    ${adv.length ? Object.keys(ADVICE_KIND).map(k => { const l = adv.filter(a => a.kind === k); return l.length ? `<h3>${ADVICE_KIND[k]}</h3><div class="list">${l.map(a => {
+      const cross = space(a.from)?.siteId !== space(a.to)?.siteId, i = adv.indexOf(a);
+      return `<div class="li"><span class="dot" style="background:${wineColor(a.w)}"></span><div class="it"><b class="ell">${esc(wineTitle(a.w))} ×${a.ids.length}</b><small>${esc(where(a.from))} → <b style="color:var(--green)">${esc(where(a.to))}</b></small><small>${esc(a.why)}</small></div>
+        <button class="btn small ${cross ? '' : 'primary'}" data-act="adviceGo" data-i="${i}">${cross ? 'Au transfert' : 'Ranger'}</button></div>`; }).join('')}</div>` : ''; }).join('')
+    : '<p class="muted">Rien à déplacer pour l’instant : chaque vin est au bon endroit.</p>'}
+    ${!S.spaces.some(s => Object.keys(s.q || {}).length) ? '<p class="tiny">Astuce : renseigne les conditions de stockage de tes espaces (Réglages › Sites, espaces et meubles) pour des conseils plus fins.</p>' : ''}`;
+}
+Object.assign(ACT, {
+  adviceSheet: () => showSheet(adviceSheet),
+  adviceGo: async t => {
+    const a = moveAdvice()[+t.dataset.i]; if (!a) return refreshSheet();
+    if (space(a.from)?.siteId !== space(a.to)?.siteId) {
+      for (const id of a.ids) if (!S.transfer.ids.includes(id)) S.transfer.ids.push(id);
+      S.transfer.to = space(a.to).siteId; await save(); refreshSheet(); render(); return toast('Ajouté au prochain transfert');
+    }
+    startPlace(a.w.id, a.ids, a.to, false);
+  },
+});
+
 
 /* ===== 80-plus.js ===== */
 /* ---------- Onglet Plus ---------- */
@@ -2376,6 +2764,7 @@ function vPlus() {
       ${isMulti() ? setRow('transferSheet', 'Transfert entre sites', S.transfer.ids.length ? plural(S.transfer.ids.length, 'bouteille en préparation', 'bouteilles en préparation') : 'Préparer les bouteilles à emporter') : ''}
       ${setRow('primeursSheet', 'Primeurs', prim ? plural(prim, 'bouteille attendue', 'bouteilles attendues') : 'Aucun primeur en attente')}
       ${setRow('friendsSheet', 'Vins gardés pour des amis', friends.length ? plural(friends.reduce((t, w) => t + wineBottles(w.id).length, 0), 'bouteille', 'bouteilles') : 'Aucun')}
+      ${setRow('wishSheet', 'Liste d’envies', S.wishes.length ? plural(S.wishes.length, 'vin à acheter', 'vins à acheter') : 'Vins repérés en dégustation')}
       ${setRow('journalSheet', 'Journal des mouvements', 'Entrées, sorties, déplacements')}
       ${setRow('importPloc', 'Importer depuis Ploc', 'À partir du PDF de ta cave')}
     </div>
@@ -2711,8 +3100,21 @@ function demoData() {
     { id: uid(), wineId: morgon.id, at: '2026-07-02', note: 15, comment: 'Croquant, encore un peu serré.', full: { evolution: 'jeune' } },
     { id: uid(), wineId: roulot.id, at: '2026-04-18', note: 17.5, comment: 'Noisette, beurre frais, grande tension.', full: { aromes: ['Noisette', 'Beurre', 'Silex'], evolution: 'apoint' } },
   );
-  const out = (w, at, motif, plat) => { const b = { id: uid(), wineId: w.id, state: 'out', spaceId: cuis.id, addedAt: '2025-10-12', outAt: at }; d.bottles.push(b); d.moves.push({ id: uid(), at, ts: new Date(at).getTime(), wineId: w.id, bottleId: b.id, type: 'out', motif, plat }); };
+  const out = (w, at, motif, plat) => { const b = { id: uid(), wineId: w.id, state: 'out', spaceId: cuis.id, addedAt: '2025-10-12', outAt: at }; d.bottles.push(b); d.moves.push({ id: uid(), at, ts: new Date(at).getTime(), wineId: w.id, bottleId: b.id, type: 'out', motif, plat });
+    const t = d.tastings.find(x => x.wineId === w.id && x.at === at && !x.bottleId); if (t) { t.bottleId = b.id; t.horsCave = false; t.type = 'plaisir'; t.plat = plat; } };
   out(crozes, '2026-09-14', 'bue', 'Magret aux cerises'); out(morgon, '2026-07-02', 'bue', 'Planche de charcuterie'); out(roulot, '2026-04-18', 'bue', 'Turbot au beurre blanc');
+  // Dégustations hors cave, une séance, une envie (v1.5)
+  const sess = { id: uid(), titre: 'Salon des vins de Loire', type: 'salon', lieu: 'Angers', date: '2026-10-18', convives: 'Marc' }; d.sessions.push(sess);
+  const T = (o, t) => { const w = W(o); d.tastings.push({ id: uid(), wineId: w.id, horsCave: true, ...t }); return w; };
+  const coulee = T({ domaine: 'Nicolas Joly', cuvee: 'Coulée de Serrant', appellation: 'Savennières', region: 'Loire', couleur: 'blanc', millesime: 2018, cepages: 'Chenin' },
+    { at: '2026-10-18', note: 18, comment: 'Coing, cire, miel. Immense, très long.', sessionId: sess.id, type: 'salon', lieu: 'Angers', convives: 'Marc', full: { aromes: ['Coing', 'Miel', 'Fleurs blanches'], evolution: 'jeune' } });
+  T({ domaine: 'Guiberteau', cuvee: 'Brézé', appellation: 'Saumur', region: 'Loire', couleur: 'blanc', millesime: 2021, cepages: 'Chenin' }, { at: '2026-10-18', note: 16, comment: 'Silex, citron, tendu.', sessionId: sess.id, type: 'salon', lieu: 'Angers' });
+  T({ domaine: 'Olga Raffault', cuvee: 'Les Picasses', appellation: 'Chinon', region: 'Loire', couleur: 'rouge', millesime: 2019, cepages: 'Cabernet franc' }, { at: '2026-10-18', note: 15, sessionId: sess.id, type: 'salon', lieu: 'Angers' });
+  T({ domaine: 'Didier Dagueneau', cuvee: 'Silex', appellation: 'Pouilly-Fumé', region: 'Loire', couleur: 'blanc', millesime: 2020, cepages: 'Sauvignon' },
+    { at: '2026-11-02', note: 17.5, comment: 'Fumé, pamplemousse, salin.', type: 'restaurant', lieu: 'Le Clarence', convives: 'Julie, Marc', prix: 180, provenance: 'Carte du restaurant', plat: 'Bar de ligne, beurre blanc', accord: 'parfait' });
+  d.tastings.push({ id: uid(), wineId: morgon.id, horsCave: true, at: '2026-08-12', note: 15.5, type: 'domaine', lieu: 'Villié-Morgon', comment: 'Dégusté au domaine, sur fût et en bouteille.' });
+  d.wishes.push({ id: uid(), wineId: coulee.id, at: '2026-10-18', prix: 95, lieu: 'Au domaine' });
+  cuis.target = 24;
   d.settings.site = ville.id;
   S = prev;
   return d;
@@ -2739,6 +3141,7 @@ document.addEventListener('input', e => { const k = e.target.dataset?.in; if (k 
 document.addEventListener('change', e => {
   const t = e.target;
   if (t.id === 'f-photo') return onPhoto(t.files[0]);
+  if (t.id === 'f-photo2') return onTastePhoto(t.files[0]);
   if (t.id === 'f-pdf') return onPdf(t.files[0]);
   if (t.id === 'f-backup') return onBackupFile(t.files[0]);
   const k = t.dataset?.ch; if (k && CHANGES[k]) Promise.resolve(CHANGES[k](t, e)).catch(err => toast('Erreur : ' + (err.message || err)));

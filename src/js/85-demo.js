@@ -57,8 +57,21 @@ function demoData() {
     { id: uid(), wineId: morgon.id, at: '2026-07-02', note: 15, comment: 'Croquant, encore un peu serré.', full: { evolution: 'jeune' } },
     { id: uid(), wineId: roulot.id, at: '2026-04-18', note: 17.5, comment: 'Noisette, beurre frais, grande tension.', full: { aromes: ['Noisette', 'Beurre', 'Silex'], evolution: 'apoint' } },
   );
-  const out = (w, at, motif, plat) => { const b = { id: uid(), wineId: w.id, state: 'out', spaceId: cuis.id, addedAt: '2025-10-12', outAt: at }; d.bottles.push(b); d.moves.push({ id: uid(), at, ts: new Date(at).getTime(), wineId: w.id, bottleId: b.id, type: 'out', motif, plat }); };
+  const out = (w, at, motif, plat) => { const b = { id: uid(), wineId: w.id, state: 'out', spaceId: cuis.id, addedAt: '2025-10-12', outAt: at }; d.bottles.push(b); d.moves.push({ id: uid(), at, ts: new Date(at).getTime(), wineId: w.id, bottleId: b.id, type: 'out', motif, plat });
+    const t = d.tastings.find(x => x.wineId === w.id && x.at === at && !x.bottleId); if (t) { t.bottleId = b.id; t.horsCave = false; t.type = 'plaisir'; t.plat = plat; } };
   out(crozes, '2026-09-14', 'bue', 'Magret aux cerises'); out(morgon, '2026-07-02', 'bue', 'Planche de charcuterie'); out(roulot, '2026-04-18', 'bue', 'Turbot au beurre blanc');
+  // Dégustations hors cave, une séance, une envie (v1.5)
+  const sess = { id: uid(), titre: 'Salon des vins de Loire', type: 'salon', lieu: 'Angers', date: '2026-10-18', convives: 'Marc' }; d.sessions.push(sess);
+  const T = (o, t) => { const w = W(o); d.tastings.push({ id: uid(), wineId: w.id, horsCave: true, ...t }); return w; };
+  const coulee = T({ domaine: 'Nicolas Joly', cuvee: 'Coulée de Serrant', appellation: 'Savennières', region: 'Loire', couleur: 'blanc', millesime: 2018, cepages: 'Chenin' },
+    { at: '2026-10-18', note: 18, comment: 'Coing, cire, miel. Immense, très long.', sessionId: sess.id, type: 'salon', lieu: 'Angers', convives: 'Marc', full: { aromes: ['Coing', 'Miel', 'Fleurs blanches'], evolution: 'jeune' } });
+  T({ domaine: 'Guiberteau', cuvee: 'Brézé', appellation: 'Saumur', region: 'Loire', couleur: 'blanc', millesime: 2021, cepages: 'Chenin' }, { at: '2026-10-18', note: 16, comment: 'Silex, citron, tendu.', sessionId: sess.id, type: 'salon', lieu: 'Angers' });
+  T({ domaine: 'Olga Raffault', cuvee: 'Les Picasses', appellation: 'Chinon', region: 'Loire', couleur: 'rouge', millesime: 2019, cepages: 'Cabernet franc' }, { at: '2026-10-18', note: 15, sessionId: sess.id, type: 'salon', lieu: 'Angers' });
+  T({ domaine: 'Didier Dagueneau', cuvee: 'Silex', appellation: 'Pouilly-Fumé', region: 'Loire', couleur: 'blanc', millesime: 2020, cepages: 'Sauvignon' },
+    { at: '2026-11-02', note: 17.5, comment: 'Fumé, pamplemousse, salin.', type: 'restaurant', lieu: 'Le Clarence', convives: 'Julie, Marc', prix: 180, provenance: 'Carte du restaurant', plat: 'Bar de ligne, beurre blanc', accord: 'parfait' });
+  d.tastings.push({ id: uid(), wineId: morgon.id, horsCave: true, at: '2026-08-12', note: 15.5, type: 'domaine', lieu: 'Villié-Morgon', comment: 'Dégusté au domaine, sur fût et en bouteille.' });
+  d.wishes.push({ id: uid(), wineId: coulee.id, at: '2026-10-18', prix: 95, lieu: 'Au domaine' });
+  cuis.target = 24;
   d.settings.site = ville.id;
   S = prev;
   return d;

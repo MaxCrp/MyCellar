@@ -32,6 +32,7 @@ const ICON = {
   info: sv('<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/>'),
   star: sv('<path d="M12 4l2.4 5 5.4.6-4 3.7 1.1 5.4L12 16l-4.9 2.7L8.2 13.3l-4-3.7 5.4-.6z"/>'),
   face: sv('<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M9 9v1.5M15 9v1.5M12 9v4h-1M9 16c1.6 1.2 4.4 1.2 6 0"/>'),
+  notes: sv('<path d="M6 3h10a2 2 0 0 1 2 2v16l-3-2-3 2-3-2-3 2V5a2 2 0 0 1 2-2z"/><path d="M9 8h6M9 12h6M9 16h3"/>'),
   glass: sv('<path d="M7 3h10l-.8 7a4.2 4.2 0 0 1-8.4 0z"/><path d="M12 14.5V20M8.5 21h7"/>'),
 };
 const LOGO = `<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#6E1E2F"/><path d="M22 14h20l-1.6 13a8.4 8.4 0 0 1-16.8 0z" fill="#F7F3EC"/><path d="M23.2 22h17.6l-.6 5a8.2 8.2 0 0 1-16.4 0z" fill="#B8424F"/><path d="M32 36v11M25 49h14" stroke="#F7F3EC" stroke-width="3" stroke-linecap="round"/></svg>`;
@@ -133,17 +134,18 @@ function banners() {
 }
 function render() {
   if (mode !== 'app' && mode !== 'demo') return;
-  const views = { cave: ['Cave', vCave], somm: ['Sommelier', vSomm], boire: ['À boire', vBoire], plus: ['Plus', vPlus] };
+  const views = { cave: ['Cave', vCave], deg: ['Dégustations', vDeg], somm: ['Sommelier', vSomm], boire: ['À boire', vBoire], plus: ['Réglages', vPlus] };
   const [title, fn] = views[view];
   const tab = (v, l, i) => `<button class="tab${view === v ? ' on' : ''}" data-act="go" data-v="${v}" aria-label="${l}">${i}${l}</button>`;
   const body = fn();
   app.innerHTML = `
-    <header class="top"><div class="top-row"><h1>${title}</h1>${view === 'cave' || view === 'somm' ? sitePill() : ''}</div>${view === 'cave' ? caveTools() : ''}</header>
+    <header class="top"><div class="top-row">${view === 'plus' ? `<button class="icon-btn" data-act="go" data-v="cave" aria-label="Retour" style="margin-left:-8px">${ICON.back}</button>` : ''}<h1>${title}</h1>${view === 'cave' || view === 'somm' ? sitePill() : ''}
+      ${view !== 'plus' ? `<button class="icon-btn gear" data-act="go" data-v="plus" aria-label="Réglages">${ICON.gear}</button>` : ''}</div>${view === 'cave' ? caveTools() : view === 'deg' ? degTools() : ''}</header>
     <main class="view${view === 'somm' ? ' chat' : ''}">${banners()}${body}</main>
     ${view === 'somm' ? composer() : ''}
-    <nav class="tabs" aria-label="Navigation">${tab('cave', 'Cave', ICON.cave)}${tab('somm', 'Sommelier', ICON.somm)}
-      <button class="tab plus" data-act="add" aria-label="Ajouter une bouteille"><span>${ICON.add}</span></button>
-      ${tab('boire', 'À boire', ICON.boire)}${tab('plus', 'Plus', ICON.plus)}</nav>`;
+    <nav class="tabs" aria-label="Navigation">${tab('cave', 'Cave', ICON.cave)}${tab('deg', 'Dégustations', ICON.notes)}
+      <button class="tab plus" data-act="add" aria-label="${view === 'deg' ? 'Nouvelle dégustation' : 'Ajouter une bouteille'}"><span>${ICON.add}</span></button>
+      ${tab('boire', 'À boire', ICON.boire)}${tab('somm', 'Sommelier', ICON.somm)}</nav>`;
   paintPhotos(app);
   for (const r of $$('input[type=range]', app)) setRangeFill(r);
   afterRender();

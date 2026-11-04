@@ -219,11 +219,13 @@ Un même modèle, avec un rôle et des instructions dédiés pour chaque agent. 
 - Un résumé apparaît à l'ouverture de l'app, sans notification push.
 
 ### 7.3 Logistique entre sites et cuisine (v1.5)
-- Conseils de déplacement :
-  - les vins qui entrent dans leur fenêtre passent du site de stockage au site de consommation ;
-  - les vins de longue garde stockés dans une cave de moindre qualité vont vers la meilleure cave ;
-  - la cave de cuisine est réapprovisionnée à partir d'un nombre de places cible.
-- Ces conseils alimentent la liste de transfert (§5).
+Une carte « Conseils de rangement » dans l'onglet À boire ouvre la liste des déplacements conseillés. Les règles sont locales, sans appel à l'IA :
+- **À rapprocher** : un vin à boire en priorité qui se trouve dans un espace de garde va vers un espace de consommation, de préférence sur le site de consommation.
+- **À mettre en garde** : un vin de longue garde (trop tôt, ou fin de fenêtre à 6 ans ou plus) va vers le meilleur espace de garde, s'il est rangé dans un espace de consommation, ou dans une cave nettement moins bonne qu'une autre disponible.
+- **Réassort** : un espace de consommation qui a un nombre de places cible et se trouve en dessous est complété avec les vins prêts à boire des espaces de garde, les plus urgents d'abord.
+- **Action** : quand le conseil change de site, la bouteille va dans la liste de transfert (§5) ; sur le même site, l'écran de rangement s'ouvre directement. Les vins des amis ne sont concernés que par la mise en garde.
+
+**Réévaluation après dégustation (v1.5).** Elle part quand une dégustation apporte une information (commentaire, évolution ou potentiel) et qu'il reste des bouteilles du vin. Le sommelier propose alors une nouvelle fenêtre, ou ne dit rien si la fenêtre actuelle tient ; tu valides. C'est un appel court, sans recherche web. Sans clé IA, la règle simple de la v1 s'applique.
 
 ### 7.4 Audit de cave (v2)
 - Analyse de l'équilibre de la cave (couleurs, régions, prêts à boire, embouteillage de millésimes qui arrivent à maturité en même temps), avec des suggestions d'achat.

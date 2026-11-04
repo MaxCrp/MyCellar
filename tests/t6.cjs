@@ -1,0 +1,93 @@
+// Test de bout en bout (Playwright) : v1.5 — onglet Dégustations, séances, envies, conseils de rangement, réévaluation
+const { chromium } = require('playwright');
+const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true });
+(async () => {
+  const b = await chromium.launch();
+  const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const p = await ctx.newPage();
+  const errs = [], calls = [];
+  p.on('pageerror', e => errs.push('PAGEERR ' + e.message));
+  p.on('console', m => { if (m.type() === 'error') errs.push('CONSOLE ' + m.text()); });
+  p.on('dialog', d => d.accept());
+  await p.route('https://api.anthropic.com/**', async route => {
+    const req = route.request(), cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' };
+    if (req.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
+    const body = JSON.parse(req.postData()), schema = body.output_config?.format?.schema; calls.push(body);
+    let text = 'OK';
+    if (schema?.properties?.changer) text = JSON.stringify({ changer: true, debut: 2024, pic: 2026, fin: 2028, justification: 'Tu le trouves déjà à point et un peu évolué : mieux vaut boire les dernières bouteilles d’ici 2028.' });
+    else if (!schema) text = '```json\n{"debut":2022,"pic":2025,"fin":2030,"justification":"test","confiance":"moyenne"}\n```';
+    return route.fulfill({ status: 200, headers: { ...cors, 'content-type': 'application/json' }, body: JSON.stringify({ model: body.model, stop_reason: 'end_turn', content: [{ type: 'text', text }], usage: { input_tokens: 2000, output_tokens: 200 } }) });
+  });
+  const count = () => p.evaluate(() => ({ t: S.tastings.length, s: S.sessions.length, w: S.wishes.length, cave: S.bottles.filter(inCave).length, wines: S.wines.length }));
+  await p.goto('http://localhost:8765/'); await p.waitForTimeout(500);
+  await p.click('[data-act=demo]'); await p.waitForTimeout(300);
+  const c0 = await count();
+  await p.click('[data-act=go][data-v=deg]'); await p.waitForTimeout(200);
+  await p.screenshot({ path: D + '60-journal.png', fullPage: true });
+  await p.click('[data-act=degMode][data-m=vin]'); await p.waitForTimeout(200);
+  await p.screenshot({ path: D + '61-parvin.png' });
+  await p.click('[data-act=degMode][data-m=journal]');
+  await p.click('[data-act=dfSrc][data-v=hors]'); await p.waitForTimeout(100);
+  const horsOnly = await p.$$eval('.view .li[data-act=tasteView]', x => x.length);
+  await p.click('[data-act=dfSrc][data-v=hors]');
+  // Nouvelle dégustation hors cave, saisie manuelle
+  await p.click('[data-act=add]'); await p.waitForTimeout(200);
+  await p.screenshot({ path: D + '62-new.png' });
+  await p.click('.sheet [data-act=newTasteWine][data-kind=vin]'); await p.waitForTimeout(200);
+  await p.fill('.sheet input[name=domaine]', 'Domaine Tissot'); await p.fill('.sheet input[name=appellation]', 'Arbois'); await p.fill('.sheet input[name=cuvee]', 'Savagnin en Spois'); await p.fill('.sheet input[name=millesime]', '2019');
+  await p.selectOption('.sheet select[name=couleur]', 'blanc');
+  await p.click('.sheet [type=submit]'); await p.waitForTimeout(300);
+  await p.click('.sheet [data-act=tctx][data-k=type][data-v=restaurant]'); await p.waitForTimeout(100);
+  await p.fill('.sheet input[data-k=lieu]', 'Le Bistrot du Jura'); await p.fill('.sheet input[data-k=prix]', '62');
+  await p.fill('.sheet input[data-k=provenance]', 'Carte du restaurant'); await p.fill('.sheet input[data-k=plat]', 'Poulet aux morilles');
+  await p.click('.sheet [data-act=tctx][data-k=accord][data-v=parfait]'); await p.waitForTimeout(100);
+  const [fc] = await Promise.all([p.waitForEvent('filechooser'), p.click('.sheet [data-act=tphoto]')]);
+  await fc.setFiles(D + '01-lock.png'); await p.waitForTimeout(500);
+  await p.screenshot({ path: D + '63-form.png' });
+  await p.click('.sheet button.btn.primary[data-act=tasteSave]'); await p.waitForTimeout(300);
+  const c1 = await count();
+  // Vin de la cave bu ailleurs, avec sortie du stock → réévaluation IA
+  await p.click('[data-act=go][data-v=plus]'); await p.click('[data-act=aiSettings]'); await p.fill('.sheet input[name=key]', 'sk-ant-x');
+  await p.uncheck('.sheet input[name=auto]'); await p.click('.sheet [type=submit]'); await p.waitForTimeout(200);
+  await p.click('[data-act=go][data-v=deg]'); await p.click('[data-act=add]'); await p.waitForTimeout(100);
+  await p.fill('.sheet input[data-in=tasteFind]', 'bandol'); await p.waitForTimeout(100);
+  await p.click('#taste-find [data-act=tasteWine]'); await p.waitForTimeout(200);
+  await p.check('.sheet input[data-ch=tcave]'); await p.waitForTimeout(100);
+  await p.fill('.sheet textarea[data-k=comment]', 'Déjà évolué, un peu fatigué.');
+  await p.click('.sheet button.btn.primary[data-act=tasteSave]'); await p.waitForTimeout(800);
+  await p.screenshot({ path: D + '64-reeval.png' });
+  await p.click('.sheet [data-act=applyReeval]'); await p.waitForTimeout(200);
+  const c2 = await count();
+  // Séance
+  await p.click('[data-act=add]'); await p.click('.sheet [data-act=newSession]'); await p.waitForTimeout(100);
+  await p.fill('.sheet input[name=titre]', 'Verticale de Morgon'); await p.click('.sheet [type=submit]'); await p.waitForTimeout(200);
+  await p.click('.sheet [data-act=newTaste]'); await p.fill('.sheet input[data-in=tasteFind]', 'morgon'); await p.waitForTimeout(100);
+  await p.click('#taste-find [data-act=tasteWine]'); await p.waitForTimeout(200);
+  await p.screenshot({ path: D + '65-session-taste.png' });
+  await p.click('.sheet button.btn.primary[data-act=tasteSave]'); await p.waitForTimeout(400);
+  await p.screenshot({ path: D + '66-session.png' });
+  await p.click('.shead [data-act=close]');
+  // Envie depuis une dégustation, puis « Acheté »
+  await p.click('.view .li[data-act=tasteView] >> nth=0'); await p.waitForTimeout(200);
+  await p.screenshot({ path: D + '67-view.png' });
+  await p.click('.sheet [data-act=wishToggle]'); await p.waitForTimeout(200);
+  await p.click('.shead [data-act=close]');
+  await p.click('[data-act=go][data-v=plus]'); await p.click('[data-act=wishSheet]'); await p.waitForTimeout(200);
+  await p.screenshot({ path: D + '68-wishes.png' });
+  await p.click('.sheet [data-act=wishBought] >> nth=0'); await p.waitForTimeout(200);
+  await p.click('.sheet [type=submit]'); await p.waitForTimeout(400);
+  if (await p.$('.sheet [data-act=placeOk]')) await p.click('.sheet [data-act=placeOk]');
+  await p.waitForTimeout(300);
+  const c3 = await count();
+  // Conseils de rangement
+  await p.click('[data-act=go][data-v=boire]'); await p.waitForTimeout(200);
+  await p.screenshot({ path: D + '69-boire.png' });
+  await p.click('[data-act=adviceSheet]'); await p.waitForTimeout(200);
+  await p.screenshot({ path: D + '70-advice.png' });
+  await p.click('.sheet [data-act=adviceGo] >> nth=0'); await p.waitForTimeout(300);
+  console.log('démo', JSON.stringify(c0), '| hors cave filtrées', horsOnly);
+  console.log('après dégustation hors cave', JSON.stringify(c1), '| après dégustation « de ma cave »', JSON.stringify(c2), '| après achat', JSON.stringify(c3));
+  console.log('appels IA', calls.map(c => c.output_config?.format?.schema?.properties?.changer ? 'réévaluation' : c.output_config?.format ? 'schéma' : 'texte').join(', '));
+  console.log(errs.join('\n') || 'NO ERRORS');
+  await b.close();
+})();

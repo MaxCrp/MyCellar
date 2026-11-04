@@ -17,11 +17,12 @@ src/js/*.js         code, assemblé dans l'ordre des noms de fichiers
   00-core           utilitaires, stockage, chiffrement, Face ID, vérification du code
   10-data           référentiels (couleurs, formats, meubles, arômes), modèle, emplacements
   20-ui             icônes, feuilles, verrou, rendu principal
-  30-cave           vue Cave : plan, liste, urgence, recherche, meubles
+  30-cave           vue Cave : plan, liste, recherche, meubles
   40-wine           ajout, fiche vin et bouteille, rangement, sortie, transferts, primeurs
-  50-tasting        dégustation rapide ou complète, roue des arômes
+  50-tasting        dégustation rapide ou complète, contexte, roue des arômes
+  55-deg            onglet Dégustations : journal, vue par vin, séances, liste d'envies
   60-ai             IA : sommelier, apogées, lecture d'étiquette, import Ploc, coûts
-  70-boire          vue À boire
+  70-boire          vue À boire, conseils de rangement et réassort
   80-plus           réglages, sites et espaces, IA, sauvegarde, sécurité
   85-demo           cave fictive
   90-boot           événements, démarrage, verrouillage automatique
