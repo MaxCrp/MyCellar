@@ -373,6 +373,14 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
   - **Sécurité** : le journal des versions n'est que du texte affiché, jamais du code. Il n'entre pas dans l'empreinte et ne remplace pas la vérification du code.
   - **Limite** : la fonction n'existe qu'à partir de la v1.6. Lors du passage de la v1.5.2 à la v1.6, le bandeau ne pourra pas encore montrer le contenu avant l'installation, mais la fenêtre « Nouveautés » s'affichera après.
 
+**v1.6.1** (corrections ; rien n'est développé)
+- [ ] **Suivi d'utilisation impossible à activer** : l'interrupteur reste grisé malgré un appui.
+  - **Diagnostic** : l'interrupteur est volontairement désactivé dans la cave fictive (mode démo), comme Face ID et « Rester déverrouillé », mais rien ne l'explique à l'écran. Sur une vraie cave, l'activation fonctionne : c'est vérifié en test, au toucher, sur une taille d'iPhone.
+  - **Correction proposée** :
+    - en démo, le suivi s'active aussi. Le journal est gardé en mémoire seulement, il peut être exporté comme rapport, et il s'efface en quittant la démo. Les bêta-testeurs qui découvrent l'app par la démo peuvent ainsi envoyer leurs retours ;
+    - tout interrupteur indisponible affiche la raison en une ligne (par exemple « Indisponible dans la cave fictive »).
+  - **Si le problème survient aussi sur une vraie cave** : relever le modèle d'iPhone et la version d'iOS, puis faire un test ciblé avant de corriger.
+
 **v2**
 - Sauvegarde automatique Google Drive.
 - Audit de cave.
