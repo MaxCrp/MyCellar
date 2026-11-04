@@ -7,9 +7,9 @@ Ce document part du [rapport de bugs](rapport-bugs.md) du 4 novembre 2026. Il se
 
 Rien n'est encore développé. La release ne démarre que sur « lance la v1.6.2 ».
 
-## Décisions à prendre avant le développement
+## Décisions (validées le 4 novembre 2026)
 
-| # | Question | Proposition par défaut |
+| # | Question | Décision |
 |---|---|---|
 | D1 | B05 : dégustation enregistrée sans toucher au curseur | « Sans note » : le curseur part au milieu, grisé, avec la mention « Touche pour noter ». La note reste vide tant qu'on n'y a pas touché. |
 | D2 | B02 : millésime saisi sur deux chiffres (« 19 ») | Le compléter automatiquement (« 19 » → 2019, « 98 » → 1998) et l'afficher dans le champ. |

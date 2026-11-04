@@ -397,18 +397,18 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
 **v1.6.2** (fiabilité, issue de la campagne de tests du 4 novembre 2026 ; rien n'est développé)
 Le détail est dans `docs/tests/2026-11-04-campagne-v1.6.1/` : `rapport-bugs.md` pour les constats, `rapport-correctifs.md` pour le plan, les fichiers concernés et les vérifications.
 - [ ] C01 · Doubles appuis : une validation ou une action d'enregistrement ne s'exécute qu'une fois (B01, majeur).
-- [ ] C02 · Fiche vin : bornes et messages (millésime, prix, degré, quantité), et nombres au format « 1.234,50 » (B02, B09).
+- [ ] C02 · Fiche vin : bornes et messages (millésime, prix, degré, quantité), et nombres au format « 1.234,50 » (B02, B09). Validé : un millésime à deux chiffres est complété automatiquement (« 19 » → 2019, « 98 » → 1998).
 - [ ] C03 · Fenêtres de dégustation toujours cohérentes, à la saisie comme dans les réponses de l'IA (B03, B06).
 - [ ] C04 · Lecture d'étiquette : valeurs ramenées aux listes connues (B04).
-- [ ] C05 · Dégustation sans note : pas de 14/20 par défaut (B05 ; décision D1).
+- [ ] C05 · Dégustation sans note : pas de 14/20 par défaut (B05 ; validé : note vide tant que le curseur n'est pas touché, mention « Touche pour noter »).
 - [ ] C06 · Import Ploc : quantités bornées et total exact (B07).
 - [ ] C07 · Sites et espaces : nom vide et cible négative refusés (B08).
 - [ ] C08 · Nettoyage des données orphelines et des positions invalides (B10, B13).
 - [ ] C09 · Rangement : avertissement quand les places manquent (B11).
 - [ ] C10 · Restauration : messages distincts pour un fichier endommagé et un mot de passe faux (B12).
-- [ ] C11 · Spiritueux désactivés : cases grisées sur le plan (B14 ; décision D3).
+- [ ] C11 · Spiritueux désactivés : cases grisées sur le plan (B14 ; validé : cases grisées, sans nom).
 - [ ] C12 · Sommelier : mention quand une recommandation ne correspond plus à la cave (B15).
-- [ ] C13 · Contexte du sommelier réduit au-delà de 300 références (B16 ; décision D4).
+- [ ] C13 · Contexte du sommelier réduit au-delà de 300 références (B16 ; validé).
 - [ ] La campagne `tests/campagne.cjs` rejoint `tests/run.sh` et doit afficher 0 anomalie.
 
 **v2**
