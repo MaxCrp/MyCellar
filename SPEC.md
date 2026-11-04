@@ -281,7 +281,12 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
 
 ---
 
-## 10. Découpage
+## 10. Découpage en releases
+
+**Règles de travail**
+- Chaque mise à jour demandée est rattachée à une release de développement nommée (v1.6, v1.6.1…). Elle est inscrite ici, avec une case à cocher.
+- Une demande est d'abord seulement spécifiée. Le développement d'une release ne commence que sur demande explicite (« lance la v1.6 »).
+- Une release livrée a toutes ses cases cochées et porte la mention « (livrée) ».
 
 **v1**
 - Sites, espaces et meubles, avec plan visuel et éditeur.
@@ -300,33 +305,10 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
 - Réévaluation des apogées après dégustation.
 - Onglet **Dégustations**, séances et liste d’envies (§6 bis).
 
-**v2** : sauvegarde automatique, chiffrée, vers **Google Drive** (dossier caché de l'application, `appDataFolder`), via OAuth PKCE.
-
----
-
-## 10. Découpage
-
-**v1**
-- Sites, espaces et meubles, avec plan visuel et éditeur.
-- Fiches vin, bouteilles et emplacements ; vins des amis.
-- Scan d'étiquette, saisie manuelle, import du PDF Ploc.
-- Sorties, déplacements, liste de transfert, primeurs.
-- Dégustation rapide et complète, avec la roue des arômes.
-- Sommelier des accords (§7.1).
-- Apogées et tableau « À boire » (§7.2).
-- Site actuel, mode site unique ou plusieurs sites, sites renommables.
-- Compteur de coûts, chiffrement, sauvegarde manuelle.
-- Option spiritueux (§7 bis).
-
-**v1.5**
-- Conseils de logistique entre sites et de réassort de la cuisine (§7.3).
-- Réévaluation des apogées après dégustation.
-- Onglet **Dégustations**, séances et liste d’envies (§6 bis).
-
-**v1.5.2** (corrections de détail, regroupées et livrées en une fois ; les prochaines corrections viennent s’ajouter ici)
-- [ ] Icône du bouton « Déguster » : un bouchon de liège à la place de l’étoile.
-- [ ] Icône de l’onglet Dégustations : un carnet (couverture, reliure, pages) à la place de l’icône actuelle, qui évoque un ticket de caisse.
-- [ ] Présentation de l’app au premier lancement, quand aucune cave n’existe encore : une fenêtre qui présente MyCellar, ses fonctions et un tutoriel rapide. Proposition à valider :
+**v1.5.2** (livrée)
+- [x] Icône du bouton « Déguster » : un bouchon de liège à la place de l’étoile.
+- [x] Icône de l’onglet Dégustations : un carnet (couverture, reliure, pages) à la place de l’icône actuelle, qui évoque un ticket de caisse.
+- [x] Présentation de l’app au premier lancement, quand aucune cave n’existe encore : une fenêtre qui présente MyCellar, ses fonctions et un tutoriel rapide. Proposition à valider :
   - **Format** : quelques écrans à faire défiler, avec une illustration chacun, un bouton « Passer » toujours visible, et le bouton « Créer ma cave » sur le dernier écran.
   - **Écrans** :
     1. Bienvenue : ta cave sur ton iPhone, privée et chiffrée.
@@ -337,13 +319,13 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
     6. Les dégustations : en cave ou ailleurs, séances, liste d’envies.
     7. Sauvegarder : rappel que les données ne sont que sur l’iPhone.
   - **Revoir la présentation** : possible ensuite depuis Réglages › Aide.
-- [ ] Bouton « + » identique sur tous les onglets, simplifié en deux choix :
+- [x] Bouton « + » identique sur tous les onglets, simplifié en deux choix :
   - **Nouvelle dégustation** : ouvre l’écran actuel (photo de l’étiquette, vin déjà connu, saisie manuelle, spiritueux, démarrer une séance) ;
   - **Nouveau vin** : ouvre l’écran actuel d’ajout en cave (photo de l’étiquette, saisie manuelle, spiritueux, racheter un vin de la cave).
   Une case libre touchée sur le plan continue d’ouvrir directement « Nouveau vin » pour cette place.
-- [ ] Import depuis Ploc accessible uniquement depuis les réglages : il disparaît du bouton « + » et de la carte d’accueil de la page Cave, puisqu’il ne sert qu’une fois.
-- [ ] Barre de recherche dans « Racheter un vin de la cave », pour ne plus faire défiler toute la liste. Elle filtre sur le domaine, la cuvée, l’appellation et le millésime.
-- [ ] **Dégustation à l’aveugle** (nouvelle fonction, validée) :
+- [x] Import depuis Ploc accessible uniquement depuis les réglages : il disparaît du bouton « + » et de la carte d’accueil de la page Cave, puisqu’il ne sert qu’une fois.
+- [x] Barre de recherche dans « Racheter un vin de la cave », pour ne plus faire défiler toute la liste. Elle filtre sur le domaine, la cuvée, l’appellation et le millésime.
+- [x] **Dégustation à l’aveugle** (nouvelle fonction, validée) :
   - **Entrée** : un choix « À l’aveugle » dans « Nouvelle dégustation », et dans une séance. Une séance peut être entièrement à l’aveugle.
   - **D’abord la fiche** : la fiche de dégustation habituelle, sur un « vin mystère ». La couleur (rouge, blanc, rosé…) se choisit dans la partie œil, et elle adapte les teintes et la bouche, comme aujourd’hui.
   - **Hypothèses**, facultatives : avant la révélation, tu notes ce que tu penses avoir dans le verre (cépage, région ou appellation, millésime, gamme de prix).
@@ -356,6 +338,8 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
     - **Ce qu’il donne** : un ou deux repères concrets pour distinguer la prochaine fois les vins que tu as confondus.
     - **Règle** : il ne s’appuie que sur ce que tu as noté et sur les caractéristiques connues du vin. Il ne fait aucun commentaire générique ; s’il n’a rien d’utile à dire, il le dit en une phrase.
     - **Coût** : un appel court, moins d’un centime, uniquement quand il y avait des hypothèses ; on peut aussi le demander à la main.
+
+**v1.6** (release intermédiaire avant la v2 ; périmètre à définir, rien n'est développé)
 
 **v2**
 - Sauvegarde automatique Google Drive.
