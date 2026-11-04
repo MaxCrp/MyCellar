@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#F7F3EC">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-SWYdsitLZnatsTKWEcMB5EuNr+CV5oJ4zcyGqRSLPQc='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-5kWI0dccTEGPFezxNWFvEbrT+6If5XktNO0rDDtUPUU='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>MyCellar</title>
@@ -523,7 +523,7 @@ const sameBytes = (a, b) => a && b && a.length === b.length && a.every((v, i) =>
    Le service worker sert toujours la version mise en cache : le code ne change
    jamais tout seul. À chaque démarrage, l'app calcule l'empreinte du code servi,
    la compare à celle que tu as approuvée, et te signale toute différence. */
-const CODE_FILES = ['./index.html', './sw.js'];
+const CODE_FILES = ['./', './sw.js'];   // « ./ » et non « ./index.html », que Cloudflare redirige
 let code = { status: 'unknown', served: null, approved: null, net: null, at: null, err: null, checked: null };
 const hex = u8 => [...u8].map(b => b.toString(16).padStart(2, '0')).join('');
 const fpLabel = h => h ? hex(unb64(h).slice(0, 8)).toUpperCase().match(/.{4}/g).join(' ') : '—';

@@ -40,7 +40,7 @@ tests/run.sh            # build + serveur local + tests de bout en bout (capture
 
 Le script est intégré dans la page et la politique de sécurité (CSP) n'autorise que lui, par son empreinte SHA-256. Ne modifie jamais `public/` à la main : modifie `src/`, puis relance `node build.mjs`.
 
-`src/static/sw.js` ne doit pas changer d'une version à l'autre. Si l'hébergeur le remplace, l'app y voit une alerte de sécurité.
+`src/static/sw.js` ne doit pas changer d’une version à l’autre : si l’hébergeur le remplace, l’app y voit une alerte de sécurité. Il ne met en cache que `./`, jamais `./index.html`, car Cloudflare redirige `/index.html` vers `/` et Safari refuse une page en cache issue d’une redirection. `tests/serve.cjs` imite ce comportement.
 
 ## Déployer sur Cloudflare Pages
 

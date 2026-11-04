@@ -214,7 +214,7 @@ const sameBytes = (a, b) => a && b && a.length === b.length && a.every((v, i) =>
    Le service worker sert toujours la version mise en cache : le code ne change
    jamais tout seul. À chaque démarrage, l'app calcule l'empreinte du code servi,
    la compare à celle que tu as approuvée, et te signale toute différence. */
-const CODE_FILES = ['./index.html', './sw.js'];
+const CODE_FILES = ['./', './sw.js'];   // « ./ » et non « ./index.html », que Cloudflare redirige
 let code = { status: 'unknown', served: null, approved: null, net: null, at: null, err: null, checked: null };
 const hex = u8 => [...u8].map(b => b.toString(16).padStart(2, '0')).join('');
 const fpLabel = h => h ? hex(unb64(h).slice(0, 8)).toUpperCase().match(/.{4}/g).join(' ') : '—';
