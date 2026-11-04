@@ -93,10 +93,10 @@ const emptyData = () => ({
   settings: {
     multi: false, site: null, spirits: false, cocktails: true, friends: [],
     ai: { provider: 'anthropic', key: '', model: '', budget: 2, auto: true, web: true },
-    lockMin: 5, stay: false, lastExport: null, aromas: {}, rate: 0.92,
+    lockMin: 5, stay: false, lastExport: null, aromas: {}, rate: 0.92, usage: { on: false },
   },
   sites: [], spaces: [], units: [], wines: [], bottles: [], moves: [], tastings: [],
-  transfer: { ids: [], to: null }, chat: [], usage: {}, dismissed: {}, sessions: [], wishes: [],
+  transfer: { ids: [], to: null }, chat: [], usage: {}, dismissed: {}, sessions: [], wishes: [], diag: { errors: [] },
 });
 function normalize(d) {
   const e = emptyData();
@@ -105,6 +105,8 @@ function normalize(d) {
   for (const k of ['sites', 'spaces', 'units', 'wines', 'bottles', 'moves', 'tastings', 'chat', 'sessions', 'wishes']) d[k] = Array.isArray(d[k]) ? d[k] : [];
   d.transfer = { ...e.transfer, ...(d.transfer || {}) };
   d.usage = d.usage || {}; d.dismissed = d.dismissed || {};
+  d.diag = { errors: Array.isArray(d.diag?.errors) ? d.diag.errors.slice(-30) : [] };
+  d.settings.usage = { on: !!d.settings.usage?.on };
   if (!d.sites.length) d.sites.push({ id: uid(), name: 'Site 1', role: 'conso' });
   if (!d.spaces.length) d.spaces.push({ id: uid(), siteId: d.sites[0].id, name: 'Cave', use: 'conso', q: {} });
   if (!d.sites.some(s => s.id === d.settings.site)) d.settings.site = d.sites[0].id;

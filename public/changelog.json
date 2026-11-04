@@ -1,0 +1,59 @@
+[
+ {
+  "version": "1.6",
+  "date": "2026-11-04",
+  "titre": "Retours d’utilisation et suivi des versions",
+  "items": [
+   "Suivi d’utilisation (désactivé par défaut, Réglages › Aide) : l’app note, sur ton iPhone uniquement, les écrans et les gestes, jamais tes vins ni tes notes. Tu peux consulter la synthèse et exporter un rapport à envoyer, avec ton avis.",
+   "« Signaler un problème » : décris ce qui s’est passé, l’app prépare un rapport avec les dernières minutes d’utilisation et les erreurs récentes. Raccourci aussi dans les messages d’erreur.",
+   "Mises à jour : « Plus d’infos » montre le contenu d’une nouvelle version avant de l’installer, une fenêtre « Nouveautés » s’affiche après, et l’historique des versions est dans Réglages › Aide."
+  ]
+ },
+ {
+  "version": "1.5.2",
+  "date": "2026-11-04",
+  "titre": "Dégustation à l’aveugle et finitions",
+  "items": [
+   "Dégustation à l’aveugle : la fiche d’abord sur un « vin mystère », tes hypothèses, puis la révélation, la comparaison et l’analyse du sommelier.",
+   "Le bouton + est le même partout : « Nouvelle dégustation » ou « Nouveau vin ».",
+   "Présentation de l’app au premier lancement, à revoir dans Réglages › Aide.",
+   "Recherche dans « Racheter un vin ». L’import Ploc est désormais dans les réglages.",
+   "Nouvelles icônes : un bouchon pour « Déguster », un carnet pour les dégustations."
+  ]
+ },
+ {
+  "version": "1.5",
+  "date": "2026-11-04",
+  "titre": "Dégustations et conseils de rangement",
+  "items": [
+   "Onglet Dégustations : le journal de tous tes vins dégustés, en cave ou ailleurs (restaurant, salon, domaine…), avec recherche, filtres et vue par vin.",
+   "Séances de dégustation avec classement, et liste d’envies avec « Acheté ».",
+   "Conseils de rangement dans À boire : vins à rapprocher, à mettre en garde, réassort de la cave de consommation.",
+   "Le sommelier propose d’ajuster la fenêtre d’un vin après une dégustation, et tient compte de tes vins bus ailleurs et de tes accords.",
+   "Les réglages passent sous l’icône engrenage."
+  ]
+ },
+ {
+  "version": "1.0.1",
+  "date": "2026-11-04",
+  "titre": "Corrections",
+  "items": [
+   "L’app se rouvre correctement sur iPhone après un premier lancement.",
+   "La création de la cave ne pose plus de question : un site « Site 1 », renommable, et le mode plusieurs sites dans les réglages.",
+   "La vue Urgence de la page Cave est retirée : l’onglet À boire fait référence."
+  ]
+ },
+ {
+  "version": "1.0",
+  "date": "2026-11-04",
+  "titre": "Première version",
+  "items": [
+   "Ta cave sur ton iPhone, chiffrée par ton mot de passe ou Face ID, et utilisable hors ligne.",
+   "Sites, espaces et meubles (armoire, rack, étagère, caisses, cartons) avec un plan visuel et une recherche.",
+   "Ajout par photo d’étiquette ou saisie, rangement suggéré, sorties, déplacements, transferts, primeurs, vins des amis.",
+   "Dégustation rapide ou complète avec la roue des arômes.",
+   "Sommelier pour les accords mets-vins, fenêtres de dégustation estimées, onglet À boire.",
+   "Option spiritueux, import Ploc, sauvegarde chiffrée."
+  ]
+ }
+]

@@ -255,7 +255,7 @@ async function checkNetwork() {
 function paintCode() {
   const el = $('#codebar'); if (!el) return;
   if (code.status === 'update') el.innerHTML = `<div class="codebar"><p>Une nouvelle version de l’app est disponible. Si tu n’en es pas à l’origine, ne l’installe pas.</p>
-    <div class="row wrap"><button class="btn primary small" data-act="codeupdate">Installer la mise à jour</button><button class="btn small" data-act="codeinfo">Détails</button><button class="btn small" data-act="codelater">Plus tard</button></div></div>`;
+    <div class="row wrap"><button class="btn primary small" data-act="codeupdate">Installer la mise à jour</button><button class="btn small" data-act="codeinfo">Plus d’infos</button><button class="btn small" data-act="codelater">Plus tard</button></div></div>`;
   else if (code.status === 'sw') el.innerHTML = `<div class="codebar bad"><p><strong>Le programme de l’app vient d’être remplacé chez l’hébergeur, sans ta validation.</strong> Ne rouvre pas l’app et ne saisis pas ton mot de passe avant d’avoir vérifié l’historique de ton dépôt.</p>
     <div class="row"><button class="btn small" data-act="codeinfo">Que faire ?</button></div></div>`;
   else if (code.status === 'changed') el.innerHTML = `<div class="codebar bad"><p><strong>Le code de l’app a changé</strong> sans que tu l’aies approuvé. Ne saisis pas ton mot de passe avant d’avoir vérifié.</p>
@@ -276,8 +276,13 @@ function sheetCode() {
     <p>Le fichier qui installe l’app sur ton iPhone (sw.js) a changé chez l’hébergeur. Une version légitime de l’app ne le modifie jamais : si tu n’es pas à l’origine de ce changement, ton compte d’hébergement a probablement été compromis.</p>
     <p class="small">Depuis un ordinateur : consulte l’historique du dépôt, remets les fichiers d’origine, change le mot de passe du compte. Ensuite, sur l’iPhone, supprime l’app, efface les données du site dans Réglages › Safari, réinstalle-la et restaure ta dernière sauvegarde.</p>
     <button class="btn wide" data-act="close">Fermer</button>`);
-  const changed = code.status === 'changed';
-  openSheet(`<h2>${changed ? 'Code modifié' : 'Vérification du code'}</h2>
+  showSheet(sheetCodeHtml);
+  if (code.status === 'update' && code.news == null) loadNews();
+}
+function sheetCodeHtml() {
+  const changed = code.status === 'changed', upd = code.status === 'update';
+  return `<h2>${changed ? 'Code modifié' : upd ? 'Nouvelle version disponible' : 'Vérification du code'}</h2>
+    ${upd ? newsBlock() + '<h3>Vérification du code</h3>' : ''}
     <p class="small">L’empreinte est un condensé du code de l’app. Elle ne change que si le code change.</p>
     <p>Approuvée${code.at ? ' le ' + new Date(code.at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}<br><span class="fp">${fpLabel(code.approved)}</span></p>
     <p>${changed ? 'Code actuellement servi' : 'Version en ligne'}<br><span class="fp">${fpLabel(changed ? code.served : code.net)}</span></p>
@@ -287,7 +292,7 @@ function sheetCode() {
       : code.status === 'update' ? '<p>N’installe cette version que si tu viens de mettre les fichiers à jour toi-même.</p><button class="btn primary wide" data-act="codeupdate">Installer la mise à jour</button>'
       : `<p class="small">${code.err ? 'Dernière vérification en échec : ' + esc(code.err) : code.checked ? 'Vérifié à ' + new Date(code.checked).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + ' : la version en ligne est identique.' : 'Pas encore vérifié en ligne.'}</p>
         <button class="btn primary wide" data-act="codecheck">Vérifier maintenant</button>`}
-    <button class="btn wide" data-act="close">Fermer</button></div>`);
+    ${upd ? '<button class="btn wide" data-act="codelaterclose">Plus tard</button>' : '<button class="btn wide" data-act="close">Fermer</button>'}</div>`;
 }
 
 /* ---------- État global ---------- */

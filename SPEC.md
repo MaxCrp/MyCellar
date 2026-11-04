@@ -339,8 +339,8 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
     - **Règle** : il ne s’appuie que sur ce que tu as noté et sur les caractéristiques connues du vin. Il ne fait aucun commentaire générique ; s’il n’a rien d’utile à dire, il le dit en une phrase.
     - **Coût** : un appel court, moins d’un centime, uniquement quand il y avait des hypothèses ; on peut aussi le demander à la main.
 
-**v1.6** (release intermédiaire avant la v2 ; en cours de définition, rien n'est développé)
-- [ ] **Suivi d'utilisation**, sur le modèle de Patrimoine, pour améliorer l'expérience à partir des retours des bêta-testeurs (validé) :
+**v1.6** (release intermédiaire avant la v2 ; livrée)
+- [x] **Suivi d'utilisation**, sur le modèle de Patrimoine, pour améliorer l'expérience à partir des retours des bêta-testeurs (validé) :
   - **Ce qui est noté**, en local uniquement :
     - les écrans affichés et le temps passé sur chacun ;
     - les boutons touchés (nom de l'action dans le code) ;
@@ -360,7 +360,7 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
     - Il exporte un rapport ciblé : la description, les 15 dernières minutes du journal, les dernières erreurs techniques, l'écran affiché et le contexte. Même format JSON et même partage iOS.
     - Il fonctionne même si le suivi est désactivé : seuls le contexte et les erreurs récentes sont joints, et l'app l'indique.
   - **Effacement** : bouton « Effacer le journal ».
-- [ ] **Suivi des mises à jour** : savoir ce que contient une mise à jour avant et après l'avoir acceptée (validé) :
+- [x] **Suivi des mises à jour** : savoir ce que contient une mise à jour avant et après l'avoir acceptée (validé) :
   - **Numéro de version** : l'app connaît son propre numéro (1.6, 1.6.1…), affiché dans Réglages › Aide.
   - **Journal des versions** : un fichier `changelog.json` publié avec l'app. Pour chaque version, il donne le numéro, la date et la liste des nouveautés et corrections, rédigées pour l'utilisateur. Ce fichier est mis à jour à chaque release, à partir des cases de ce document.
   - **Avant d'installer** : dans le bandeau « Une nouvelle version est disponible », le bouton « Détails » devient « Plus d'infos ».

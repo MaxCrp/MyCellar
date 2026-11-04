@@ -1,3 +1,4 @@
 tests/shots/
 tests/backup.json
 node_modules/
+tests/shots/*.json

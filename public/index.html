@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#F7F3EC">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-dLcvgUxUmnHYMI02nQA2ZAUQbYrYwDkH4x4F86ouUyQ='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-Ue7Of7DZZD6xRH9D+63haJ7GP79qS1mEkp8Wc3H/CbQ='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>MyCellar</title>
@@ -311,6 +311,8 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .cmp th{text-align:left;font-size:11px;color:var(--muted);font-weight:600;padding:0 6px 4px 0}
 .cmp td{padding:6px 6px 6px 0;border-top:1px solid var(--line);vertical-align:top}
 .cmp td:first-child{color:var(--muted);white-space:nowrap}
+.notes{margin:0;padding-left:18px;font-size:14px;line-height:1.45}
+.notes li{margin:4px 0}
 
 </style>
 </head>
@@ -325,6 +327,8 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 <input type="file" id="f-backup" accept="application/json,.json" hidden>
 <script>
 'use strict';
+const CHANGELOG = [{"version":"1.6","date":"2026-11-04","titre":"Retours d’utilisation et suivi des versions","items":["Suivi d’utilisation (désactivé par défaut, Réglages › Aide) : l’app note, sur ton iPhone uniquement, les écrans et les gestes, jamais tes vins ni tes notes. Tu peux consulter la synthèse et exporter un rapport à envoyer, avec ton avis.","« Signaler un problème » : décris ce qui s’est passé, l’app prépare un rapport avec les dernières minutes d’utilisation et les erreurs récentes. Raccourci aussi dans les messages d’erreur.","Mises à jour : « Plus d’infos » montre le contenu d’une nouvelle version avant de l’installer, une fenêtre « Nouveautés » s’affiche après, et l’historique des versions est dans Réglages › Aide."]},{"version":"1.5.2","date":"2026-11-04","titre":"Dégustation à l’aveugle et finitions","items":["Dégustation à l’aveugle : la fiche d’abord sur un « vin mystère », tes hypothèses, puis la révélation, la comparaison et l’analyse du sommelier.","Le bouton + est le même partout : « Nouvelle dégustation » ou « Nouveau vin ».","Présentation de l’app au premier lancement, à revoir dans Réglages › Aide.","Recherche dans « Racheter un vin ». L’import Ploc est désormais dans les réglages.","Nouvelles icônes : un bouchon pour « Déguster », un carnet pour les dégustations."]},{"version":"1.5","date":"2026-11-04","titre":"Dégustations et conseils de rangement","items":["Onglet Dégustations : le journal de tous tes vins dégustés, en cave ou ailleurs (restaurant, salon, domaine…), avec recherche, filtres et vue par vin.","Séances de dégustation avec classement, et liste d’envies avec « Acheté ».","Conseils de rangement dans À boire : vins à rapprocher, à mettre en garde, réassort de la cave de consommation.","Le sommelier propose d’ajuster la fenêtre d’un vin après une dégustation, et tient compte de tes vins bus ailleurs et de tes accords.","Les réglages passent sous l’icône engrenage."]},{"version":"1.0.1","date":"2026-11-04","titre":"Corrections","items":["L’app se rouvre correctement sur iPhone après un premier lancement.","La création de la cave ne pose plus de question : un site « Site 1 », renommable, et le mode plusieurs sites dans les réglages.","La vue Urgence de la page Cave est retirée : l’onglet À boire fait référence."]},{"version":"1.0","date":"2026-11-04","titre":"Première version","items":["Ta cave sur ton iPhone, chiffrée par ton mot de passe ou Face ID, et utilisable hors ligne.","Sites, espaces et meubles (armoire, rack, étagère, caisses, cartons) avec un plan visuel et une recherche.","Ajout par photo d’étiquette ou saisie, rangement suggéré, sorties, déplacements, transferts, primeurs, vins des amis.","Dégustation rapide ou complète avec la roue des arômes.","Sommelier pour les accords mets-vins, fenêtres de dégustation estimées, onglet À boire.","Option spiritueux, import Ploc, sauvegarde chiffrée."]}];
+const APP_VERSION = CHANGELOG[0].version;
 
 /* ===== 00-core.js ===== */
 // L'app ne doit jamais s'afficher dans un cadre : une page tierce pourrait superposer
@@ -584,7 +588,7 @@ async function checkNetwork() {
 function paintCode() {
   const el = $('#codebar'); if (!el) return;
   if (code.status === 'update') el.innerHTML = `<div class="codebar"><p>Une nouvelle version de l’app est disponible. Si tu n’en es pas à l’origine, ne l’installe pas.</p>
-    <div class="row wrap"><button class="btn primary small" data-act="codeupdate">Installer la mise à jour</button><button class="btn small" data-act="codeinfo">Détails</button><button class="btn small" data-act="codelater">Plus tard</button></div></div>`;
+    <div class="row wrap"><button class="btn primary small" data-act="codeupdate">Installer la mise à jour</button><button class="btn small" data-act="codeinfo">Plus d’infos</button><button class="btn small" data-act="codelater">Plus tard</button></div></div>`;
   else if (code.status === 'sw') el.innerHTML = `<div class="codebar bad"><p><strong>Le programme de l’app vient d’être remplacé chez l’hébergeur, sans ta validation.</strong> Ne rouvre pas l’app et ne saisis pas ton mot de passe avant d’avoir vérifié l’historique de ton dépôt.</p>
     <div class="row"><button class="btn small" data-act="codeinfo">Que faire ?</button></div></div>`;
   else if (code.status === 'changed') el.innerHTML = `<div class="codebar bad"><p><strong>Le code de l’app a changé</strong> sans que tu l’aies approuvé. Ne saisis pas ton mot de passe avant d’avoir vérifié.</p>
@@ -605,8 +609,13 @@ function sheetCode() {
     <p>Le fichier qui installe l’app sur ton iPhone (sw.js) a changé chez l’hébergeur. Une version légitime de l’app ne le modifie jamais : si tu n’es pas à l’origine de ce changement, ton compte d’hébergement a probablement été compromis.</p>
     <p class="small">Depuis un ordinateur : consulte l’historique du dépôt, remets les fichiers d’origine, change le mot de passe du compte. Ensuite, sur l’iPhone, supprime l’app, efface les données du site dans Réglages › Safari, réinstalle-la et restaure ta dernière sauvegarde.</p>
     <button class="btn wide" data-act="close">Fermer</button>`);
-  const changed = code.status === 'changed';
-  openSheet(`<h2>${changed ? 'Code modifié' : 'Vérification du code'}</h2>
+  showSheet(sheetCodeHtml);
+  if (code.status === 'update' && code.news == null) loadNews();
+}
+function sheetCodeHtml() {
+  const changed = code.status === 'changed', upd = code.status === 'update';
+  return `<h2>${changed ? 'Code modifié' : upd ? 'Nouvelle version disponible' : 'Vérification du code'}</h2>
+    ${upd ? newsBlock() + '<h3>Vérification du code</h3>' : ''}
     <p class="small">L’empreinte est un condensé du code de l’app. Elle ne change que si le code change.</p>
     <p>Approuvée${code.at ? ' le ' + new Date(code.at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}<br><span class="fp">${fpLabel(code.approved)}</span></p>
     <p>${changed ? 'Code actuellement servi' : 'Version en ligne'}<br><span class="fp">${fpLabel(changed ? code.served : code.net)}</span></p>
@@ -616,7 +625,7 @@ function sheetCode() {
       : code.status === 'update' ? '<p>N’installe cette version que si tu viens de mettre les fichiers à jour toi-même.</p><button class="btn primary wide" data-act="codeupdate">Installer la mise à jour</button>'
       : `<p class="small">${code.err ? 'Dernière vérification en échec : ' + esc(code.err) : code.checked ? 'Vérifié à ' + new Date(code.checked).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + ' : la version en ligne est identique.' : 'Pas encore vérifié en ligne.'}</p>
         <button class="btn primary wide" data-act="codecheck">Vérifier maintenant</button>`}
-    <button class="btn wide" data-act="close">Fermer</button></div>`);
+    ${upd ? '<button class="btn wide" data-act="codelaterclose">Plus tard</button>' : '<button class="btn wide" data-act="close">Fermer</button>'}</div>`;
 }
 
 /* ---------- État global ---------- */
@@ -724,10 +733,10 @@ const emptyData = () => ({
   settings: {
     multi: false, site: null, spirits: false, cocktails: true, friends: [],
     ai: { provider: 'anthropic', key: '', model: '', budget: 2, auto: true, web: true },
-    lockMin: 5, stay: false, lastExport: null, aromas: {}, rate: 0.92,
+    lockMin: 5, stay: false, lastExport: null, aromas: {}, rate: 0.92, usage: { on: false },
   },
   sites: [], spaces: [], units: [], wines: [], bottles: [], moves: [], tastings: [],
-  transfer: { ids: [], to: null }, chat: [], usage: {}, dismissed: {}, sessions: [], wishes: [],
+  transfer: { ids: [], to: null }, chat: [], usage: {}, dismissed: {}, sessions: [], wishes: [], diag: { errors: [] },
 });
 function normalize(d) {
   const e = emptyData();
@@ -736,6 +745,8 @@ function normalize(d) {
   for (const k of ['sites', 'spaces', 'units', 'wines', 'bottles', 'moves', 'tastings', 'chat', 'sessions', 'wishes']) d[k] = Array.isArray(d[k]) ? d[k] : [];
   d.transfer = { ...e.transfer, ...(d.transfer || {}) };
   d.usage = d.usage || {}; d.dismissed = d.dismissed || {};
+  d.diag = { errors: Array.isArray(d.diag?.errors) ? d.diag.errors.slice(-30) : [] };
+  d.settings.usage = { on: !!d.settings.usage?.on };
   if (!d.sites.length) d.sites.push({ id: uid(), name: 'Site 1', role: 'conso' });
   if (!d.spaces.length) d.spaces.push({ id: uid(), siteId: d.sites[0].id, name: 'Cave', use: 'conso', q: {} });
   if (!d.sites.some(s => s.id === d.settings.site)) d.settings.site = d.sites[0].id;
@@ -956,7 +967,7 @@ const LOGO = `<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" heigh
 let sheetStack = [];
 function showSheet(fn, { replace = false, full = false } = {}) {
   if (replace) sheetStack.pop();
-  sheetStack.push({ fn, full });
+  sheetStack.push({ fn, full, u: uPending || fn.name || 'feuille' });
   paintSheet();
 }
 function paintSheet(keepScroll) {
@@ -969,10 +980,10 @@ function paintSheet(keepScroll) {
   html = html.replace('<!--back-->', back);
   $('#layer').innerHTML = `<div class="backdrop" data-act="close"></div><div class="sheet${top.full ? ' full' : ''}" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`;
   const sh = $('.sheet'); if (y) sh.scrollTop = y;
-  paintPhotos(sh); afterSheet();
+  paintPhotos(sh); afterSheet(); uScreenCheck();
 }
 const refreshSheet = () => paintSheet(true);
-function closeSheet() { sheetStack = []; $('#layer').innerHTML = ''; }
+function closeSheet() { sheetStack = []; $('#layer').innerHTML = ''; uScreenCheck(); }
 function sheetBack() { sheetStack.pop(); paintSheet(); }
 // Feuille ponctuelle (message, confirmation)
 const openSheet = html => showSheet(() => html);
@@ -1020,10 +1031,10 @@ function renderLock(kind, err = '') {
     ${!persistent ? '<p class="banner">Aperçu : rien n’est conservé dans cet environnement.</p>' : ''}
   </main>`;
 }
-function enterApp() { view = 'cave'; render(); window.scrollTo(0, 0); }
+function enterApp(via) { view = 'cave'; render(); window.scrollTo(0, 0); if (mode === 'app') { uStart(via); afterEnter(via); } }
 function lockNow() {
   if (mode === 'demo') { wipeKeys(); return boot(); }
-  lockHasPk = !!slots?.pk; wipeKeys(); closeSheet(); renderLock('unlock');
+  uStop(hiddenAt ? 'auto' : 'manuel'); lockHasPk = !!slots?.pk; wipeKeys(); closeSheet(); renderLock('unlock');
 }
 
 /* ---------- Rendu principal ---------- */
@@ -1061,7 +1072,7 @@ function render() {
       ${tab('boire', 'À boire', ICON.boire)}${tab('somm', 'Sommelier', ICON.somm)}</nav>`;
   paintPhotos(app);
   for (const r of $$('input[type=range]', app)) setRangeFill(r);
-  afterRender();
+  afterRender(); uScreenCheck();
 }
 function afterRender() { if (view === 'somm') { const m = $('.chat'); if (m && chatScroll) { window.scrollTo(0, document.body.scrollHeight); chatScroll = false; } } }
 let chatScroll = false;
@@ -1073,7 +1084,8 @@ Object.assign(ACT, {
   codeupdate: () => applyCodeUpdate(),
   codeinfo: () => sheetCode(),
   codelater: () => { code.status = 'ok'; paintCode(); },
-  codecheck: async () => { await checkNetwork(); sheetCode(); },
+  codelaterclose: () => { code.status = 'ok'; paintCode(); closeSheet(); },
+  codecheck: async () => { await checkNetwork(); closeSheet(); sheetCode(); },
   codeapprove: async () => {
     if (!confirm('Approuver ce code ? Ne le fais que si tu viens de mettre l’app à jour toi-même.')) return;
     await store.set('code', { fp: code.served, at: Date.now() }); code.approved = code.served; code.at = Date.now(); code.status = 'ok'; paintCode(); closeSheet();
@@ -2109,7 +2121,7 @@ async function blindAnalysis(tid) {
   const real = [wineTitle(w), w.domaine && `producteur ${w.domaine}`, w.appellation, w.region, w.pays, w.cepages && `cépages ${w.cepages}`, w.kind === 'spirit' && [SPIRIT_CATS[w.cat], w.age && w.age + ' ans', w.fut].filter(Boolean).join(', '), w.degre && w.degre + ' %', (t.prix ?? w.achat?.prix) != null && `prix ${t.prix ?? w.achat.prix} €`].filter(Boolean).join(' ; ');
   blindBusy = tid; refreshSheet();
   try {
-    const r = await aiCall({ system: BLIND_SYS, content: `Sa fiche : ${fiche || 'presque vide'}\nSes hypothèses : ${hyp}\nLe vin révélé : ${real}`, maxTokens: 2500, effort: 'medium' });
+    const r = await aiCall({ tag: 'aveugle', system: BLIND_SYS, content: `Sa fiche : ${fiche || 'presque vide'}\nSes hypothèses : ${hyp}\nLe vin révélé : ${real}`, maxTokens: 2500, effort: 'medium' });
     t.blind.analysis = r.text.trim().slice(0, 1500);
     await save();
   } catch (e) { toast('Analyse impossible : ' + (e.message || '').split('\n')[0]); }
@@ -2354,7 +2366,19 @@ function budgetCheck() {
   if (b && monthSpend() >= b) throw new AIError(`Plafond mensuel atteint (${fmtE2.format(b)}). Tu peux le relever dans Plus › Intelligence artificielle.`);
 }
 // Un appel au modèle. system : texte fixe ; context : texte mis en cache (cave) ; content : blocs du dernier message.
-async function aiCall({ system, context = '', history = [], content, schema = null, maxTokens = 4000, effort = 'medium', web = false }) {
+// Enveloppe : note chaque appel dans le suivi d'utilisation (type, durée, coût, réussite) et garde les erreurs
+async function aiCall(opts) {
+  const t0 = Date.now(), tag = opts.tag || 'autre';
+  try {
+    const r = await aiCall0(opts);
+    uLog('ai', tag, `ok,${Date.now() - t0},${(r.usd || 0).toFixed(4)}`);
+    return r;
+  } catch (e) {
+    uLog('ai', tag, `err,${Date.now() - t0},0`); errLog('ia:' + tag, e);
+    throw e;
+  }
+}
+async function aiCall0({ system, context = '', history = [], content, schema = null, maxTokens = 4000, effort = 'medium', web = false }) {
   if (!aiReady()) throw new AIError('Aucune clé IA configurée. Va dans Plus › Intelligence artificielle.');
   if (navigator.onLine === false) throw new AIError('Pas de connexion réseau.');
   budgetCheck();
@@ -2502,7 +2526,7 @@ function vSomm() {
 }
 function chatMsg(m, i) {
   if (m.role === 'user') return `<div class="bubble me">${esc(m.text)}</div>`;
-  if (m.error) return `<div class="bubble ai err">${esc(m.error)}</div>`;
+  if (m.error) return `<div class="bubble ai err">${esc(m.error)}</div>${i === S.chat.length - 1 ? '<button class="link" style="font-size:13px" data-act="problem">Signaler un problème</button>' : ''}`;
   const d = m.data || {}, last = i === S.chat.length - 1;
   const recos = (d.recos || []).map((r, k) => {
     const w = wine(r.id); if (!w) return '';
@@ -2544,7 +2568,7 @@ async function chatSend(q) {
   const clean = []; for (const m of hist) { if (clean.length && clean.at(-1).role === m.role) clean.pop(); clean.push(m); }
   if (clean.length && clean.at(-1).role === 'user') clean.pop();
   try {
-    const r = await aiCall({ system: SOMM_SYS(), context: caveContext(chatOpts.all), history: clean, content: [{ type: 'text', text: (ctxNote ? ctxNote + '\n' : '') + q, cache_control: { type: 'ephemeral' } }], schema: SOMM_SCHEMA, maxTokens: 3000, effort: 'medium' });
+    const r = await aiCall({ tag: 'sommelier', system: SOMM_SYS(), context: caveContext(chatOpts.all), history: clean, content: [{ type: 'text', text: (ctxNote ? ctxNote + '\n' : '') + q, cache_control: { type: 'ephemeral' } }], schema: SOMM_SCHEMA, maxTokens: 3000, effort: 'medium' });
     S.chat.push({ role: 'assistant', data: r.json, at: Date.now(), usd: r.usd });
   } catch (e) {
     S.chat.push({ role: 'assistant', error: e instanceof AIError ? e.message : 'Erreur inattendue : ' + (e.message || e), at: Date.now() });
@@ -2582,7 +2606,7 @@ async function estimateApogee(wid, { quiet = false } = {}) {
   const w = wine(wid); if (!w || w.kind === 'spirit') return;
   if (!quiet) toast('Le sommelier étudie ce vin…');
   try {
-    const r = await aiCall({ system: APO_SYS, content: wineBrief(w), maxTokens: 6000, effort: 'medium', web: aiClaude() && aiCfg().web });
+    const r = await aiCall({ tag: 'apogee', system: APO_SYS, content: wineBrief(w), maxTokens: 6000, effort: 'medium', web: aiClaude() && aiCfg().web });
     const j = lastJson(r.text);
     if (!j || !yearOk(+j.fin, w)) throw new AIError('Estimation illisible. Réessaie.');
     const deb = yearOk(+j.debut, w) ? +j.debut : null, pic = yearOk(+j.pic, w) ? +j.pic : null, fin = +j.fin;
@@ -2591,7 +2615,7 @@ async function estimateApogee(wid, { quiet = false } = {}) {
     toast(`Fenêtre estimée : ${windowLabel(w.apogee)}`);
   } catch (e) {
     if (quiet) toast('Apogée non estimée : ' + (e.message || '').split('\n')[0]);
-    else sheetMsg('Estimation impossible', e.message || String(e));
+    else errSheet('Estimation impossible', e.message || String(e));
   }
 }
 // Estimation groupée, sans recherche web (import, vins sans fenêtre)
@@ -2600,7 +2624,7 @@ async function estimateBatch(ws, onStep) {
   let done = 0;
   for (let k = 0; k < ws.length; k += 30) {
     const chunk = ws.slice(k, k + 30);
-    const r = await aiCall({ system: APO_SYS.replace(/Si un outil[\s\S]*?conclure\.\n/, '').replace(/Termine ta réponse[\s\S]*$/, 'Réponds pour chaque vin avec son numéro i.'), content: chunk.map((w, i) => `#${i}\n${wineBrief(w)}`).join('\n\n'), schema: BATCH_SCHEMA, maxTokens: 6000, effort: 'low' });
+    const r = await aiCall({ tag: 'apogee-lot', system: APO_SYS.replace(/Si un outil[\s\S]*?conclure\.\n/, '').replace(/Termine ta réponse[\s\S]*$/, 'Réponds pour chaque vin avec son numéro i.'), content: chunk.map((w, i) => `#${i}\n${wineBrief(w)}`).join('\n\n'), schema: BATCH_SCHEMA, maxTokens: 6000, effort: 'low' });
     for (const it of r.json.items || []) {
       const w = chunk[it.i]; if (!w || !yearOk(it.fin, w)) continue;
       w.apogee = { debut: yearOk(it.debut, w) && it.debut <= it.fin ? it.debut : null, pic: yearOk(it.pic, w) && it.pic <= it.fin ? it.pic : null, fin: it.fin, src: 'ia', why: 'Estimation groupée, sans recherche web.', at: Date.now() };
@@ -2620,7 +2644,7 @@ Object.assign(ACT, {
     if (!confirm(`Estimer la fenêtre de ${plural(ws.length, 'vin', 'vins')} ? Coût indicatif : moins de ${fmtE2.format(Math.max(0.02, ws.length * 0.004))}.`)) return;
     toast('Estimation en cours…');
     try { const n = await estimateBatch(ws); render(); toast(`${plural(n, 'fenêtre estimée', 'fenêtres estimées')}`); }
-    catch (e) { sheetMsg('Estimation impossible', e.message || String(e)); }
+    catch (e) { errSheet('Estimation impossible', e.message || String(e)); }
   },
 });
 
@@ -2656,14 +2680,14 @@ async function onPhoto(file) {
   closeSheet();
   showSheet(() => `${head('Lecture de l’étiquette…')}<p class="small">Le sommelier déchiffre l’étiquette. Quelques secondes.</p><div class="bubble ai"><span class="typing"><i></i><i></i><i></i></span></div>`);
   try {
-    const r = await aiCall({ system: LABEL_SYS, content: [{ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: await blobB64(big) } }, { type: 'text', text: 'Fiche de cette bouteille.' }], schema: LABEL_SCHEMA, maxTokens: 2000, effort: 'low' });
+    const r = await aiCall({ tag: 'etiquette', system: LABEL_SYS, content: [{ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: await blobB64(big) } }, { type: 'text', text: 'Fiche de cette bouteille.' }], schema: LABEL_SCHEMA, maxTokens: 2000, effort: 'low' });
     const j = r.json, f = { ...j };
     f.millesime = int(j.millesime) || null; f.degre = num(j.degre); f.age = int(j.age) || null;
     f.format = j.kind === 'spirit' ? (FORMATS.spirit.some(x => x[0] === j.format) ? j.format : '70') : (FORMATS.vin.some(x => x[0] === j.format) ? j.format : '75');
     if (!f.couleur) delete f.couleur; if (!f.cat) delete f.cat;
     for (const k of Object.keys(f)) if (f[k] === '') delete f[k];
     closeSheet(); go(f);
-  } catch (e) { closeSheet(); go({}); sheetMsg('Lecture impossible', (e.message || String(e)) + '\n\nTu peux remplir la fiche à la main : la photo est conservée.'); }
+  } catch (e) { closeSheet(); go({}); errSheet('Lecture impossible', (e.message || String(e)) + '\n\nTu peux remplir la fiche à la main : la photo est conservée.'); }
 }
 
 /* ---------- Import depuis Ploc (PDF) ---------- */
@@ -2706,14 +2730,14 @@ async function onPdf(file) {
   step('Lecture du PDF…');
   try {
     const data = b64(await file.arrayBuffer());
-    const r = await aiCall({ system: 'Tu extrais l’inventaire d’une cave à vin depuis un PDF exporté par l’application Ploc. Liste chaque vin distinct avec sa quantité par emplacement (une ligne par vin et par emplacement). « nom » : nom du vin tel qu’écrit (appellation, cuvée). « millesime » : année ou chaîne vide. « emplacement » : emplacement indiqué (casier, rangée…), vide si absent. N’invente rien.', content: [{ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data } }, { type: 'text', text: 'Extrais toutes les bouteilles de ce PDF.' }], schema: PLOC_SCHEMA, maxTokens: 16000, effort: 'low' });
+    const r = await aiCall({ tag: 'ploc', system: 'Tu extrais l’inventaire d’une cave à vin depuis un PDF exporté par l’application Ploc. Liste chaque vin distinct avec sa quantité par emplacement (une ligne par vin et par emplacement). « nom » : nom du vin tel qu’écrit (appellation, cuvée). « millesime » : année ou chaîne vide. « emplacement » : emplacement indiqué (casier, rangée…), vide si absent. N’invente rien.', content: [{ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data } }, { type: 'text', text: 'Extrais toutes les bouteilles de ce PDF.' }], schema: PLOC_SCHEMA, maxTokens: 16000, effort: 'low' });
     const items = (r.json.items || []).filter(x => x.domaine || x.nom);
     if (!items.length) throw new AIError('Aucune bouteille trouvée dans ce PDF.');
     step(`${plural(items.length, 'ligne trouvée', 'lignes trouvées')}. Le sommelier complète les fiches…`);
     for (let k = 0; k < items.length; k += 40) {
       const chunk = items.slice(k, k + 40);
       try {
-        const e = await aiCall({ system: `Pour chaque vin, donne sa couleur, son appellation, sa cuvée éventuelle (nom de cuvée distinct de l’appellation, sinon vide), sa région, son pays, ses cépages habituels, et une fenêtre de dégustation estimée (début, apogée, fin) en années, pour un stockage correct. Année actuelle : ${thisYear()}. Réponds pour chaque vin avec son numéro i.`, content: chunk.map((x, i) => `#${i} ${x.domaine} | ${x.nom} | ${x.millesime || 'NM'}`).join('\n'), schema: ENRICH_SCHEMA, maxTokens: 12000, effort: 'low' });
+        const e = await aiCall({ tag: 'ploc-fiches', system: `Pour chaque vin, donne sa couleur, son appellation, sa cuvée éventuelle (nom de cuvée distinct de l’appellation, sinon vide), sa région, son pays, ses cépages habituels, et une fenêtre de dégustation estimée (début, apogée, fin) en années, pour un stockage correct. Année actuelle : ${thisYear()}. Réponds pour chaque vin avec son numéro i.`, content: chunk.map((x, i) => `#${i} ${x.domaine} | ${x.nom} | ${x.millesime || 'NM'}`).join('\n'), schema: ENRICH_SCHEMA, maxTokens: 12000, effort: 'low' });
         for (const it of e.json.items || []) if (chunk[it.i]) Object.assign(chunk[it.i], { ...it, i: undefined });
       } catch (err) { /* l'import reste possible sans enrichissement */ }
       step(`Fiches complétées : ${Math.min(items.length, k + 40)} / ${items.length}…`);
@@ -2744,7 +2768,7 @@ async function reevaluate(w, rec) {
     F.evolution && `évolution jugée : ${({ jeune: 'jeune', apoint: 'à point', declin: 'sur le déclin' })[F.evolution]}`, F.potentiel && `potentiel restant estimé : ${F.potentiel}`,
     F.aromes?.length && `arômes : ${F.aromes.join(', ')}`].filter(Boolean).join(' ; ');
   try {
-    const r = await aiCall({ system: APO_SYS.replace(/Si un outil[\s\S]*?conclure\.\n/, '').replace(/Termine ta réponse[\s\S]*$/, '') +
+    const r = await aiCall({ tag: 'reevaluation', system: APO_SYS.replace(/Si un outil[\s\S]*?conclure\.\n/, '').replace(/Termine ta réponse[\s\S]*$/, '') +
       `\nOn vient de déguster ce vin. Dis s'il faut modifier sa fenêtre actuelle (${a?.fin ? `${a.debut || '?'}–${a.fin}, apogée ${a.pic || '?'}` : 'inconnue'}) pour les ${left} bouteille(s) restantes. Ne la change que si la dégustation l'apporte vraiment (changer = false sinon, et recopie la fenêtre actuelle). Justification en une ou deux phrases, en français, en tutoyant.`,
       content: wineBrief(w) + '\n' + note, schema: REEVAL_SCHEMA, maxTokens: 2000, effort: 'low' });
     const j = r.json;
@@ -2940,7 +2964,12 @@ function vPlus() {
       ${setRow('codeinfo', 'Vérification du code', 'Empreinte ' + esc(fpLabel(code.approved)))}
     </div>
     <div class="sect">Aide</div>
-    <div class="card" style="padding:0 12px">${setRow('introShow', 'Revoir la présentation', 'Les fonctions de MyCellar en sept écrans')}</div>
+    <div class="card" style="padding:0 12px">
+      ${setRow('historySheet', 'Historique des versions', 'Version installée : ' + esc(APP_VERSION))}
+      ${setRow('usageSheet', 'Suivi d’utilisation', S.settings.usage?.on ? 'Activé · synthèse et rapport à envoyer' : 'Désactivé · aide à améliorer l’app')}
+      ${setRow('problem', 'Signaler un problème', 'Prépare un rapport à envoyer')}
+      ${setRow('introShow', 'Revoir la présentation', 'Les fonctions de MyCellar en quelques écrans')}
+    </div>
     <div class="btns" style="margin-top:16px"><button class="btn wide" data-act="lock">${ICON.lock} ${mode === 'demo' ? 'Quitter la démo' : 'Verrouiller maintenant'}</button></div>
     <p class="tiny" style="text-align:center;margin-top:14px">MyCellar · données chiffrées sur cet appareil</p>`;
 }
@@ -3117,7 +3146,7 @@ Object.assign(ACT, {
     const prev = { ...S.settings.ai };
     Object.assign(S.settings.ai, { provider: d.provider, key: d.key.replace(/\s+/g, ''), model: d.model });
     t.disabled = true; t.textContent = 'Test en cours…';
-    try { const r = await aiCall({ system: 'Réponds par OK.', content: 'ping', maxTokens: 50, effort: 'low' }); sheetMsg('Test de la clé', `La clé fonctionne (${AI[d.provider].label}, ${aiModel()}). Réponse : ${r.text.slice(0, 40)}`); }
+    try { const r = await aiCall({ tag: 'test', system: 'Réponds par OK.', content: 'ping', maxTokens: 50, effort: 'low' }); sheetMsg('Test de la clé', `La clé fonctionne (${AI[d.provider].label}, ${aiModel()}). Réponse : ${r.text.slice(0, 40)}`); }
     catch (e) { sheetMsg('Test de la clé', e.message || String(e)); }
     finally { Object.assign(S.settings.ai, prev); }
   },
@@ -3160,7 +3189,7 @@ FORMS.import = async (f, d) => {
     await adopt({ raw: o.raw, data: o.data, slots: { pw: pendingImport.slots.pw } });
     S.settings.stay = false; S.settings.lastExport = pendingImport.savedAt || Date.now();
     await save(); navigator.storage?.persist?.(); pendingImport = null;
-    closeSheet(); enterApp(); toast('Cave restaurée');
+    closeSheet(); enterApp('restauration'); toast('Cave restaurée');
   } catch { btn.disabled = false; btn.textContent = 'Restaurer'; const er = $('#ierr'); er.hidden = false; er.textContent = 'Mot de passe incorrect pour cette sauvegarde.'; }
 };
 Object.assign(ACT, {
@@ -3268,21 +3297,308 @@ function demoData() {
 }
 
 
+/* ===== 87-usage.js ===== */
+/* ---------- Suivi d'utilisation (v1.6) ----------
+   Journal local des gestes : écrans affichés et temps passé, boutons touchés, formulaires validés,
+   noms des champs modifiés, appels IA (type, durée, coût), erreurs.
+   Ne contient jamais de nom de vin, de note, de commentaire, de prix, de lieu ni de contenu saisi :
+   seulement des noms d'actions du code, des écrans et des horodatages. Chiffré avec la clé du coffre,
+   jamais envoyé : l'utilisateur exporte lui-même un rapport.
+   Chaque événement : [horodatage ms, n° de session, type, nom, écran, détail]. */
+const USE_MAX = 20000;
+let U = null, uSess = 0, uScreen = '', uPending = null, uDirty = 0, uTimer = null;
+const usageOn = () => mode === 'app' && !!S?.settings.usage?.on && !!U;
+const uNew = () => ({ v: 1, since: Date.now(), n: 0, ev: [] });
+const uBase = () => view + (view === 'cave' ? '/' + caveMode : view === 'deg' ? '/' + degMode : '');
+// Détail sûr d'un geste : uniquement des codes courts du programme (jamais un identifiant, un nom ou un texte saisi)
+const U_KEYS = ['v', 'm', 'k', 'kind'];
+function uDetail(el) {
+  const d = el.dataset, out = [];
+  for (const k of U_KEYS) if (d[k] != null && /^[a-z0-9_-]{1,16}$/i.test(d[k]) && !/^[0-9a-f]{12}$/.test(d[k])) out.push(d[k]);
+  if (d.session) out.push('seance');
+  return out.join(',') || undefined;
+}
+function uLog(k, a, x) {
+  if (!usageOn()) return;
+  const e = [Date.now(), uSess, k, a || '', uScreen];
+  if (x != null) e.push(x);
+  U.ev.push(e);
+  if (U.ev.length > USE_MAX) U.ev.splice(0, U.ev.length - USE_MAX);
+  uDirty++;
+  clearTimeout(uTimer); uTimer = setTimeout(() => uFlush(), 4000);
+}
+// Après chaque affichage : note un changement d'écran (onglet, mode, feuille ouverte)
+function uScreenCheck() {
+  if (!usageOn()) return;
+  const top = sheetStack[sheetStack.length - 1];
+  const sc = uBase() + (top ? ' > ' + (top.u || 'feuille') : '') + (introAt != null ? ' > presentation' : '');
+  if (sc === uScreen) return;
+  uScreen = sc; uLog('screen', sc);
+}
+async function uFlush(key = dek) {
+  if (!U || !key || !uDirty || mode !== 'app') return;
+  uDirty = 0;
+  try { await store.set('usage', await aesEnc(key, enc.encode(JSON.stringify(U)))); } catch { uDirty++; }
+}
+async function uLoad() {
+  if (U) return;
+  try { const r = await store.get('usage'); U = r ? JSON.parse(dec.decode(await aesDec(dek, r.iv, r.ct))) : null; } catch { U = null; }
+  if (!U || U.v !== 1 || !Array.isArray(U.ev)) U = uNew();
+}
+async function uStart(via) {
+  if (mode !== 'app') return;
+  await uLoad();
+  if (!S?.settings.usage?.on) return;
+  uSess = ++U.n; uScreen = '';
+  uLog('start', via || 'inconnu', `${innerWidth}x${innerHeight}${matchMedia('(display-mode: standalone)').matches ? ',app' : ',navigateur'}`);
+  uScreenCheck();
+}
+function uStop(reason) {
+  if (usageOn()) uLog('end', reason);
+  const k = dek; clearTimeout(uTimer); uFlush(k); U = null;
+}
+
+/* ---------- Erreurs récentes ----------
+   Gardées même quand le suivi est désactivé (30 au plus, messages techniques seulement), pour « Signaler un problème ». */
+function errLog(where, e) {
+  const msg = String(e?.message || e || '').replace(/\s+/g, ' ').slice(0, 240);
+  if (S?.diag) { S.diag.errors.push({ t: Date.now(), where, msg, screen: uScreen || uBase() }); if (S.diag.errors.length > 30) S.diag.errors.splice(0, S.diag.errors.length - 30); }
+  uLog('error', where, msg.slice(0, 120));
+}
+window.addEventListener('error', e => { try { errLog('js', e.error || e.message); } catch {} });
+window.addEventListener('unhandledrejection', e => { try { errLog('promesse', e.reason); } catch {} });
+// Message d'erreur avec raccourci vers « Signaler un problème »
+function errSheet(title, msg) {
+  showSheet(() => `${head(esc(title))}<p style="white-space:pre-wrap">${esc(msg)}</p>
+    <div class="btns"><button class="btn wide" data-act="sheetback">OK</button>${mode === 'app' ? '<button class="btn ghost wide" data-act="problem">Signaler ce problème</button>' : ''}</div>`);
+}
+
+/* ---------- Synthèse ---------- */
+const U_DONE = new Set(['tasteSave', 'placeOk', 'putHere', 'receive', 'transferDone', 'chatAsk', 'export', 'applyReeval', 'applyAdvice', 'adviceGo', 'wishToggle',
+  'revealWine', 'openBottle', 'delWine', 'delUnit', 'estimate', 'estimateMissing', 'plocGo', 'toTransfer', 'awayTransfer', 'takeIt', 'blindAI', 'usageExport', 'problemSend']);
+const uMed = a => { if (!a.length) return 0; const b = a.slice().sort((x, y) => x - y), m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; };
+const uTop = (o, n) => Object.entries(o).sort((a, b) => b[1] - a[1]).slice(0, n);
+function uSummary() {
+  const ev = U?.ev || [], bySess = new Map();
+  for (const e of ev) { if (!bySess.has(e[1])) bySess.set(e[1], []); bySess.get(e[1]).push(e); }
+  const acts = {}, screens = {}, tasks = {}, grams = {}, ai = {}, errors = {}, hours = Array(24).fill(0), days = Array(7).fill(0), sess = [];
+  for (const list of bySess.values()) {
+    let cur = null, since = null, dur = 0, gestures = 0, path = [], t0 = list[0][0], seq = [];
+    const close = t => { if (cur && since != null) { const d = t - since; dur += d; const o = screens[cur]; o.ms += d; o.d.push(d); } since = null; };
+    for (const [t, , k, a, , x] of list) {
+      if (k === 'screen') {
+        if (cur?.includes(' > ') && !a.includes(' > ')) { path = []; t0 = t; }   // feuille refermée sans rien valider
+        close(t); cur = a; since = t;
+        const o = screens[a] ||= { n: 0, ms: 0, d: [], taps: [], via: {} };
+        o.n++; o.taps.push(path.length);
+        if (path.length) { const p = path.slice(-6).join(' › '); o.via[p] = (o.via[p] || 0) + 1; }
+      } else if (k === 'pause' || k === 'end') close(t);
+      else if (k === 'resume') since = t;
+      else if (k === 'start') { t0 = t; path = []; }
+      else if (k === 'ai') { const o = ai[a] ||= { n: 0, err: 0, ms: [], usd: 0 }; const [st, ms, usd] = String(x || '').split(','); o.n++; if (st !== 'ok') o.err++; o.ms.push(+ms || 0); o.usd += +usd || 0; }
+      else if (k === 'error') errors[a] = (errors[a] || 0) + 1;
+      else if (k === 'tap' || k === 'submit' || k === 'change') {
+        const name = k === 'submit' ? 'valide:' + a : k === 'change' ? 'champ:' + a : a + (x ? ':' + x : '');
+        acts[name] = (acts[name] || 0) + 1;
+        const d = new Date(t); hours[d.getHours()]++; days[(d.getDay() + 6) % 7]++;
+        if (k !== 'submit') gestures++;
+        if (k === 'tap' && a === 'go') { path = []; t0 = t; }   // un onglet touché démarre un nouveau chemin
+        path.push(name); seq.push(name);
+        if (seq.length >= 3) { const g = seq.slice(-3).join(' › '); grams[g] = (grams[g] || 0) + 1; }
+        if ((k === 'submit' && !['unlock', 'setup'].includes(a)) || (k === 'tap' && U_DONE.has(a))) {
+          const o = tasks[name] ||= { n: 0, taps: [], secs: [], paths: {} };
+          o.n++; o.taps.push(path.filter(p => !p.startsWith('valide:')).length); o.secs.push((t - t0) / 1000);
+          const p = path.slice(-8).join(' › '); o.paths[p] = (o.paths[p] || 0) + 1;
+          path = []; t0 = t;
+        }
+      }
+    }
+    close(list[list.length - 1][0]);
+    sess.push({ dur, gestures });
+  }
+  const r1 = x => Math.round(x * 10) / 10;
+  return {
+    period: ev.length ? { from: new Date(ev[0][0]).toISOString(), to: new Date(ev[ev.length - 1][0]).toISOString() } : null,
+    sessions: { n: sess.length, medianSeconds: r1(uMed(sess.map(s => s.dur / 1000))), medianGestures: uMed(sess.map(s => s.gestures)), totalGestures: sess.reduce((t, s) => t + s.gestures, 0) },
+    actions: uTop(acts, 60).map(([action, n]) => ({ action, n })),
+    screens: Object.entries(screens).sort((a, b) => b[1].n - a[1].n).map(([screen, o]) => ({ screen, visits: o.n, totalSeconds: Math.round(o.ms / 1000),
+      medianSeconds: r1(uMed(o.d) / 1000), medianTapsToReach: uMed(o.taps), topPaths: uTop(o.via, 3).map(([path, n]) => ({ path, n })) })),
+    tasks: Object.entries(tasks).sort((a, b) => b[1].n - a[1].n).map(([task, o]) => ({ task, n: o.n, medianTaps: uMed(o.taps), medianSeconds: r1(uMed(o.secs)),
+      topPaths: uTop(o.paths, 3).map(([path, n]) => ({ path, n })) })),
+    sequences: uTop(grams, 25).map(([seq, n]) => ({ seq, n })),
+    ai: Object.entries(ai).map(([kind, o]) => ({ kind, n: o.n, errors: o.err, medianMs: uMed(o.ms), usd: Math.round(o.usd * 1e4) / 1e4 })),
+    errors: Object.entries(errors).map(([where, n]) => ({ where, n })),
+    byHour: hours, byWeekday: { order: 'lun→dim', counts: days },
+  };
+}
+// Libellés lisibles pour la synthèse affichée dans l'app (le rapport garde les noms du code)
+const U_LABELS = {
+  'go:cave': 'Onglet Cave', 'go:deg': 'Onglet Dégustations', 'go:boire': 'Onglet À boire', 'go:somm': 'Onglet Sommelier', 'go:plus': 'Réglages',
+  add: 'Bouton +', addWine: '+ › Nouveau vin', newTaste: '+ › Nouvelle dégustation', newWine: 'Saisie manuelle d’un vin', scanLabel: 'Photo d’étiquette',
+  slot: 'Case du plan', emptySlot: 'Case libre du plan', bottle: 'Fiche bouteille', wine: 'Fiche vin', outBottle: 'Sortir une bouteille', moveBottle: 'Déplacer',
+  taste: 'Déguster', tasteSave: 'Enregistrer une dégustation', tasteView: 'Voir une dégustation', placeOk: 'Valider un rangement', pickSlot: 'Choisir une case',
+  chatAsk: 'Question au sommelier', takeIt: 'Je la prends', blindStart: 'Dégustation à l’aveugle', reveal: 'Révéler un vin', revealWine: 'Vin révélé',
+  caveMode: 'Plan / Liste', degMode: 'Journal / Par vin', adviceSheet: 'Conseils de rangement', transferSheet: 'Transfert', export: 'Sauvegarder',
+  'valide:wine': 'Valider une fiche vin', 'valide:out': 'Valider une sortie', 'valide:chat': 'Envoyer au sommelier', 'valide:unit': 'Valider un meuble',
+  close: 'Fermer une fenêtre', sheetback: 'Retour', problem: 'Signaler un problème', usageSheet: 'Suivi d’utilisation',
+  cave: 'Cave', deg: 'Dégustations', boire: 'À boire', somm: 'Sommelier', plus: 'Réglages',
+};
+const uLabel = n => n.includes(' > ') ? n.split(' > ').map(uLabel).join(' › ') : U_LABELS[n] || U_LABELS[n.split(',')[0]] || U_LABELS[n.split('/')[0]] || U_LABELS[n.split(':')[0]] || n;
+
+/* ---------- Écrans : Réglages › Aide › Suivi d'utilisation ---------- */
+function usageSheet() {
+  const on = !!S.settings.usage?.on, s = U ? uSummary() : null, n = U?.ev.length || 0;
+  const li = (l, v) => `<dt>${esc(l)}</dt><dd>${esc(String(v))}</dd>`;
+  const dur = x => x >= 60 ? `${Math.floor(x / 60)} min ${String(Math.round(x % 60)).padStart(2, '0')}` : `${Math.round(x)} s`;
+  return `${head('Suivi d’utilisation')}
+    <div class="card row"><div class="grow"><b style="font-size:15px">Noter mon utilisation</b><div class="small">Sur cet iPhone uniquement, chiffré, jamais envoyé sans toi.</div></div>${sw('setUsage', on, mode !== 'app')}</div>
+    <p class="small">Ce qui est noté : les écrans affichés et le temps passé, les boutons touchés, le nom des champs modifiés, les erreurs, les appels au sommelier (durée, coût). Jamais tes vins, tes notes, tes commentaires, tes prix ni tes questions.</p>
+    ${s?.sessions.n ? `<h3>Synthèse</h3><p class="small" style="margin-top:-4px">Du ${esc(fmtDate(s.period.from))} au ${esc(fmtDate(s.period.to))} · ${plural(n, 'événement', 'événements')}</p>
+      <dl class="kv">${li('Ouvertures de l’app', s.sessions.n)}${li('Durée médiane d’une ouverture', dur(s.sessions.medianSeconds))}${li('Gestes médians par ouverture', s.sessions.medianGestures)}</dl>
+      <h3>Gestes les plus fréquents</h3><dl class="kv">${s.actions.slice(0, 8).map(a => li(uLabel(a.action), a.n)).join('')}</dl>
+      ${s.tasks.length ? `<h3>Tâches accomplies</h3><p class="tiny" style="margin-top:-4px">Nombre de fois · gestes médians pour y arriver</p><dl class="kv">${s.tasks.slice(0, 8).map(t => li(uLabel(t.task), `${t.n} · ${t.medianTaps}`)).join('')}</dl>` : ''}
+      <h3>Écrans les plus consultés</h3><p class="tiny" style="margin-top:-4px">Visites · temps médian</p><dl class="kv">${s.screens.slice(0, 8).map(x => li(uLabel(x.screen), `${x.visits} · ${dur(x.medianSeconds)}`)).join('')}</dl>`
+    : `<p class="muted small">${on ? 'Utilise l’app quelques jours : la synthèse se remplira.' : 'Le suivi est désactivé.'}</p>`}
+    <div class="btns" style="margin-top:16px"><button class="btn primary wide" data-act="usageReport" ${n ? '' : 'disabled'}>${ICON.up} Exporter le rapport</button>
+      ${n ? '<button class="btn danger wide" data-act="usageClear">Effacer le journal</button>' : ''}</div>`;
+}
+CHANGES.setUsage = async el => {
+  if (mode !== 'app') return;
+  S.settings.usage = { ...(S.settings.usage || {}), on: el.checked };
+  await save(); await uLoad();
+  if (el.checked) { await uStart('activation'); toast('Suivi activé'); } else { uLog('end', 'desactivation'); toast('Suivi désactivé'); }
+  refreshSheet();
+};
+function usageReportSheet() {
+  return `${head('Exporter le rapport')}
+    <p class="small" style="margin-top:-4px">Le rapport contient la synthèse et le journal des gestes, sans aucune donnée de ta cave. Ajoute ton avis si tu veux : il sera joint tel quel.</p>
+    <form class="form" data-form="usageExport"><label>Ton avis <span class="tiny">(facultatif)</span><textarea name="avis" placeholder="Ce qui te plaît, ce qui te gêne, ce qui te manque…"></textarea></label>
+      <button class="btn primary wide" type="submit">${ICON.up} Exporter et partager</button></form>`;
+}
+function reportContext() {
+  return { screen: `${screen.width}x${screen.height}`, viewport: `${innerWidth}x${innerHeight}`, standalone: matchMedia('(display-mode: standalone)').matches,
+    userAgent: navigator.userAgent.slice(0, 160), appVersion: APP_VERSION, appFingerprint: code.served ? fpLabel(code.served) : null,
+    references: S ? S.wines.filter(w => wineBottles(w.id).length).length : null, bottles: S ? S.bottles.filter(inCave).length : null,
+    sites: S?.sites.length, spaces: S?.spaces.length, units: S?.units.length, tastings: S?.tastings.length, sessions: S?.sessions.length, wishes: S?.wishes.length,
+    multiSites: S ? isMulti() : null, spirits: S?.settings.spirits, ai: S ? (aiReady() ? aiCfg().provider || 'anthropic' : 'non') : null, usageTracking: !!S?.settings.usage?.on };
+}
+async function shareJson(name, obj) {
+  const blob = new Blob([JSON.stringify(obj, null, 1)], { type: 'application/json' });
+  const file = new File([blob], name, { type: 'application/json' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file] }); return true; } catch (e) { if (e.name === 'AbortError') return false; }
+  }
+  const u = URL.createObjectURL(blob), a = document.createElement('a'); a.href = u; a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(u), 4000);
+  return true;
+}
+const U_LEGEND = {
+  kinds: { start: 'ouverture (détail = taille de la fenêtre, app ou navigateur)', end: 'verrouillage ou désactivation', pause: 'app en arrière-plan', resume: 'retour dans l’app',
+    screen: 'écran affiché (onglet/mode > feuille ouverte)', tap: 'bouton touché (nom = action du code, détail = paramètres courts)', submit: 'formulaire validé',
+    change: 'champ modifié (nom du champ, jamais sa valeur)', ai: 'appel IA (détail = ok|err, durée ms, coût $)', error: 'erreur technique (détail = message)' },
+  note: 'Aucun nom de vin, note, commentaire, prix, lieu, convive ni question au sommelier. Les « paths » listent les derniers gestes avant d’atteindre un écran ou une tâche.',
+};
+FORMS.usageExport = async (f, d) => {
+  if (!U) return;
+  uLog('tap', 'usageExport'); await uFlush();
+  const out = { format: 'mycellar-usage-v1', exportedAt: new Date().toISOString(), trackingSince: new Date(U.since).toISOString(), avis: d.avis || null,
+    context: reportContext(), legend: U_LEGEND, summary: uSummary(), recentErrors: S.diag.errors,
+    events: { columns: ['time', 'session', 'kind', 'name', 'screen', 'detail'], rows: U.ev.map(([t, ...r]) => [new Date(t).toISOString(), ...r]) } };
+  if (await shareJson(`mycellar-rapport-${today()}.json`, out)) { sheetBack(); toast('Rapport exporté'); }
+};
+
+/* ---------- Signaler un problème ---------- */
+function problemSheet() {
+  const on = usageOn();
+  return `${head('Signaler un problème')}
+    <form class="form" data-form="problemSend"><label>Que s’est-il passé ?<textarea name="desc" required placeholder="Ce que tu faisais, ce que tu attendais, ce qui s’est produit…"></textarea></label>
+      <p class="tiny" style="margin:0">${on ? 'Le rapport joint les 15 dernières minutes d’utilisation, les erreurs récentes et l’écran affiché.' : 'Le suivi d’utilisation est désactivé : le rapport joint seulement les erreurs récentes et le contexte (version, écran, options).'} Aucune donnée de ta cave n’y figure.</p>
+      <button class="btn primary wide" type="submit">${ICON.up} Exporter et partager</button></form>`;
+}
+FORMS.problemSend = async (f, d) => {
+  if (!d.desc) return toast('Décris le problème en quelques mots');
+  uLog('tap', 'problemSend'); await uFlush();
+  const since = Date.now() - 15 * 60e3;
+  const out = { format: 'mycellar-probleme-v1', exportedAt: new Date().toISOString(), description: d.desc, screen: uScreen || uBase(),
+    context: reportContext(), recentErrors: S.diag.errors.slice(-20),
+    recentEvents: U && S.settings.usage?.on ? { columns: ['time', 'session', 'kind', 'name', 'screen', 'detail'], rows: U.ev.filter(e => e[0] >= since).map(([t, ...r]) => [new Date(t).toISOString(), ...r]) } : null };
+  if (await shareJson(`mycellar-probleme-${today()}.json`, out)) { closeSheet(); toast('Rapport prêt à envoyer'); }
+};
+Object.assign(ACT, {
+  usageSheet: async () => { await uLoad(); showSheet(usageSheet); },
+  usageReport: () => showSheet(usageReportSheet),
+  usageClear: async () => { if (!confirm('Effacer tout le journal d’utilisation ?')) return; U = uNew(); uDirty++; await uFlush(); if (S.settings.usage?.on) await uStart('effacement'); refreshSheet(); toast('Journal effacé'); },
+  problem: () => showSheet(problemSheet),
+});
+
+
+/* ===== 88-versions.js ===== */
+/* ---------- Suivi des mises à jour (v1.6) ----------
+   CHANGELOG et APP_VERSION sont injectés par build.mjs depuis src/changelog.json.
+   Le même journal est publié à part (changelog.json) : la version installée le lit en ligne
+   pour montrer le contenu d'une mise à jour avant de l'installer. C'est du texte affiché, jamais du code. */
+function cmpVer(a, b) {
+  const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number);
+  for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d; }
+  return 0;
+}
+// Versions plus récentes que « v » (toutes si v est vide), de la plus récente à la plus ancienne
+const newerThan = (list, v) => list.filter(e => !v || cmpVer(e.version, v) > 0).sort((a, b) => cmpVer(b.version, a.version));
+function versionsHtml(list) {
+  return list.map(e => `<div class="card"><div class="ct"><span>Version ${esc(e.version)}${e.titre ? ' · ' + esc(e.titre) : ''}</span><span class="small">${esc(fmtDate(e.date))}</span></div>
+    <ul class="notes">${(e.items || []).map(i => `<li>${esc(i)}</li>`).join('')}</ul></div>`).join('');
+}
+// Au déverrouillage : la fenêtre « Nouveautés » s'affiche une fois après une mise à jour
+async function afterEnter(via) {
+  let last = null; try { last = await store.get('lastVersion'); } catch {}
+  try { await store.set('lastVersion', APP_VERSION); } catch {}
+  if (via === 'creation' || via === 'restauration' || last === APP_VERSION) return;   // nouvel appareil : rien à annoncer
+  // Sans trace de version : l'app vient d'une version antérieure à la 1.6, qui ne la notait pas
+  const list = last ? newerThan(CHANGELOG, last) : CHANGELOG.filter(e => e.version === APP_VERSION);
+  if (!list.length || introAt != null) return;
+  setTimeout(() => { if (!sheetStack.length) showSheet(() => `${head('Nouveautés')}<p class="small" style="margin-top:-6px">${last ? `Depuis la version ${esc(last)}` : `Version ${esc(APP_VERSION)}`}</p>${versionsHtml(list)}
+    <button class="btn primary wide" style="margin-top:12px" data-act="close">C’est noté</button>`); }, 300);
+}
+function historySheet() {
+  return `${head('Historique des versions')}<p class="small" style="margin-top:-6px">Version installée : <b style="color:var(--ink)">${esc(APP_VERSION)}</b></p>${versionsHtml(newerThan(CHANGELOG, null))}`;
+}
+// Contenu d'une mise à jour disponible : journal publié en ligne, filtré depuis la version installée
+async function loadNews() {
+  code.news = 'chargement'; refreshSheet();
+  try {
+    const r = await fetch('./changelog.json?fresh=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) throw new Error(String(r.status));
+    const j = await r.json();
+    if (!Array.isArray(j)) throw new Error('format');
+    code.news = newerThan(j.filter(e => e && typeof e.version === 'string' && Array.isArray(e.items)).map(e => ({ version: e.version, date: String(e.date || ''), titre: String(e.titre || ''), items: e.items.map(String).slice(0, 30) })), APP_VERSION);
+  } catch { code.news = 'erreur'; }
+  refreshSheet();
+}
+function newsBlock() {
+  if (code.news === 'chargement' || code.news == null) return '<p class="small">Chargement du contenu de la mise à jour…</p>';
+  if (code.news === 'erreur') return '<p class="small">Le contenu de la mise à jour n’a pas pu être récupéré (pas de connexion, ou journal absent).</p>';
+  if (!code.news.length) return '<p class="small">Le journal des versions ne décrit pas encore cette mise à jour.</p>';
+  return `<h3>Ce qui change depuis ta version (${esc(APP_VERSION)})</h3>${versionsHtml(code.news)}`;
+}
+Object.assign(ACT, { historySheet: () => showSheet(historySheet) });
+
+
 /* ===== 90-boot.js ===== */
 /* ---------- Événements ---------- */
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-act]'); if (!t || !ACT[t.dataset.act]) return;
   if (t.tagName === 'INPUT' || t.tagName === 'SELECT') return;
   e.preventDefault();
-  Promise.resolve(ACT[t.dataset.act](t, e)).catch(err => { console.error(err); toast('Erreur : ' + (err.message || err)); });
+  const act = t.dataset.act; uPending = act; uLog('tap', act, uDetail(t));
+  Promise.resolve(ACT[act](t, e)).catch(err => { console.error(err); errLog('action:' + act, err); errSheet('Une erreur est survenue', String(err.message || err)); });
 });
 document.addEventListener('submit', async e => {
   e.preventDefault();
   const f = e.target, name = f.dataset.form; if (!FORMS[name]) return;
   const btn = f.querySelector('[type=submit]');
   if (btn?.disabled) return;
+  uPending = name; uLog('submit', name);
   try { await FORMS[name](f, formData(f)); }
-  catch (err) { console.error(err); toast('Erreur : ' + (err.message || err)); if (btn) btn.disabled = false; }
+  catch (err) { console.error(err); errLog('formulaire:' + name, err); if (btn) btn.disabled = false; errSheet('Une erreur est survenue', String(err.message || err)); }
 });
 document.addEventListener('input', e => { const k = e.target.dataset?.in; if (k && INPUTS[k]) INPUTS[k](e.target, e); });
 document.addEventListener('change', e => {
@@ -3291,7 +3607,8 @@ document.addEventListener('change', e => {
   if (t.id === 'f-photo2') return onTastePhoto(t.files[0]);
   if (t.id === 'f-pdf') return onPdf(t.files[0]);
   if (t.id === 'f-backup') return onBackupFile(t.files[0]);
-  const k = t.dataset?.ch; if (k && CHANGES[k]) Promise.resolve(CHANGES[k](t, e)).catch(err => toast('Erreur : ' + (err.message || err)));
+  if (t.type !== 'password' && t.type !== 'file') { const nm = t.dataset?.ch || t.dataset?.in || t.name; if (nm && !/^(p|p1|p2|c0|c1|c2|key)$/.test(nm)) uLog('change', nm); }
+  const k = t.dataset?.ch; if (k && CHANGES[k]) Promise.resolve(CHANGES[k](t, e)).catch(err => { errLog('champ:' + k, err); toast('Erreur : ' + (err.message || err)); });
 });
 // Entrée envoie la question au sommelier (Maj+Entrée pour aller à la ligne)
 document.addEventListener('keydown', e => {
@@ -3306,7 +3623,7 @@ FORMS.setup = async (f, d) => {
   const raw = rand(32);
   await adopt({ raw, data: seedStructure(emptyData()), slots: { pw: await makePwSlot(raw, d.p1) } });
   await save(); navigator.storage?.persist?.(); await clearFails();
-  enterApp(); toast('Cave créée');
+  enterApp('creation'); toast('Cave créée');
   if (pkAvailable()) setTimeout(() => showSheet(() => `${head('Face ID')}<p>Veux-tu ouvrir ta cave avec Face ID plutôt qu’avec ton mot de passe ?</p>
     <div class="btns"><button class="btn primary wide" data-act="pkOffer">${ICON.face} Activer Face ID</button><button class="btn ghost wide" data-act="close">Plus tard</button></div>`), 400);
 };
@@ -3316,7 +3633,7 @@ FORMS.unlock = async (f, d) => {
   const btn = f.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Ouverture…';
   try {
     await adopt(await openVault(await store.get('vault'), { pass: d.p1 }));
-    await clearFails(); enterApp();
+    await clearFails(); enterApp('motdepasse');
   } catch {
     const n = await noteFail();
     renderLock('unlock', n.until > Date.now() ? `Mot de passe incorrect. Réessaie dans ${Math.ceil((n.until - Date.now()) / 1000)} secondes.` : 'Mot de passe incorrect.');
@@ -3327,7 +3644,7 @@ Object.assign(ACT, {
     try {
       const vault = await store.get('vault');
       await adopt(await openVault(vault, { prf: await prfGet(vault.slots.pk) }));
-      await clearFails(); enterApp();
+      await clearFails(); enterApp('faceid');
     } catch (e) { renderLock('unlock', e.name === 'NotAllowedError' ? '' : pkError(e)); }
   },
   pkOffer: async () => {
@@ -3340,10 +3657,10 @@ Object.assign(ACT, {
 /* ---------- Verrouillage automatique ---------- */
 const veil = on => document.documentElement.classList.toggle('veil', on && mode === 'app');
 document.addEventListener('visibilitychange', () => {
-  if (document.hidden) { hiddenAt = Date.now(); veil(true); return; }
+  if (document.hidden) { hiddenAt = Date.now(); veil(true); uLog('pause'); uFlush(); return; }
   const min = S?.settings.lockMin ?? 5;
   if (mode === 'app' && !S.settings.stay && min && hiddenAt && Date.now() - hiddenAt > min * 60e3) { veil(false); lockNow(); }
-  else { veil(false); hiddenAt = 0; }
+  else { veil(false); hiddenAt = 0; uLog('resume'); }
 });
 window.addEventListener('pagehide', () => veil(true));
 window.addEventListener('pageshow', () => { if (!document.hidden) veil(false); });
@@ -3358,7 +3675,7 @@ async function boot() {
   lockHasPk = !!vault?.slots?.pk;
   if (vault) {
     const raw = await devOpen();
-    if (raw) { try { await adopt(await openVault(vault, { raw })); return enterApp(); } catch { await devDisable(); } }
+    if (raw) { try { await adopt(await openVault(vault, { raw })); return enterApp('appareil'); } catch { await devDisable(); } }
   }
   renderLock(vault ? 'unlock' : 'setup');
   if (!vault && !(await store.get('introSeen'))) showIntro(0, false);
@@ -3393,6 +3710,7 @@ const INTRO = [
   ['somm', 'Ton sommelier', 'Décris ton plat : il choisit dans ta cave, et t’indique la température, le carafage et l’emplacement exact. Il fonctionne avec ta propre clé API (environ 1 € par mois), à ajouter dans les réglages.'],
   ['notes', 'Tes dégustations', 'Note les vins de ta cave ou bus ailleurs, en séance ou à l’aveugle, avec la roue des arômes. Garde tes coups de cœur dans la liste d’envies.'],
   ['up', 'Pense à sauvegarder', 'Ta cave n’existe que sur cet iPhone. Exporte régulièrement une sauvegarde chiffrée vers Fichiers ou iCloud Drive : Réglages › Sauvegarder.'],
+  ['info', 'Aide à améliorer l’app', 'Tu testes MyCellar en avant-première ? Active le suivi d’utilisation dans Réglages › Aide : il note tes gestes, jamais tes vins. Tu pourras envoyer le rapport avec ton avis, ou signaler un problème.'],
 ];
 let introAt = null, introInApp = false;
 function showIntro(i = 0, inApp = false) { introAt = i; introInApp = inApp; paintIntro(); }

@@ -38,7 +38,19 @@ function budgetCheck() {
   if (b && monthSpend() >= b) throw new AIError(`Plafond mensuel atteint (${fmtE2.format(b)}). Tu peux le relever dans Plus › Intelligence artificielle.`);
 }
 // Un appel au modèle. system : texte fixe ; context : texte mis en cache (cave) ; content : blocs du dernier message.
-async function aiCall({ system, context = '', history = [], content, schema = null, maxTokens = 4000, effort = 'medium', web = false }) {
+// Enveloppe : note chaque appel dans le suivi d'utilisation (type, durée, coût, réussite) et garde les erreurs
+async function aiCall(opts) {
+  const t0 = Date.now(), tag = opts.tag || 'autre';
+  try {
+    const r = await aiCall0(opts);
+    uLog('ai', tag, `ok,${Date.now() - t0},${(r.usd || 0).toFixed(4)}`);
+    return r;
+  } catch (e) {
+    uLog('ai', tag, `err,${Date.now() - t0},0`); errLog('ia:' + tag, e);
+    throw e;
+  }
+}
+async function aiCall0({ system, context = '', history = [], content, schema = null, maxTokens = 4000, effort = 'medium', web = false }) {
   if (!aiReady()) throw new AIError('Aucune clé IA configurée. Va dans Plus › Intelligence artificielle.');
   if (navigator.onLine === false) throw new AIError('Pas de connexion réseau.');
   budgetCheck();
@@ -186,7 +198,7 @@ function vSomm() {
 }
 function chatMsg(m, i) {
   if (m.role === 'user') return `<div class="bubble me">${esc(m.text)}</div>`;
-  if (m.error) return `<div class="bubble ai err">${esc(m.error)}</div>`;
+  if (m.error) return `<div class="bubble ai err">${esc(m.error)}</div>${i === S.chat.length - 1 ? '<button class="link" style="font-size:13px" data-act="problem">Signaler un problème</button>' : ''}`;
   const d = m.data || {}, last = i === S.chat.length - 1;
   const recos = (d.recos || []).map((r, k) => {
     const w = wine(r.id); if (!w) return '';
@@ -228,7 +240,7 @@ async function chatSend(q) {
   const clean = []; for (const m of hist) { if (clean.length && clean.at(-1).role === m.role) clean.pop(); clean.push(m); }
   if (clean.length && clean.at(-1).role === 'user') clean.pop();
   try {
-    const r = await aiCall({ system: SOMM_SYS(), context: caveContext(chatOpts.all), history: clean, content: [{ type: 'text', text: (ctxNote ? ctxNote + '\n' : '') + q, cache_control: { type: 'ephemeral' } }], schema: SOMM_SCHEMA, maxTokens: 3000, effort: 'medium' });
+    const r = await aiCall({ tag: 'sommelier', system: SOMM_SYS(), context: caveContext(chatOpts.all), history: clean, content: [{ type: 'text', text: (ctxNote ? ctxNote + '\n' : '') + q, cache_control: { type: 'ephemeral' } }], schema: SOMM_SCHEMA, maxTokens: 3000, effort: 'medium' });
     S.chat.push({ role: 'assistant', data: r.json, at: Date.now(), usd: r.usd });
   } catch (e) {
     S.chat.push({ role: 'assistant', error: e instanceof AIError ? e.message : 'Erreur inattendue : ' + (e.message || e), at: Date.now() });
@@ -266,7 +278,7 @@ async function estimateApogee(wid, { quiet = false } = {}) {
   const w = wine(wid); if (!w || w.kind === 'spirit') return;
   if (!quiet) toast('Le sommelier étudie ce vin…');
   try {
-    const r = await aiCall({ system: APO_SYS, content: wineBrief(w), maxTokens: 6000, effort: 'medium', web: aiClaude() && aiCfg().web });
+    const r = await aiCall({ tag: 'apogee', system: APO_SYS, content: wineBrief(w), maxTokens: 6000, effort: 'medium', web: aiClaude() && aiCfg().web });
     const j = lastJson(r.text);
     if (!j || !yearOk(+j.fin, w)) throw new AIError('Estimation illisible. Réessaie.');
     const deb = yearOk(+j.debut, w) ? +j.debut : null, pic = yearOk(+j.pic, w) ? +j.pic : null, fin = +j.fin;
@@ -275,7 +287,7 @@ async function estimateApogee(wid, { quiet = false } = {}) {
     toast(`Fenêtre estimée : ${windowLabel(w.apogee)}`);
   } catch (e) {
     if (quiet) toast('Apogée non estimée : ' + (e.message || '').split('\n')[0]);
-    else sheetMsg('Estimation impossible', e.message || String(e));
+    else errSheet('Estimation impossible', e.message || String(e));
   }
 }
 // Estimation groupée, sans recherche web (import, vins sans fenêtre)
@@ -284,7 +296,7 @@ async function estimateBatch(ws, onStep) {
   let done = 0;
   for (let k = 0; k < ws.length; k += 30) {
     const chunk = ws.slice(k, k + 30);
-    const r = await aiCall({ system: APO_SYS.replace(/Si un outil[\s\S]*?conclure\.\n/, '').replace(/Termine ta réponse[\s\S]*$/, 'Réponds pour chaque vin avec son numéro i.'), content: chunk.map((w, i) => `#${i}\n${wineBrief(w)}`).join('\n\n'), schema: BATCH_SCHEMA, maxTokens: 6000, effort: 'low' });
+    const r = await aiCall({ tag: 'apogee-lot', system: APO_SYS.replace(/Si un outil[\s\S]*?conclure\.\n/, '').replace(/Termine ta réponse[\s\S]*$/, 'Réponds pour chaque vin avec son numéro i.'), content: chunk.map((w, i) => `#${i}\n${wineBrief(w)}`).join('\n\n'), schema: BATCH_SCHEMA, maxTokens: 6000, effort: 'low' });
     for (const it of r.json.items || []) {
       const w = chunk[it.i]; if (!w || !yearOk(it.fin, w)) continue;
       w.apogee = { debut: yearOk(it.debut, w) && it.debut <= it.fin ? it.debut : null, pic: yearOk(it.pic, w) && it.pic <= it.fin ? it.pic : null, fin: it.fin, src: 'ia', why: 'Estimation groupée, sans recherche web.', at: Date.now() };
@@ -304,7 +316,7 @@ Object.assign(ACT, {
     if (!confirm(`Estimer la fenêtre de ${plural(ws.length, 'vin', 'vins')} ? Coût indicatif : moins de ${fmtE2.format(Math.max(0.02, ws.length * 0.004))}.`)) return;
     toast('Estimation en cours…');
     try { const n = await estimateBatch(ws); render(); toast(`${plural(n, 'fenêtre estimée', 'fenêtres estimées')}`); }
-    catch (e) { sheetMsg('Estimation impossible', e.message || String(e)); }
+    catch (e) { errSheet('Estimation impossible', e.message || String(e)); }
   },
 });
 
@@ -340,14 +352,14 @@ async function onPhoto(file) {
   closeSheet();
   showSheet(() => `${head('Lecture de l’étiquette…')}<p class="small">Le sommelier déchiffre l’étiquette. Quelques secondes.</p><div class="bubble ai"><span class="typing"><i></i><i></i><i></i></span></div>`);
   try {
-    const r = await aiCall({ system: LABEL_SYS, content: [{ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: await blobB64(big) } }, { type: 'text', text: 'Fiche de cette bouteille.' }], schema: LABEL_SCHEMA, maxTokens: 2000, effort: 'low' });
+    const r = await aiCall({ tag: 'etiquette', system: LABEL_SYS, content: [{ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: await blobB64(big) } }, { type: 'text', text: 'Fiche de cette bouteille.' }], schema: LABEL_SCHEMA, maxTokens: 2000, effort: 'low' });
     const j = r.json, f = { ...j };
     f.millesime = int(j.millesime) || null; f.degre = num(j.degre); f.age = int(j.age) || null;
     f.format = j.kind === 'spirit' ? (FORMATS.spirit.some(x => x[0] === j.format) ? j.format : '70') : (FORMATS.vin.some(x => x[0] === j.format) ? j.format : '75');
     if (!f.couleur) delete f.couleur; if (!f.cat) delete f.cat;
     for (const k of Object.keys(f)) if (f[k] === '') delete f[k];
     closeSheet(); go(f);
-  } catch (e) { closeSheet(); go({}); sheetMsg('Lecture impossible', (e.message || String(e)) + '\n\nTu peux remplir la fiche à la main : la photo est conservée.'); }
+  } catch (e) { closeSheet(); go({}); errSheet('Lecture impossible', (e.message || String(e)) + '\n\nTu peux remplir la fiche à la main : la photo est conservée.'); }
 }
 
 /* ---------- Import depuis Ploc (PDF) ---------- */
@@ -390,14 +402,14 @@ async function onPdf(file) {
   step('Lecture du PDF…');
   try {
     const data = b64(await file.arrayBuffer());
-    const r = await aiCall({ system: 'Tu extrais l’inventaire d’une cave à vin depuis un PDF exporté par l’application Ploc. Liste chaque vin distinct avec sa quantité par emplacement (une ligne par vin et par emplacement). « nom » : nom du vin tel qu’écrit (appellation, cuvée). « millesime » : année ou chaîne vide. « emplacement » : emplacement indiqué (casier, rangée…), vide si absent. N’invente rien.', content: [{ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data } }, { type: 'text', text: 'Extrais toutes les bouteilles de ce PDF.' }], schema: PLOC_SCHEMA, maxTokens: 16000, effort: 'low' });
+    const r = await aiCall({ tag: 'ploc', system: 'Tu extrais l’inventaire d’une cave à vin depuis un PDF exporté par l’application Ploc. Liste chaque vin distinct avec sa quantité par emplacement (une ligne par vin et par emplacement). « nom » : nom du vin tel qu’écrit (appellation, cuvée). « millesime » : année ou chaîne vide. « emplacement » : emplacement indiqué (casier, rangée…), vide si absent. N’invente rien.', content: [{ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data } }, { type: 'text', text: 'Extrais toutes les bouteilles de ce PDF.' }], schema: PLOC_SCHEMA, maxTokens: 16000, effort: 'low' });
     const items = (r.json.items || []).filter(x => x.domaine || x.nom);
     if (!items.length) throw new AIError('Aucune bouteille trouvée dans ce PDF.');
     step(`${plural(items.length, 'ligne trouvée', 'lignes trouvées')}. Le sommelier complète les fiches…`);
     for (let k = 0; k < items.length; k += 40) {
       const chunk = items.slice(k, k + 40);
       try {
-        const e = await aiCall({ system: `Pour chaque vin, donne sa couleur, son appellation, sa cuvée éventuelle (nom de cuvée distinct de l’appellation, sinon vide), sa région, son pays, ses cépages habituels, et une fenêtre de dégustation estimée (début, apogée, fin) en années, pour un stockage correct. Année actuelle : ${thisYear()}. Réponds pour chaque vin avec son numéro i.`, content: chunk.map((x, i) => `#${i} ${x.domaine} | ${x.nom} | ${x.millesime || 'NM'}`).join('\n'), schema: ENRICH_SCHEMA, maxTokens: 12000, effort: 'low' });
+        const e = await aiCall({ tag: 'ploc-fiches', system: `Pour chaque vin, donne sa couleur, son appellation, sa cuvée éventuelle (nom de cuvée distinct de l’appellation, sinon vide), sa région, son pays, ses cépages habituels, et une fenêtre de dégustation estimée (début, apogée, fin) en années, pour un stockage correct. Année actuelle : ${thisYear()}. Réponds pour chaque vin avec son numéro i.`, content: chunk.map((x, i) => `#${i} ${x.domaine} | ${x.nom} | ${x.millesime || 'NM'}`).join('\n'), schema: ENRICH_SCHEMA, maxTokens: 12000, effort: 'low' });
         for (const it of e.json.items || []) if (chunk[it.i]) Object.assign(chunk[it.i], { ...it, i: undefined });
       } catch (err) { /* l'import reste possible sans enrichissement */ }
       step(`Fiches complétées : ${Math.min(items.length, k + 40)} / ${items.length}…`);
@@ -428,7 +440,7 @@ async function reevaluate(w, rec) {
     F.evolution && `évolution jugée : ${({ jeune: 'jeune', apoint: 'à point', declin: 'sur le déclin' })[F.evolution]}`, F.potentiel && `potentiel restant estimé : ${F.potentiel}`,
     F.aromes?.length && `arômes : ${F.aromes.join(', ')}`].filter(Boolean).join(' ; ');
   try {
-    const r = await aiCall({ system: APO_SYS.replace(/Si un outil[\s\S]*?conclure\.\n/, '').replace(/Termine ta réponse[\s\S]*$/, '') +
+    const r = await aiCall({ tag: 'reevaluation', system: APO_SYS.replace(/Si un outil[\s\S]*?conclure\.\n/, '').replace(/Termine ta réponse[\s\S]*$/, '') +
       `\nOn vient de déguster ce vin. Dis s'il faut modifier sa fenêtre actuelle (${a?.fin ? `${a.debut || '?'}–${a.fin}, apogée ${a.pic || '?'}` : 'inconnue'}) pour les ${left} bouteille(s) restantes. Ne la change que si la dégustation l'apporte vraiment (changer = false sinon, et recopie la fenêtre actuelle). Justification en une ou deux phrases, en français, en tutoyant.`,
       content: wineBrief(w) + '\n' + note, schema: REEVAL_SCHEMA, maxTokens: 2000, effort: 'low' });
     const j = r.json;

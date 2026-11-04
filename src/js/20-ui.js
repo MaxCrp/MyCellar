@@ -44,7 +44,7 @@ const LOGO = `<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" heigh
 let sheetStack = [];
 function showSheet(fn, { replace = false, full = false } = {}) {
   if (replace) sheetStack.pop();
-  sheetStack.push({ fn, full });
+  sheetStack.push({ fn, full, u: uPending || fn.name || 'feuille' });
   paintSheet();
 }
 function paintSheet(keepScroll) {
@@ -57,10 +57,10 @@ function paintSheet(keepScroll) {
   html = html.replace('<!--back-->', back);
   $('#layer').innerHTML = `<div class="backdrop" data-act="close"></div><div class="sheet${top.full ? ' full' : ''}" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`;
   const sh = $('.sheet'); if (y) sh.scrollTop = y;
-  paintPhotos(sh); afterSheet();
+  paintPhotos(sh); afterSheet(); uScreenCheck();
 }
 const refreshSheet = () => paintSheet(true);
-function closeSheet() { sheetStack = []; $('#layer').innerHTML = ''; }
+function closeSheet() { sheetStack = []; $('#layer').innerHTML = ''; uScreenCheck(); }
 function sheetBack() { sheetStack.pop(); paintSheet(); }
 // Feuille ponctuelle (message, confirmation)
 const openSheet = html => showSheet(() => html);
@@ -108,10 +108,10 @@ function renderLock(kind, err = '') {
     ${!persistent ? '<p class="banner">Aperçu : rien n’est conservé dans cet environnement.</p>' : ''}
   </main>`;
 }
-function enterApp() { view = 'cave'; render(); window.scrollTo(0, 0); }
+function enterApp(via) { view = 'cave'; render(); window.scrollTo(0, 0); if (mode === 'app') { uStart(via); afterEnter(via); } }
 function lockNow() {
   if (mode === 'demo') { wipeKeys(); return boot(); }
-  lockHasPk = !!slots?.pk; wipeKeys(); closeSheet(); renderLock('unlock');
+  uStop(hiddenAt ? 'auto' : 'manuel'); lockHasPk = !!slots?.pk; wipeKeys(); closeSheet(); renderLock('unlock');
 }
 
 /* ---------- Rendu principal ---------- */
@@ -149,7 +149,7 @@ function render() {
       ${tab('boire', 'À boire', ICON.boire)}${tab('somm', 'Sommelier', ICON.somm)}</nav>`;
   paintPhotos(app);
   for (const r of $$('input[type=range]', app)) setRangeFill(r);
-  afterRender();
+  afterRender(); uScreenCheck();
 }
 function afterRender() { if (view === 'somm') { const m = $('.chat'); if (m && chatScroll) { window.scrollTo(0, document.body.scrollHeight); chatScroll = false; } } }
 let chatScroll = false;
@@ -161,7 +161,8 @@ Object.assign(ACT, {
   codeupdate: () => applyCodeUpdate(),
   codeinfo: () => sheetCode(),
   codelater: () => { code.status = 'ok'; paintCode(); },
-  codecheck: async () => { await checkNetwork(); sheetCode(); },
+  codelaterclose: () => { code.status = 'ok'; paintCode(); closeSheet(); },
+  codecheck: async () => { await checkNetwork(); closeSheet(); sheetCode(); },
   codeapprove: async () => {
     if (!confirm('Approuver ce code ? Ne le fais que si tu viens de mettre l’app à jour toi-même.')) return;
     await store.set('code', { fp: code.served, at: Date.now() }); code.approved = code.served; code.at = Date.now(); code.status = 'ok'; paintCode(); closeSheet();

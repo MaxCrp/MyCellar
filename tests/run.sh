@@ -7,4 +7,4 @@ node build.mjs
 node tests/serve.cjs 8765 & SRV=$!   # imite Cloudflare (redirection de /index.html)
 trap 'kill $SRV' EXIT
 sleep 1
-for t in t1 t2 t3 t4 t5 t6 t7; do echo "== $t"; node tests/$t.cjs; done
+for t in t1 t2 t3 t4 t5 t6 t7 t8; do echo "== $t"; node tests/$t.cjs; done

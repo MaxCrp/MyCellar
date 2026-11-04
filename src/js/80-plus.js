@@ -50,7 +50,12 @@ function vPlus() {
       ${setRow('codeinfo', 'Vérification du code', 'Empreinte ' + esc(fpLabel(code.approved)))}
     </div>
     <div class="sect">Aide</div>
-    <div class="card" style="padding:0 12px">${setRow('introShow', 'Revoir la présentation', 'Les fonctions de MyCellar en sept écrans')}</div>
+    <div class="card" style="padding:0 12px">
+      ${setRow('historySheet', 'Historique des versions', 'Version installée : ' + esc(APP_VERSION))}
+      ${setRow('usageSheet', 'Suivi d’utilisation', S.settings.usage?.on ? 'Activé · synthèse et rapport à envoyer' : 'Désactivé · aide à améliorer l’app')}
+      ${setRow('problem', 'Signaler un problème', 'Prépare un rapport à envoyer')}
+      ${setRow('introShow', 'Revoir la présentation', 'Les fonctions de MyCellar en quelques écrans')}
+    </div>
     <div class="btns" style="margin-top:16px"><button class="btn wide" data-act="lock">${ICON.lock} ${mode === 'demo' ? 'Quitter la démo' : 'Verrouiller maintenant'}</button></div>
     <p class="tiny" style="text-align:center;margin-top:14px">MyCellar · données chiffrées sur cet appareil</p>`;
 }
@@ -227,7 +232,7 @@ Object.assign(ACT, {
     const prev = { ...S.settings.ai };
     Object.assign(S.settings.ai, { provider: d.provider, key: d.key.replace(/\s+/g, ''), model: d.model });
     t.disabled = true; t.textContent = 'Test en cours…';
-    try { const r = await aiCall({ system: 'Réponds par OK.', content: 'ping', maxTokens: 50, effort: 'low' }); sheetMsg('Test de la clé', `La clé fonctionne (${AI[d.provider].label}, ${aiModel()}). Réponse : ${r.text.slice(0, 40)}`); }
+    try { const r = await aiCall({ tag: 'test', system: 'Réponds par OK.', content: 'ping', maxTokens: 50, effort: 'low' }); sheetMsg('Test de la clé', `La clé fonctionne (${AI[d.provider].label}, ${aiModel()}). Réponse : ${r.text.slice(0, 40)}`); }
     catch (e) { sheetMsg('Test de la clé', e.message || String(e)); }
     finally { Object.assign(S.settings.ai, prev); }
   },
@@ -270,7 +275,7 @@ FORMS.import = async (f, d) => {
     await adopt({ raw: o.raw, data: o.data, slots: { pw: pendingImport.slots.pw } });
     S.settings.stay = false; S.settings.lastExport = pendingImport.savedAt || Date.now();
     await save(); navigator.storage?.persist?.(); pendingImport = null;
-    closeSheet(); enterApp(); toast('Cave restaurée');
+    closeSheet(); enterApp('restauration'); toast('Cave restaurée');
   } catch { btn.disabled = false; btn.textContent = 'Restaurer'; const er = $('#ierr'); er.hidden = false; er.textContent = 'Mot de passe incorrect pour cette sauvegarde.'; }
 };
 Object.assign(ACT, {

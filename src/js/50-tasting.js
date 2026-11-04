@@ -326,7 +326,7 @@ async function blindAnalysis(tid) {
   const real = [wineTitle(w), w.domaine && `producteur ${w.domaine}`, w.appellation, w.region, w.pays, w.cepages && `cépages ${w.cepages}`, w.kind === 'spirit' && [SPIRIT_CATS[w.cat], w.age && w.age + ' ans', w.fut].filter(Boolean).join(', '), w.degre && w.degre + ' %', (t.prix ?? w.achat?.prix) != null && `prix ${t.prix ?? w.achat.prix} €`].filter(Boolean).join(' ; ');
   blindBusy = tid; refreshSheet();
   try {
-    const r = await aiCall({ system: BLIND_SYS, content: `Sa fiche : ${fiche || 'presque vide'}\nSes hypothèses : ${hyp}\nLe vin révélé : ${real}`, maxTokens: 2500, effort: 'medium' });
+    const r = await aiCall({ tag: 'aveugle', system: BLIND_SYS, content: `Sa fiche : ${fiche || 'presque vide'}\nSes hypothèses : ${hyp}\nLe vin révélé : ${real}`, maxTokens: 2500, effort: 'medium' });
     t.blind.analysis = r.text.trim().slice(0, 1500);
     await save();
   } catch (e) { toast('Analyse impossible : ' + (e.message || '').split('\n')[0]); }

@@ -8,6 +8,7 @@ const INTRO = [
   ['somm', 'Ton sommelier', 'Décris ton plat : il choisit dans ta cave, et t’indique la température, le carafage et l’emplacement exact. Il fonctionne avec ta propre clé API (environ 1 € par mois), à ajouter dans les réglages.'],
   ['notes', 'Tes dégustations', 'Note les vins de ta cave ou bus ailleurs, en séance ou à l’aveugle, avec la roue des arômes. Garde tes coups de cœur dans la liste d’envies.'],
   ['up', 'Pense à sauvegarder', 'Ta cave n’existe que sur cet iPhone. Exporte régulièrement une sauvegarde chiffrée vers Fichiers ou iCloud Drive : Réglages › Sauvegarder.'],
+  ['info', 'Aide à améliorer l’app', 'Tu testes MyCellar en avant-première ? Active le suivi d’utilisation dans Réglages › Aide : il note tes gestes, jamais tes vins. Tu pourras envoyer le rapport avec ton avis, ou signaler un problème.'],
 ];
 let introAt = null, introInApp = false;
 function showIntro(i = 0, inApp = false) { introAt = i; introInApp = inApp; paintIntro(); }

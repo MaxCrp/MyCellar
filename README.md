@@ -25,9 +25,12 @@ src/js/*.js         code, assemblé dans l'ordre des noms de fichiers
   70-boire          vue À boire, conseils de rangement et réassort
   80-plus           réglages, sites et espaces, IA, sauvegarde, sécurité
   85-demo           cave fictive
+  87-usage          suivi d'utilisation, rapport, signaler un problème
+  88-versions       numéro de version, nouveautés, historique, « Plus d’infos » avant une mise à jour
   90-boot           événements, démarrage, verrouillage automatique
   95-intro          présentation au premier lancement (et Réglages › Aide)
 src/static/         sw.js, manifeste, icônes, _headers (copiés tels quels)
+src/changelog.json  journal des versions (intégré au code et publié en public/changelog.json)
 build.mjs           assemble tout dans public/index.html et calcule l'empreinte CSP du script
 public/             ce qui est publié (généré par le build, commité)
 tests/              tests de bout en bout (Playwright)

@@ -3,15 +3,17 @@ document.addEventListener('click', e => {
   const t = e.target.closest('[data-act]'); if (!t || !ACT[t.dataset.act]) return;
   if (t.tagName === 'INPUT' || t.tagName === 'SELECT') return;
   e.preventDefault();
-  Promise.resolve(ACT[t.dataset.act](t, e)).catch(err => { console.error(err); toast('Erreur : ' + (err.message || err)); });
+  const act = t.dataset.act; uPending = act; uLog('tap', act, uDetail(t));
+  Promise.resolve(ACT[act](t, e)).catch(err => { console.error(err); errLog('action:' + act, err); errSheet('Une erreur est survenue', String(err.message || err)); });
 });
 document.addEventListener('submit', async e => {
   e.preventDefault();
   const f = e.target, name = f.dataset.form; if (!FORMS[name]) return;
   const btn = f.querySelector('[type=submit]');
   if (btn?.disabled) return;
+  uPending = name; uLog('submit', name);
   try { await FORMS[name](f, formData(f)); }
-  catch (err) { console.error(err); toast('Erreur : ' + (err.message || err)); if (btn) btn.disabled = false; }
+  catch (err) { console.error(err); errLog('formulaire:' + name, err); if (btn) btn.disabled = false; errSheet('Une erreur est survenue', String(err.message || err)); }
 });
 document.addEventListener('input', e => { const k = e.target.dataset?.in; if (k && INPUTS[k]) INPUTS[k](e.target, e); });
 document.addEventListener('change', e => {
@@ -20,7 +22,8 @@ document.addEventListener('change', e => {
   if (t.id === 'f-photo2') return onTastePhoto(t.files[0]);
   if (t.id === 'f-pdf') return onPdf(t.files[0]);
   if (t.id === 'f-backup') return onBackupFile(t.files[0]);
-  const k = t.dataset?.ch; if (k && CHANGES[k]) Promise.resolve(CHANGES[k](t, e)).catch(err => toast('Erreur : ' + (err.message || err)));
+  if (t.type !== 'password' && t.type !== 'file') { const nm = t.dataset?.ch || t.dataset?.in || t.name; if (nm && !/^(p|p1|p2|c0|c1|c2|key)$/.test(nm)) uLog('change', nm); }
+  const k = t.dataset?.ch; if (k && CHANGES[k]) Promise.resolve(CHANGES[k](t, e)).catch(err => { errLog('champ:' + k, err); toast('Erreur : ' + (err.message || err)); });
 });
 // Entrée envoie la question au sommelier (Maj+Entrée pour aller à la ligne)
 document.addEventListener('keydown', e => {
@@ -35,7 +38,7 @@ FORMS.setup = async (f, d) => {
   const raw = rand(32);
   await adopt({ raw, data: seedStructure(emptyData()), slots: { pw: await makePwSlot(raw, d.p1) } });
   await save(); navigator.storage?.persist?.(); await clearFails();
-  enterApp(); toast('Cave créée');
+  enterApp('creation'); toast('Cave créée');
   if (pkAvailable()) setTimeout(() => showSheet(() => `${head('Face ID')}<p>Veux-tu ouvrir ta cave avec Face ID plutôt qu’avec ton mot de passe ?</p>
     <div class="btns"><button class="btn primary wide" data-act="pkOffer">${ICON.face} Activer Face ID</button><button class="btn ghost wide" data-act="close">Plus tard</button></div>`), 400);
 };
@@ -45,7 +48,7 @@ FORMS.unlock = async (f, d) => {
   const btn = f.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Ouverture…';
   try {
     await adopt(await openVault(await store.get('vault'), { pass: d.p1 }));
-    await clearFails(); enterApp();
+    await clearFails(); enterApp('motdepasse');
   } catch {
     const n = await noteFail();
     renderLock('unlock', n.until > Date.now() ? `Mot de passe incorrect. Réessaie dans ${Math.ceil((n.until - Date.now()) / 1000)} secondes.` : 'Mot de passe incorrect.');
@@ -56,7 +59,7 @@ Object.assign(ACT, {
     try {
       const vault = await store.get('vault');
       await adopt(await openVault(vault, { prf: await prfGet(vault.slots.pk) }));
-      await clearFails(); enterApp();
+      await clearFails(); enterApp('faceid');
     } catch (e) { renderLock('unlock', e.name === 'NotAllowedError' ? '' : pkError(e)); }
   },
   pkOffer: async () => {
@@ -69,10 +72,10 @@ Object.assign(ACT, {
 /* ---------- Verrouillage automatique ---------- */
 const veil = on => document.documentElement.classList.toggle('veil', on && mode === 'app');
 document.addEventListener('visibilitychange', () => {
-  if (document.hidden) { hiddenAt = Date.now(); veil(true); return; }
+  if (document.hidden) { hiddenAt = Date.now(); veil(true); uLog('pause'); uFlush(); return; }
   const min = S?.settings.lockMin ?? 5;
   if (mode === 'app' && !S.settings.stay && min && hiddenAt && Date.now() - hiddenAt > min * 60e3) { veil(false); lockNow(); }
-  else { veil(false); hiddenAt = 0; }
+  else { veil(false); hiddenAt = 0; uLog('resume'); }
 });
 window.addEventListener('pagehide', () => veil(true));
 window.addEventListener('pageshow', () => { if (!document.hidden) veil(false); });
@@ -87,7 +90,7 @@ async function boot() {
   lockHasPk = !!vault?.slots?.pk;
   if (vault) {
     const raw = await devOpen();
-    if (raw) { try { await adopt(await openVault(vault, { raw })); return enterApp(); } catch { await devDisable(); } }
+    if (raw) { try { await adopt(await openVault(vault, { raw })); return enterApp('appareil'); } catch { await devDisable(); } }
   }
   renderLock(vault ? 'unlock' : 'setup');
   if (!vault && !(await store.get('introSeen'))) showIntro(0, false);
