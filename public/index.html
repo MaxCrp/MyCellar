@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#F7F3EC">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-Ue7Of7DZZD6xRH9D+63haJ7GP79qS1mEkp8Wc3H/CbQ='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-pKZsWdOtF7B68X7V4OxJyq4PBAMphtBxTnWgr5+S4Hk='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>MyCellar</title>
@@ -213,7 +213,8 @@ input[type=date]{display:block}
 @media (prefers-reduced-motion: reduce){.sheet{animation:none}.toast{transition:none}}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px;margin:0}
 .kv dt{color:var(--muted)} .kv dd{margin:0;font-weight:500;text-align:right}
-.photo{width:100%;max-height:260px;object-fit:contain;border-radius:12px;background:var(--sunk)}
+.photo{width:100%;height:240px;object-fit:contain;border-radius:12px;background:var(--sunk);display:block}
+.photo[hidden],.thumb[hidden]{display:block;visibility:hidden}
 .big-actions{display:grid;gap:10px}
 .big-action{display:flex;align-items:center;gap:14px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;width:100%}
 .big-action svg{width:28px;height:28px;color:var(--bx);flex:none}
@@ -313,6 +314,9 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .cmp td:first-child{color:var(--muted);white-space:nowrap}
 .notes{margin:0;padding-left:18px;font-size:14px;line-height:1.45}
 .notes li{margin:4px 0}
+.switch[data-act]{cursor:not-allowed}
+.switch input:disabled{pointer-events:none}
+.why-off{display:block;font-size:12px;color:var(--bx);margin-top:2px}
 
 </style>
 </head>
@@ -327,7 +331,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 <input type="file" id="f-backup" accept="application/json,.json" hidden>
 <script>
 'use strict';
-const CHANGELOG = [{"version":"1.6","date":"2026-11-04","titre":"Retours d’utilisation et suivi des versions","items":["Suivi d’utilisation (désactivé par défaut, Réglages › Aide) : l’app note, sur ton iPhone uniquement, les écrans et les gestes, jamais tes vins ni tes notes. Tu peux consulter la synthèse et exporter un rapport à envoyer, avec ton avis.","« Signaler un problème » : décris ce qui s’est passé, l’app prépare un rapport avec les dernières minutes d’utilisation et les erreurs récentes. Raccourci aussi dans les messages d’erreur.","Mises à jour : « Plus d’infos » montre le contenu d’une nouvelle version avant de l’installer, une fenêtre « Nouveautés » s’affiche après, et l’historique des versions est dans Réglages › Aide."]},{"version":"1.5.2","date":"2026-11-04","titre":"Dégustation à l’aveugle et finitions","items":["Dégustation à l’aveugle : la fiche d’abord sur un « vin mystère », tes hypothèses, puis la révélation, la comparaison et l’analyse du sommelier.","Le bouton + est le même partout : « Nouvelle dégustation » ou « Nouveau vin ».","Présentation de l’app au premier lancement, à revoir dans Réglages › Aide.","Recherche dans « Racheter un vin ». L’import Ploc est désormais dans les réglages.","Nouvelles icônes : un bouchon pour « Déguster », un carnet pour les dégustations."]},{"version":"1.5","date":"2026-11-04","titre":"Dégustations et conseils de rangement","items":["Onglet Dégustations : le journal de tous tes vins dégustés, en cave ou ailleurs (restaurant, salon, domaine…), avec recherche, filtres et vue par vin.","Séances de dégustation avec classement, et liste d’envies avec « Acheté ».","Conseils de rangement dans À boire : vins à rapprocher, à mettre en garde, réassort de la cave de consommation.","Le sommelier propose d’ajuster la fenêtre d’un vin après une dégustation, et tient compte de tes vins bus ailleurs et de tes accords.","Les réglages passent sous l’icône engrenage."]},{"version":"1.0.1","date":"2026-11-04","titre":"Corrections","items":["L’app se rouvre correctement sur iPhone après un premier lancement.","La création de la cave ne pose plus de question : un site « Site 1 », renommable, et le mode plusieurs sites dans les réglages.","La vue Urgence de la page Cave est retirée : l’onglet À boire fait référence."]},{"version":"1.0","date":"2026-11-04","titre":"Première version","items":["Ta cave sur ton iPhone, chiffrée par ton mot de passe ou Face ID, et utilisable hors ligne.","Sites, espaces et meubles (armoire, rack, étagère, caisses, cartons) avec un plan visuel et une recherche.","Ajout par photo d’étiquette ou saisie, rangement suggéré, sorties, déplacements, transferts, primeurs, vins des amis.","Dégustation rapide ou complète avec la roue des arômes.","Sommelier pour les accords mets-vins, fenêtres de dégustation estimées, onglet À boire.","Option spiritueux, import Ploc, sauvegarde chiffrée."]}];
+const CHANGELOG = [{"version":"1.6.1","date":"2026-11-04","titre":"Confort et corrections","items":["Les fenêtres ne clignotent plus et ne remontent plus en haut quand tu touches un choix (fiche de dégustation, rangement, liste d’envies, transfert…).","Fiche de dégustation : le bouton « OK » en haut disparaît, on enregistre avec le bouton du bas. Fermer une fiche commencée demande confirmation.","Dans la cave fictive, les réglages indisponibles (suivi d’utilisation, Face ID, Rester déverrouillé) expliquent pourquoi.","Réglages › Contenu : la ligne « Vins · Toujours actif » est retirée."]},{"version":"1.6","date":"2026-11-04","titre":"Retours d’utilisation et suivi des versions","items":["Suivi d’utilisation (désactivé par défaut, Réglages › Aide) : l’app note, sur ton iPhone uniquement, les écrans et les gestes, jamais tes vins ni tes notes. Tu peux consulter la synthèse et exporter un rapport à envoyer, avec ton avis.","« Signaler un problème » : décris ce qui s’est passé, l’app prépare un rapport avec les dernières minutes d’utilisation et les erreurs récentes. Raccourci aussi dans les messages d’erreur.","Mises à jour : « Plus d’infos » montre le contenu d’une nouvelle version avant de l’installer, une fenêtre « Nouveautés » s’affiche après, et l’historique des versions est dans Réglages › Aide."]},{"version":"1.5.2","date":"2026-11-04","titre":"Dégustation à l’aveugle et finitions","items":["Dégustation à l’aveugle : la fiche d’abord sur un « vin mystère », tes hypothèses, puis la révélation, la comparaison et l’analyse du sommelier.","Le bouton + est le même partout : « Nouvelle dégustation » ou « Nouveau vin ».","Présentation de l’app au premier lancement, à revoir dans Réglages › Aide.","Recherche dans « Racheter un vin ». L’import Ploc est désormais dans les réglages.","Nouvelles icônes : un bouchon pour « Déguster », un carnet pour les dégustations."]},{"version":"1.5","date":"2026-11-04","titre":"Dégustations et conseils de rangement","items":["Onglet Dégustations : le journal de tous tes vins dégustés, en cave ou ailleurs (restaurant, salon, domaine…), avec recherche, filtres et vue par vin.","Séances de dégustation avec classement, et liste d’envies avec « Acheté ».","Conseils de rangement dans À boire : vins à rapprocher, à mettre en garde, réassort de la cave de consommation.","Le sommelier propose d’ajuster la fenêtre d’un vin après une dégustation, et tient compte de tes vins bus ailleurs et de tes accords.","Les réglages passent sous l’icône engrenage."]},{"version":"1.0.1","date":"2026-11-04","titre":"Corrections","items":["L’app se rouvre correctement sur iPhone après un premier lancement.","La création de la cave ne pose plus de question : un site « Site 1 », renommable, et le mode plusieurs sites dans les réglages.","La vue Urgence de la page Cave est retirée : l’onglet À boire fait référence."]},{"version":"1.0","date":"2026-11-04","titre":"Première version","items":["Ta cave sur ton iPhone, chiffrée par ton mot de passe ou Face ID, et utilisable hors ligne.","Sites, espaces et meubles (armoire, rack, étagère, caisses, cartons) avec un plan visuel et une recherche.","Ajout par photo d’étiquette ou saisie, rangement suggéré, sorties, déplacements, transferts, primeurs, vins des amis.","Dégustation rapide ou complète avec la roue des arômes.","Sommelier pour les accords mets-vins, fenêtres de dégustation estimées, onglet À boire.","Option spiritueux, import Ploc, sauvegarde chiffrée."]}];
 const APP_VERSION = CHANGELOG[0].version;
 
 /* ===== 00-core.js ===== */
@@ -967,20 +971,32 @@ const LOGO = `<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" heigh
 let sheetStack = [];
 function showSheet(fn, { replace = false, full = false } = {}) {
   if (replace) sheetStack.pop();
+  // La fenêtre recouverte garde sa position de défilement, retrouvée au retour
+  const cur = sheetStack[sheetStack.length - 1], el = $('.sheet');
+  if (cur && el && el.__top === cur) cur.y = el.scrollTop;
   sheetStack.push({ fn, full, u: uPending || fn.name || 'feuille' });
   paintSheet();
 }
+// Redessiner la fenêtre déjà affichée la met à jour sur place : elle n'est ni recréée ni réanimée
+// (pas de clignotement), et le défilement est restauré une fois tout dessiné (roue, curseurs).
 function paintSheet(keepScroll) {
   const top = sheetStack[sheetStack.length - 1];
   if (!top) { $('#layer').innerHTML = ''; return; }
-  const old = $('.sheet'), y = keepScroll && old ? old.scrollTop : 0;
+  const old = $('.sheet'), same = !!(keepScroll && old && old.__top === top);
+  const y = same ? old.scrollTop : (top.y || 0);
   const back = sheetStack.length > 1 ? `<button class="icon-btn" data-act="sheetback" aria-label="Retour">${ICON.back}</button>` : '';
   let html = top.fn();
   if (html == null) { sheetStack.pop(); return paintSheet(); }
   html = html.replace('<!--back-->', back);
-  $('#layer').innerHTML = `<div class="backdrop" data-act="close"></div><div class="sheet${top.full ? ' full' : ''}" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`;
-  const sh = $('.sheet'); if (y) sh.scrollTop = y;
-  paintPhotos(sh); afterSheet(); uScreenCheck();
+  let sh;
+  if (same) { sh = old; sh.innerHTML = `<div class="grab"></div>${html}`; }
+  else {
+    $('#layer').innerHTML = `<div class="backdrop" data-act="close"></div><div class="sheet${top.full ? ' full' : ''}" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`;
+    sh = $('.sheet'); sh.__top = top;
+  }
+  afterSheet(); paintPhotos(sh);
+  if (y) sh.scrollTop = y;
+  uScreenCheck();
 }
 const refreshSheet = () => paintSheet(true);
 function closeSheet() { sheetStack = []; $('#layer').innerHTML = ''; uScreenCheck(); }
@@ -1056,8 +1072,10 @@ function banners() {
     <div class="row" style="gap:8px"><button class="btn small primary" data-act="export">Sauvegarder</button><button class="btn small ghost" data-act="backupLater">Plus tard</button></div></div>`);
   return out.join('');
 }
+let lastView = null;
 function render() {
   if (mode !== 'app' && mode !== 'demo') return;
+  const keepY = lastView === view ? window.scrollY : null; lastView = view;
   const views = { cave: ['Cave', vCave], deg: ['Dégustations', vDeg], somm: ['Sommelier', vSomm], boire: ['À boire', vBoire], plus: ['Réglages', vPlus] };
   const [title, fn] = views[view];
   const tab = (v, l, i) => `<button class="tab${view === v ? ' on' : ''}" data-act="go" data-v="${v}" aria-label="${l}">${i}${l}</button>`;
@@ -1073,14 +1091,16 @@ function render() {
   paintPhotos(app);
   for (const r of $$('input[type=range]', app)) setRangeFill(r);
   afterRender(); uScreenCheck();
+  if (keepY) window.scrollTo(0, keepY);
 }
 function afterRender() { if (view === 'somm') { const m = $('.chat'); if (m && chatScroll) { window.scrollTo(0, document.body.scrollHeight); chatScroll = false; } } }
 let chatScroll = false;
 
 Object.assign(ACT, {
   go: t => { view = t.dataset.v; render(); window.scrollTo(0, view === 'somm' ? document.body.scrollHeight : 0); },
-  close: () => closeSheet(),
-  sheetback: () => sheetBack(),
+  close: () => { if (!guardTaste('close')) closeSheet(); },
+  sheetback: () => { if (!guardTaste('back')) sheetBack(); },
+  demoOnly: () => toast(DEMO_OFF),
   codeupdate: () => applyCodeUpdate(),
   codeinfo: () => sheetCode(),
   codelater: () => { code.status = 'ok'; paintCode(); },
@@ -1817,6 +1837,7 @@ function startTaste(wineId, bottleId, m, ctx = {}) {
   draft = { taste: { wineId, bottleId: bottleId || null, kind: w.kind, mode: m === 'full' ? 'full' : 'quick', note: 14, comment: '', at: sess?.date || today(), plat: prev?.plat || '',
     type: sess?.type || null, lieu: sess?.lieu || '', convives: sess?.convives || '', prix: '', achatLieu: '', provenance: '', accord: null, sessionId: sess?.id || null, fromCave: false, full: { aromes: [] } } };
   wheelState = { active: null };
+  draft.taste._snap = tasteSig(draft.taste);
   showSheet(tasteSheet, { full: true });
 }
 // Dégustation à l'aveugle : tant que le vin n'est pas révélé, on travaille sur un « vin mystère »
@@ -1825,12 +1846,14 @@ const tastingWine = t => wine(t.wineId) || (t.blind ? mysteryWine(t.blind) : nul
 function startBlind(sessionId) {
   startTaste(null, null, 'full', { sessionId });
   Object.assign(draft.taste, { blind: true, kind: 'vin', couleur: null, hyp: {} });
+  draft.taste._snap = tasteSig(draft.taste);
   refreshSheet();
 }
 function editTaste(id) {
   const r = byId(S.tastings, id), w = tastingWine(r);
   draft = { taste: { ...r, blind: !!r.blind, couleur: r.blind?.couleur || null, hyp: { ...(r.blind?.hyp || {}) }, kind: w.kind, mode: r.full ? 'full' : 'quick', prix: r.prix != null ? numFr(r.prix, 2) : '', full: { aromes: [], ...(structuredClone(r.full || {})) }, editId: id } };
   wheelState = { active: null };
+  draft.taste._snap = tasteSig(draft.taste);
   showSheet(tasteSheet, { full: true });
 }
 function tasteContext(t, w) {
@@ -1879,7 +1902,7 @@ function tasteSheet() {
       ${chips('equilibre', T_CHIPS.equilibre)}
       ${sp ? '' : `<div class="lbl">Évolution</div>${chips('evolution', T_CHIPS.evolution)}<div class="lbl">Potentiel restant</div>${chips('potentiel', T_CHIPS.potentiel)}`}
     </div>` : '';
-  return `${head('Dégustation', `<button class="link" data-act="tasteSave">OK</button>`)}
+  return `${head('Dégustation')}
     <div class="card" style="margin-top:0"><div class="row"><div class="grow"><div class="rn">${esc(wineTitle(w))}</div><div class="rs">${t.blind && !t.wineId ? 'À l’aveugle : tu révéleras le vin à la fin' : esc(wineSub(w))}</div></div>${t.blind ? '<span class="tag b">À l’aveugle</span>' : t.bottleId || t.fromCave ? '<span class="tag g">De ma cave</span>' : '<span class="tag o">Hors cave</span>'}</div>
       ${t.blind && !t.wineId ? `<div class="chips wrap">${Object.entries(COLORS).map(([k, c]) => `<button type="button" class="chip soft${t.kind === 'vin' && t.couleur === k ? ' on' : ''}" data-act="tcolor" data-v="${k}"><span class="dot" style="background:${c.c}"></span>${c.label}</button>`).join('')}${spiritsOn() ? `<button type="button" class="chip soft${t.kind === 'spirit' ? ' on' : ''}" data-act="tcolor" data-v="spirit"><span class="dot" style="background:${SPIRIT_COLOR}"></span>Spiritueux</button>` : ''}</div>` : ''}
       <div class="seg"><button class="${t.mode === 'quick' ? 'on' : ''}" data-act="tmode" data-m="quick">Rapide</button><button class="${t.mode === 'full' ? 'on' : ''}" data-act="tmode" data-m="full">Complète</button></div></div>
@@ -2135,6 +2158,22 @@ Object.assign(ACT, {
   revealScan: t => { labelFor = { reveal: t.dataset.t }; const i = $('#f-photo'); i.value = ''; i.click(); },
   revealManual: t => { const r = byId(S.tastings, t.dataset.t); newDraft(r.blind?.kind === 'spirit' ? 'spirit' : 'vin', r.blind?.couleur ? { couleur: r.blind.couleur } : {}); draft.forReveal = t.dataset.t; showSheet(wineFormSheet, { full: true }); },
   blindAI: t => blindAnalysis(t.dataset.t),
+});
+
+/* ---------- Fermer une dégustation en cours de saisie ---------- */
+const tasteSig = t => JSON.stringify([t.note, t.comment, t.plat, t.type, t.lieu, t.convives, t.prix, t.achatLieu, t.provenance, t.accord, t.fromCave, t.at, t.couleur, t.kind, t.full, t.hyp, !!t.photoBlob]);
+const tasteDirty = () => !!draft?.taste && tasteSig(draft.taste) !== draft.taste._snap;
+// Renvoie vrai si la fermeture est suspendue par la question « Abandonner cette dégustation ? »
+function guardTaste(next) {
+  const top = sheetStack[sheetStack.length - 1];
+  if (top?.fn !== tasteSheet || !tasteDirty()) return false;
+  showSheet(() => `${head('Abandonner cette dégustation ?')}<p>Ce que tu as saisi sera perdu.</p>
+    <div class="btns"><button class="btn primary wide" data-act="tasteKeep">Continuer la dégustation</button><button class="btn danger wide" data-act="tasteAbandon" data-next="${next}">Abandonner</button></div>`);
+  return true;
+}
+Object.assign(ACT, {
+  tasteKeep: () => sheetBack(),
+  tasteAbandon: t => { draft = null; if (t.dataset.next === 'back') { sheetStack.pop(); sheetStack.pop(); paintSheet(); } else closeSheet(); },
 });
 
 
@@ -2913,7 +2952,10 @@ Object.assign(ACT, {
 
 /* ===== 80-plus.js ===== */
 /* ---------- Onglet Plus ---------- */
-const sw = (act, on, dis = false) => `<span class="switch"><input type="checkbox" data-ch="${act}" ${on ? 'checked' : ''} ${dis ? 'disabled' : ''}><span></span></span>`;
+const DEMO_OFF = 'Indisponible dans la cave fictive : crée ta cave pour l’utiliser';
+// Interrupteur ; « demoOff » : désactivé dans la cave fictive, et un appui explique pourquoi
+const sw = (act, on, dis = false, demoOff = false) => `<span class="switch" ${demoOff ? 'data-act="demoOnly"' : ''}><input type="checkbox" data-ch="${act}" ${on ? 'checked' : ''} ${dis || demoOff ? 'disabled' : ''}><span></span></span>`;
+const whyOff = on => on ? `<span class="why-off">${DEMO_OFF}</span>` : '';
 const setRow = (act, title, sub, val = '', extra = '') => `<button class="set" data-act="${act}" ${extra}><div class="it"><b>${title}</b>${sub ? `<small>${sub}</small>` : ''}</div>${val ? `<span class="val">${val}</span>` : ''}<span class="chev">${ICON.chev}</span></button>`;
 function vPlus() {
   const bs = S.bottles.filter(inCave), mine = bs.filter(b => !isFriend(wine(b.wineId)));
@@ -2939,7 +2981,6 @@ function vPlus() {
     </div>
     <div class="sect">Contenu</div>
     <div class="card" style="padding:0 12px">
-      <div class="set"><div class="it"><b>Vins</b><small>Toujours actif</small></div>${sw('', true, true)}</div>
       <div class="set"><div class="it"><b>Spiritueux</b><small>Whisky, rhum, cognac, armagnac, mignonnettes…</small></div>${sw('setSpirits', S.settings.spirits)}</div>
       ${S.settings.spirits ? `<div class="set"><div class="it"><b>Cocktails</b><small>Le sommelier peut proposer des cocktails avec tes spiritueux</small></div>${sw('setCocktails', S.settings.cocktails)}</div>` : ''}
     </div>
@@ -2956,8 +2997,8 @@ function vPlus() {
     </div>
     <div class="sect">Sécurité</div>
     <div class="card" style="padding:0 12px">
-      ${pkAvailable() ? `<div class="set"><div class="it"><b>Face ID</b><small>Déverrouiller sans mot de passe</small></div>${sw('setPk', !!slots?.pk, mode === 'demo')}</div>` : ''}
-      <div class="set"><div class="it"><b>Rester déverrouillé</b><small>Ouvre la cave sans mot de passe sur cet iPhone</small></div>${sw('setStay', S.settings.stay, mode === 'demo')}</div>
+      ${pkAvailable() ? `<div class="set"><div class="it"><b>Face ID</b><small>Déverrouiller sans mot de passe</small>${whyOff(mode === 'demo')}</div>${sw('setPk', !!slots?.pk, false, mode === 'demo')}</div>` : ''}
+      <div class="set"><div class="it"><b>Rester déverrouillé</b><small>Ouvre la cave sans mot de passe sur cet iPhone</small>${whyOff(mode === 'demo')}</div>${sw('setStay', S.settings.stay, false, mode === 'demo')}</div>
       ${S.settings.stay ? '' : `<label class="set" style="display:flex"><div class="it"><b>Verrouillage automatique</b><small>Après un passage en arrière-plan</small></div>
         <select data-ch="setLock" style="width:auto;min-height:34px;padding:4px 30px 4px 10px;font-size:14px">${[[2, '2 min'], [5, '5 min'], [15, '15 min'], [60, '1 h'], [0, 'Jamais']].map(([v, l]) => `<option value="${v}" ${S.settings.lockMin === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>`}
       ${mode === 'app' ? setRow('chpw', 'Changer le mot de passe', '') : ''}
@@ -3451,7 +3492,7 @@ function usageSheet() {
   const li = (l, v) => `<dt>${esc(l)}</dt><dd>${esc(String(v))}</dd>`;
   const dur = x => x >= 60 ? `${Math.floor(x / 60)} min ${String(Math.round(x % 60)).padStart(2, '0')}` : `${Math.round(x)} s`;
   return `${head('Suivi d’utilisation')}
-    <div class="card row"><div class="grow"><b style="font-size:15px">Noter mon utilisation</b><div class="small">Sur cet iPhone uniquement, chiffré, jamais envoyé sans toi.</div></div>${sw('setUsage', on, mode !== 'app')}</div>
+    <div class="card row"><div class="grow"><b style="font-size:15px">Noter mon utilisation</b><div class="small">Sur cet iPhone uniquement, chiffré, jamais envoyé sans toi.</div>${whyOff(mode === 'demo')}</div>${sw('setUsage', on, false, mode === 'demo')}</div>
     <p class="small">Ce qui est noté : les écrans affichés et le temps passé, les boutons touchés, le nom des champs modifiés, les erreurs, les appels au sommelier (durée, coût). Jamais tes vins, tes notes, tes commentaires, tes prix ni tes questions.</p>
     ${s?.sessions.n ? `<h3>Synthèse</h3><p class="small" style="margin-top:-4px">Du ${esc(fmtDate(s.period.from))} au ${esc(fmtDate(s.period.to))} · ${plural(n, 'événement', 'événements')}</p>
       <dl class="kv">${li('Ouvertures de l’app', s.sessions.n)}${li('Durée médiane d’une ouverture', dur(s.sessions.medianSeconds))}${li('Gestes médians par ouverture', s.sessions.medianGestures)}</dl>
@@ -3459,8 +3500,8 @@ function usageSheet() {
       ${s.tasks.length ? `<h3>Tâches accomplies</h3><p class="tiny" style="margin-top:-4px">Nombre de fois · gestes médians pour y arriver</p><dl class="kv">${s.tasks.slice(0, 8).map(t => li(uLabel(t.task), `${t.n} · ${t.medianTaps}`)).join('')}</dl>` : ''}
       <h3>Écrans les plus consultés</h3><p class="tiny" style="margin-top:-4px">Visites · temps médian</p><dl class="kv">${s.screens.slice(0, 8).map(x => li(uLabel(x.screen), `${x.visits} · ${dur(x.medianSeconds)}`)).join('')}</dl>`
     : `<p class="muted small">${on ? 'Utilise l’app quelques jours : la synthèse se remplira.' : 'Le suivi est désactivé.'}</p>`}
-    <div class="btns" style="margin-top:16px"><button class="btn primary wide" data-act="usageReport" ${n ? '' : 'disabled'}>${ICON.up} Exporter le rapport</button>
-      ${n ? '<button class="btn danger wide" data-act="usageClear">Effacer le journal</button>' : ''}</div>`;
+    ${mode === 'app' ? `<div class="btns" style="margin-top:16px"><button class="btn primary wide" data-act="usageReport" ${n ? '' : 'disabled'}>${ICON.up} Exporter le rapport</button>
+      ${n ? '<button class="btn danger wide" data-act="usageClear">Effacer le journal</button>' : ''}</div>` : ''}`;
 }
 CHANGES.setUsage = async el => {
   if (mode !== 'app') return;

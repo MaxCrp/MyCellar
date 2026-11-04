@@ -58,12 +58,12 @@ const PUB = path.join(__dirname, '..', 'public');
   await p.click('[data-act=go][data-v=plus]'); await p.click('[data-act=historySheet]'); await p.waitForTimeout(150);
   const histCount = await p.$$eval('.sheet .card', x => x.length);
   await p.click('.shead [data-act=close]');
-  // « Plus d'infos » : on publie une version 1.6.1 fictive (code et journal modifiés), l'app installée la détecte
+  // « Plus d'infos » : on publie une version fictive (code et journal modifiés), l'app installée la détecte
   const idx = path.join(PUB, 'index.html'), clg = path.join(PUB, 'changelog.json');
   const idx0 = fs.readFileSync(idx, 'utf8'), clg0 = fs.readFileSync(clg, 'utf8');
   try {
-    fs.writeFileSync(idx, idx0 + '\n<!-- 1.6.1 -->\n');
-    fs.writeFileSync(clg, JSON.stringify([{ version: '1.6.1', date: '2026-11-20', titre: 'Corrections', items: ['Le plan est plus grand sur iPhone mini.', 'Correction du bouton Ranger.'] }, ...JSON.parse(clg0)]));
+    fs.writeFileSync(idx, idx0 + '\n<!-- version fictive de test -->\n');
+    fs.writeFileSync(clg, JSON.stringify([{ version: '99.0', date: '2026-11-20', titre: 'Version fictive de test', items: ['Le plan est plus grand sur iPhone mini.', 'Correction du bouton Ranger.'] }, ...JSON.parse(clg0)]));
     await p.reload(); await p.waitForTimeout(2500);
     const banner = await p.textContent('#codebar').catch(() => '');
     await p.screenshot({ path: D + '94-banner.png' });

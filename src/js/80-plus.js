@@ -1,5 +1,8 @@
 /* ---------- Onglet Plus ---------- */
-const sw = (act, on, dis = false) => `<span class="switch"><input type="checkbox" data-ch="${act}" ${on ? 'checked' : ''} ${dis ? 'disabled' : ''}><span></span></span>`;
+const DEMO_OFF = 'Indisponible dans la cave fictive : crée ta cave pour l’utiliser';
+// Interrupteur ; « demoOff » : désactivé dans la cave fictive, et un appui explique pourquoi
+const sw = (act, on, dis = false, demoOff = false) => `<span class="switch" ${demoOff ? 'data-act="demoOnly"' : ''}><input type="checkbox" data-ch="${act}" ${on ? 'checked' : ''} ${dis || demoOff ? 'disabled' : ''}><span></span></span>`;
+const whyOff = on => on ? `<span class="why-off">${DEMO_OFF}</span>` : '';
 const setRow = (act, title, sub, val = '', extra = '') => `<button class="set" data-act="${act}" ${extra}><div class="it"><b>${title}</b>${sub ? `<small>${sub}</small>` : ''}</div>${val ? `<span class="val">${val}</span>` : ''}<span class="chev">${ICON.chev}</span></button>`;
 function vPlus() {
   const bs = S.bottles.filter(inCave), mine = bs.filter(b => !isFriend(wine(b.wineId)));
@@ -25,7 +28,6 @@ function vPlus() {
     </div>
     <div class="sect">Contenu</div>
     <div class="card" style="padding:0 12px">
-      <div class="set"><div class="it"><b>Vins</b><small>Toujours actif</small></div>${sw('', true, true)}</div>
       <div class="set"><div class="it"><b>Spiritueux</b><small>Whisky, rhum, cognac, armagnac, mignonnettes…</small></div>${sw('setSpirits', S.settings.spirits)}</div>
       ${S.settings.spirits ? `<div class="set"><div class="it"><b>Cocktails</b><small>Le sommelier peut proposer des cocktails avec tes spiritueux</small></div>${sw('setCocktails', S.settings.cocktails)}</div>` : ''}
     </div>
@@ -42,8 +44,8 @@ function vPlus() {
     </div>
     <div class="sect">Sécurité</div>
     <div class="card" style="padding:0 12px">
-      ${pkAvailable() ? `<div class="set"><div class="it"><b>Face ID</b><small>Déverrouiller sans mot de passe</small></div>${sw('setPk', !!slots?.pk, mode === 'demo')}</div>` : ''}
-      <div class="set"><div class="it"><b>Rester déverrouillé</b><small>Ouvre la cave sans mot de passe sur cet iPhone</small></div>${sw('setStay', S.settings.stay, mode === 'demo')}</div>
+      ${pkAvailable() ? `<div class="set"><div class="it"><b>Face ID</b><small>Déverrouiller sans mot de passe</small>${whyOff(mode === 'demo')}</div>${sw('setPk', !!slots?.pk, false, mode === 'demo')}</div>` : ''}
+      <div class="set"><div class="it"><b>Rester déverrouillé</b><small>Ouvre la cave sans mot de passe sur cet iPhone</small>${whyOff(mode === 'demo')}</div>${sw('setStay', S.settings.stay, false, mode === 'demo')}</div>
       ${S.settings.stay ? '' : `<label class="set" style="display:flex"><div class="it"><b>Verrouillage automatique</b><small>Après un passage en arrière-plan</small></div>
         <select data-ch="setLock" style="width:auto;min-height:34px;padding:4px 30px 4px 10px;font-size:14px">${[[2, '2 min'], [5, '5 min'], [15, '15 min'], [60, '1 h'], [0, 'Jamais']].map(([v, l]) => `<option value="${v}" ${S.settings.lockMin === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>`}
       ${mode === 'app' ? setRow('chpw', 'Changer le mot de passe', '') : ''}

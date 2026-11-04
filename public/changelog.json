@@ -1,5 +1,16 @@
 [
  {
+  "version": "1.6.1",
+  "date": "2026-11-04",
+  "titre": "Confort et corrections",
+  "items": [
+   "Les fenêtres ne clignotent plus et ne remontent plus en haut quand tu touches un choix (fiche de dégustation, rangement, liste d’envies, transfert…).",
+   "Fiche de dégustation : le bouton « OK » en haut disparaît, on enregistre avec le bouton du bas. Fermer une fiche commencée demande confirmation.",
+   "Dans la cave fictive, les réglages indisponibles (suivi d’utilisation, Face ID, Rester déverrouillé) expliquent pourquoi.",
+   "Réglages › Contenu : la ligne « Vins · Toujours actif » est retirée."
+  ]
+ },
+ {
   "version": "1.6",
   "date": "2026-11-04",
   "titre": "Retours d’utilisation et suivi des versions",

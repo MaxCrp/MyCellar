@@ -373,13 +373,13 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
   - **Sécurité** : le journal des versions n'est que du texte affiché, jamais du code. Il n'entre pas dans l'empreinte et ne remplace pas la vérification du code.
   - **Limite** : la fonction n'existe qu'à partir de la v1.6. Lors du passage de la v1.5.2 à la v1.6, le bandeau ne pourra pas encore montrer le contenu avant l'installation, mais la fenêtre « Nouveautés » s'affichera après.
 
-**v1.6.1** (corrections ; rien n'est développé)
-- [ ] **Suivi d'utilisation grisé dans la cave fictive, sans explication** (validé) :
+**v1.6.1** (corrections ; livrée)
+- [x] **Suivi d'utilisation grisé dans la cave fictive, sans explication** (validé) :
   - **Constat** : dans la cave fictive (mode démo), l'interrupteur du suivi est désactivé, comme Face ID et « Rester déverrouillé », mais rien ne l'explique. Sur une vraie cave, il fonctionne.
   - **Décision** : ces réglages restent désactivés en démo.
   - **Correction** : sous chaque réglage désactivé en démo, une ligne indique « Indisponible dans la cave fictive : crée ta cave pour l'utiliser ». Toucher l'interrupteur grisé affiche le même message.
   - **Réglages concernés** : suivi d'utilisation, Face ID, Rester déverrouillé. L'export du rapport n'est pas proposé en démo.
-- [ ] **Clignotement et retour en haut dans les fenêtres** (relevé : fiche de dégustation, champs « Équilibre » ou « À boire »). Audit fait sur tous les boutons qui modifient une fenêtre sur place (`tests/t9.cjs`) : 16 actions sur 23 présentent un défaut.
+- [x] **Clignotement et retour en haut dans les fenêtres** (relevé : fiche de dégustation, champs « Équilibre » ou « À boire »). Audit fait sur tous les boutons qui modifient une fenêtre sur place (`tests/t9.cjs`) : 16 actions sur 23 présentent un défaut.
   - **Cause 1, clignotement** : à chaque choix, la fenêtre entière est recréée, et son animation d'ouverture est rejouée. Touche toutes les pastilles et tous les choix de la fiche de dégustation (teinte, limpidité, attaque, tanins, équilibre, évolution, potentiel, type, accord, couleur à l'aveugle, Rapide/Complète), l'écran de rangement (choisir une case, Suggérer, Effacer, changer d'espace), la liste d'envies depuis une fiche vin, l'ajout au transfert, la vérification de l'import Ploc, les réglages des sites.
   - **Cause 2, retour vers le haut** : la position de défilement est restaurée avant que la roue des arômes et les photos soient redessinées. La fenêtre est alors trop courte et le défilement remonte. Mesuré : de 87 px (attaque) à 398 px (évolution, potentiel) sur iPhone.
   - **Correction** :
@@ -388,9 +388,9 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
     - les photos gardent une hauteur réservée pour ne plus décaler la page en se chargeant ;
     - même vérification pour les écrans principaux. L'audit n'y montre pas de saut aujourd'hui, mais ils resteront couverts.
   - **Contrôle** : `tests/t9.cjs` est ajouté à `tests/run.sh` et doit afficher 0 défaut sur l'ensemble des actions.
-- [ ] **Réglages › Contenu** : supprimer la ligne « Vins · Toujours actif », qui n'apporte rien. Il reste « Spiritueux » et, quand les spiritueux sont activés, « Cocktails ».
-- [ ] **Fiche de dégustation : retirer le bouton « OK » en haut à droite**. Il est collé à la croix de fermeture, et on risque de toucher l'un pour l'autre. L'enregistrement se fait uniquement par le bouton « Enregistrer la dégustation » en bas de la fiche. Ça vaut pour toutes les dégustations, puisque c'est la même fiche : après la sortie d'une bouteille, depuis l'onglet Dégustations, à l'aveugle ou en séance.
-- [ ] **Fiche de dégustation : confirmation avant de fermer sans enregistrer.** Si la fiche contient déjà des informations (note modifiée, commentaire, arômes, pastilles, contexte, hypothèses, photo), fermer demande « Abandonner cette dégustation ? Ce que tu as saisi sera perdu. », avec les boutons « Abandonner » et « Continuer la dégustation ».
+- [x] **Réglages › Contenu** : supprimer la ligne « Vins · Toujours actif », qui n'apporte rien. Il reste « Spiritueux » et, quand les spiritueux sont activés, « Cocktails ».
+- [x] **Fiche de dégustation : retirer le bouton « OK » en haut à droite**. Il est collé à la croix de fermeture, et on risque de toucher l'un pour l'autre. L'enregistrement se fait uniquement par le bouton « Enregistrer la dégustation » en bas de la fiche. Ça vaut pour toutes les dégustations, puisque c'est la même fiche : après la sortie d'une bouteille, depuis l'onglet Dégustations, à l'aveugle ou en séance.
+- [x] **Fiche de dégustation : confirmation avant de fermer sans enregistrer.** Si la fiche contient déjà des informations (note modifiée, commentaire, arômes, pastilles, contexte, hypothèses, photo), fermer demande « Abandonner cette dégustation ? Ce que tu as saisi sera perdu. », avec les boutons « Abandonner » et « Continuer la dégustation ».
   - **Cas couverts** : la croix, le fond grisé derrière la fiche et la flèche de retour.
   - **Fiche vide** : elle se ferme directement, sans question.
 

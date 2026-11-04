@@ -44,20 +44,32 @@ const LOGO = `<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" heigh
 let sheetStack = [];
 function showSheet(fn, { replace = false, full = false } = {}) {
   if (replace) sheetStack.pop();
+  // La fenêtre recouverte garde sa position de défilement, retrouvée au retour
+  const cur = sheetStack[sheetStack.length - 1], el = $('.sheet');
+  if (cur && el && el.__top === cur) cur.y = el.scrollTop;
   sheetStack.push({ fn, full, u: uPending || fn.name || 'feuille' });
   paintSheet();
 }
+// Redessiner la fenêtre déjà affichée la met à jour sur place : elle n'est ni recréée ni réanimée
+// (pas de clignotement), et le défilement est restauré une fois tout dessiné (roue, curseurs).
 function paintSheet(keepScroll) {
   const top = sheetStack[sheetStack.length - 1];
   if (!top) { $('#layer').innerHTML = ''; return; }
-  const old = $('.sheet'), y = keepScroll && old ? old.scrollTop : 0;
+  const old = $('.sheet'), same = !!(keepScroll && old && old.__top === top);
+  const y = same ? old.scrollTop : (top.y || 0);
   const back = sheetStack.length > 1 ? `<button class="icon-btn" data-act="sheetback" aria-label="Retour">${ICON.back}</button>` : '';
   let html = top.fn();
   if (html == null) { sheetStack.pop(); return paintSheet(); }
   html = html.replace('<!--back-->', back);
-  $('#layer').innerHTML = `<div class="backdrop" data-act="close"></div><div class="sheet${top.full ? ' full' : ''}" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`;
-  const sh = $('.sheet'); if (y) sh.scrollTop = y;
-  paintPhotos(sh); afterSheet(); uScreenCheck();
+  let sh;
+  if (same) { sh = old; sh.innerHTML = `<div class="grab"></div>${html}`; }
+  else {
+    $('#layer').innerHTML = `<div class="backdrop" data-act="close"></div><div class="sheet${top.full ? ' full' : ''}" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`;
+    sh = $('.sheet'); sh.__top = top;
+  }
+  afterSheet(); paintPhotos(sh);
+  if (y) sh.scrollTop = y;
+  uScreenCheck();
 }
 const refreshSheet = () => paintSheet(true);
 function closeSheet() { sheetStack = []; $('#layer').innerHTML = ''; uScreenCheck(); }
@@ -133,8 +145,10 @@ function banners() {
     <div class="row" style="gap:8px"><button class="btn small primary" data-act="export">Sauvegarder</button><button class="btn small ghost" data-act="backupLater">Plus tard</button></div></div>`);
   return out.join('');
 }
+let lastView = null;
 function render() {
   if (mode !== 'app' && mode !== 'demo') return;
+  const keepY = lastView === view ? window.scrollY : null; lastView = view;
   const views = { cave: ['Cave', vCave], deg: ['Dégustations', vDeg], somm: ['Sommelier', vSomm], boire: ['À boire', vBoire], plus: ['Réglages', vPlus] };
   const [title, fn] = views[view];
   const tab = (v, l, i) => `<button class="tab${view === v ? ' on' : ''}" data-act="go" data-v="${v}" aria-label="${l}">${i}${l}</button>`;
@@ -150,14 +164,16 @@ function render() {
   paintPhotos(app);
   for (const r of $$('input[type=range]', app)) setRangeFill(r);
   afterRender(); uScreenCheck();
+  if (keepY) window.scrollTo(0, keepY);
 }
 function afterRender() { if (view === 'somm') { const m = $('.chat'); if (m && chatScroll) { window.scrollTo(0, document.body.scrollHeight); chatScroll = false; } } }
 let chatScroll = false;
 
 Object.assign(ACT, {
   go: t => { view = t.dataset.v; render(); window.scrollTo(0, view === 'somm' ? document.body.scrollHeight : 0); },
-  close: () => closeSheet(),
-  sheetback: () => sheetBack(),
+  close: () => { if (!guardTaste('close')) closeSheet(); },
+  sheetback: () => { if (!guardTaste('back')) sheetBack(); },
+  demoOnly: () => toast(DEMO_OFF),
   codeupdate: () => applyCodeUpdate(),
   codeinfo: () => sheetCode(),
   codelater: () => { code.status = 'ok'; paintCode(); },

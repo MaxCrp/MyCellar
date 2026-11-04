@@ -38,6 +38,7 @@ const { chromium } = require('playwright');
   await probe('Dégustation › accord', '.sheet [data-act=tctx][data-k=accord]');
   await probe('Dégustation › Rapide', '.sheet [data-act=tmode][data-m=quick]');
   await p.click('.shead [data-act=close]');
+  if (await p.$('.sheet [data-act=tasteAbandon]')) await p.click('.sheet [data-act=tasteAbandon]');
   // 2. Rangement
   await p.click('[data-act=caveMode][data-m=liste]'); await p.click('.li[data-act=wine]'); await p.click('.sheet [data-act=bottle]'); await p.click('.sheet [data-act=moveBottle]'); await p.waitForTimeout(250);
   await probe('Rangement › choisir une case', '.sheet [data-act=pickSlot] >> nth=8');

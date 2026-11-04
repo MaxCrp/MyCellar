@@ -22,6 +22,7 @@ function startTaste(wineId, bottleId, m, ctx = {}) {
   draft = { taste: { wineId, bottleId: bottleId || null, kind: w.kind, mode: m === 'full' ? 'full' : 'quick', note: 14, comment: '', at: sess?.date || today(), plat: prev?.plat || '',
     type: sess?.type || null, lieu: sess?.lieu || '', convives: sess?.convives || '', prix: '', achatLieu: '', provenance: '', accord: null, sessionId: sess?.id || null, fromCave: false, full: { aromes: [] } } };
   wheelState = { active: null };
+  draft.taste._snap = tasteSig(draft.taste);
   showSheet(tasteSheet, { full: true });
 }
 // Dégustation à l'aveugle : tant que le vin n'est pas révélé, on travaille sur un « vin mystère »
@@ -30,12 +31,14 @@ const tastingWine = t => wine(t.wineId) || (t.blind ? mysteryWine(t.blind) : nul
 function startBlind(sessionId) {
   startTaste(null, null, 'full', { sessionId });
   Object.assign(draft.taste, { blind: true, kind: 'vin', couleur: null, hyp: {} });
+  draft.taste._snap = tasteSig(draft.taste);
   refreshSheet();
 }
 function editTaste(id) {
   const r = byId(S.tastings, id), w = tastingWine(r);
   draft = { taste: { ...r, blind: !!r.blind, couleur: r.blind?.couleur || null, hyp: { ...(r.blind?.hyp || {}) }, kind: w.kind, mode: r.full ? 'full' : 'quick', prix: r.prix != null ? numFr(r.prix, 2) : '', full: { aromes: [], ...(structuredClone(r.full || {})) }, editId: id } };
   wheelState = { active: null };
+  draft.taste._snap = tasteSig(draft.taste);
   showSheet(tasteSheet, { full: true });
 }
 function tasteContext(t, w) {
@@ -84,7 +87,7 @@ function tasteSheet() {
       ${chips('equilibre', T_CHIPS.equilibre)}
       ${sp ? '' : `<div class="lbl">Évolution</div>${chips('evolution', T_CHIPS.evolution)}<div class="lbl">Potentiel restant</div>${chips('potentiel', T_CHIPS.potentiel)}`}
     </div>` : '';
-  return `${head('Dégustation', `<button class="link" data-act="tasteSave">OK</button>`)}
+  return `${head('Dégustation')}
     <div class="card" style="margin-top:0"><div class="row"><div class="grow"><div class="rn">${esc(wineTitle(w))}</div><div class="rs">${t.blind && !t.wineId ? 'À l’aveugle : tu révéleras le vin à la fin' : esc(wineSub(w))}</div></div>${t.blind ? '<span class="tag b">À l’aveugle</span>' : t.bottleId || t.fromCave ? '<span class="tag g">De ma cave</span>' : '<span class="tag o">Hors cave</span>'}</div>
       ${t.blind && !t.wineId ? `<div class="chips wrap">${Object.entries(COLORS).map(([k, c]) => `<button type="button" class="chip soft${t.kind === 'vin' && t.couleur === k ? ' on' : ''}" data-act="tcolor" data-v="${k}"><span class="dot" style="background:${c.c}"></span>${c.label}</button>`).join('')}${spiritsOn() ? `<button type="button" class="chip soft${t.kind === 'spirit' ? ' on' : ''}" data-act="tcolor" data-v="spirit"><span class="dot" style="background:${SPIRIT_COLOR}"></span>Spiritueux</button>` : ''}</div>` : ''}
       <div class="seg"><button class="${t.mode === 'quick' ? 'on' : ''}" data-act="tmode" data-m="quick">Rapide</button><button class="${t.mode === 'full' ? 'on' : ''}" data-act="tmode" data-m="full">Complète</button></div></div>
@@ -340,4 +343,20 @@ Object.assign(ACT, {
   revealScan: t => { labelFor = { reveal: t.dataset.t }; const i = $('#f-photo'); i.value = ''; i.click(); },
   revealManual: t => { const r = byId(S.tastings, t.dataset.t); newDraft(r.blind?.kind === 'spirit' ? 'spirit' : 'vin', r.blind?.couleur ? { couleur: r.blind.couleur } : {}); draft.forReveal = t.dataset.t; showSheet(wineFormSheet, { full: true }); },
   blindAI: t => blindAnalysis(t.dataset.t),
+});
+
+/* ---------- Fermer une dégustation en cours de saisie ---------- */
+const tasteSig = t => JSON.stringify([t.note, t.comment, t.plat, t.type, t.lieu, t.convives, t.prix, t.achatLieu, t.provenance, t.accord, t.fromCave, t.at, t.couleur, t.kind, t.full, t.hyp, !!t.photoBlob]);
+const tasteDirty = () => !!draft?.taste && tasteSig(draft.taste) !== draft.taste._snap;
+// Renvoie vrai si la fermeture est suspendue par la question « Abandonner cette dégustation ? »
+function guardTaste(next) {
+  const top = sheetStack[sheetStack.length - 1];
+  if (top?.fn !== tasteSheet || !tasteDirty()) return false;
+  showSheet(() => `${head('Abandonner cette dégustation ?')}<p>Ce que tu as saisi sera perdu.</p>
+    <div class="btns"><button class="btn primary wide" data-act="tasteKeep">Continuer la dégustation</button><button class="btn danger wide" data-act="tasteAbandon" data-next="${next}">Abandonner</button></div>`);
+  return true;
+}
+Object.assign(ACT, {
+  tasteKeep: () => sheetBack(),
+  tasteAbandon: t => { draft = null; if (t.dataset.next === 'back') { sheetStack.pop(); sheetStack.pop(); paintSheet(); } else closeSheet(); },
 });
