@@ -307,12 +307,17 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
   - **Écrans** :
     1. Bienvenue : ta cave sur ton iPhone, privée et chiffrée.
     2. Décrire sa cave : sites, espaces, meubles, plan visuel.
-    3. Ajouter des bouteilles : photo d’étiquette, saisie, import Ploc ; les ranger.
+    3. Ajouter des bouteilles : photo d’étiquette ou saisie, puis rangement (l’import Ploc est signalé dans les réglages).
     4. Boire au bon moment : fenêtres de dégustation, onglet À boire, conseils de rangement.
     5. Le sommelier : accords mets-vins depuis ta cave, clé API et coût (environ 1 € par mois).
     6. Les dégustations : en cave ou ailleurs, séances, liste d’envies.
     7. Sauvegarder : rappel que les données ne sont que sur l’iPhone.
   - **Revoir la présentation** : possible ensuite depuis Réglages › Aide.
+- [ ] Bouton « + » identique sur tous les onglets, simplifié en deux choix :
+  - **Nouvelle dégustation** : ouvre l’écran actuel (photo de l’étiquette, vin déjà connu, saisie manuelle, spiritueux, démarrer une séance) ;
+  - **Nouveau vin** : ouvre l’écran actuel d’ajout en cave (photo de l’étiquette, saisie manuelle, spiritueux, racheter un vin de la cave).
+  Une case libre touchée sur le plan continue d’ouvrir directement « Nouveau vin » pour cette place.
+- [ ] Import depuis Ploc accessible uniquement depuis les réglages : il disparaît du bouton « + » et de la carte d’accueil de la page Cave, puisqu’il ne sert qu’une fois.
 
 **v2**
 - Sauvegarde automatique Google Drive.
