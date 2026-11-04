@@ -302,6 +302,17 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
 **v1.5.2** (corrections de détail, regroupées et livrées en une fois ; les prochaines corrections viennent s’ajouter ici)
 - [ ] Icône du bouton « Déguster » : un bouchon de liège à la place de l’étoile.
 - [ ] Icône de l’onglet Dégustations : un carnet (couverture, reliure, pages) à la place de l’icône actuelle, qui évoque un ticket de caisse.
+- [ ] Présentation de l’app au premier lancement, quand aucune cave n’existe encore : une fenêtre qui présente MyCellar, ses fonctions et un tutoriel rapide. Proposition à valider :
+  - **Format** : quelques écrans à faire défiler, avec une illustration chacun, un bouton « Passer » toujours visible, et le bouton « Créer ma cave » sur le dernier écran.
+  - **Écrans** :
+    1. Bienvenue : ta cave sur ton iPhone, privée et chiffrée.
+    2. Décrire sa cave : sites, espaces, meubles, plan visuel.
+    3. Ajouter des bouteilles : photo d’étiquette, saisie, import Ploc ; les ranger.
+    4. Boire au bon moment : fenêtres de dégustation, onglet À boire, conseils de rangement.
+    5. Le sommelier : accords mets-vins depuis ta cave, clé API et coût (environ 1 € par mois).
+    6. Les dégustations : en cave ou ailleurs, séances, liste d’envies.
+    7. Sauvegarder : rappel que les données ne sont que sur l’iPhone.
+  - **Revoir la présentation** : possible ensuite depuis Réglages › Aide.
 
 **v2**
 - Sauvegarde automatique Google Drive.
