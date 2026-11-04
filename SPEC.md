@@ -394,6 +394,23 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
   - **Cas couverts** : la croix, le fond grisé derrière la fiche et la flèche de retour.
   - **Fiche vide** : elle se ferme directement, sans question.
 
+**v1.6.2** (fiabilité, issue de la campagne de tests du 4 novembre 2026 ; rien n'est développé)
+Le détail est dans `docs/tests/2026-11-04-campagne-v1.6.1/` : `rapport-bugs.md` pour les constats, `rapport-correctifs.md` pour le plan, les fichiers concernés et les vérifications.
+- [ ] C01 · Doubles appuis : une validation ou une action d'enregistrement ne s'exécute qu'une fois (B01, majeur).
+- [ ] C02 · Fiche vin : bornes et messages (millésime, prix, degré, quantité), et nombres au format « 1.234,50 » (B02, B09).
+- [ ] C03 · Fenêtres de dégustation toujours cohérentes, à la saisie comme dans les réponses de l'IA (B03, B06).
+- [ ] C04 · Lecture d'étiquette : valeurs ramenées aux listes connues (B04).
+- [ ] C05 · Dégustation sans note : pas de 14/20 par défaut (B05 ; décision D1).
+- [ ] C06 · Import Ploc : quantités bornées et total exact (B07).
+- [ ] C07 · Sites et espaces : nom vide et cible négative refusés (B08).
+- [ ] C08 · Nettoyage des données orphelines et des positions invalides (B10, B13).
+- [ ] C09 · Rangement : avertissement quand les places manquent (B11).
+- [ ] C10 · Restauration : messages distincts pour un fichier endommagé et un mot de passe faux (B12).
+- [ ] C11 · Spiritueux désactivés : cases grisées sur le plan (B14 ; décision D3).
+- [ ] C12 · Sommelier : mention quand une recommandation ne correspond plus à la cave (B15).
+- [ ] C13 · Contexte du sommelier réduit au-delà de 300 références (B16 ; décision D4).
+- [ ] La campagne `tests/campagne.cjs` rejoint `tests/run.sh` et doit afficher 0 anomalie.
+
 **v2**
 - Sauvegarde automatique Google Drive.
 - Audit de cave.
