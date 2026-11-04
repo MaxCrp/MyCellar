@@ -299,6 +299,10 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
 - Réévaluation des apogées après dégustation.
 - Onglet **Dégustations**, séances et liste d’envies (§6 bis).
 
+**v1.5.2** (corrections de détail, regroupées et livrées en une fois ; les prochaines corrections viennent s’ajouter ici)
+- [ ] Icône du bouton « Déguster » : un bouchon de liège à la place de l’étoile.
+- [ ] Icône de l’onglet Dégustations : un carnet (couverture, reliure, pages) à la place de l’icône actuelle, qui évoque un ticket de caisse.
+
 **v2**
 - Sauvegarde automatique Google Drive.
 - Audit de cave.
