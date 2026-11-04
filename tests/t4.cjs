@@ -25,7 +25,7 @@ const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true })
     else text = 'OK';
     return route.fulfill({ status: 200, headers: { ...cors, 'content-type': 'application/json' }, body: JSON.stringify({ model: body.model, stop_reason: 'end_turn', content: [{ type: 'text', text }], usage: { input_tokens: 3000, output_tokens: 800 } }) });
   });
-  await p.goto('http://localhost:8765/'); await p.waitForTimeout(500);
+  await p.goto('http://localhost:8765/'); await p.waitForTimeout(500); if (await p.$('#intro')) await p.click('#intro [data-act=introDone]');
   await p.click('[data-act=demo]'); await p.waitForTimeout(300);
   // liste + filtres
   await p.click('[data-act=caveMode][data-m=liste]'); await p.click('[data-act=lf]'); await p.waitForTimeout(200);

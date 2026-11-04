@@ -39,7 +39,7 @@ function vCave() {
   if (m) found = S.bottles.filter(b => inCave(b) && sps.some(s => s.id === b.spaceId) && m(wine(b.wineId))).length;
   const nothing = !S.wines.length;
   return `${nothing ? `<div class="card"><b>Bienvenue dans ta cave</b><p class="small" style="margin:6px 0 10px">Commence par décrire tes meubles (armoire, rack, caisses), puis ajoute tes bouteilles avec le bouton +.</p>
-      <div class="btns2"><button class="btn primary small" data-act="addUnit" data-space="${sps[0]?.id || ''}">Ajouter un meuble</button><button class="btn small" data-act="importPloc">Importer depuis Ploc</button></div></div>` : ''}
+      <button class="btn primary small" data-act="addUnit" data-space="${sps[0]?.id || ''}">Ajouter un meuble</button><p class="tiny" style="margin:8px 0 0">Tu viens de Ploc ? L’import se trouve dans les réglages.</p></div>` : ''}
     ${m ? `<p class="small" style="margin:10px 4px 0">${found ? plural(found, 'bouteille trouvée', 'bouteilles trouvées') + ' : elles sont encadrées sur le plan.' : 'Aucune bouteille ne correspond ici.'}</p>` : ''}
     ${sps.map(sp => spaceBlock(sp, ctx, sps.length > 1)).join('')}
     ${transferChip()}`;

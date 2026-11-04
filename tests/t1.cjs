@@ -11,6 +11,7 @@ const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true })
   p.on('dialog', d => d.accept());
   await p.goto('http://localhost:8765/');
   await p.waitForTimeout(800);
+  if (await p.$('#intro')) await p.click('#intro [data-act=introDone]');
   await p.screenshot({ path: D + '01-lock.png' });
   await p.click('[data-act=demo]');
   await p.waitForTimeout(400);

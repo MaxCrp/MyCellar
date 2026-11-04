@@ -31,7 +31,7 @@ const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true })
     }
     return route.fulfill({ status: 200, headers: { ...cors, 'content-type': 'application/json' }, body: JSON.stringify({ model: body.model, stop_reason: 'end_turn', content: [{ type: 'text', text }], usage: { input_tokens: 6000, output_tokens: 400, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 } }) });
   });
-  await p.goto('http://localhost:8765/'); await p.waitForTimeout(600);
+  await p.goto('http://localhost:8765/'); await p.waitForTimeout(600); if (await p.$('#intro')) await p.click('#intro [data-act=introDone]');
   await p.click('[data-act=demo]'); await p.waitForTimeout(300);
   // Bouteille → sortie → dégustation complète
   await p.click('.slot[data-act=slot] >> nth=3'); await p.waitForTimeout(200);
@@ -62,7 +62,7 @@ const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true })
   await p.screenshot({ path: D + '16-take.png' });
   await p.click('.shead [data-act=close]');
   // Ajout manuel → rangement
-  await p.click('[data-act=add]'); await p.waitForTimeout(200);
+  await p.click('[data-act=add]'); await p.click('.sheet [data-act=addWine]'); await p.waitForTimeout(200);
   await p.screenshot({ path: D + '17-add.png' });
   await p.click('.sheet [data-act=newWine][data-kind=vin]'); await p.waitForTimeout(200);
   await p.fill('.sheet input[name=domaine]', 'Domaine Rostaing'); await p.fill('.sheet input[name=appellation]', 'Côte-Rôtie'); await p.fill('.sheet input[name=millesime]', '2020'); await p.fill('.sheet input[name=qty]', '3');
@@ -81,7 +81,7 @@ const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true })
   await p.screenshot({ path: D + '23-unit.png' });
   await p.click('.shead [data-act=close]');
   // Scan étiquette simulé
-  await p.click('[data-act=add]'); await p.waitForTimeout(100);
+  await p.click('[data-act=add]'); await p.click('.sheet [data-act=addWine]'); await p.waitForTimeout(100);
   const [fc] = await Promise.all([p.waitForEvent('filechooser'), p.click('.sheet [data-act=scanLabel]')]);
   await fc.setFiles(__dirname + '/shots/02-cave.png'); await p.waitForTimeout(1200);
   await p.screenshot({ path: D + '24-scan.png' });

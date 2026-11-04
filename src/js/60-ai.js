@@ -133,7 +133,7 @@ function caveContext(allSites) {
     lines.push('- ' + parts.filter(Boolean).join(' | '));
   }
   const sites = S.sites.map(s => `${s.name} (${s.role === 'stock' ? 'stockage' : 'consommation'}${s.id === cur ? ', l’utilisateur y est actuellement' : ''})`).join(' ; ');
-  const top = [...S.tastings].filter(t => t.note != null).sort((a, b) => b.note - a.note);
+  const top = [...S.tastings].filter(t => t.note != null && wine(t.wineId)).sort((a, b) => b.note - a.note);
   const liked = top.slice(0, 6).map(t => `${wineTitle(wine(t.wineId) || {})} ${numFr(t.note)}/20`).filter(x => !x.startsWith('undefined'));
   const disliked = top.filter(t => t.note < 12).slice(-4).map(t => `${wineTitle(wine(t.wineId) || {})} ${numFr(t.note)}/20`);
   const tw = t => wine(t.wineId) || {};
@@ -333,7 +333,7 @@ async function onPhoto(file) {
   const go = fields => {
     newDraft(fields.kind === 'spirit' && spiritsOn() ? 'spirit' : 'vin', fields);
     draft.photo = small; draft.photoUrl = URL.createObjectURL(small);
-    if (forTaste) draft.forTaste = forTaste;
+    if (forTaste?.reveal) draft.forReveal = forTaste.reveal; else if (forTaste) draft.forTaste = forTaste;
     showSheet(wineFormSheet, { full: true });
   };
   if (!aiReady() || !aiClaude()) { closeSheet(); go({}); return toast(aiReady() ? 'Lecture d’étiquette : Claude uniquement' : 'Sans clé IA : saisie manuelle'); }

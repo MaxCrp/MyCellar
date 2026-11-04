@@ -26,6 +26,7 @@ src/js/*.js         code, assemblé dans l'ordre des noms de fichiers
   80-plus           réglages, sites et espaces, IA, sauvegarde, sécurité
   85-demo           cave fictive
   90-boot           événements, démarrage, verrouillage automatique
+  95-intro          présentation au premier lancement (et Réglages › Aide)
 src/static/         sw.js, manifeste, icônes, _headers (copiés tels quels)
 build.mjs           assemble tout dans public/index.html et calcule l'empreinte CSP du script
 public/             ce qui est publié (généré par le build, commité)

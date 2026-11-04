@@ -185,7 +185,8 @@ Le journal unique de toutes les dégustations : bouteilles de la cave, et vins b
 ### Modèle de données
 ```js
 Tasting { …existant, type:'restaurant'|'oeno'|'salon'|'domaine'|'plaisir'|null, lieu, convives, prix, achatLieu, provenance,
-          accord:'rate'|'correct'|'parfait'|null, photoLibre, sessionId, horsCave:boolean }
+          accord:'rate'|'correct'|'parfait'|null, photoLibre, sessionId, horsCave:boolean,
+          blind?: { kind, couleur, hyp:{ cepage, region, millesime, prix }, revealed, revealedAt, analysis } }   // v1.5.2 : wineId vide tant que le vin mystère n'est pas révélé
 Session { id, date, type, lieu, convives, titre }
 Wish    { id, wineId, at, prix, lieu, note }
 Wine    : peut n'avoir aucune bouteille (vin seulement dégusté)
@@ -277,6 +278,29 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
 ## 9. Sauvegarde
 - **v1** : le bouton « Sauvegarder » produit un fichier chiffré et ouvre le partage iOS, puis « Enregistrer dans Fichiers » vers iCloud. Rappel si la dernière sauvegarde a plus de 7 jours. Import depuis ce fichier.
 - **v2** : sauvegarde automatique, chiffrée, vers **Google Drive** (dossier caché de l'application, `appDataFolder`), via OAuth PKCE.
+
+---
+
+## 10. Découpage
+
+**v1**
+- Sites, espaces et meubles, avec plan visuel et éditeur.
+- Fiches vin, bouteilles et emplacements ; vins des amis.
+- Scan d'étiquette, saisie manuelle, import du PDF Ploc.
+- Sorties, déplacements, liste de transfert, primeurs.
+- Dégustation rapide et complète, avec la roue des arômes.
+- Sommelier des accords (§7.1).
+- Apogées et tableau « À boire » (§7.2).
+- Site actuel, mode site unique ou plusieurs sites, sites renommables.
+- Compteur de coûts, chiffrement, sauvegarde manuelle.
+- Option spiritueux (§7 bis).
+
+**v1.5**
+- Conseils de logistique entre sites et de réassort de la cuisine (§7.3).
+- Réévaluation des apogées après dégustation.
+- Onglet **Dégustations**, séances et liste d’envies (§6 bis).
+
+**v2** : sauvegarde automatique, chiffrée, vers **Google Drive** (dossier caché de l'application, `appDataFolder`), via OAuth PKCE.
 
 ---
 

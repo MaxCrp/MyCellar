@@ -7,7 +7,7 @@ function degTastings() {
   const m = matcher(degQuery), f = degF;
   const q = norm(degQuery);
   return S.tastings.filter(t => {
-    const w = wine(t.wineId); if (!w || !kindOn(w)) return false;
+    const w = tastingWine(t); if (!w || !kindOn(w)) return false;
     if (f.min && !(t.note >= 16)) return false;
     if (f.src === 'hors' && t.bottleId) return false;
     if (f.src === 'cave' && !t.bottleId) return false;
@@ -19,7 +19,7 @@ function degTastings() {
 }
 function degTools() {
   const f = degF, ch = (act, v, on, l) => `<button class="chip soft${on ? ' on' : ''}" data-act="${act}" data-v="${v}">${l}</button>`;
-  const colors = [...new Set(S.tastings.map(t => wine(t.wineId)?.couleur).filter(Boolean))];
+  const colors = [...new Set(S.tastings.map(t => tastingWine(t)?.couleur).filter(Boolean))];
   return `<div class="search">${ICON.search}<input type="search" placeholder="Rechercher un vin, un lieu, un plat…" value="${esc(degQuery)}" data-in="degSearch" autocomplete="off" enterkeyhint="search"></div>
     <div class="seg"><button class="${degMode === 'journal' ? 'on' : ''}" data-act="degMode" data-m="journal">Journal</button><button class="${degMode === 'vin' ? 'on' : ''}" data-act="degMode" data-m="vin">Par vin</button></div>
     <div class="chips">${ch('dfMin', '1', f.min, '16 et plus')}${ch('dfSrc', 'hors', f.src === 'hors', 'Hors cave')}${ch('dfSrc', 'cave', f.src === 'cave', 'De ma cave')}
@@ -28,8 +28,8 @@ function degTools() {
 }
 const noteBadge = n => `<span class="qty" style="color:var(--bx);background:var(--bx-soft)">${n != null ? numFr(n) : '–'}</span>`;
 function tasteRow(t, rank) {
-  const w = wine(t.wineId);
-  const sub = [w.domaine && !nameIsDomaine(w) ? w.domaine : w.appellation, t.type ? TASTE_TYPES[t.type] : '', t.lieu, t.bottleId ? 'de ma cave' : 'hors cave', isWished(w.id) ? '♥ envie' : ''].filter(Boolean).join(' · ');
+  const w = tastingWine(t), mystery = t.blind && !t.wineId;
+  const sub = [mystery ? 'à l’aveugle · à révéler' : w.domaine && !nameIsDomaine(w) ? w.domaine : w.appellation, t.blind && !mystery ? 'à l’aveugle' : '', t.type ? TASTE_TYPES[t.type] : '', t.lieu, mystery ? '' : t.bottleId ? 'de ma cave' : 'hors cave', !mystery && isWished(w.id) ? '♥ envie' : ''].filter(Boolean).join(' · ');
   return `<button class="li" data-act="tasteView" data-id="${t.id}">${rank ? `<span class="rank">${rank}</span>` : `<span class="dot" style="background:${wineColor(w)}"></span>`}
     <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(sub)}</small>${t.plat || t.accord ? `<small class="ell">${t.accord ? 'Accord ' + ACCORDS[t.accord].toLowerCase() : ''}${t.accord && t.plat ? ' · ' : ''}${esc(t.plat || '')}</small>` : ''}</div>${noteBadge(t.note)}</button>`;
 }
@@ -71,7 +71,7 @@ function vDeg() {
 }
 function vDegByWine(ts) {
   const by = new Map();
-  for (const t of ts) by.set(t.wineId, [...(by.get(t.wineId) || []), t]);
+  for (const t of ts) if (t.wineId) by.set(t.wineId, [...(by.get(t.wineId) || []), t]);
   const rows = [...by].map(([wid, l]) => ({ w: wine(wid), l, avg: l.filter(t => t.note != null).reduce((n, t, _, a) => n + t.note / a.length, 0) }))
     .sort((a, b) => (b.l[0].at || '').localeCompare(a.l[0].at || ''));
   return `<p class="small" style="margin:10px 4px 0">${plural(rows.length, 'vin', 'vins')}</p><div class="list">${rows.map(({ w, l, avg }) => `<button class="li" data-act="wine" data-id="${w.id}"><span class="dot" style="background:${wineColor(w)}"></span>
@@ -90,6 +90,7 @@ function newTasteSheet(sessionId) {
       <div class="card" style="margin:0"><div class="search" style="margin:0">${ICON.search}<input type="search" placeholder="Un vin déjà connu (cave, dégustations)…" data-in="tasteFind" data-session="${sessionId || ''}" autocomplete="off"></div><div id="taste-find"></div></div>
       <button class="big-action" data-act="newTasteWine" data-kind="vin" data-session="${sessionId || ''}">${ICON.edit}<div><b>Saisie manuelle</b><small>Domaine, cuvée, millésime.</small></div></button>
       ${spiritsOn() ? `<button class="big-action" data-act="newTasteWine" data-kind="spirit" data-session="${sessionId || ''}">${ICON.bottle}<div><b>Un spiritueux</b><small>Whisky, rhum, cognac…</small></div></button>` : ''}
+      <button class="big-action" data-act="blindStart" data-session="${sessionId || ''}">${ICON.glass}<div><b>À l’aveugle</b><small>La fiche d’abord, le vin ensuite : compare tes hypothèses.</small></div></button>
       ${s ? '' : `<button class="big-action" style="border-color:var(--bx)" data-act="newSession">${ICON.glass}<div><b>Démarrer une séance</b><small>Salon, verticale, soirée : plusieurs vins, un seul contexte.</small></div></button>`}
     </div>`;
 }
@@ -144,7 +145,8 @@ function sessionSheet(id) {
   return `${head(esc(s.titre), `<button class="icon-btn" data-act="editSession" data-id="${id}" aria-label="Modifier">${ICON.edit}</button>`)}
     <p class="small" style="margin-top:-6px">${s.type ? `<span class="tag o">${TASTE_TYPES[s.type]}</span> ` : ''}${[s.lieu, fmtDate(s.date), s.convives && 'avec ' + s.convives].filter(Boolean).map(esc).join(' · ')}</p>
     ${ts.length ? `<div class="sect">Classement de la séance</div><div class="list">${ts.map((t, i) => tasteRow(t, i + 1)).join('')}</div>` : '<p class="muted">Aucun vin pour l’instant.</p>'}
-    <button class="btn primary wide" style="margin-top:12px" data-act="newTaste" data-session="${id}">${ICON.add} Ajouter un vin à la séance</button>`;
+    <button class="btn primary wide" style="margin-top:12px" data-act="newTaste" data-session="${id}">${ICON.add} Ajouter un vin à la séance</button>
+    ${ts.some(t => t.blind && !t.wineId) ? `<p class="tiny" style="margin-top:8px">${plural(ts.filter(t => t.blind && !t.wineId).length, 'vin mystère reste', 'vins mystère restent')} à révéler : touche-les pour les révéler.</p>` : ''}`;
 }
 Object.assign(ACT, {
   newSession: () => showSheet(() => sessionForm(null), { replace: true }),

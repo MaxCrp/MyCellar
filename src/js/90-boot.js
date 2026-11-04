@@ -90,6 +90,7 @@ async function boot() {
     if (raw) { try { await adopt(await openVault(vault, { raw })); return enterApp(); } catch { await devDisable(); } }
   }
   renderLock(vault ? 'unlock' : 'setup');
+  if (!vault && !(await store.get('introSeen'))) showIntro(0, false);
 }
 if (location.search.includes('u=')) history.replaceState({}, '', location.pathname);
 // Le service worker ne doit jamais changer : une mise à jour approuvée passe par une désinstallation complète.

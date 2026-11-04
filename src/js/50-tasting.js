@@ -16,7 +16,7 @@ const sliderOut = (k, v, kind = draft?.taste?.kind) => k === 'longueur' && kind 
 
 // ctx : { sessionId } pour une dégustation dans une séance
 function startTaste(wineId, bottleId, m, ctx = {}) {
-  const w = wine(wineId);
+  const w = wine(wineId) || mysteryWine();
   const prev = S.dismissed.rate?.bottleId === bottleId ? S.dismissed.rate : null;
   const sess = ctx.sessionId && byId(S.sessions, ctx.sessionId);
   draft = { taste: { wineId, bottleId: bottleId || null, kind: w.kind, mode: m === 'full' ? 'full' : 'quick', note: 14, comment: '', at: sess?.date || today(), plat: prev?.plat || '',
@@ -24,9 +24,17 @@ function startTaste(wineId, bottleId, m, ctx = {}) {
   wheelState = { active: null };
   showSheet(tasteSheet, { full: true });
 }
+// Dégustation à l'aveugle : tant que le vin n'est pas révélé, on travaille sur un « vin mystère »
+const mysteryWine = b => ({ id: '', kind: b?.kind || 'vin', couleur: b?.couleur || null, cuvee: 'Vin mystère', domaine: '', appellation: '' });
+const tastingWine = t => wine(t.wineId) || (t.blind ? mysteryWine(t.blind) : null);
+function startBlind(sessionId) {
+  startTaste(null, null, 'full', { sessionId });
+  Object.assign(draft.taste, { blind: true, kind: 'vin', couleur: null, hyp: {} });
+  refreshSheet();
+}
 function editTaste(id) {
-  const r = byId(S.tastings, id), w = wine(r.wineId);
-  draft = { taste: { ...r, kind: w.kind, mode: r.full ? 'full' : 'quick', prix: r.prix != null ? numFr(r.prix, 2) : '', full: { aromes: [], ...(structuredClone(r.full || {})) }, editId: id } };
+  const r = byId(S.tastings, id), w = tastingWine(r);
+  draft = { taste: { ...r, blind: !!r.blind, couleur: r.blind?.couleur || null, hyp: { ...(r.blind?.hyp || {}) }, kind: w.kind, mode: r.full ? 'full' : 'quick', prix: r.prix != null ? numFr(r.prix, 2) : '', full: { aromes: [], ...(structuredClone(r.full || {})) }, editId: id } };
   wheelState = { active: null };
   showSheet(tasteSheet, { full: true });
 }
@@ -51,7 +59,7 @@ function tasteContext(t, w) {
 }
 function tasteSheet() {
   const t = draft?.taste; if (!t) return null;
-  const w = wine(t.wineId), F = t.full, sp = w.kind === 'spirit';
+  const w = t.wineId ? wine(t.wineId) : mysteryWine(t), F = t.full, sp = w.kind === 'spirit';
   const chips = (k, list) => `<div class="chips wrap" style="margin-top:0">${list.map(x => { const [v, l] = Array.isArray(x) ? x : [x, x]; return `<button type="button" class="chip soft${F[k] === v ? ' on' : ''}" data-act="tchip" data-k="${k}" data-v="${esc(v)}">${esc(l)}</button>`; }).join('')}</div>`;
   const slider = ([k, l, min, max]) => `<div class="sl"><span>${l}</span><input type="range" min="${min}" max="${max}" step="1" value="${F[k] ?? Math.round((min + max) / 2)}" data-in="tv" data-k="${k}"><output id="o-${k}">${F[k] != null ? sliderOut(k, F[k]) : '–'}</output></div>`;
   const teintes = TEINTES[sp ? 'spirit' : w.couleur] || TEINTES.rouge;
@@ -77,9 +85,11 @@ function tasteSheet() {
       ${sp ? '' : `<div class="lbl">Évolution</div>${chips('evolution', T_CHIPS.evolution)}<div class="lbl">Potentiel restant</div>${chips('potentiel', T_CHIPS.potentiel)}`}
     </div>` : '';
   return `${head('Dégustation', `<button class="link" data-act="tasteSave">OK</button>`)}
-    <div class="card" style="margin-top:0"><div class="row"><div class="grow"><div class="rn">${esc(wineTitle(w))}</div><div class="rs">${esc(wineSub(w))}</div></div>${t.bottleId || t.fromCave ? '<span class="tag g">De ma cave</span>' : '<span class="tag o">Hors cave</span>'}</div>
+    <div class="card" style="margin-top:0"><div class="row"><div class="grow"><div class="rn">${esc(wineTitle(w))}</div><div class="rs">${t.blind && !t.wineId ? 'À l’aveugle : tu révéleras le vin à la fin' : esc(wineSub(w))}</div></div>${t.blind ? '<span class="tag b">À l’aveugle</span>' : t.bottleId || t.fromCave ? '<span class="tag g">De ma cave</span>' : '<span class="tag o">Hors cave</span>'}</div>
+      ${t.blind && !t.wineId ? `<div class="chips wrap">${Object.entries(COLORS).map(([k, c]) => `<button type="button" class="chip soft${t.kind === 'vin' && t.couleur === k ? ' on' : ''}" data-act="tcolor" data-v="${k}"><span class="dot" style="background:${c.c}"></span>${c.label}</button>`).join('')}${spiritsOn() ? `<button type="button" class="chip soft${t.kind === 'spirit' ? ' on' : ''}" data-act="tcolor" data-v="spirit"><span class="dot" style="background:${SPIRIT_COLOR}"></span>Spiritueux</button>` : ''}</div>` : ''}
       <div class="seg"><button class="${t.mode === 'quick' ? 'on' : ''}" data-act="tmode" data-m="quick">Rapide</button><button class="${t.mode === 'full' ? 'on' : ''}" data-act="tmode" data-m="full">Complète</button></div></div>
     ${tasteContext(t, w)}
+    ${t.blind ? blindHypCard(t) : ''}
     <div class="card"><div class="score" id="t-score">${numFr(t.note)}<small> / 20</small></div>
       <input type="range" min="0" max="20" step="0.5" value="${t.note}" data-in="tnote" aria-label="Note sur 20"></div>
     ${full}
@@ -149,6 +159,7 @@ Object.assign(ACT, {
   tphoto: () => { const i = $('#f-photo2'); i.value = ''; i.click(); },
   tasteSave: async () => {
     const t = draft.taste, w = wine(t.wineId);
+    if (t.blind && !t.wineId && !t.couleur && t.kind !== 'spirit') return toast('Choisis d’abord la couleur du vin mystère');
     const fields = { at: t.at || today(), note: t.note, comment: t.comment, plat: t.plat, type: t.type || null, lieu: t.lieu, convives: t.convives,
       prix: num(t.prix), achatLieu: t.achatLieu, provenance: t.provenance, accord: t.accord || null, sessionId: t.sessionId || null };
     let rec;
@@ -164,13 +175,17 @@ Object.assign(ACT, {
       S.tastings.push(rec);
     }
     rec.horsCave = !rec.bottleId;
+    if (t.blind) rec.blind = { ...(rec.blind || {}), kind: t.kind, couleur: w?.couleur || t.couleur, hyp: { ...t.hyp }, revealed: !!rec.wineId };
     if (t.photoBlob) { await photoSave('t-' + rec.id, t.photoBlob); rec.photo = true; }
     if (S.dismissed.rate && (S.dismissed.rate.bottleId === rec.bottleId || S.dismissed.rate.wineId === rec.wineId)) delete S.dismissed.rate;
     await save(); draft = null;
     const sid = rec.sessionId;
     closeSheet(); render(); toast(t.editId ? 'Dégustation modifiée' : 'Dégustation enregistrée');
     if (sid && !t.editId) showSheet(() => sessionSheet(sid));
-    if (!t.editId) afterTasting(w, rec);
+    if (t.blind && !rec.wineId && !t.editId && !sid) return showSheet(() => `${head('Vin mystère enregistré')}<p>Ta fiche est enregistrée. Révèle le vin quand tu le connais : je comparerai tes hypothèses à la réalité.</p>
+      <div class="btns"><button class="btn primary wide" data-act="reveal" data-t="${rec.id}">Révéler le vin</button><button class="btn ghost wide" data-act="close">Plus tard</button></div>
+      <p class="tiny">La dégustation reste dans ton journal en « Vin mystère ».</p>`);
+    if (!t.editId && w) afterTasting(w, rec);
   },
   tasteView: t => showSheet(() => tasteView(t.dataset.id)),
   tasteEdit: t => editTaste(t.dataset.id),
@@ -204,12 +219,12 @@ function tastingAdvice(w, rec) {
 }
 function tasteView(id) {
   const t = byId(S.tastings, id); if (!t) return null;
-  const w = wine(t.wineId), F = t.full || {}, sess = t.sessionId && byId(S.sessions, t.sessionId), wished = isWished(w.id);
+  const w = tastingWine(t), F = t.full || {}, sess = t.sessionId && byId(S.sessions, t.sessionId), wished = isWished(w.id), mystery = !!t.blind && !t.wineId;
   const row = (k, v) => v != null && v !== '' ? `<dt>${k}</dt><dd>${esc(v)}</dd>` : '';
   const sl = k => F[k] != null ? sliderOut(k, F[k], w.kind) : null;
   return `${head('Dégustation', `<button class="icon-btn" data-act="tasteEdit" data-id="${id}" aria-label="Modifier">${ICON.edit}</button><button class="icon-btn" data-act="delTaste" data-id="${id}" aria-label="Supprimer">${ICON.trash}</button>`)}
     <p class="small" style="margin-top:-6px"><b style="color:var(--ink)">${esc(wineTitle(w))}</b> · ${esc(fmtDate(t.at))}</p>
-    <div class="tags">${t.type ? `<span class="tag o">${TASTE_TYPES[t.type]}</span>` : ''}${t.bottleId ? '<span class="tag g">De ma cave</span>' : '<span class="tag">Hors cave</span>'}${t.accord ? `<span class="tag ${t.accord === 'parfait' ? 'g' : t.accord === 'rate' ? 'r' : ''}">Accord ${ACCORDS[t.accord].toLowerCase()}</span>` : ''}</div>
+    <div class="tags">${t.blind ? '<span class="tag b">À l’aveugle</span>' : ''}${t.type ? `<span class="tag o">${TASTE_TYPES[t.type]}</span>` : ''}${mystery ? '' : t.bottleId ? '<span class="tag g">De ma cave</span>' : '<span class="tag">Hors cave</span>'}${t.accord ? `<span class="tag ${t.accord === 'parfait' ? 'g' : t.accord === 'rate' ? 'r' : ''}">Accord ${ACCORDS[t.accord].toLowerCase()}</span>` : ''}</div>
     <div class="score" style="margin-top:8px">${t.note != null ? numFr(t.note) : '–'}<small> / 20</small></div>
     ${t.comment ? `<p style="white-space:pre-wrap">${esc(t.comment)}</p>` : ''}
     ${t.photo ? `<img class="photo" data-photo="t-${t.id}" alt="Photo" hidden>` : ''}
@@ -220,11 +235,13 @@ function tasteView(id) {
       ${row('Intensité (nez)', sl('nez'))}${row('Ouverture', F.ouverture)}${row('Service', F.eau)}${row('Attaque', F.attaque)}
       ${(w.kind === 'spirit' ? SLIDERS_SPIRIT : SLIDERS_VIN).map(([k, l]) => row(l, sl(k))).join('')}${row('Tanins', F.texture)}${row('Équilibre', F.equilibre)}
       ${row('Évolution', ({ jeune: 'Jeune', apoint: 'À point', declin: 'Sur le déclin' })[F.evolution])}${row('Potentiel', F.potentiel)}</dl>
+    ${t.blind && t.wineId ? blindCompare(t, w) : ''}
+    ${mystery ? `<div class="btns" style="margin-top:14px"><button class="btn primary wide" data-act="reveal" data-t="${id}">Révéler le vin</button>${sess ? `<button class="btn ghost wide" data-act="session" data-id="${sess.id}">Voir la séance</button>` : ''}</div>` : `
     <div class="btns" style="margin-top:14px">
       <div class="btns2"><button class="btn ${wished ? 'outline' : 'green'}" data-act="wishToggle" data-w="${w.id}" data-t="${id}">${wished ? '♥ Dans mes envies' : '♥ Je veux en acheter'}</button><button class="btn" data-act="rebuy" data-id="${w.id}">${ICON.add} Ajouter à la cave</button></div>
       ${sess ? `<button class="btn ghost wide" data-act="session" data-id="${sess.id}">Voir la séance</button>` : ''}
       <button class="btn ghost wide" data-act="wine" data-id="${w.id}">Voir la fiche du vin</button>
-    </div>`;
+    </div>`}`;
 }
 // Après une dégustation : réévaluation de la fenêtre par le sommelier, ou règle simple sans IA
 function afterTasting(w, rec) {
@@ -238,3 +255,89 @@ async function onTastePhoto(file) {
   try { const blob = await shrinkImage(file, 900, 0.72); draft.taste.photoBlob = blob; draft.taste.photoUrl = URL.createObjectURL(blob); refreshSheet(); }
   catch { toast('Image illisible'); }
 }
+
+/* ---------- À l'aveugle : hypothèses, révélation, comparaison ---------- */
+function blindHypCard(t) {
+  const h = t.hyp || {}, f = (k, l, ph, mode = '') => `<label>${l}<input value="${esc(h[k] ?? '')}" data-in="th" data-k="${k}" placeholder="${esc(ph)}" autocomplete="off" ${mode ? `inputmode="${mode}"` : ''}></label>`;
+  return `<div class="card form"><div class="lbl" style="margin:0">Tes hypothèses <span class="tiny" style="text-transform:none;letter-spacing:0">(facultatif)</span></div>
+    ${t.kind === 'spirit' ? `${f('cepage', 'Catégorie, style', 'Whisky tourbé, rhum agricole…')}${f('region', 'Origine', 'Islay, Martinique…')}${f('millesime', 'Âge', 'En années', 'numeric')}`
+      : `${f('cepage', 'Cépage', 'Chenin, Syrah…')}${f('region', 'Région ou appellation', 'Loire, Savennières…')}<div class="grid2">${f('millesime', 'Millésime', '2018', 'numeric')}${f('prix', 'Prix (€)', '30', 'decimal')}</div>`}</div>`;
+}
+INPUTS.th = el => { draft.taste.hyp[el.dataset.k] = el.value; };
+const hasHyp = t => Object.values(t.blind?.hyp || {}).some(v => String(v || '').trim());
+function blindCompare(t, w) {
+  const h = t.blind.hyp || {}, rows = [];
+  const tok = s => norm(s).split(/[\s,;/-]+/).filter(x => x.length > 2);
+  const hit = (guess, real) => { const g = tok(guess), r = norm(real); return g.length && g.some(x => r.includes(x)); };
+  if (h.cepage) rows.push([w.kind === 'spirit' ? 'Style' : 'Cépage', h.cepage, w.kind === 'spirit' ? [SPIRIT_CATS[w.cat], w.fut].filter(Boolean).join(', ') : w.cepages, hit(h.cepage, w.kind === 'spirit' ? [SPIRIT_CATS[w.cat], w.fut, w.cuvee].join(' ') : w.cepages) ? 'ok' : 'ko']);
+  if (h.region) rows.push(['Origine', h.region, [w.appellation, w.region, w.pays].filter(Boolean).join(', '), hit(h.region, [w.appellation, w.region, w.pays].join(' ')) ? 'ok' : 'ko']);
+  if (h.millesime) { const g = int(h.millesime), r = w.kind === 'spirit' ? w.age : w.millesime; rows.push([w.kind === 'spirit' ? 'Âge' : 'Millésime', h.millesime, r || '?', r && g ? (g === r ? 'ok' : Math.abs(g - r) <= 2 ? 'near' : 'ko') : '']); }
+  if (h.prix) { const g = num(h.prix), r = t.prix ?? w.achat?.prix; rows.push(['Prix', eur(g), r != null ? eur(r) : '?', r && g ? (Math.abs(g - r) / r <= 0.3 ? 'ok' : 'ko') : '']); }
+  const mark = { ok: '<b style="color:var(--green)">✓</b>', near: '<b style="color:var(--gold)">≈</b>', ko: '<b style="color:var(--red)">✗</b>', '': '' };
+  const a = t.blind.analysis;
+  return `<div class="card">
+    <div class="ct">À l’aveugle : tes hypothèses</div>
+    ${rows.length ? `<table class="cmp"><tr><th></th><th>Ton idée</th><th>En réalité</th><th></th></tr>${rows.map(([l, g, r, m]) => `<tr><td>${esc(l)}</td><td>${esc(g)}</td><td>${esc(r)}</td><td>${mark[m]}</td></tr>`).join('')}</table>` : '<p class="small" style="margin:0">Tu n’avais pas noté d’hypothèse.</p>'}
+    ${a ? `<div class="lbl">Analyse du sommelier</div><p style="margin:0;white-space:pre-wrap;font-size:14.5px;line-height:1.45">${esc(a)}</p>`
+      : blindBusy === t.id ? `<div class="lbl">Analyse du sommelier</div><span class="typing"><i></i><i></i><i></i></span>`
+      : rows.length && aiReady() ? `<button class="btn small" style="margin-top:10px" data-act="blindAI" data-t="${t.id}">${ICON.spark} Analyse du sommelier</button>` : ''}
+  </div>`;
+}
+function revealSheet(tid) {
+  const t = byId(S.tastings, tid); if (!t) return null;
+  return `${head('Révéler le vin')}
+    <p class="small" style="margin-top:-6px">Vin mystère du ${esc(fmtDate(t.at))}${t.note != null ? ' · ' + numFr(t.note) + '/20' : ''}</p>
+    <div class="big-actions">
+      <button class="big-action" data-act="revealScan" data-t="${tid}">${ICON.camera}<div><b>Photo de l’étiquette</b><small>Le sommelier reconnaît le vin.</small></div></button>
+      <div class="card" style="margin:0"><div class="search" style="margin:0">${ICON.search}<input type="search" placeholder="Un vin déjà connu…" data-in="revealFind" data-t="${tid}" autocomplete="off"></div><div id="reveal-find"></div></div>
+      <button class="big-action" data-act="revealManual" data-t="${tid}">${ICON.edit}<div><b>Saisie manuelle</b><small>Appellation, millésime, domaine…</small></div></button>
+    </div>`;
+}
+INPUTS.revealFind = el => {
+  const m = matcher(el.value), box = $('#reveal-find'); if (!box) return;
+  if (!m) { box.innerHTML = ''; return; }
+  const ws = S.wines.filter(w => kindOn(w) && m(w)).slice(0, 8);
+  box.innerHTML = ws.length ? `<div class="list" style="margin-top:8px">${ws.map(w => `<button class="li" data-act="revealWine" data-w="${w.id}" data-t="${el.dataset.t}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(wineSub(w))}</small></div></button>`).join('')}</div>` : '<p class="small" style="margin:8px 4px 0">Aucun vin connu : photo ou saisie manuelle.</p>';
+};
+async function doReveal(tid, wid) {
+  const t = byId(S.tastings, tid), w = wine(wid); if (!t || !w) return;
+  t.wineId = wid; t.blind = { ...(t.blind || {}), revealed: true, revealedAt: today(), couleur: w.couleur || t.blind?.couleur };
+  await save(); closeSheet(); render(); toast('Vin révélé');
+  showSheet(() => tasteView(tid));
+  if (hasHyp(t) && aiReady()) blindAnalysis(tid);
+}
+let blindBusy = null;
+const BLIND_SYS = `Tu es formateur en dégustation, niveau sommelier. Un amateur a dégusté un vin à l’aveugle : il a rempli une fiche, noté ses hypothèses, puis le vin a été révélé.
+Explique-lui, en t’appuyant uniquement sur ce qu’il a noté dans sa fiche et sur les caractéristiques typiques du vin révélé (cépage, appellation, millésime, élevage) :
+1. quels éléments de sa fiche pointaient vers le vrai vin ;
+2. pourquoi il a pu être orienté vers ses hypothèses : quels descripteurs qu’il a notés sont typiques de ce qu’il a proposé ;
+3. un ou deux repères concrets pour distinguer la prochaine fois le vin réel de celui qu’il a proposé.
+Pas de félicitations ni de généralités. N’invente aucun descripteur qu’il n’a pas noté. Si ses hypothèses étaient justes, dis en une phrase ce qui les justifiait. Si sa fiche est trop pauvre pour une analyse utile, dis-le en une phrase et indique quoi noter la prochaine fois.
+Français, tutoiement, 130 mots maximum, sans markdown, en deux ou trois paragraphes courts.`;
+async function blindAnalysis(tid) {
+  const t = byId(S.tastings, tid), w = wine(t?.wineId); if (!t || !w) return;
+  const F = t.full || {}, h = t.blind.hyp || {};
+  const fiche = [`Note : ${t.note ?? '?'}/20`, F.teinte && `teinte ${F.teinte}`, F.oeil && `intensité visuelle ${F.oeil}/5`, F.limpidite, F.nez && `intensité du nez ${F.nez}/5`, F.ouverture && `nez ${F.ouverture.toLowerCase()}`,
+    F.aromes?.length && `arômes : ${F.aromes.join(', ')}`, F.attaque && `attaque ${F.attaque.toLowerCase()}`,
+    ...(w.kind === 'spirit' ? SLIDERS_SPIRIT : SLIDERS_VIN).filter(([k]) => F[k] != null).map(([k, l]) => `${l.toLowerCase()} ${sliderOut(k, F[k], w.kind)}`),
+    F.texture && `tanins ${F.texture.toLowerCase()}`, F.equilibre && F.equilibre.toLowerCase(), F.evolution && `évolution : ${({ jeune: 'jeune', apoint: 'à point', declin: 'sur le déclin' })[F.evolution]}`,
+    t.comment && `commentaire : « ${t.comment} »`].filter(Boolean).join(' ; ');
+  const hyp = [h.cepage && `${w.kind === 'spirit' ? 'style' : 'cépage'} : ${h.cepage}`, h.region && `origine : ${h.region}`, h.millesime && `${w.kind === 'spirit' ? 'âge' : 'millésime'} : ${h.millesime}`, h.prix && `prix : ${h.prix} €`].filter(Boolean).join(' ; ');
+  const real = [wineTitle(w), w.domaine && `producteur ${w.domaine}`, w.appellation, w.region, w.pays, w.cepages && `cépages ${w.cepages}`, w.kind === 'spirit' && [SPIRIT_CATS[w.cat], w.age && w.age + ' ans', w.fut].filter(Boolean).join(', '), w.degre && w.degre + ' %', (t.prix ?? w.achat?.prix) != null && `prix ${t.prix ?? w.achat.prix} €`].filter(Boolean).join(' ; ');
+  blindBusy = tid; refreshSheet();
+  try {
+    const r = await aiCall({ system: BLIND_SYS, content: `Sa fiche : ${fiche || 'presque vide'}\nSes hypothèses : ${hyp}\nLe vin révélé : ${real}`, maxTokens: 2500, effort: 'medium' });
+    t.blind.analysis = r.text.trim().slice(0, 1500);
+    await save();
+  } catch (e) { toast('Analyse impossible : ' + (e.message || '').split('\n')[0]); }
+  blindBusy = null; if (sheetStack.length) refreshSheet();
+}
+Object.assign(ACT, {
+  blindStart: t => { closeSheet(); startBlind(t.dataset.session || null); },
+  tcolor: t => { const v = t.dataset.v; if (v === 'spirit') { draft.taste.kind = 'spirit'; draft.taste.couleur = null; } else { draft.taste.kind = 'vin'; draft.taste.couleur = v; } wheelState = { active: null }; refreshSheet(); },
+  reveal: t => showSheet(() => revealSheet(t.dataset.t)),
+  revealWine: t => doReveal(t.dataset.t, t.dataset.w),
+  revealScan: t => { labelFor = { reveal: t.dataset.t }; const i = $('#f-photo'); i.value = ''; i.click(); },
+  revealManual: t => { const r = byId(S.tastings, t.dataset.t); newDraft(r.blind?.kind === 'spirit' ? 'spirit' : 'vin', r.blind?.couleur ? { couleur: r.blind.couleur } : {}); draft.forReveal = t.dataset.t; showSheet(wineFormSheet, { full: true }); },
+  blindAI: t => blindAnalysis(t.dataset.t),
+});

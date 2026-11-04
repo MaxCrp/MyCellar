@@ -7,15 +7,22 @@ const occupancyExcept = ids => { const m = occupancy(); for (const [k, b] of m) 
 
 /* ---------- Ajouter ---------- */
 let addTarget = null;   // place choisie avant l'ajout (case libre touchée sur le plan)
+// Bouton + commun à tous les onglets : deux choix, puis les écrans détaillés
+function plusSheet() {
+  return `${head('Ajouter')}
+    <div class="big-actions">
+      <button class="big-action" data-act="newTaste">${ICON.notes}<div><b>Nouvelle dégustation</b><small>Un vin de ta cave ou bu ailleurs, une séance, à l’aveugle.</small></div></button>
+      <button class="big-action" data-act="addWine">${ICON.bottle}<div><b>Nouveau vin</b><small>Ajouter des bouteilles à ta cave.</small></div></button>
+    </div>`;
+}
 function addSheet() {
   const ai = aiReady();
-  return `${head('Ajouter')}
+  return `${head('Nouveau vin')}
     <div class="big-actions">
       <button class="big-action" data-act="scanLabel">${ICON.camera}<div><b>Photo de l’étiquette</b><small>${ai ? 'Le sommelier remplit la fiche, tu valides.' : 'Nécessite une clé IA (Plus › Intelligence artificielle).'}</small></div></button>
       <button class="big-action" data-act="newWine" data-kind="vin">${ICON.edit}<div><b>Saisie manuelle</b><small>Domaine, cuvée, millésime, quantité.</small></div></button>
       ${spiritsOn() ? `<button class="big-action" data-act="newWine" data-kind="spirit">${ICON.bottle}<div><b>Spiritueux</b><small>Whisky, rhum, cognac, mignonnettes…</small></div></button>` : ''}
       ${S.wines.length ? `<button class="big-action" data-act="rebuyList">${ICON.copy}<div><b>Racheter un vin de la cave</b><small>Ajouter des bouteilles à une référence existante.</small></div></button>` : ''}
-      <button class="big-action" data-act="importPloc">${ICON.doc}<div><b>Importer depuis Ploc</b><small>À partir du PDF exporté par Ploc.</small></div></button>
     </div>`;
 }
 function newDraft(kind, w = {}) {
@@ -58,7 +65,7 @@ function wineFormSheet() {
       <div class="grid2"><label class="check"><input type="checkbox" name="bruteDeFut" ${w.bruteDeFut ? 'checked' : ''}> Brut de fût</label><label class="check"><input type="checkbox" name="singleCask" ${w.singleCask ? 'checked' : ''}> Single cask</label></div>
       <div class="grid2"><label>Embouteilleur indépendant<input name="independant" value="${v('independant')}" autocomplete="off"></label><label>N° de fût ou bouteille<input name="numero" value="${v('numero')}" autocomplete="off"></label></div>
     </div>`;
-  const ft = d.forTaste;
+  const ft = d.forTaste || d.forReveal;
   const stock = editing || ft ? '' : `
     <div class="fieldset"><div class="ft">Bouteilles</div>
       <div class="grid2"><label>Quantité<input name="qty" inputmode="numeric" value="${d.qty}" required></label>
@@ -88,7 +95,7 @@ function wineFormSheet() {
         <div class="grid2"><label>Nom court (plan)<input name="short" value="${v('short')}" placeholder="${esc(shortName({ ...w, short: '' }))}"></label><label>Abréviation (rack)<input name="abbr" value="${v('abbr')}" placeholder="${esc(abbr({ ...w, abbr: '' }))}" maxlength="3"></label></div>
         <label>Notes<textarea name="notes">${esc(w.notes || '')}</textarea></label>
       </details>
-      <button class="btn primary wide" type="submit">${editing ? 'Enregistrer' : ft ? 'Continuer vers la dégustation' : 'Ajouter à la cave'}</button>
+      <button class="btn primary wide" type="submit">${editing ? 'Enregistrer' : d.forReveal ? 'Révéler ce vin' : ft ? 'Continuer vers la dégustation' : 'Ajouter à la cave'}</button>
     </form>
     ${dl('dl-dom', uniq(x => x.domaine))}${dl('dl-app', uniq(x => x.appellation))}${dl('dl-reg', uniq(x => x.region))}${dl('dl-lieu', uniq(x => x.achat?.lieu))}${dl('dl-friends', [...new Set(friends)])}`;
 }
@@ -120,13 +127,14 @@ FORMS.wine = async (f, d) => {
   const w = { id: uid(), ...dr.w, createdAt: Date.now() };
   readWineForm(d, w);
   // Vin dégusté hors cave : une fiche sans bouteille (ou la fiche existante), puis la dégustation
-  if (dr.forTaste) {
+  if (dr.forTaste || dr.forReveal) {
     const same = S.wines.find(x => x.kind === w.kind && norm(x.domaine) === norm(w.domaine) && norm(x.cuvee) === norm(w.cuvee) && norm(x.appellation) === norm(w.appellation) && (x.millesime || null) === w.millesime);
     const target = same || w;
     if (!same) { delete w.achat; S.wines.push(w); }
     if (dr.photo && !target.photo) { await photoSave(target.id, dr.photo); target.photo = true; }
     await save(); draft = null; closeSheet();
     if (target.kind === 'vin' && !target.apogee?.fin && aiReady() && S.settings.ai.auto && !same) estimateApogee(target.id, { quiet: true });
+    if (dr.forReveal) return doReveal(dr.forReveal, target.id);
     return startTaste(target.id, null, 'quick', { sessionId: dr.forTaste.sessionId });
   }
   const qty = clamp(int(d.qty) || 1, 1, 500);
@@ -198,9 +206,16 @@ function placeToggle(unitId, r, c) {
   refreshSheet();
 }
 Object.assign(ACT, {
-  add: t => { if (view === 'deg' && !t.dataset?.u) return ACT.newTaste(t); addTarget = t.dataset?.u ? { unitId: t.dataset.u, r: +t.dataset.r, c: +t.dataset.c } : null; if (addTarget) closeSheet(); showSheet(addSheet); },
+  add: t => {
+    addTarget = t.dataset?.u ? { unitId: t.dataset.u, r: +t.dataset.r, c: +t.dataset.c } : null;
+    if (addTarget) { closeSheet(); return showSheet(addSheet); }   // case libre du plan : directement « Nouveau vin »
+    showSheet(plusSheet);
+  },
+  addWine: () => showSheet(addSheet),
   newWine: t => { newDraft(t.dataset.kind); showSheet(wineFormSheet, { full: true }); },
-  rebuyList: () => showSheet(() => `${head('Racheter un vin')}<div class="list">${[...S.wines].filter(kindOn).sort((a, b) => wineName(a).localeCompare(wineName(b), 'fr')).map(w => `<button class="li" data-act="rebuy" data-id="${w.id}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(wineSub(w))} · ${wineBottles(w.id).length} en cave</small></div></button>`).join('')}</div>`),
+  rebuyList: () => showSheet(() => `${head('Racheter un vin')}
+    <div class="search" style="margin:0 0 4px">${ICON.search}<input type="search" placeholder="Domaine, cuvée, appellation, millésime…" data-in="rebuyFind" autocomplete="off"></div>
+    <div id="rebuy-list">${rebuyRows('')}</div>`),
   rebuy: t => showSheet(() => addBottlesSheet(t.dataset.id)),
   placeSpace: t => { draft.place.spaceId = t.dataset.id; draft.place.sel = suggestFor(draft.place); refreshSheet(); },
   pickSlot: t => placeToggle(t.dataset.u, +t.dataset.r, +t.dataset.c),
@@ -287,7 +302,7 @@ function wineSheet(id) {
     </div>`}
     <h3>En cave · ${bs.length}${pr.length ? ` <span class="small">+ ${pr.length} en primeur</span>` : ''}</h3>
     ${bs.length || pr.length ? `<div class="list">${[...bs, ...pr].map(b => `<button class="li" data-act="bottle" data-b="${b.id}"><span class="chev">${ICON.pin}</span><div class="it"><b style="font-weight:500;font-size:14px">${esc(locLabel(b))}</b>${b.state === 'open' ? `<small>Ouverte · niveau ${b.level ?? 100} %</small>` : ''}</div><span class="chev">${ICON.chev}</span></button>`).join('')}</div>` : `<p class="muted small">${S.tastings.some(t => t.wineId === id) && !S.bottles.some(b => b.wineId === id) ? 'Vin dégusté, jamais en cave.' : 'Plus aucune bouteille en cave.'}</p>`}
-    <div class="btns2" style="margin-top:10px"><button class="btn" data-act="rebuy" data-id="${id}">${ICON.add} ${bs.length ? 'Ajouter' : 'Ajouter à la cave'}</button><button class="btn" data-act="taste" data-w="${id}">${ICON.star} Déguster</button></div>
+    <div class="btns2" style="margin-top:10px"><button class="btn" data-act="rebuy" data-id="${id}">${ICON.add} ${bs.length ? 'Ajouter' : 'Ajouter à la cave'}</button><button class="btn" data-act="taste" data-w="${id}">${ICON.cork} Déguster</button></div>
     <button class="btn wide ${isWished(id) ? 'outline' : 'ghost'}" style="margin-top:8px" data-act="wishToggle" data-w="${id}">${isWished(id) ? '♥ Dans ma liste d’envies' : '♥ Ajouter à ma liste d’envies'}</button>
     <h3>Fiche</h3>
     <dl class="kv">${dlrow(sp ? 'Distillerie' : 'Domaine', w.domaine)}${dlrow(sp ? 'Expression' : 'Cuvée', w.cuvee)}${dlrow('Appellation', w.appellation)}${dlrow('Région', [w.region, w.pays].filter(Boolean).join(', '))}
@@ -313,7 +328,7 @@ function bottleSheet(bid) {
       ${b.state === 'primeur' ? `<button class="btn primary wide" data-act="receive" data-b="${bid}">${ICON.down} Réceptionner</button>`
       : `<button class="btn primary wide" data-act="outBottle" data-b="${bid}">${ICON.out} ${sp && b.state === 'open' ? 'Bouteille terminée' : isFriend(w) ? 'Sortir (rendre, boire…)' : 'Sortir de la cave'}</button>
         ${sp && b.state !== 'open' ? `<button class="btn wide" data-act="openBottle" data-b="${bid}">Ouvrir la bouteille</button>` : ''}
-        <div class="btns2"><button class="btn" data-act="moveBottle" data-b="${bid}">${ICON.move} Déplacer</button><button class="btn" data-act="taste" data-w="${w.id}" data-b="${bid}">${ICON.star} Déguster</button></div>
+        <div class="btns2"><button class="btn" data-act="moveBottle" data-b="${bid}">${ICON.move} Déplacer</button><button class="btn" data-act="taste" data-w="${w.id}" data-b="${bid}">${ICON.cork} Déguster</button></div>
         ${isMulti() ? `<button class="btn wide ${inT ? 'outline' : ''}" data-act="toTransfer" data-b="${bid}">${ICON.truck} ${inT ? 'Retirer du transfert' : 'Ajouter au prochain transfert'}</button>` : ''}`}
       <button class="btn ghost wide" data-act="wine" data-id="${w.id}">Voir la fiche du vin</button>
     </div>`;
@@ -415,3 +430,11 @@ Object.assign(ACT, {
     await save(); closeSheet(); render(); toast('Référence supprimée');
   },
 });
+
+function rebuyRows(q) {
+  const m = matcher(q);
+  const ws = [...S.wines].filter(w => kindOn(w) && (!m || m(w))).sort((a, b) => wineName(a).localeCompare(wineName(b), 'fr') || (a.millesime || 0) - (b.millesime || 0));
+  return ws.length ? `<div class="list">${ws.map(w => `<button class="li" data-act="rebuy" data-id="${w.id}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(wineSub(w))} · ${wineBottles(w.id).length ? wineBottles(w.id).length + ' en cave' : 'pas en cave'}</small></div></button>`).join('')}</div>`
+    : '<p class="small" style="margin:10px 4px">Aucun vin ne correspond.</p>';
+}
+INPUTS.rebuyFind = el => { const box = $('#rebuy-list'); if (box) box.innerHTML = rebuyRows(el.value); };

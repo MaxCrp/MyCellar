@@ -49,6 +49,8 @@ function vPlus() {
       ${mode === 'app' ? setRow('chpw', 'Changer le mot de passe', '') : ''}
       ${setRow('codeinfo', 'Vérification du code', 'Empreinte ' + esc(fpLabel(code.approved)))}
     </div>
+    <div class="sect">Aide</div>
+    <div class="card" style="padding:0 12px">${setRow('introShow', 'Revoir la présentation', 'Les fonctions de MyCellar en sept écrans')}</div>
     <div class="btns" style="margin-top:16px"><button class="btn wide" data-act="lock">${ICON.lock} ${mode === 'demo' ? 'Quitter la démo' : 'Verrouiller maintenant'}</button></div>
     <p class="tiny" style="text-align:center;margin-top:14px">MyCellar · données chiffrées sur cet appareil</p>`;
 }

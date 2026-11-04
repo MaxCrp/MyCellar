@@ -19,7 +19,7 @@ const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true })
     return route.fulfill({ status: 200, headers: { ...cors, 'content-type': 'application/json' }, body: JSON.stringify({ model: body.model, stop_reason: 'end_turn', content: [{ type: 'text', text }], usage: { input_tokens: 2000, output_tokens: 200 } }) });
   });
   const count = () => p.evaluate(() => ({ t: S.tastings.length, s: S.sessions.length, w: S.wishes.length, cave: S.bottles.filter(inCave).length, wines: S.wines.length }));
-  await p.goto('http://localhost:8765/'); await p.waitForTimeout(500);
+  await p.goto('http://localhost:8765/'); await p.waitForTimeout(500); if (await p.$('#intro')) await p.click('#intro [data-act=introDone]');
   await p.click('[data-act=demo]'); await p.waitForTimeout(300);
   const c0 = await count();
   await p.click('[data-act=go][data-v=deg]'); await p.waitForTimeout(200);
@@ -31,7 +31,7 @@ const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true })
   const horsOnly = await p.$$eval('.view .li[data-act=tasteView]', x => x.length);
   await p.click('[data-act=dfSrc][data-v=hors]');
   // Nouvelle dégustation hors cave, saisie manuelle
-  await p.click('[data-act=add]'); await p.waitForTimeout(200);
+  await p.click('[data-act=add]'); await p.click('.sheet [data-act=newTaste]'); await p.waitForTimeout(200);
   await p.screenshot({ path: D + '62-new.png' });
   await p.click('.sheet [data-act=newTasteWine][data-kind=vin]'); await p.waitForTimeout(200);
   await p.fill('.sheet input[name=domaine]', 'Domaine Tissot'); await p.fill('.sheet input[name=appellation]', 'Arbois'); await p.fill('.sheet input[name=cuvee]', 'Savagnin en Spois'); await p.fill('.sheet input[name=millesime]', '2019');
@@ -49,7 +49,7 @@ const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true })
   // Vin de la cave bu ailleurs, avec sortie du stock → réévaluation IA
   await p.click('[data-act=go][data-v=plus]'); await p.click('[data-act=aiSettings]'); await p.fill('.sheet input[name=key]', 'sk-ant-x');
   await p.uncheck('.sheet input[name=auto]'); await p.click('.sheet [type=submit]'); await p.waitForTimeout(200);
-  await p.click('[data-act=go][data-v=deg]'); await p.click('[data-act=add]'); await p.waitForTimeout(100);
+  await p.click('[data-act=go][data-v=deg]'); await p.click('[data-act=add]'); await p.click('.sheet [data-act=newTaste]'); await p.waitForTimeout(100);
   await p.fill('.sheet input[data-in=tasteFind]', 'bandol'); await p.waitForTimeout(100);
   await p.click('#taste-find [data-act=tasteWine]'); await p.waitForTimeout(200);
   await p.check('.sheet input[data-ch=tcave]'); await p.waitForTimeout(100);
@@ -59,7 +59,7 @@ const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true })
   await p.click('.sheet [data-act=applyReeval]'); await p.waitForTimeout(200);
   const c2 = await count();
   // Séance
-  await p.click('[data-act=add]'); await p.click('.sheet [data-act=newSession]'); await p.waitForTimeout(100);
+  await p.click('[data-act=add]'); await p.click('.sheet [data-act=newTaste]'); await p.click('.sheet [data-act=newSession]'); await p.waitForTimeout(100);
   await p.fill('.sheet input[name=titre]', 'Verticale de Morgon'); await p.click('.sheet [type=submit]'); await p.waitForTimeout(200);
   await p.click('.sheet [data-act=newTaste]'); await p.fill('.sheet input[data-in=tasteFind]', 'morgon'); await p.waitForTimeout(100);
   await p.click('#taste-find [data-act=tasteWine]'); await p.waitForTimeout(200);

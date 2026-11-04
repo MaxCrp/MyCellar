@@ -9,7 +9,7 @@ const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true })
   p.on('pageerror', e => errs.push('PAGEERR ' + e.message));
   p.on('console', m => { if (m.type() === 'error') errs.push('CONSOLE ' + m.text()); });
   p.on('dialog', d => d.accept());
-  await p.goto('http://localhost:8765/'); await p.waitForTimeout(600);
+  await p.goto('http://localhost:8765/'); await p.waitForTimeout(600); if (await p.$('#intro')) await p.click('#intro [data-act=introDone]');
   await p.fill('input[name=p1]', 'ma cave secrète'); await p.fill('input[name=p2]', 'ma cave secrète');
   await p.click('#f-setup [type=submit]'); await p.waitForTimeout(2500);
   await p.screenshot({ path: D + '30-new.png' });
@@ -22,13 +22,13 @@ const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true })
   await p.click('.sheet [type=submit]'); await p.waitForTimeout(300);
   // un spiritueux ? désactivé : on active
   await p.click('[data-act=go][data-v=plus]'); await p.click('input[data-ch=setSpirits]'); await p.waitForTimeout(300);
-  await p.click('[data-act=add]'); await p.click('.sheet [data-act=newWine][data-kind=spirit]'); await p.waitForTimeout(200);
+  await p.click('[data-act=add]'); await p.click('.sheet [data-act=addWine]'); await p.click('.sheet [data-act=newWine][data-kind=spirit]'); await p.waitForTimeout(200);
   await p.screenshot({ path: D + '31-spirit-form.png' });
   await p.fill('.sheet input[name=domaine]', 'Springbank'); await p.fill('.sheet input[name=cuvee]', '10 ans'); await p.fill('.sheet input[name=age]', '10');
   await p.click('.sheet [type=submit]'); await p.waitForTimeout(400);
   await p.click('.sheet [data-act=placeOk]'); await p.waitForTimeout(400);
   // vin avec 2 bouteilles pour un ami
-  await p.click('[data-act=add]'); await p.click('.sheet [data-act=newWine][data-kind=vin]'); await p.waitForTimeout(200);
+  await p.click('[data-act=add]'); await p.click('.sheet [data-act=addWine]'); await p.click('.sheet [data-act=newWine][data-kind=vin]'); await p.waitForTimeout(200);
   await p.fill('.sheet input[name=domaine]', 'Château Margaux'); await p.fill('.sheet input[name=appellation]', 'Margaux'); await p.fill('.sheet input[name=millesime]', '2005'); await p.fill('.sheet input[name=qty]', '2');
   await p.click('.sheet summary'); await p.fill('.sheet input[name=owner]', 'Julie');
   await p.click('.sheet [type=submit]'); await p.waitForTimeout(400);
@@ -47,7 +47,7 @@ const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true })
   // restauration dans un navigateur vierge
   const ctx2 = await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true });
   const q = await ctx2.newPage(); q.on('pageerror', e => errs.push('PAGEERR2 ' + e.message)); q.on('dialog', d => d.accept());
-  await q.goto('http://localhost:8765/'); await q.waitForTimeout(600);
+  await q.goto('http://localhost:8765/'); await q.waitForTimeout(600); if (await q.$('#intro')) await q.click('#intro [data-act=introDone]');
   const [fc] = await Promise.all([q.waitForEvent('filechooser'), q.click('[data-act=import]')]);
   await fc.setFiles(file); await q.waitForTimeout(300);
   await q.fill('.sheet input[name=p]', 'ma cave secrète'); await q.click('.sheet [type=submit]'); await q.waitForTimeout(2500);
