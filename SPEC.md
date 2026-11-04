@@ -318,6 +318,14 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
   - **Nouveau vin** : ouvre l’écran actuel d’ajout en cave (photo de l’étiquette, saisie manuelle, spiritueux, racheter un vin de la cave).
   Une case libre touchée sur le plan continue d’ouvrir directement « Nouveau vin » pour cette place.
 - [ ] Import depuis Ploc accessible uniquement depuis les réglages : il disparaît du bouton « + » et de la carte d’accueil de la page Cave, puisqu’il ne sert qu’une fois.
+- [ ] Barre de recherche dans « Racheter un vin de la cave », pour ne plus faire défiler toute la liste. Elle filtre sur le domaine, la cuvée, l’appellation et le millésime.
+- [ ] **Dégustation à l’aveugle** (nouvelle fonction). Proposition à valider :
+  - **Entrée** : un choix « À l’aveugle » dans « Nouvelle dégustation », et dans une séance. Une séance peut être entièrement à l’aveugle.
+  - **D’abord la fiche** : la fiche de dégustation habituelle, sur un « vin mystère ». La couleur (rouge, blanc, rosé…) se choisit dans la partie œil, et elle adapte les teintes et la bouche, comme aujourd’hui.
+  - **Hypothèses**, facultatives : avant la révélation, tu notes ce que tu penses avoir dans le verre (cépage, région ou appellation, millésime, gamme de prix).
+  - **Puis la révélation** : « Révéler le vin » ouvre la recherche dans les vins connus, la photo d’étiquette ou la saisie manuelle (appellation, millésime, domaine…). La dégustation est alors rattachée à ce vin.
+  - **Comparaison** : les hypothèses sont affichées face à la réalité (cépage trouvé, millésime à ±2 ans…).
+  - **En attente** : une dégustation pas encore révélée reste dans le journal en « Vin mystère », pour être révélée plus tard, par exemple à la fin d’une séance.
 
 **v2**
 - Sauvegarde automatique Google Drive.
