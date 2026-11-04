@@ -1,0 +1,206 @@
+# MyCellar — Spécification
+
+Application de gestion de cave à vin, avec un sommelier IA intégré.
+Utilisateur principal : un seul, sur iPhone. Le partage avec des amis est envisagé plus tard (chacun aura sa propre copie, ses données et sa clé API).
+
+---
+
+## 1. Principes d'architecture (repris de Patrimoine)
+
+| Sujet | Choix |
+|---|---|
+| Format | PWA installable sur l'écran d'accueil : un seul `index.html` en JavaScript sans framework ni CDN, plus `sw.js`, `manifest.webmanifest`, des icônes et `_headers` |
+| Hébergement | Cloudflare Pages, avec du code statique uniquement |
+| Données | 100 % locales, dans IndexedDB, chiffrées en AES-GCM avec une clé dérivée du mot de passe par PBKDF2. Option « rester déverrouillé sur cet appareil » |
+| Persistance | `navigator.storage.persist()` est demandé au premier lancement |
+| Mises à jour | Le service worker sert toujours le code installé. L'app vérifie l'empreinte du nouveau code et demande confirmation avant de l'installer |
+| Hors ligne | Tout fonctionne hors ligne, sauf l'IA |
+| Sécurité | CSP stricte. `connect-src` est limité à `api.anthropic.com`, `api.mistral.ai` et, en v2, aux domaines Google Drive |
+| IA | Appels directs depuis le navigateur avec la clé API de l'utilisateur, stockée chiffrée. Claude Sonnet 5.5 (`claude-sonnet-5-5`) par défaut, Mistral en alternative |
+| Langue | Français |
+
+---
+
+## 2. Organisation physique des caves
+
+```
+Site (Ville = consommation, Campagne = stockage, Primeurs = virtuel)
+ └─ Espace (Cave cuisine, Cave de vieillissement…)  ← conditions de stockage notées
+     └─ Meuble
+         ├─ Armoire : N clayettes, chacune en simple rangée de K places
+         ├─ Rack    : grille L lignes × C colonnes, une bouteille par case
+         ├─ Caisse bois : capacité 6 ou 12, un seul vin (caisse d'origine), position dans une pile
+         └─ Carton  : comme une caisse
+```
+
+- **Site** : nom, rôle (`consommation` ou `stockage`), et un site virtuel « Primeurs » pour les vins payés mais pas encore livrés (avec la date de livraison prévue et le site de destination).
+- **Espace** : nom, et **conditions de stockage** (température : stable / variable ; hygrométrie ; lumière ; vibrations). Ces critères donnent une note de qualité de 1 à 5. Elle sert aux conseils de déplacement, et elle raccourcit les apogées estimées des vins gardés dans une cave de moindre qualité.
+- **Meuble** : type, nom, dimensions et ordre d'affichage.
+- **Emplacement d'une bouteille** : meuble plus position (clayette et place, ou ligne et colonne, ou caisse). Une bouteille peut aussi rester « non placée » dans un espace.
+- **Site actuel** : un sélecteur en haut de l'écran (« Je suis à : Ville / Campagne »). Le sommelier ne propose que les bouteilles présentes sur place, avec une option pour inclure l'autre site.
+
+### Plan visuel (v1)
+- Chaque meuble est dessiné en 2D. Chaque case affiche directement le **nom abrégé** du vin et son millésime, avec une pastille de couleur (rouge, blanc, rosé, effervescent, liquoreux). On n'a plus besoin de cliquer case par case.
+- Un mode d'affichage alternatif colore les cases selon l'urgence à boire.
+- La recherche met en surbrillance les cases où se trouve le vin.
+- Toucher une case ouvre la bouteille ; toucher une case vide propose d'y ranger un vin.
+- Les caisses sont dessinées en piles de tuiles (vin, millésime, nombre de bouteilles restantes).
+- Un éditeur de meuble permet d'ajouter un meuble, d'en définir les dimensions et de le renommer.
+- **Rangement suggéré** à l'ajout : les vins de garde vont plutôt dans l'espace de stockage, ceux à boire bientôt dans la cave de consommation. La suggestion peut être refusée.
+
+---
+
+## 3. Modèle de données
+
+```js
+Wine {          // une référence
+  id, domaine*, cuvee*, couleur*, millesime*,
+  appellation, region, pays, cepages[], degre, format('75cl'|'37.5cl'|'150cl'|…),
+  bio, nature, photo (≈100 Ko, compressée),
+  owner: 'moi' | { ami: 'Pierre' },        // vins gardés pour des amis
+  achat: { prix, lieu, date },
+  apogee: { debut, pic, fin, source:'ia'|'manuel', justification, sources[], maj },
+  cadeau: { offertPar }, notes, tags[], createdAt, updatedAt
+}
+Bottle {        // une bouteille physique
+  id, wineId, siteId, espaceId, meubleId, position, statut:'en_cave'|'primeur'|'sortie'
+}
+Movement {      // journal
+  id, bottleId, type:'sortie'|'deplacement'|'entree'|'transfert',
+  motif:'bue'|'offerte'|'cassee'|'bouchonnee'|'vendue'|'rendue_ami',
+  date, de, vers, offerteA, occasion, convives, plat
+}
+Tasting {       // dégustation
+  id, wineId, bottleId, date, note20 (pas de 0,5), commentaire,
+  complete?: { oeil, nez, bouche, conclusion }   // §6
+}
+Site, Espace, Meuble, Settings, AiUsage(mois, coût)
+```
+`*` signale un champ obligatoire. Tous les autres sont modifiables librement, sans dépendre d'une base externe.
+
+### Vins gardés pour des amis
+- Le champ `owner` vaut alors « ami ». Ces vins sont rangés et déplacés comme les autres, avec un marqueur visuel sur le plan (initiale de l'ami, case hachurée).
+- Ils sont **exclus** des conseils du sommelier, du tableau « À boire », des suggestions de consommation, de la valeur de cave et des statistiques de consommation. Un filtre permet de les afficher ou de les masquer.
+- Ils ont un motif de sortie spécifique : « rendue à l'ami ».
+
+---
+
+## 4. Saisie
+
+1. **Photo d'étiquette** : Claude lit l'image et pré-remplit la fiche (domaine, cuvée, appellation, millésime, couleur, cépages, degré). L'utilisateur valide, puis choisit la quantité et l'emplacement.
+2. **Saisie manuelle** avec auto-complétion à partir des vins déjà présents en cave. La dictée vocale passe par le micro du clavier iOS.
+3. **Import du PDF Ploc**. Le PDF contient le nom, le domaine, le millésime et l'emplacement.
+   - L'IA lit le PDF, puis complète en lot l'appellation, la couleur, la région, les cépages et une apogée estimée, sans recherche web pour limiter le coût.
+   - Un écran de correspondance permet de valider avant l'import, y compris les emplacements.
+4. **Duplication** : « + 1 bouteille identique », ou « ajouter le millésime suivant ».
+
+---
+
+## 5. Sorties et mouvements
+- **Sortir une bouteille en deux taps** : on touche la bouteille, puis « Sortir ». Le motif est « bue » par défaut, et on peut le changer.
+- Juste après la sortie, l'app propose une note rapide. Si on ne note pas, elle relance le lendemain à l'ouverture.
+- **Déplacement** : d'une case à une autre, ou d'un site à l'autre.
+- **Liste de transfert** : on prépare la liste des bouteilles à emporter lors du prochain passage à la campagne. Le bouton « Arrivées » les déplace toutes d'un coup.
+- **Primeurs** : le bouton « Réceptionner » range les bouteilles reçues.
+
+---
+
+## 6. Dégustation
+- **Mode rapide** : un slider de note sur 20 (par pas de 0,5) et un commentaire facultatif.
+- **Mode complet**, entièrement au toucher, avec des sliders et des pastilles :
+  - **Contexte** : date, occasion, convives, plat.
+  - **Œil** : teinte (nuancier selon la couleur du vin), intensité, limpidité ; pour les effervescents, finesse et persistance des bulles.
+  - **Nez** : intensité, ouverture, et une **roue des arômes** sur trois niveaux, avec environ 120 arômes. On peut **ajouter ses propres arômes**, qui sont mémorisés.
+    - Les familles : fruits rouges, fruits noirs, fruits blancs, agrumes, fruits exotiques, fruits secs et confits, floral, végétal, épicé, boisé, grillé et fumé, pâtissier et lacté, minéral, sous-bois et animal.
+    - Les défauts : goût de bouchon, réduction, oxydation.
+  - **Bouche** : attaque, sucre, acidité, tanins (quantité et texture), alcool, corps, équilibre, longueur en caudalies.
+  - **Conclusion** : stade d'évolution (jeune, à point, en déclin), potentiel restant, note sur 20, commentaire.
+- L'historique complet sert au sommelier pour apprendre tes goûts.
+
+---
+
+## 7. Agents IA
+
+Un même modèle, avec un rôle et des instructions dédiés pour chaque agent. Un contexte de cave compact est mis en cache : la liste des vins disponibles avec stock, emplacement, apogée et notes passées. Les vins des amis en sont exclus.
+
+### 7.1 Sommelier des accords mets-vins (conversation)
+- Saisie libre (« poulet basquaise ce soir, 4 personnes »), plus des suggestions rapides prêtes à taper.
+- **Critères, par ordre de priorité** :
+  1. le vin est dans sa fenêtre de dégustation ;
+  2. la qualité de l'accord ;
+  3. les vins en fin d'apogée passent en priorité ;
+  4. les grandes bouteilles sont protégées, sauf pour une « grande occasion » ;
+  5. le budget, selon le type d'occasion (quotidien, amis, grande occasion).
+- **Réponse** : les trois meilleures bouteilles, sous forme de cartes. Chaque carte donne l'explication de l'accord, la température de service, s'il faut carafer (et combien de temps), et l'**emplacement exact**. Le bouton « Je la prends » sort la bouteille du stock.
+- Un menu complet (un vin par plat) uniquement si on le demande.
+- Le sens inverse marche aussi : « Que cuisiner avec ce vin ? »
+- Si rien dans la cave ne convient, l'agent le dit et **suggère quoi acheter**.
+- Il tient compte du site actuel et des préférences tirées des notes passées.
+
+### 7.2 Sommelier des apogées
+- À l'ajout d'un vin : il estime le début, le pic et la fin de la fenêtre, avec une justification courte et ses sources (recherche web). La qualité de la cave de stockage est prise en compte.
+- Si l'utilisateur corrige la fenêtre, c'est sa valeur qui fait foi.
+- Après une dégustation : il propose d'ajuster la fenêtre des bouteilles restantes du même vin, et l'utilisateur valide.
+- **Tableau « À boire »** : quatre catégories (à boire en priorité, à leur apogée, pas encore prêts, en déclin), plus une frise par année.
+- Un résumé apparaît à l'ouverture de l'app, sans notification push.
+
+### 7.3 Logistique entre sites et cuisine (v1.5)
+- Conseils de déplacement :
+  - les vins qui entrent dans leur fenêtre passent du site de stockage au site de consommation ;
+  - les vins de longue garde stockés dans une cave de moindre qualité vont vers la meilleure cave ;
+  - la cave de cuisine est réapprovisionnée à partir d'un nombre de places cible.
+- Ces conseils alimentent la liste de transfert (§5).
+
+### 7.4 Audit de cave (v2)
+- Analyse de l'équilibre de la cave (couleurs, régions, prêts à boire, embouteillage de millésimes qui arrivent à maturité en même temps), avec des suggestions d'achat.
+
+### 7.5 Coûts
+- Le compteur de dépense mensuelle est calculé à partir de l'usage réel renvoyé par l'API. Le plafond est réglable (2 € par défaut) ; au-delà, l'IA est bloquée.
+- Estimation : environ 1 $ par mois pour 120 bouteilles et un usage normal.
+- Paramètres de l'API Claude : réflexion adaptative et effort `medium`, sorties structurées (JSON) pour les cartes de recommandation et les fiches, mise en cache du contexte de cave, recherche web `web_search_20260209` limitée par `max_uses`, en-tête `anthropic-dangerous-direct-browser-access`, et `fallbacks: "default"` en cas de refus.
+
+---
+
+## 8. Interface
+- **Quatre onglets** :
+  - **Cave** : le plan, avec une bascule vers la liste ;
+  - **Sommelier** ;
+  - **À boire** ;
+  - **Plus** : statistiques, réglages, sauvegarde, export.
+
+  Plus un bouton « + » flottant pour ajouter une bouteille.
+- **Recherche** plein texte et filtres rapides : couleur, région, prêt à boire, site, propriétaire.
+- **Identité visuelle** : thème clair sur fond crème. Bordeaux pour les éléments principaux, vert bouteille et doré en accents discrets. Police **système sans empattements** (SF Pro sur iPhone), sobre, sans fioritures. Une pastille de couleur par type de vin.
+
+---
+
+## 9. Sauvegarde
+- **v1** : le bouton « Sauvegarder » produit un fichier chiffré et ouvre le partage iOS, puis « Enregistrer dans Fichiers » vers iCloud. Rappel si la dernière sauvegarde a plus de 7 jours. Import depuis ce fichier.
+- **v2** : sauvegarde automatique, chiffrée, vers **Google Drive** (dossier caché de l'application, `appDataFolder`), via OAuth PKCE.
+
+---
+
+## 10. Découpage
+
+**v1**
+- Sites, espaces et meubles, avec plan visuel et éditeur.
+- Fiches vin, bouteilles et emplacements ; vins des amis.
+- Scan d'étiquette, saisie manuelle, import du PDF Ploc.
+- Sorties, déplacements, liste de transfert, primeurs.
+- Dégustation rapide et complète, avec la roue des arômes.
+- Sommelier des accords (§7.1).
+- Apogées et tableau « À boire » (§7.2).
+- Site actuel, compteur de coûts, chiffrement, sauvegarde manuelle.
+
+**v1.5**
+- Conseils de logistique entre sites et de réassort de la cuisine (§7.3).
+- Réévaluation des apogées après dégustation.
+
+**v2**
+- Sauvegarde automatique Google Drive.
+- Audit de cave.
+- Statistiques et valeur estimée.
+- Carte des vins à partager.
+- QR codes sur les casiers (scan dans l'app).
+- Export PDF et Excel.
+- Suivi des cadeaux.
