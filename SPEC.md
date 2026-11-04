@@ -379,6 +379,15 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
   - **Décision** : ces réglages restent désactivés en démo.
   - **Correction** : sous chaque réglage désactivé en démo, une ligne indique « Indisponible dans la cave fictive : crée ta cave pour l'utiliser ». Toucher l'interrupteur grisé affiche le même message.
   - **Réglages concernés** : suivi d'utilisation, Face ID, Rester déverrouillé. L'export du rapport n'est pas proposé en démo.
+- [ ] **Clignotement et retour en haut dans les fenêtres** (relevé : fiche de dégustation, champs « Équilibre » ou « À boire »). Audit fait sur tous les boutons qui modifient une fenêtre sur place (`tests/t9.cjs`) : 16 actions sur 23 présentent un défaut.
+  - **Cause 1, clignotement** : à chaque choix, la fenêtre entière est recréée, et son animation d'ouverture est rejouée. Touche toutes les pastilles et tous les choix de la fiche de dégustation (teinte, limpidité, attaque, tanins, équilibre, évolution, potentiel, type, accord, couleur à l'aveugle, Rapide/Complète), l'écran de rangement (choisir une case, Suggérer, Effacer, changer d'espace), la liste d'envies depuis une fiche vin, l'ajout au transfert, la vérification de l'import Ploc, les réglages des sites.
+  - **Cause 2, retour vers le haut** : la position de défilement est restaurée avant que la roue des arômes et les photos soient redessinées. La fenêtre est alors trop courte et le défilement remonte. Mesuré : de 87 px (attaque) à 398 px (évolution, potentiel) sur iPhone.
+  - **Correction** :
+    - une fenêtre déjà ouverte est mise à jour sur place : son contenu change, mais elle n'est ni recréée ni réanimée ;
+    - le défilement est restauré après le dessin complet (roue, photos) ;
+    - les photos gardent une hauteur réservée pour ne plus décaler la page en se chargeant ;
+    - même vérification pour les écrans principaux. L'audit n'y montre pas de saut aujourd'hui, mais ils resteront couverts.
+  - **Contrôle** : `tests/t9.cjs` est ajouté à `tests/run.sh` et doit afficher 0 défaut sur l'ensemble des actions.
 
 **v2**
 - Sauvegarde automatique Google Drive.
