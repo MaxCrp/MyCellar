@@ -360,7 +360,7 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
     - Il exporte un rapport ciblé : la description, les 15 dernières minutes du journal, les dernières erreurs techniques, l'écran affiché et le contexte. Même format JSON et même partage iOS.
     - Il fonctionne même si le suivi est désactivé : seuls le contexte et les erreurs récentes sont joints, et l'app l'indique.
   - **Effacement** : bouton « Effacer le journal ».
-- [ ] **Suivi des mises à jour** : savoir ce que contient une mise à jour avant et après l'avoir acceptée. Proposition à valider :
+- [ ] **Suivi des mises à jour** : savoir ce que contient une mise à jour avant et après l'avoir acceptée (validé) :
   - **Numéro de version** : l'app connaît son propre numéro (1.6, 1.6.1…), affiché dans Réglages › Aide.
   - **Journal des versions** : un fichier `changelog.json` publié avec l'app. Pour chaque version, il donne le numéro, la date et la liste des nouveautés et corrections, rédigées pour l'utilisateur. Ce fichier est mis à jour à chaque release, à partir des cases de ce document.
   - **Avant d'installer** : dans le bandeau « Une nouvelle version est disponible », le bouton « Détails » devient « Plus d'infos ».
@@ -369,6 +369,7 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
     - Hors connexion, ou si le journal est absent, l'app le dit et garde l'affichage actuel de l'empreinte.
   - **Après l'installation** : au premier lancement de la nouvelle version, une fenêtre « Nouveautés de la version X » s'affiche une fois.
   - **Historique** : Réglages › Aide › « Historique des versions » liste toutes les versions et leur contenu.
+  - **Versions passées** : le journal contient aussi un résumé des versions 1.0, 1.5 et 1.5.2, rédigé pour l'utilisateur, pour que les bêta-testeurs voient d'où part l'app.
   - **Sécurité** : le journal des versions n'est que du texte affiché, jamais du code. Il n'entre pas dans l'empreinte et ne remplace pas la vérification du code.
   - **Limite** : la fonction n'existe qu'à partir de la v1.6. Lors du passage de la v1.5.2 à la v1.6, le bandeau ne pourra pas encore montrer le contenu avant l'installation, mais la fenêtre « Nouveautés » s'affichera après.
 
