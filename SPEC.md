@@ -24,7 +24,7 @@ Utilisateur principal : un seul, sur iPhone. Le partage avec des amis est envisa
 ## 2. Organisation physique des caves
 
 ```
-Site (Ville = consommation, Campagne = stockage, Primeurs = virtuel)
+Site (Site 1, Site 2… renommables ; rôle consommation ou stockage ; Primeurs = virtuel)
  └─ Espace (Cave cuisine, Cave de vieillissement…)  ← conditions de stockage notées
      └─ Meuble
          ├─ Armoire : N clayettes, chacune en simple rangée de K places
@@ -34,20 +34,21 @@ Site (Ville = consommation, Campagne = stockage, Primeurs = virtuel)
          └─ Étagère : N planches avec des places libres (bar, spiritueux, grands formats)
 ```
 
-- **Mode de fonctionnement**, réglable dans les paramètres :
+- **Mode de fonctionnement**, réglable dans les paramètres (Plus › Sites, espaces et meubles). La création de la cave ne pose aucune question : elle démarre en site unique, avec un site nommé « Site 1 ».
+  En passant en plusieurs sites, l'app ajoute « Site 2 » (rôle stockage), puis « Site 3 »… Chaque nom se change à tout moment.
   - **Site unique** : le sélecteur de site, les transferts et les conseils entre sites disparaissent de l'interface. Les conseils de déplacement restent possibles entre espaces, par exemple de la cave de vieillissement vers la cuisine.
   - **Plusieurs sites** : de 2 à N sites.
-- **Site** : nom **librement modifiable** (« Ville » et « Campagne » ne sont que des exemples), rôle (`consommation` ou `stockage`), ordre d'affichage. On peut ajouter, renommer ou supprimer un site ; un site qui contient encore des bouteilles ne peut pas être supprimé.
+- **Site** : nom **librement modifiable** (par défaut « Site 1 », « Site 2 »…), rôle (`consommation` ou `stockage`), ordre d'affichage. On peut ajouter, renommer ou supprimer un site ; un site qui contient encore des bouteilles ne peut pas être supprimé.
 - **Primeurs** : un site virtuel pour les vins payés mais pas encore livrés, avec la date de livraison prévue et le site de destination.
 - **Espace** : nom, et **conditions de stockage** (température : stable / variable ; hygrométrie ; lumière ; vibrations). Ces critères donnent une note de qualité de 1 à 5. Elle sert aux conseils de déplacement, et elle raccourcit les apogées estimées des vins gardés dans une cave de moindre qualité.
 - **Meuble** : type, nom, dimensions et ordre d'affichage.
 - **Emplacement d'une bouteille** : meuble plus position (clayette et place, ou ligne et colonne, ou caisse). Une bouteille peut aussi rester « non placée » dans un espace.
-- **Site actuel** : un sélecteur en haut de l'écran (« Je suis à : Ville / Campagne »). Le sommelier ne propose que les bouteilles présentes sur place, avec une option pour inclure l'autre site.
+- **Site actuel** : un sélecteur en haut de l'écran (« Je suis à : Site 1 / Site 2 », avec les noms choisis). Le sommelier ne propose que les bouteilles présentes sur place, avec une option pour inclure l'autre site.
 
 ### Plan visuel (v1)
 - Chaque meuble est dessiné en 2D. Chaque case affiche directement le **nom abrégé** du vin et son millésime, avec une pastille de couleur (rouge, blanc, rosé, effervescent, liquoreux). On n'a plus besoin de cliquer case par case.
-- Un mode d'affichage alternatif colore les cases selon l'urgence à boire.
 - La recherche met en surbrillance les cases où se trouve le vin.
+- Deux vues seulement : **Plan** et **Liste**. L'urgence à boire se consulte dans l'onglet « À boire », qui reste la seule référence sur ce sujet.
 - Toucher une case ouvre la bouteille ; toucher une case vide propose d'y ranger un vin.
 - Les caisses sont dessinées en piles de tuiles (vin, millésime, nombre de bouteilles restantes).
 - Un éditeur de meuble permet d'ajouter un meuble, d'en définir les dimensions et de le renommer.

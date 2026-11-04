@@ -1,7 +1,12 @@
 /* ---------- Cave fictive (démonstration) ---------- */
 function demoData() {
-  const d = seedStructure(emptyData(), true);
-  const prev = S; S = d;
+  const d = emptyData(), prev = S; S = d;
+  const v = { id: uid(), name: 'Ville', role: 'conso' }, c = { id: uid(), name: 'Campagne', role: 'stock' };
+  d.sites = [v, c]; d.settings.multi = true;
+  d.spaces = [
+    { id: uid(), siteId: v.id, name: 'Cave cuisine', use: 'conso', q: { temp: 'stable', humid: 'ok', light: 'sombre', vib: 'oui' } },
+    { id: uid(), siteId: c.id, name: 'Cave de vieillissement', use: 'garde', q: { temp: 'stable', humid: 'ok', light: 'sombre', vib: 'non' } },
+  ];
   d.settings.spirits = true;
   const [ville, camp] = d.sites, [cuis, vieil] = d.spaces;
   const U = (spaceId, type, name, rows, cols, extra = {}) => { const u = { id: uid(), spaceId, type, name, rows, cols, order: d.units.length, ...extra }; d.units.push(u); return u; };

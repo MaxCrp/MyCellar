@@ -11,9 +11,9 @@ const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true })
   p.on('dialog', d => d.accept());
   await p.goto('http://localhost:8765/'); await p.waitForTimeout(600);
   await p.fill('input[name=p1]', 'ma cave secrète'); await p.fill('input[name=p2]', 'ma cave secrète');
-  await p.selectOption('select[name=org]', 'single');
   await p.click('#f-setup [type=submit]'); await p.waitForTimeout(2500);
   await p.screenshot({ path: D + '30-new.png' });
+  console.log('après création', await p.evaluate(() => S.sites.map(s => s.name).join(', ') + ' · multi=' + S.settings.multi + ' · pastille site : ' + !!document.querySelector('.sitepill')));
   if (await p.$('.sheet')) await p.click('.shead [data-act=close]');
   // premier meuble
   await p.click('.card [data-act=addUnit]'); await p.waitForTimeout(200);
@@ -57,6 +57,7 @@ const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true })
   await q.click('[data-act=go][data-v=plus]'); await q.click('[data-act=sitesSheet]'); await q.waitForTimeout(200);
   await q.click('.sheet [data-act=setMulti][data-v="1"]'); await q.waitForTimeout(300);
   await q.screenshot({ path: D + '35-sites.png' });
+  console.log('sites', await q.evaluate(() => S.sites.map(s => s.name + ' (' + s.role + ')').join(', ')));
   await q.click('.sheet [data-act=editSpace] >> nth=0'); await q.waitForTimeout(200);
   await q.screenshot({ path: D + '36-space.png' });
   console.log('bouteilles placées', n1, 'après restauration', n2);

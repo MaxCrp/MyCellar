@@ -16,7 +16,7 @@ function caveTools() {
   const sps = visibleSpaces();
   const n = id => S.bottles.filter(b => inCave(b) && b.spaceId === id).length;
   return `<div class="search">${ICON.search}<input type="search" placeholder="Rechercher un vin, un domaine, un millésime…" value="${esc(caveQuery)}" data-in="caveSearch" autocomplete="off" enterkeyhint="search"></div>
-    <div class="seg">${[['plan', 'Plan'], ['liste', 'Liste'], ['urgence', 'Urgence']].map(([k, l]) => `<button class="${caveMode === k ? 'on' : ''}" data-act="caveMode" data-m="${k}">${l}</button>`).join('')}</div>
+    <div class="seg">${[['plan', 'Plan'], ['liste', 'Liste']].map(([k, l]) => `<button class="${caveMode === k ? 'on' : ''}" data-act="caveMode" data-m="${k}">${l}</button>`).join('')}</div>
     ${caveMode !== 'liste' && sps.length > 1 ? `<div class="chips"><button class="chip${!caveSpace ? ' on' : ''}" data-act="caveSpace" data-id="">Tout · ${sps.reduce((t, s) => t + n(s.id), 0)}</button>${sps.map(s => `<button class="chip${caveSpace === s.id ? ' on' : ''}" data-act="caveSpace" data-id="${s.id}">${esc(s.name)} · ${n(s.id)}</button>`).join('')}</div>` : ''}
     ${caveMode === 'liste' ? listFilters() : ''}`;
 }
@@ -34,14 +34,13 @@ function vCave() {
   const m = matcher(caveQuery), occ = occupancy();
   let sps = visibleSpaces();
   if (caveSpace && sps.some(s => s.id === caveSpace)) sps = sps.filter(s => s.id === caveSpace);
-  const ctx = { occ, m, urg: caveMode === 'urgence', pick: null };
+  const ctx = { occ, m, pick: null };
   let found = 0;
   if (m) found = S.bottles.filter(b => inCave(b) && sps.some(s => s.id === b.spaceId) && m(wine(b.wineId))).length;
   const nothing = !S.wines.length;
   return `${nothing ? `<div class="card"><b>Bienvenue dans ta cave</b><p class="small" style="margin:6px 0 10px">Commence par décrire tes meubles (armoire, rack, caisses), puis ajoute tes bouteilles avec le bouton +.</p>
       <div class="btns2"><button class="btn primary small" data-act="addUnit" data-space="${sps[0]?.id || ''}">Ajouter un meuble</button><button class="btn small" data-act="importPloc">Importer depuis Ploc</button></div></div>` : ''}
     ${m ? `<p class="small" style="margin:10px 4px 0">${found ? plural(found, 'bouteille trouvée', 'bouteilles trouvées') + ' : elles sont encadrées sur le plan.' : 'Aucune bouteille ne correspond ici.'}</p>` : ''}
-    ${ctx.urg ? `<div class="legend">${Object.entries(STATUS).map(([k, s]) => `<span><i class="dot" style="background:${s.hex}"></i>${s.short}</span>`).join('')}</div>` : ''}
     ${sps.map(sp => spaceBlock(sp, ctx, sps.length > 1)).join('')}
     ${transferChip()}`;
 }
@@ -79,16 +78,14 @@ function renderGrid(u, ctx) {
       const sel = ctx.pick?.sel.some(s => s.unitId === u.id && s.r === r && s.c === c);
       if (u.type === 'rack') {
         if (!b) { cells.push(`<button class="rc${sel ? ' sel' : ''}" ${ctx.pick ? `data-act="pickSlot" data-u="${u.id}" data-r="${r}" data-c="${c}"` : `data-act="emptySlot" data-u="${u.id}" data-r="${r}" data-c="${c}"`} aria-label="${t.row1} ${r + 1}, place ${c + 1} : libre"></button>`); continue; }
-        const { w, cls } = slotState(b, ctx), st = status(w);
-        const bg = ctx.urg && st ? STATUS[st].hex : wineColor(w), light = !ctx.urg && wineLight(w);
+        const { w, cls } = slotState(b, ctx);
+        const bg = wineColor(w), light = wineLight(w);
         cells.push(`<button class="rc ${cls.join(' ')}${light ? ' light' : ''}${ctx.pick ? ' dim' : ''}" style="background:${bg};border-color:${bg}" ${isFriend(w) ? `data-ini="${esc(ownerInitial(w))}"` : ''} ${ctx.pick ? 'disabled' : `data-act="slot" data-b="${b.id}"`} aria-label="${esc(wineTitle(w))}">${esc(abbr(w))}</button>`);
         continue;
       }
       if (!b) { cells.push(`<button class="slot empty${sel ? ' sel' : ''}" ${ctx.pick ? `data-act="pickSlot" data-u="${u.id}" data-r="${r}" data-c="${c}"` : `data-act="emptySlot" data-u="${u.id}" data-r="${r}" data-c="${c}"`} aria-label="Place libre"></button>`); continue; }
-      const { w, cls } = slotState(b, ctx), st = status(w);
-      const style = ctx.urg && st ? `style="background:${STATUS[st].hex}"` : '';
-      if (ctx.urg && st) cls.push('st');
-      cells.push(`<button class="slot ${cls.join(' ')}${ctx.pick ? ' dim' : ''}" ${style} ${ctx.pick ? 'disabled' : `data-act="slot" data-b="${b.id}"`}><i style="background:${wineColor(w)}"></i><b>${esc(shortName(w))}</b><small>${esc(shortSub(w))}${b.state === 'open' ? ' · ouverte' : ''}</small>${isFriend(w) ? `<span class="ini">${esc(ownerInitial(w))}</span>` : ''}</button>`);
+      const { w, cls } = slotState(b, ctx);
+      cells.push(`<button class="slot ${cls.join(' ')}${ctx.pick ? ' dim' : ''}" ${ctx.pick ? 'disabled' : `data-act="slot" data-b="${b.id}"`}><i style="background:${wineColor(w)}"></i><b>${esc(shortName(w))}</b><small>${esc(shortSub(w))}${b.state === 'open' ? ' · ouverte' : ''}</small>${isFriend(w) ? `<span class="ini">${esc(ownerInitial(w))}</span>` : ''}</button>`);
     }
     const cols = u.type === 'rack' ? `repeat(${u.cols},minmax(26px,1fr))` : `repeat(${u.cols},minmax(${u.cols > 6 ? 54 : 0}px,1fr))`;
     const cls = u.type === 'rack' ? 'rack' : 'shelf';
@@ -104,10 +101,9 @@ function renderBoxes(boxes, ctx) {
     const bs = boxContents(u, ctx.occ), ws = [...new Set(bs.map(b => b.wineId))].map(wine);
     const title = ws.length === 1 ? wineTitle(ws[0]) : ws.length ? 'Assortiment' : 'Vide';
     const hit = ctx.m && ws.some(ctx.m), dim = ctx.m && !hit;
-    const st = ctx.urg && ws.length === 1 ? status(ws[0]) : null;
     const act = ctx.pick ? `data-act="pickBox" data-u="${u.id}"` : `data-act="box" data-u="${u.id}"`;
     const picked = ctx.pick?.sel.filter(s => s.unitId === u.id).length || 0;
-    return `<button class="crate${u.type === 'carton' ? ' carton' : ''}${hit ? ' hl' : ''}${dim ? ' dim' : ''}" ${act} ${st ? `style="box-shadow:inset 4px 0 0 ${STATUS[st].hex}"` : ''}>
+    return `<button class="crate${u.type === 'carton' ? ' carton' : ''}${hit ? ' hl' : ''}${dim ? ' dim' : ''}" ${act}>
       <span class="ell" style="display:block">${esc(title)}</span>
       <small class="ell">${esc(u.name || UNIT_TYPES[u.type].label)}${u.pile ? ' · ' + esc(u.pile) + (u.level ? ' niv. ' + u.level : '') : ''}${ws.length === 1 && isFriend(ws[0]) ? ' · ' + esc(ws[0].owner) : ''}</small>
       <span class="cnt">${bs.length} / ${capacity(u)}${picked ? ' · +' + picked : ''}</span></button>`;

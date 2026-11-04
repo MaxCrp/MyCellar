@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#F7F3EC">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-5kWI0dccTEGPFezxNWFvEbrT+6If5XktNO0rDDtUPUU='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-nC6rEUbtLlxV7TdCwPDWILe2rq+Z+os6wnSoO6xGA0I='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>MyCellar</title>
@@ -137,8 +137,6 @@ input[type=date]{display:block}
 .slot.ami{background:repeating-linear-gradient(135deg,#FAF7F2 0 5px,#EFE8DD 5px 7px)}
 .slot .ini{position:absolute;right:3px;bottom:2px;font-size:8.5px;background:var(--gold);color:#fff;border-radius:6px;padding:0 3px;font-weight:700}
 .slot.sel{outline:2px solid var(--green);outline-offset:1px;background:var(--green-soft)}
-.slot.st{color:#fff;border-color:transparent}
-.slot.st small{color:rgba(255,255,255,.85)}
 /* Plan : rack */
 .rack{display:grid;gap:6px 4px;justify-content:space-between}
 .rc{width:100%;max-width:36px;aspect-ratio:1;height:auto;justify-self:center;border-radius:50%;border:1px solid var(--line);background:#FAF7F2;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;padding:0;position:relative;letter-spacing:-.2px}
@@ -157,8 +155,6 @@ input[type=date]{display:block}
 .crate.hl{outline:2px solid var(--bx);outline-offset:1px}
 .crate.dim{opacity:.35}
 .unplaced{display:flex;gap:6px;flex-wrap:wrap}
-.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin-top:8px}
-.legend span{display:inline-flex;align-items:center;gap:4px}
 
 /* Listes */
 .list{background:var(--surface);border:1px solid var(--line);border-radius:16px;margin-top:10px;overflow:hidden}
@@ -714,28 +710,25 @@ function normalize(d) {
   for (const k of ['sites', 'spaces', 'units', 'wines', 'bottles', 'moves', 'tastings', 'chat']) d[k] = Array.isArray(d[k]) ? d[k] : [];
   d.transfer = { ...e.transfer, ...(d.transfer || {}) };
   d.usage = d.usage || {}; d.dismissed = d.dismissed || {};
-  if (!d.sites.length) d.sites.push({ id: uid(), name: 'Maison', role: 'conso' });
+  if (!d.sites.length) d.sites.push({ id: uid(), name: 'Site 1', role: 'conso' });
   if (!d.spaces.length) d.spaces.push({ id: uid(), siteId: d.sites[0].id, name: 'Cave', use: 'conso', q: {} });
   if (!d.sites.some(s => s.id === d.settings.site)) d.settings.site = d.sites[0].id;
   return d;
 }
-// Structure de départ choisie à la création du coffre
-function seedStructure(d, multi) {
-  d.settings.multi = multi;
-  if (multi) {
-    const v = { id: uid(), name: 'Ville', role: 'conso' }, c = { id: uid(), name: 'Campagne', role: 'stock' };
-    d.sites = [v, c];
-    d.spaces = [
-      { id: uid(), siteId: v.id, name: 'Cave cuisine', use: 'conso', q: { temp: 'stable', humid: 'ok', light: 'sombre', vib: 'oui' } },
-      { id: uid(), siteId: c.id, name: 'Cave de vieillissement', use: 'garde', q: { temp: 'stable', humid: 'ok', light: 'sombre', vib: 'non' } },
-    ];
-  } else {
-    const m = { id: uid(), name: 'Maison', role: 'conso' };
-    d.sites = [m];
-    d.spaces = [{ id: uid(), siteId: m.id, name: 'Cave', use: 'garde', q: {} }];
-  }
-  d.settings.site = d.sites[0].id;
+// Structure de départ : un seul site, « Site 1 ». Le mode plusieurs sites se règle dans Plus.
+function seedStructure(d) {
+  const s1 = { id: uid(), name: 'Site 1', role: 'conso' };
+  d.settings.multi = false;
+  d.sites = [s1];
+  d.spaces = [{ id: uid(), siteId: s1.id, name: 'Cave', use: 'garde', q: {} }];
+  d.settings.site = s1.id;
   return d;
+}
+// Nom par défaut d'un nouveau site : « Site 2 », « Site 3 »… (premier numéro libre)
+function newSiteName(sites = S.sites) {
+  const used = new Set(sites.map(s => s.name));
+  let n = 1; while (used.has('Site ' + n)) n++;
+  return 'Site ' + n;
 }
 
 /* ---------- Accès ---------- */
@@ -984,8 +977,6 @@ function renderLock(kind, err = '') {
       <form id="f-setup" class="lock-form" data-form="setup" autocomplete="on">${USERFIELD}
         <label>Mot de passe (10 caractères minimum)<input type="password" name="p1" autocomplete="new-password" required></label>
         <label>Confirmation<input type="password" name="p2" autocomplete="new-password" required></label>
-        <label>Organisation de ta cave
-          <select name="org"><option value="single">Un seul lieu (une maison)</option><option value="multi">Deux lieux (ville et campagne)</option></select></label>
         ${e}<button class="btn primary" type="submit">Créer ma cave</button>
       </form>
       <div class="lock-links"><button class="link" data-act="demo">Essayer avec une cave fictive</button><button class="link" data-act="import">Restaurer une sauvegarde</button></div>`
@@ -1087,7 +1078,7 @@ function caveTools() {
   const sps = visibleSpaces();
   const n = id => S.bottles.filter(b => inCave(b) && b.spaceId === id).length;
   return `<div class="search">${ICON.search}<input type="search" placeholder="Rechercher un vin, un domaine, un millésime…" value="${esc(caveQuery)}" data-in="caveSearch" autocomplete="off" enterkeyhint="search"></div>
-    <div class="seg">${[['plan', 'Plan'], ['liste', 'Liste'], ['urgence', 'Urgence']].map(([k, l]) => `<button class="${caveMode === k ? 'on' : ''}" data-act="caveMode" data-m="${k}">${l}</button>`).join('')}</div>
+    <div class="seg">${[['plan', 'Plan'], ['liste', 'Liste']].map(([k, l]) => `<button class="${caveMode === k ? 'on' : ''}" data-act="caveMode" data-m="${k}">${l}</button>`).join('')}</div>
     ${caveMode !== 'liste' && sps.length > 1 ? `<div class="chips"><button class="chip${!caveSpace ? ' on' : ''}" data-act="caveSpace" data-id="">Tout · ${sps.reduce((t, s) => t + n(s.id), 0)}</button>${sps.map(s => `<button class="chip${caveSpace === s.id ? ' on' : ''}" data-act="caveSpace" data-id="${s.id}">${esc(s.name)} · ${n(s.id)}</button>`).join('')}</div>` : ''}
     ${caveMode === 'liste' ? listFilters() : ''}`;
 }
@@ -1105,14 +1096,13 @@ function vCave() {
   const m = matcher(caveQuery), occ = occupancy();
   let sps = visibleSpaces();
   if (caveSpace && sps.some(s => s.id === caveSpace)) sps = sps.filter(s => s.id === caveSpace);
-  const ctx = { occ, m, urg: caveMode === 'urgence', pick: null };
+  const ctx = { occ, m, pick: null };
   let found = 0;
   if (m) found = S.bottles.filter(b => inCave(b) && sps.some(s => s.id === b.spaceId) && m(wine(b.wineId))).length;
   const nothing = !S.wines.length;
   return `${nothing ? `<div class="card"><b>Bienvenue dans ta cave</b><p class="small" style="margin:6px 0 10px">Commence par décrire tes meubles (armoire, rack, caisses), puis ajoute tes bouteilles avec le bouton +.</p>
       <div class="btns2"><button class="btn primary small" data-act="addUnit" data-space="${sps[0]?.id || ''}">Ajouter un meuble</button><button class="btn small" data-act="importPloc">Importer depuis Ploc</button></div></div>` : ''}
     ${m ? `<p class="small" style="margin:10px 4px 0">${found ? plural(found, 'bouteille trouvée', 'bouteilles trouvées') + ' : elles sont encadrées sur le plan.' : 'Aucune bouteille ne correspond ici.'}</p>` : ''}
-    ${ctx.urg ? `<div class="legend">${Object.entries(STATUS).map(([k, s]) => `<span><i class="dot" style="background:${s.hex}"></i>${s.short}</span>`).join('')}</div>` : ''}
     ${sps.map(sp => spaceBlock(sp, ctx, sps.length > 1)).join('')}
     ${transferChip()}`;
 }
@@ -1150,16 +1140,14 @@ function renderGrid(u, ctx) {
       const sel = ctx.pick?.sel.some(s => s.unitId === u.id && s.r === r && s.c === c);
       if (u.type === 'rack') {
         if (!b) { cells.push(`<button class="rc${sel ? ' sel' : ''}" ${ctx.pick ? `data-act="pickSlot" data-u="${u.id}" data-r="${r}" data-c="${c}"` : `data-act="emptySlot" data-u="${u.id}" data-r="${r}" data-c="${c}"`} aria-label="${t.row1} ${r + 1}, place ${c + 1} : libre"></button>`); continue; }
-        const { w, cls } = slotState(b, ctx), st = status(w);
-        const bg = ctx.urg && st ? STATUS[st].hex : wineColor(w), light = !ctx.urg && wineLight(w);
+        const { w, cls } = slotState(b, ctx);
+        const bg = wineColor(w), light = wineLight(w);
         cells.push(`<button class="rc ${cls.join(' ')}${light ? ' light' : ''}${ctx.pick ? ' dim' : ''}" style="background:${bg};border-color:${bg}" ${isFriend(w) ? `data-ini="${esc(ownerInitial(w))}"` : ''} ${ctx.pick ? 'disabled' : `data-act="slot" data-b="${b.id}"`} aria-label="${esc(wineTitle(w))}">${esc(abbr(w))}</button>`);
         continue;
       }
       if (!b) { cells.push(`<button class="slot empty${sel ? ' sel' : ''}" ${ctx.pick ? `data-act="pickSlot" data-u="${u.id}" data-r="${r}" data-c="${c}"` : `data-act="emptySlot" data-u="${u.id}" data-r="${r}" data-c="${c}"`} aria-label="Place libre"></button>`); continue; }
-      const { w, cls } = slotState(b, ctx), st = status(w);
-      const style = ctx.urg && st ? `style="background:${STATUS[st].hex}"` : '';
-      if (ctx.urg && st) cls.push('st');
-      cells.push(`<button class="slot ${cls.join(' ')}${ctx.pick ? ' dim' : ''}" ${style} ${ctx.pick ? 'disabled' : `data-act="slot" data-b="${b.id}"`}><i style="background:${wineColor(w)}"></i><b>${esc(shortName(w))}</b><small>${esc(shortSub(w))}${b.state === 'open' ? ' · ouverte' : ''}</small>${isFriend(w) ? `<span class="ini">${esc(ownerInitial(w))}</span>` : ''}</button>`);
+      const { w, cls } = slotState(b, ctx);
+      cells.push(`<button class="slot ${cls.join(' ')}${ctx.pick ? ' dim' : ''}" ${ctx.pick ? 'disabled' : `data-act="slot" data-b="${b.id}"`}><i style="background:${wineColor(w)}"></i><b>${esc(shortName(w))}</b><small>${esc(shortSub(w))}${b.state === 'open' ? ' · ouverte' : ''}</small>${isFriend(w) ? `<span class="ini">${esc(ownerInitial(w))}</span>` : ''}</button>`);
     }
     const cols = u.type === 'rack' ? `repeat(${u.cols},minmax(26px,1fr))` : `repeat(${u.cols},minmax(${u.cols > 6 ? 54 : 0}px,1fr))`;
     const cls = u.type === 'rack' ? 'rack' : 'shelf';
@@ -1175,10 +1163,9 @@ function renderBoxes(boxes, ctx) {
     const bs = boxContents(u, ctx.occ), ws = [...new Set(bs.map(b => b.wineId))].map(wine);
     const title = ws.length === 1 ? wineTitle(ws[0]) : ws.length ? 'Assortiment' : 'Vide';
     const hit = ctx.m && ws.some(ctx.m), dim = ctx.m && !hit;
-    const st = ctx.urg && ws.length === 1 ? status(ws[0]) : null;
     const act = ctx.pick ? `data-act="pickBox" data-u="${u.id}"` : `data-act="box" data-u="${u.id}"`;
     const picked = ctx.pick?.sel.filter(s => s.unitId === u.id).length || 0;
-    return `<button class="crate${u.type === 'carton' ? ' carton' : ''}${hit ? ' hl' : ''}${dim ? ' dim' : ''}" ${act} ${st ? `style="box-shadow:inset 4px 0 0 ${STATUS[st].hex}"` : ''}>
+    return `<button class="crate${u.type === 'carton' ? ' carton' : ''}${hit ? ' hl' : ''}${dim ? ' dim' : ''}" ${act}>
       <span class="ell" style="display:block">${esc(title)}</span>
       <small class="ell">${esc(u.name || UNIT_TYPES[u.type].label)}${u.pile ? ' · ' + esc(u.pile) + (u.level ? ' niv. ' + u.level : '') : ''}${ws.length === 1 && isFriend(ws[0]) ? ' · ' + esc(ws[0].owner) : ''}</small>
       <span class="cnt">${bs.length} / ${capacity(u)}${picked ? ' · +' + picked : ''}</span></button>`;
@@ -1490,7 +1477,7 @@ const suggestFor = p => suggestSlots(p.spaceId, p.ids.length, new Set()).filter(
 function placeSheet() {
   const p = draft?.place; if (!p) return null;
   const w = wine(p.wineId), occ = occupancyExcept(new Set(p.ids)), sp = space(p.spaceId);
-  const ctx = { occ, m: null, urg: false, pick: p };
+  const ctx = { occ, m: null, pick: p };
   const units = spaceUnits(sp.id), grid = units.filter(u => !UNIT_TYPES[u.type].box), boxes = units.filter(u => UNIT_TYPES[u.type].box);
   return `${head(`Ranger ${p.ids.length > 1 ? p.ids.length + ' bouteilles' : 'la bouteille'}`)}
     <p class="small" style="margin-top:-6px"><span class="dot" style="background:${wineColor(w)}"></span> ${esc(wineTitle(w))}</p>
@@ -2435,10 +2422,10 @@ function sitesSheet() {
     ${multi ? `<button class="btn wide" style="margin-top:12px" data-act="editSite">${ICON.add} Ajouter un site</button>` : ''}`;
 }
 function siteSheet(id) {
-  const s = id ? site(id) : { name: '', role: 'stock' };
+  const s = id ? site(id) : { name: newSiteName(), role: 'stock' };
   return `${head(id ? 'Modifier le site' : 'Nouveau site')}
     <form class="form" data-form="site" data-id="${id || ''}">
-      <label>Nom<input name="name" value="${esc(s.name)}" required placeholder="Ville, Campagne, Chalet…"></label>
+      <label>Nom<input name="name" value="${esc(s.name)}" required placeholder="Site 2, Maison de campagne…"></label>
       ${S.settings.multi ? `<label>Rôle<select name="role"><option value="conso" ${s.role === 'conso' ? 'selected' : ''}>Consommation (là où je vis)</option><option value="stock" ${s.role === 'stock' ? 'selected' : ''}>Stockage</option></select></label>` : ''}
       <button class="btn primary wide" type="submit">Enregistrer</button>
       ${id && S.sites.length > 1 ? `<button class="btn danger wide" type="button" data-act="delSite" data-id="${id}">Supprimer ce site</button>` : ''}
@@ -2482,7 +2469,7 @@ Object.assign(ACT, {
     if (multi === S.settings.multi) return;
     if (multi) {
       S.settings.multi = true;
-      if (S.sites.length < 2) { S.sites[0].role = 'conso'; const c = { id: uid(), name: 'Campagne', role: 'stock' }; S.sites.push(c); S.spaces.push({ id: uid(), siteId: c.id, name: 'Cave', use: 'garde', q: {} }); }
+      if (S.sites.length < 2) { S.sites[0].role = 'conso'; const c = { id: uid(), name: newSiteName(), role: 'stock' }; S.sites.push(c); S.spaces.push({ id: uid(), siteId: c.id, name: 'Cave', use: 'garde', q: {} }); }
     } else {
       if (S.sites.length > 1 && !confirm(`Passer en site unique ? Tous les espaces seront regroupés dans « ${S.sites[0].name} » et les autres sites supprimés. Les bouteilles ne bougent pas de leurs meubles.`)) return;
       const keep = S.sites[0];
@@ -2667,8 +2654,13 @@ FORMS.chpw = async (f, d) => {
 /* ===== 85-demo.js ===== */
 /* ---------- Cave fictive (démonstration) ---------- */
 function demoData() {
-  const d = seedStructure(emptyData(), true);
-  const prev = S; S = d;
+  const d = emptyData(), prev = S; S = d;
+  const v = { id: uid(), name: 'Ville', role: 'conso' }, c = { id: uid(), name: 'Campagne', role: 'stock' };
+  d.sites = [v, c]; d.settings.multi = true;
+  d.spaces = [
+    { id: uid(), siteId: v.id, name: 'Cave cuisine', use: 'conso', q: { temp: 'stable', humid: 'ok', light: 'sombre', vib: 'oui' } },
+    { id: uid(), siteId: c.id, name: 'Cave de vieillissement', use: 'garde', q: { temp: 'stable', humid: 'ok', light: 'sombre', vib: 'non' } },
+  ];
   d.settings.spirits = true;
   const [ville, camp] = d.sites, [cuis, vieil] = d.spaces;
   const U = (spaceId, type, name, rows, cols, extra = {}) => { const u = { id: uid(), spaceId, type, name, rows, cols, order: d.units.length, ...extra }; d.units.push(u); return u; };
@@ -2762,7 +2754,7 @@ FORMS.setup = async (f, d) => {
   if (d.p1 !== d.p2) return renderLock('setup', 'Les deux mots de passe ne correspondent pas.');
   const btn = f.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Création…';
   const raw = rand(32);
-  await adopt({ raw, data: seedStructure(emptyData(), d.org === 'multi'), slots: { pw: await makePwSlot(raw, d.p1) } });
+  await adopt({ raw, data: seedStructure(emptyData()), slots: { pw: await makePwSlot(raw, d.p1) } });
   await save(); navigator.storage?.persist?.(); await clearFails();
   enterApp(); toast('Cave créée');
   if (pkAvailable()) setTimeout(() => showSheet(() => `${head('Face ID')}<p>Veux-tu ouvrir ta cave avec Face ID plutôt qu’avec ton mot de passe ?</p>

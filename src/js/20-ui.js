@@ -91,8 +91,6 @@ function renderLock(kind, err = '') {
       <form id="f-setup" class="lock-form" data-form="setup" autocomplete="on">${USERFIELD}
         <label>Mot de passe (10 caractères minimum)<input type="password" name="p1" autocomplete="new-password" required></label>
         <label>Confirmation<input type="password" name="p2" autocomplete="new-password" required></label>
-        <label>Organisation de ta cave
-          <select name="org"><option value="single">Un seul lieu (une maison)</option><option value="multi">Deux lieux (ville et campagne)</option></select></label>
         ${e}<button class="btn primary" type="submit">Créer ma cave</button>
       </form>
       <div class="lock-links"><button class="link" data-act="demo">Essayer avec une cave fictive</button><button class="link" data-act="import">Restaurer une sauvegarde</button></div>`

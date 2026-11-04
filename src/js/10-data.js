@@ -103,28 +103,25 @@ function normalize(d) {
   for (const k of ['sites', 'spaces', 'units', 'wines', 'bottles', 'moves', 'tastings', 'chat']) d[k] = Array.isArray(d[k]) ? d[k] : [];
   d.transfer = { ...e.transfer, ...(d.transfer || {}) };
   d.usage = d.usage || {}; d.dismissed = d.dismissed || {};
-  if (!d.sites.length) d.sites.push({ id: uid(), name: 'Maison', role: 'conso' });
+  if (!d.sites.length) d.sites.push({ id: uid(), name: 'Site 1', role: 'conso' });
   if (!d.spaces.length) d.spaces.push({ id: uid(), siteId: d.sites[0].id, name: 'Cave', use: 'conso', q: {} });
   if (!d.sites.some(s => s.id === d.settings.site)) d.settings.site = d.sites[0].id;
   return d;
 }
-// Structure de départ choisie à la création du coffre
-function seedStructure(d, multi) {
-  d.settings.multi = multi;
-  if (multi) {
-    const v = { id: uid(), name: 'Ville', role: 'conso' }, c = { id: uid(), name: 'Campagne', role: 'stock' };
-    d.sites = [v, c];
-    d.spaces = [
-      { id: uid(), siteId: v.id, name: 'Cave cuisine', use: 'conso', q: { temp: 'stable', humid: 'ok', light: 'sombre', vib: 'oui' } },
-      { id: uid(), siteId: c.id, name: 'Cave de vieillissement', use: 'garde', q: { temp: 'stable', humid: 'ok', light: 'sombre', vib: 'non' } },
-    ];
-  } else {
-    const m = { id: uid(), name: 'Maison', role: 'conso' };
-    d.sites = [m];
-    d.spaces = [{ id: uid(), siteId: m.id, name: 'Cave', use: 'garde', q: {} }];
-  }
-  d.settings.site = d.sites[0].id;
+// Structure de départ : un seul site, « Site 1 ». Le mode plusieurs sites se règle dans Plus.
+function seedStructure(d) {
+  const s1 = { id: uid(), name: 'Site 1', role: 'conso' };
+  d.settings.multi = false;
+  d.sites = [s1];
+  d.spaces = [{ id: uid(), siteId: s1.id, name: 'Cave', use: 'garde', q: {} }];
+  d.settings.site = s1.id;
   return d;
+}
+// Nom par défaut d'un nouveau site : « Site 2 », « Site 3 »… (premier numéro libre)
+function newSiteName(sites = S.sites) {
+  const used = new Set(sites.map(s => s.name));
+  let n = 1; while (used.has('Site ' + n)) n++;
+  return 'Site ' + n;
 }
 
 /* ---------- Accès ---------- */

@@ -20,8 +20,6 @@ const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true })
   await p.screenshot({ path: D + '03-search.png' });
   await p.fill('input[data-in=caveSearch]', '');
   await p.dispatchEvent('input[data-in=caveSearch]', 'input');
-  await p.click('[data-act=caveMode][data-m=urgence]'); await p.waitForTimeout(200);
-  await p.screenshot({ path: D + '04-urgence.png', fullPage: true });
   await p.click('[data-act=caveMode][data-m=liste]'); await p.waitForTimeout(200);
   await p.screenshot({ path: D + '05-liste.png', fullPage: true });
   await p.click('[data-act=go][data-v=boire]'); await p.waitForTimeout(200);

@@ -166,7 +166,7 @@ const suggestFor = p => suggestSlots(p.spaceId, p.ids.length, new Set()).filter(
 function placeSheet() {
   const p = draft?.place; if (!p) return null;
   const w = wine(p.wineId), occ = occupancyExcept(new Set(p.ids)), sp = space(p.spaceId);
-  const ctx = { occ, m: null, urg: false, pick: p };
+  const ctx = { occ, m: null, pick: p };
   const units = spaceUnits(sp.id), grid = units.filter(u => !UNIT_TYPES[u.type].box), boxes = units.filter(u => UNIT_TYPES[u.type].box);
   return `${head(`Ranger ${p.ids.length > 1 ? p.ids.length + ' bouteilles' : 'la bouteille'}`)}
     <p class="small" style="margin-top:-6px"><span class="dot" style="background:${wineColor(w)}"></span> ${esc(wineTitle(w))}</p>

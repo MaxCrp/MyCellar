@@ -65,10 +65,10 @@ function sitesSheet() {
     ${multi ? `<button class="btn wide" style="margin-top:12px" data-act="editSite">${ICON.add} Ajouter un site</button>` : ''}`;
 }
 function siteSheet(id) {
-  const s = id ? site(id) : { name: '', role: 'stock' };
+  const s = id ? site(id) : { name: newSiteName(), role: 'stock' };
   return `${head(id ? 'Modifier le site' : 'Nouveau site')}
     <form class="form" data-form="site" data-id="${id || ''}">
-      <label>Nom<input name="name" value="${esc(s.name)}" required placeholder="Ville, Campagne, Chalet…"></label>
+      <label>Nom<input name="name" value="${esc(s.name)}" required placeholder="Site 2, Maison de campagne…"></label>
       ${S.settings.multi ? `<label>Rôle<select name="role"><option value="conso" ${s.role === 'conso' ? 'selected' : ''}>Consommation (là où je vis)</option><option value="stock" ${s.role === 'stock' ? 'selected' : ''}>Stockage</option></select></label>` : ''}
       <button class="btn primary wide" type="submit">Enregistrer</button>
       ${id && S.sites.length > 1 ? `<button class="btn danger wide" type="button" data-act="delSite" data-id="${id}">Supprimer ce site</button>` : ''}
@@ -112,7 +112,7 @@ Object.assign(ACT, {
     if (multi === S.settings.multi) return;
     if (multi) {
       S.settings.multi = true;
-      if (S.sites.length < 2) { S.sites[0].role = 'conso'; const c = { id: uid(), name: 'Campagne', role: 'stock' }; S.sites.push(c); S.spaces.push({ id: uid(), siteId: c.id, name: 'Cave', use: 'garde', q: {} }); }
+      if (S.sites.length < 2) { S.sites[0].role = 'conso'; const c = { id: uid(), name: newSiteName(), role: 'stock' }; S.sites.push(c); S.spaces.push({ id: uid(), siteId: c.id, name: 'Cave', use: 'garde', q: {} }); }
     } else {
       if (S.sites.length > 1 && !confirm(`Passer en site unique ? Tous les espaces seront regroupés dans « ${S.sites[0].name} » et les autres sites supprimés. Les bouteilles ne bougent pas de leurs meubles.`)) return;
       const keep = S.sites[0];

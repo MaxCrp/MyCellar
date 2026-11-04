@@ -32,7 +32,7 @@ FORMS.setup = async (f, d) => {
   if (d.p1 !== d.p2) return renderLock('setup', 'Les deux mots de passe ne correspondent pas.');
   const btn = f.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Création…';
   const raw = rand(32);
-  await adopt({ raw, data: seedStructure(emptyData(), d.org === 'multi'), slots: { pw: await makePwSlot(raw, d.p1) } });
+  await adopt({ raw, data: seedStructure(emptyData()), slots: { pw: await makePwSlot(raw, d.p1) } });
   await save(); navigator.storage?.persist?.(); await clearFails();
   enterApp(); toast('Cave créée');
   if (pkAvailable()) setTimeout(() => showSheet(() => `${head('Face ID')}<p>Veux-tu ouvrir ta cave avec Face ID plutôt qu’avec ton mot de passe ?</p>
