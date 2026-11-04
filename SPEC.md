@@ -188,6 +188,8 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
   - accords (chocolat, fromages, desserts) ;
   - digestif après un repas donné ;
   - ordre de dégustation pour une soirée découverte.
+- **Cocktails** : le sommelier peut proposer un cocktail réalisable avec les spiritueux de la cave, uniquement quand l'option spiritueux est activée. Un interrupteur dédié permet de couper les cocktails.
+- **Mignonnettes et échantillons** : une contenance de plus (5 cl), à côté de 20, 35, 50, 70, 100 et 150 cl.
 - **Rangement** : dans n'importe quel meuble, en particulier le type « Étagère ».
 
 ---

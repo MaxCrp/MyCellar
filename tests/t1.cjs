@@ -1,0 +1,35 @@
+// Test de bout en bout (Playwright) : lancé par tests/run.sh, sur http://localhost:8765
+const { chromium } = require('playwright');
+const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true });
+(async () => {
+  const b = await chromium.launch();
+  const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+  const p = await ctx.newPage();
+  const errs = [];
+  p.on('pageerror', e => errs.push('PAGEERR ' + e.message));
+  p.on('console', m => { if (m.type() === 'error') errs.push('CONSOLE ' + m.text()); });
+  p.on('dialog', d => d.accept());
+  await p.goto('http://localhost:8765/');
+  await p.waitForTimeout(800);
+  await p.screenshot({ path: D + '01-lock.png' });
+  await p.click('[data-act=demo]');
+  await p.waitForTimeout(400);
+  await p.screenshot({ path: D + '02-cave.png', fullPage: true });
+  await p.fill('input[data-in=caveSearch]', 'morgon');
+  await p.waitForTimeout(200);
+  await p.screenshot({ path: D + '03-search.png' });
+  await p.fill('input[data-in=caveSearch]', '');
+  await p.dispatchEvent('input[data-in=caveSearch]', 'input');
+  await p.click('[data-act=caveMode][data-m=urgence]'); await p.waitForTimeout(200);
+  await p.screenshot({ path: D + '04-urgence.png', fullPage: true });
+  await p.click('[data-act=caveMode][data-m=liste]'); await p.waitForTimeout(200);
+  await p.screenshot({ path: D + '05-liste.png', fullPage: true });
+  await p.click('[data-act=go][data-v=boire]'); await p.waitForTimeout(200);
+  await p.screenshot({ path: D + '06-boire.png', fullPage: true });
+  await p.click('[data-act=go][data-v=plus]'); await p.waitForTimeout(200);
+  await p.screenshot({ path: D + '07-plus.png', fullPage: true });
+  await p.click('[data-act=go][data-v=somm]'); await p.waitForTimeout(200);
+  await p.screenshot({ path: D + '08-somm.png' });
+  console.log(errs.join('\n') || 'NO ERRORS');
+  await b.close();
+})();
