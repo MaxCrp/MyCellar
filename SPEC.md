@@ -390,6 +390,9 @@ Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : 
   - **Contrôle** : `tests/t9.cjs` est ajouté à `tests/run.sh` et doit afficher 0 défaut sur l'ensemble des actions.
 - [ ] **Réglages › Contenu** : supprimer la ligne « Vins · Toujours actif », qui n'apporte rien. Il reste « Spiritueux » et, quand les spiritueux sont activés, « Cocktails ».
 - [ ] **Fiche de dégustation : retirer le bouton « OK » en haut à droite**. Il est collé à la croix de fermeture, et on risque de toucher l'un pour l'autre. L'enregistrement se fait uniquement par le bouton « Enregistrer la dégustation » en bas de la fiche. Ça vaut pour toutes les dégustations, puisque c'est la même fiche : après la sortie d'une bouteille, depuis l'onglet Dégustations, à l'aveugle ou en séance.
+- [ ] **Fiche de dégustation : confirmation avant de fermer sans enregistrer.** Si la fiche contient déjà des informations (note modifiée, commentaire, arômes, pastilles, contexte, hypothèses, photo), fermer demande « Abandonner cette dégustation ? Ce que tu as saisi sera perdu. », avec les boutons « Abandonner » et « Continuer la dégustation ».
+  - **Cas couverts** : la croix, le fond grisé derrière la fiche et la flèche de retour.
+  - **Fiche vide** : elle se ferme directement, sans question.
 
 **v2**
 - Sauvegarde automatique Google Drive.
