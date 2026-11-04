@@ -30,10 +30,15 @@ Site (Ville = consommation, Campagne = stockage, Primeurs = virtuel)
          ├─ Armoire : N clayettes, chacune en simple rangée de K places
          ├─ Rack    : grille L lignes × C colonnes, une bouteille par case
          ├─ Caisse bois : capacité 6 ou 12, un seul vin (caisse d'origine), position dans une pile
-         └─ Carton  : comme une caisse
+         ├─ Carton  : comme une caisse
+         └─ Étagère : N planches avec des places libres (bar, spiritueux, grands formats)
 ```
 
-- **Site** : nom, rôle (`consommation` ou `stockage`), et un site virtuel « Primeurs » pour les vins payés mais pas encore livrés (avec la date de livraison prévue et le site de destination).
+- **Mode de fonctionnement**, réglable dans les paramètres :
+  - **Site unique** : le sélecteur de site, les transferts et les conseils entre sites disparaissent de l'interface. Les conseils de déplacement restent possibles entre espaces, par exemple de la cave de vieillissement vers la cuisine.
+  - **Plusieurs sites** : de 2 à N sites.
+- **Site** : nom **librement modifiable** (« Ville » et « Campagne » ne sont que des exemples), rôle (`consommation` ou `stockage`), ordre d'affichage. On peut ajouter, renommer ou supprimer un site ; un site qui contient encore des bouteilles ne peut pas être supprimé.
+- **Primeurs** : un site virtuel pour les vins payés mais pas encore livrés, avec la date de livraison prévue et le site de destination.
 - **Espace** : nom, et **conditions de stockage** (température : stable / variable ; hygrométrie ; lumière ; vibrations). Ces critères donnent une note de qualité de 1 à 5. Elle sert aux conseils de déplacement, et elle raccourcit les apogées estimées des vins gardés dans une cave de moindre qualité.
 - **Meuble** : type, nom, dimensions et ordre d'affichage.
 - **Emplacement d'une bouteille** : meuble plus position (clayette et place, ou ligne et colonne, ou caisse). Une bouteille peut aussi rester « non placée » dans un espace.
@@ -53,8 +58,8 @@ Site (Ville = consommation, Campagne = stockage, Primeurs = virtuel)
 ## 3. Modèle de données
 
 ```js
-Wine {          // une référence
-  id, domaine*, cuvee*, couleur*, millesime*,
+Wine {          // une référence (vin ou spiritueux)
+  id, type:'vin'|'spiritueux', domaine*, cuvee*, couleur*, millesime*,   // champs propres aux spiritueux : §7 bis
   appellation, region, pays, cepages[], degre, format('75cl'|'37.5cl'|'150cl'|…),
   bio, nature, photo (≈100 Ko, compressée),
   owner: 'moi' | { ami: 'Pierre' },        // vins gardés pour des amis
@@ -110,7 +115,12 @@ Site, Espace, Meuble, Settings, AiUsage(mois, coût)
 - **Mode complet**, entièrement au toucher, avec des sliders et des pastilles :
   - **Contexte** : date, occasion, convives, plat.
   - **Œil** : teinte (nuancier selon la couleur du vin), intensité, limpidité ; pour les effervescents, finesse et persistance des bulles.
-  - **Nez** : intensité, ouverture, et une **roue des arômes** sur trois niveaux, avec environ 120 arômes. On peut **ajouter ses propres arômes**, qui sont mémorisés.
+  - **Nez** : intensité, ouverture, et une **roue des arômes** visuelle et tactile, sur le principe de Ploc :
+    - L'anneau intérieur montre les familles, l'anneau extérieur leurs arômes.
+    - Toucher une famille l'agrandit (environ 140° du cercle) et affiche ses arômes en grand. Les autres familles restent visibles en réduit.
+    - Toucher un arôme le sélectionne ou le désélectionne. Les arômes choisis s'affichent en bordeaux sur la roue et en pastilles sous la roue.
+    - Le centre de la roue indique le nombre d'arômes sélectionnés.
+    - Environ 120 arômes au total. On peut **ajouter ses propres arômes** dans une famille ; ils sont mémorisés.
     - Les familles : fruits rouges, fruits noirs, fruits blancs, agrumes, fruits exotiques, fruits secs et confits, floral, végétal, épicé, boisé, grillé et fumé, pâtissier et lacté, minéral, sous-bois et animal.
     - Les défauts : goût de bouchon, réduction, oxydation.
   - **Bouche** : attaque, sucre, acidité, tanins (quantité et texture), alcool, corps, équilibre, longueur en caudalies.
@@ -161,6 +171,27 @@ Un même modèle, avec un rôle et des instructions dédiés pour chaque agent. 
 
 ---
 
+## 7 bis. Spiritueux (option activable dans les paramètres)
+
+Désactivée par défaut. Une fois activée, elle s'applique dans toute l'app : un filtre Vins / Spiritueux dans la Cave, un type à choisir à l'ajout, des statistiques séparées.
+
+- **Catégories** : whisky, rhum, cognac, armagnac, calvados, gin, autre (catégorie libre).
+- **Fiche** : maison ou distillerie, nom de l'expression, catégorie, pays et région, âge, millésime de distillation, date d'embouteillage, degré, type de fût et finition, brut de fût, single cask, embouteilleur indépendant, numéro de fût ou de bouteille, contenance (70 cl par défaut), prix, photo, propriétaire (moi ou un ami, comme pour les vins).
+- **Bouteille entamée** : une dégustation ne sort pas la bouteille du stock. La bouteille passe à l'état « ouverte », avec sa date d'ouverture et un **niveau restant** réglable au slider. Elle ne sort du stock qu'au motif « terminée ».
+- **Pas d'apogée** (un spiritueux évolue peu en bouteille). À la place, le tableau « À boire » signale les **bouteilles ouvertes à finir** : niveau bas depuis longtemps, risque d'oxydation.
+- **Dégustation** : une **roue d'arômes dédiée aux spiritueux**.
+  - Familles communes : tourbé et fumé, céréales et malt, fruits frais, fruits secs, floral, boisé et vanille, épices, vineux (sherry, porto), maritime et iodé, caramel et sucré.
+  - Familles spécifiques au rhum : canne, mélasse, esters et notes « funky ».
+  - La note sur 20 et le commentaire fonctionnent comme pour les vins.
+- **Sommelier** :
+  - choix selon l'envie (« quelque chose de tourbé mais pas trop ») ;
+  - accords (chocolat, fromages, desserts) ;
+  - digestif après un repas donné ;
+  - ordre de dégustation pour une soirée découverte.
+- **Rangement** : dans n'importe quel meuble, en particulier le type « Étagère ».
+
+---
+
 ## 8. Interface
 - **Quatre onglets** :
   - **Cave** : le plan, avec une bascule vers la liste ;
@@ -168,7 +199,8 @@ Un même modèle, avec un rôle et des instructions dédiés pour chaque agent. 
   - **À boire** ;
   - **Plus** : statistiques, réglages, sauvegarde, export.
 
-  Plus un bouton « + » flottant pour ajouter une bouteille.
+  Le bouton **« + »** (ajouter une bouteille) est placé **au centre de la barre d'onglets**, surélevé : Cave · Sommelier · **+** · À boire · Plus.
+- Les pastilles de couleur sont **rondes** (cercles parfaits, de taille fixe).
 - **Recherche** plein texte et filtres rapides : couleur, région, prêt à boire, site, propriétaire.
 - **Identité visuelle** : thème clair sur fond crème. Bordeaux pour les éléments principaux, vert bouteille et doré en accents discrets. Police **système sans empattements** (SF Pro sur iPhone), sobre, sans fioritures. Une pastille de couleur par type de vin.
 
@@ -190,7 +222,9 @@ Un même modèle, avec un rôle et des instructions dédiés pour chaque agent. 
 - Dégustation rapide et complète, avec la roue des arômes.
 - Sommelier des accords (§7.1).
 - Apogées et tableau « À boire » (§7.2).
-- Site actuel, compteur de coûts, chiffrement, sauvegarde manuelle.
+- Site actuel, mode site unique ou plusieurs sites, sites renommables.
+- Compteur de coûts, chiffrement, sauvegarde manuelle.
+- Option spiritueux (§7 bis).
 
 **v1.5**
 - Conseils de logistique entre sites et de réassort de la cuisine (§7.3).

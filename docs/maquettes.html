@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MyCellar maquettes</title>
+<style>
+:root{
+  --bg:#F7F3EC; --surface:#FFFFFF; --ink:#2A1F1D; --muted:#7D716B; --line:#E7DFD4;
+  --bx:#6E1E2F; --bx-soft:#F3E6E7; --green:#2F5240; --green-soft:#E4EEE7; --gold:#A8844E; --gold-soft:#F4ECDD;
+  --rouge:#8E2435; --blanc:#E3CB6B; --rose:#E59CA2; --bulle:#CDBB8C; --liquo:#C4852A;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#DCD5CA;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Helvetica Neue",Arial,sans-serif;color:var(--ink);padding:28px;display:flex;gap:28px;flex-wrap:wrap;justify-content:center}
+.phone{width:390px;height:844px;background:var(--bg);border-radius:44px;overflow:hidden;position:relative;box-shadow:0 20px 50px rgba(60,30,20,.18),0 0 0 10px #1d1716;display:flex;flex-direction:column}
+.status{height:44px;display:flex;justify-content:space-between;align-items:center;padding:0 28px;font-size:14px;font-weight:600}
+.top{padding:6px 18px 10px}
+.row{display:flex;align-items:center;gap:8px}
+.between{justify-content:space-between}
+h1{font-size:30px;font-weight:700;letter-spacing:-.5px}
+.site{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:6px 12px;font-size:13px;font-weight:600}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex:none}
+.search{margin-top:12px;background:#EFE8DD;border-radius:12px;padding:10px 12px;font-size:15px;color:var(--muted);display:flex;gap:8px;align-items:center}
+.seg{display:flex;background:#EAE2D6;border-radius:10px;padding:2px;margin-top:12px}
+.seg div{flex:1;text-align:center;font-size:13px;font-weight:600;padding:6px 0;border-radius:8px;color:var(--muted)}
+.seg .on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.chips{display:flex;gap:6px;margin-top:12px;overflow:hidden}
+.chip{font-size:12.5px;padding:6px 11px;border-radius:16px;background:var(--surface);border:1px solid var(--line);white-space:nowrap;font-weight:500}
+.chip.on{background:var(--bx);color:#fff;border-color:var(--bx)}
+.scroll{flex:1;overflow:hidden;padding:0 14px 90px}
+.card{background:var(--surface);border-radius:16px;padding:12px;margin-top:10px;border:1px solid var(--line)}
+.ct{font-size:13px;font-weight:700;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.ct span{font-weight:500;color:var(--muted);font-size:12px}
+.shelf{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:5px;align-items:stretch}
+.shelf-l{font-size:10px;color:var(--muted);margin:6px 0 3px;font-weight:600;letter-spacing:.3px}
+.slot{background:#FAF7F2;border:1px solid var(--line);border-radius:7px;height:42px;padding:5px 3px 4px 7px;font-size:9.5px;line-height:1.15;position:relative;overflow:hidden;font-weight:600}
+.slot i{position:absolute;left:0;top:0;bottom:0;width:4px}
+.slot small{display:block;color:var(--muted);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slot b{display:block;font-size:9.5px;letter-spacing:-.2px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slot.empty{background:transparent;border-style:dashed}
+.slot.hl{outline:2px solid var(--bx);outline-offset:1px;background:var(--bx-soft)}
+.slot.ami{background:repeating-linear-gradient(135deg,#FAF7F2 0 5px,#EFE8DD 5px 7px)}
+.slot .ini{position:absolute;right:3px;bottom:2px;font-size:8.5px;background:var(--gold);color:#fff;border-radius:6px;padding:0 3px}
+.rack{display:grid;grid-template-columns:repeat(8,32px);justify-content:space-between;row-gap:6px}
+.rc{width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:#FAF7F2;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff}
+.pile{display:flex;gap:8px}
+.crate{flex:1;background:#EADCC4;border:1px solid #D8C5A5;border-radius:8px;padding:8px;font-size:11px;font-weight:600;line-height:1.3}
+.crate small{display:block;font-weight:500;color:#6E5A3E}
+.crate .cnt{display:inline-block;margin-top:4px;background:#fff;border-radius:8px;padding:1px 6px;font-size:10.5px}
+.tabs{position:absolute;bottom:0;left:0;right:0;height:84px;background:rgba(255,255,255,.94);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding-top:8px}
+.tab{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;color:var(--muted);font-weight:500;width:70px}
+.tab svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.7}
+.tab.on{color:var(--bx)}
+.tab.plus{width:64px}
+.tab.plus span{width:56px;height:56px;border-radius:50%;background:var(--bx);color:#fff;font-size:32px;font-weight:300;display:flex;align-items:center;justify-content:center;margin-top:-26px;box-shadow:0 6px 16px rgba(110,30,47,.35);border:4px solid var(--bg)}
+/* sommelier */
+.bubble{max-width:82%;padding:10px 13px;border-radius:18px;font-size:14.5px;line-height:1.35;margin-top:10px}
+.me{background:var(--bx);color:#fff;margin-left:auto;border-bottom-right-radius:6px}
+.ai{background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:6px}
+.reco{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:8px}
+.reco.first{border:1.5px solid var(--bx)}
+.rk{font-size:11px;font-weight:700;color:var(--bx);letter-spacing:.4px;text-transform:uppercase}
+.rn{font-size:15px;font-weight:700;margin-top:3px}
+.rs{font-size:12.5px;color:var(--muted);margin-top:1px}
+.why{font-size:13px;line-height:1.35;margin-top:7px}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.tag{font-size:11.5px;padding:3px 8px;border-radius:10px;background:#F2ECE3;font-weight:500}
+.tag.g{background:var(--green-soft);color:var(--green)}
+.loc{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;font-weight:600;color:var(--green)}
+.btn{margin-top:10px;background:var(--bx);color:#fff;text-align:center;border-radius:11px;padding:9px;font-size:14px;font-weight:600}
+.btn.ghost{background:transparent;color:var(--bx);border:1px solid var(--bx)}
+.input{position:absolute;bottom:84px;left:0;right:0;padding:8px 14px;background:var(--bg)}
+.input .box{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:11px 14px;font-size:14.5px;color:var(--muted);display:flex;justify-content:space-between}
+.mini{display:flex;gap:6px;margin-bottom:8px;overflow:hidden}
+/* à boire */
+.banner{background:var(--bx);color:#fff;border-radius:16px;padding:14px;margin-top:6px}
+.banner b{font-size:16px}
+.banner p{font-size:13px;opacity:.88;margin-top:3px;line-height:1.35}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 6px;text-align:center}
+.kpi b{display:block;font-size:20px}
+.kpi span{font-size:10.5px;color:var(--muted);font-weight:600}
+.kpi.on{border:1.5px solid var(--bx)}
+.item{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border:0}
+.it{flex:1;min-width:0}
+.it b{font-size:14px;display:block}
+.it small{font-size:12px;color:var(--muted)}
+.win{position:relative;height:6px;background:#EFE8DD;border-radius:3px;margin-top:7px}
+.win .w{position:absolute;top:0;bottom:0;border-radius:3px;background:linear-gradient(90deg,var(--gold) 0%,var(--green) 45%,var(--green) 65%,#B76A5A 100%)}
+.win .now{position:absolute;top:-3px;width:2px;height:12px;background:var(--ink);border-radius:1px}
+.qty{font-size:13px;font-weight:700;background:#F2ECE3;border-radius:9px;padding:3px 8px}
+.sect{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:16px 4px 2px}
+/* dégustation */
+.lbl{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin:14px 0 6px}
+.slider{position:relative;height:28px}
+.slider .tr{position:absolute;top:12px;left:0;right:0;height:4px;background:#EAE2D6;border-radius:2px}
+.slider .fi{position:absolute;top:12px;left:0;height:4px;background:var(--bx);border-radius:2px}
+.slider .kn{position:absolute;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;border:1px solid var(--line);box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.score{font-size:40px;font-weight:700;color:var(--bx);text-align:center}
+.score small{font-size:17px;color:var(--muted)}
+.wl{font-family:inherit}
+.aro{display:flex;flex-wrap:wrap;gap:6px}
+.ac{font-size:12.5px;padding:6px 10px;border-radius:15px;border:1px solid var(--line);background:var(--surface);font-weight:500}
+.ac.on{background:var(--bx-soft);border-color:var(--bx);color:var(--bx);font-weight:600}
+.ac.add{border-style:dashed;color:var(--muted)}
+.fam{display:flex;gap:6px;overflow:hidden;margin-bottom:8px}
+.fam div{font-size:12px;padding:5px 10px;border-radius:8px;background:#EFE8DD;font-weight:600;white-space:nowrap}
+.fam .on{background:var(--ink);color:#fff}
+.sl2{display:grid;grid-template-columns:72px 1fr;align-items:center;gap:8px;font-size:12.5px;margin-top:4px}
+.navb{display:flex;justify-content:space-between;align-items:center;padding:4px 18px 8px;font-size:16px}
+.navb b{font-size:16px}
+.navb span{color:var(--bx);font-weight:500}
+.set{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+.ed{font-size:13px;color:var(--bx);font-weight:600}
+.tg{width:46px;height:28px;border-radius:14px;background:#E2D9CC;position:relative;flex:none}
+.tg::after{content:"";position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.tg.on{background:var(--green)}.tg.on::after{left:20px}.tg.lock{opacity:.45}
+.caption{width:100%;text-align:center;font-size:13px;color:#5d524c;margin-top:-14px}
+</style></head><body>
+
+<!-- 1. CAVE -->
+<div class="phone">
+  <div class="status"><span>19:42</span><span>●●● 100%</span></div>
+  <div class="top">
+    <div class="row between"><h1>Cave</h1><div class="site"><span class="dot" style="background:var(--green)"></span>Ville ▾</div></div>
+    <div class="search">⌕ <span>Rechercher : « morgon »</span></div>
+    <div class="seg"><div class="on">Plan</div><div>Liste</div><div>Urgence</div></div>
+    <div class="chips"><div class="chip on">Cave cuisine · 34</div><div class="chip">Cave de vieillissement · 58</div></div>
+  </div>
+  <div class="scroll">
+    <div class="card">
+      <div class="ct">Armoire à vin <span>4 clayettes · 20 places · 18 occupées</span></div>
+      <div class="shelf-l">CLAYETTE 1</div>
+      <div class="shelf">
+        <div class="slot hl"><i style="background:var(--rouge)"></i><b>Morgon</b><small>Foillard 22</small></div>
+        <div class="slot hl"><i style="background:var(--rouge)"></i><b>Morgon</b><small>Foillard 22</small></div>
+        <div class="slot"><i style="background:var(--rouge)"></i><b>Crozes</b><small>Graillot 19</small></div>
+        <div class="slot"><i style="background:var(--rouge)"></i><b>St-Joseph</b><small>Gonon 20</small></div>
+        <div class="slot empty"></div>
+        </div>
+      <div class="shelf-l">CLAYETTE 2</div>
+      <div class="shelf">
+        <div class="slot"><i style="background:var(--blanc)"></i><b>Chablis</b><small>1er Fèvre 20</small></div>
+        <div class="slot"><i style="background:var(--blanc)"></i><b>Chablis</b><small>1er Fèvre 20</small></div>
+        <div class="slot"><i style="background:var(--blanc)"></i><b>Sancerre</b><small>Vacheron 23</small></div>
+        <div class="slot"><i style="background:var(--blanc)"></i><b>Vouvray</b><small>Huet 19</small></div>
+        <div class="slot"><i style="background:var(--rose)"></i><b>Bandol</b><small>Tempier 23</small></div>
+        </div>
+      <div class="shelf-l">CLAYETTE 3</div>
+      <div class="shelf">
+                <div class="slot"><i style="background:var(--bulle)"></i><b>Champagne</b><small>Billecart BR</small></div>
+        <div class="slot"><i style="background:var(--liquo)"></i><b>Sauternes</b><small>Suduiraut 15</small></div>
+        <div class="slot ami"><i style="background:var(--rouge)"></i><b>Léoville</b><small>Barton 10</small><span class="ini">P</span></div>
+        <div class="slot ami"><i style="background:var(--rouge)"></i><b>Léoville</b><small>Barton 10</small><span class="ini">P</span></div>
+        <div class="slot"><i style="background:var(--rouge)"></i><b>Côte-Rôtie</b><small>Jamet 17</small></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct">Rack mural <span>3 × 8 · 13 occupées</span></div>
+      <div class="rack">
+        <div class="rc" style="background:var(--rouge)">MO</div><div class="rc" style="background:var(--rouge)">CR</div><div class="rc" style="background:var(--rouge)">CR</div><div class="rc"></div><div class="rc" style="background:var(--blanc);color:#5a4a10">MU</div><div class="rc" style="background:var(--blanc);color:#5a4a10">MU</div><div class="rc"></div><div class="rc"></div>
+        <div class="rc" style="background:var(--rouge)">CH</div><div class="rc" style="background:var(--rouge)">CH</div><div class="rc" style="background:var(--rouge)">CH</div><div class="rc" style="background:var(--rose);color:#6b2a2f">TA</div><div class="rc"></div><div class="rc"></div><div class="rc" style="background:var(--rouge)">FI</div><div class="rc"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct">Caisses <span>pile de 2</span></div>
+      <div class="pile">
+        <div class="crate">Ch. Batailley 2016<small>Pauillac · caisse d'origine</small><span class="cnt">9 / 12</span></div>
+        <div class="crate">Clos Rougeard 2018<small>Saumur-Champigny</small><span class="cnt">6 / 6</span></div>
+      </div>
+    </div>
+  </div>
+    <div class="tabs">
+    <div class="tab on"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16"/></svg>Cave</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><path d="M8 3h8l-1 7a3 3 0 0 1-6 0z"/><path d="M12 13v7M8 21h8"/></svg>Sommelier</div>
+    <div class="tab plus"><span>+</span></div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>À boire</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18" cy="12" r="1.3"/></svg>Plus</div>
+  </div>
+</div>
+
+<!-- 2. SOMMELIER -->
+<div class="phone">
+  <div class="status"><span>19:44</span><span>●●● 100%</span></div>
+  <div class="top">
+    <div class="row between"><h1>Sommelier</h1><div class="site"><span class="dot" style="background:var(--green)"></span>Ville ▾</div></div>
+  </div>
+  <div class="scroll" style="padding-bottom:170px">
+    <div class="bubble me">Ce soir magret de canard aux cerises, on sera 4. Repas entre amis, budget raisonnable.</div>
+    <div class="bubble ai">Le canard et les cerises appellent un rouge fruité, à tanins fondus et bonne acidité. Voici ce que j'ouvrirais :</div>
+    <div class="reco first">
+      <div class="rk">1 · Mon choix</div>
+      <div class="rn">Crozes-Hermitage 2019</div>
+      <div class="rs">Alain Graillot · Syrah · 2 en cave</div>
+      <div class="why">Fruit noir et poivre qui répondent aux cerises. Les tanins sont fondus à 5 ans, et le vin est en plein dans sa fenêtre (2023–2029).</div>
+      <div class="tags"><span class="tag g">À son apogée</span><span class="tag">16 °C</span><span class="tag">Carafe 30 min</span><span class="tag">~25 €</span></div>
+      <div class="loc">◉ Cuisine › Armoire › Clayette 1, place 3</div>
+      <div class="btn">Je la prends</div>
+    </div>
+    <div class="reco">
+      <div class="rk">2 · Plus frais</div>
+      <div class="rn">Morgon Côte du Py 2022</div>
+      <div class="rs">Jean Foillard · Gamay · 5 en cave</div>
+      <div class="tags"><span class="tag g">Prêt</span><span class="tag">14 °C</span><span class="tag">Sans carafe</span></div>
+      <div class="loc">◉ Cuisine › Armoire › Clayette 1, places 1–2</div>
+    </div>
+  </div>
+  <div class="input">
+    <div class="mini"><div class="chip">Plutôt moins tannique ?</div><div class="chip">Et pour le dessert ?</div><div class="chip">Grande occasion</div></div>
+    <div class="box"><span>Demande au sommelier…</span><span>🎙</span></div>
+  </div>
+  <div class="tabs">
+    <div class="tab"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16"/></svg>Cave</div>
+    <div class="tab on"><svg viewBox="0 0 24 24"><path d="M8 3h8l-1 7a3 3 0 0 1-6 0z"/><path d="M12 13v7M8 21h8"/></svg>Sommelier</div>
+    <div class="tab plus"><span>+</span></div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>À boire</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18" cy="12" r="1.3"/></svg>Plus</div>
+  </div>
+</div>
+
+<!-- 3. A BOIRE -->
+<div class="phone">
+  <div class="status"><span>19:45</span><span>●●● 100%</span></div>
+  <div class="top"><h1>À boire</h1></div>
+  <div class="scroll">
+    <div class="banner"><b>4 bouteilles sortent de leur fenêtre d'ici mars</b><p>Dont 2 à la Campagne : je te conseille de les rapatrier au prochain passage.</p></div>
+    <div class="kpis">
+      <div class="kpi on"><b style="color:var(--bx)">6</b><span>Priorité</span></div>
+      <div class="kpi"><b style="color:var(--green)">31</b><span>Apogée</span></div>
+      <div class="kpi"><b style="color:var(--gold)">74</b><span>Trop tôt</span></div>
+      <div class="kpi"><b style="color:#9A5B4D">2</b><span>Déclin</span></div>
+    </div>
+    <div class="sect">À boire en priorité</div>
+    <div class="card" style="padding:4px 12px">
+      <div class="item"><span class="dot" style="background:var(--blanc);width:10px;height:10px"></span><div class="it"><b>Savennières 2019</b><small>Baumard · fenêtre 2021–2026</small><div class="win"><div class="w" style="left:5%;right:8%"></div><div class="now" style="left:84%"></div></div></div><span class="qty">×1</span></div>
+      <div class="item"><span class="dot" style="background:var(--rose);width:10px;height:10px"></span><div class="it"><b>Bandol rosé 2023</b><small>Tempier · fenêtre 2024–2026</small><div class="win"><div class="w" style="left:10%;right:10%"></div><div class="now" style="left:80%"></div></div></div><span class="qty">×2</span></div>
+      <div class="item"><span class="dot" style="background:var(--rouge);width:10px;height:10px"></span><div class="it"><b>Ch. Batailley 2016</b><small>Pauillac · fenêtre 2022–2032 · Campagne</small><div class="win"><div class="w" style="left:5%;right:5%"></div><div class="now" style="left:45%"></div></div></div><span class="qty">×9</span></div>
+    </div>
+    <div class="sect">Frise</div>
+    <div class="card">
+      <div style="display:flex;align-items:flex-end;gap:6px;height:80px">
+        <div style="flex:1;background:var(--bx);height:30%;border-radius:4px 4px 0 0"></div>
+        <div style="flex:1;background:var(--green);height:85%;border-radius:4px 4px 0 0"></div>
+        <div style="flex:1;background:var(--green);height:70%;border-radius:4px 4px 0 0"></div>
+        <div style="flex:1;background:var(--gold);height:55%;border-radius:4px 4px 0 0"></div>
+        <div style="flex:1;background:var(--gold);height:40%;border-radius:4px 4px 0 0"></div>
+        <div style="flex:1;background:var(--gold);height:25%;border-radius:4px 4px 0 0"></div>
+      </div>
+      <div style="display:flex;gap:6px;font-size:10.5px;color:var(--muted);margin-top:4px;text-align:center"><span style="flex:1">2026</span><span style="flex:1">2027</span><span style="flex:1">2028</span><span style="flex:1">2029</span><span style="flex:1">2030</span><span style="flex:1">2031+</span></div>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16"/></svg>Cave</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><path d="M8 3h8l-1 7a3 3 0 0 1-6 0z"/><path d="M12 13v7M8 21h8"/></svg>Sommelier</div>
+    <div class="tab plus"><span>+</span></div>
+    <div class="tab on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>À boire</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18" cy="12" r="1.3"/></svg>Plus</div>
+  </div>
+</div>
+
+<!-- 4. DÉGUSTATION -->
+<div class="phone">
+  <div class="status"><span>21:10</span><span>●●● 100%</span></div>
+  <div class="navb"><span>Annuler</span><b>Dégustation</b><span style="font-weight:700">OK</span></div>
+  <div class="scroll" style="padding-bottom:20px">
+    <div class="card" style="margin-top:0">
+      <div class="rn">Crozes-Hermitage 2019</div><div class="rs">Alain Graillot · avec magret aux cerises</div>
+      <div class="seg" style="margin-top:10px"><div>Rapide</div><div class="on">Complète</div></div>
+    </div>
+    <div class="card">
+      <div class="score">16,5<small> / 20</small></div>
+      <div class="slider"><div class="tr"></div><div class="fi" style="width:82%"></div><div class="kn" style="left:calc(82% - 11px)"></div></div>
+      <div class="lbl">Nez · roue des arômes</div>
+      <div id="wheel" style="display:flex;justify-content:center"></div>
+      <div class="aro" style="margin-top:8px">
+        <div class="ac on">Cerise noire ×</div><div class="ac on">Mûre ×</div><div class="ac on">Poivre noir ×</div><div class="ac add">+ Arôme perso</div>
+      </div>
+      <div class="lbl">Bouche</div>
+      <div class="sl2"><span>Acidité</span><div class="slider"><div class="tr"></div><div class="fi" style="width:60%"></div><div class="kn" style="left:calc(60% - 11px)"></div></div></div>
+      <div class="sl2"><span>Tanins</span><div class="slider"><div class="tr"></div><div class="fi" style="width:45%"></div><div class="kn" style="left:calc(45% - 11px)"></div></div></div>
+      <div class="sl2"><span>Corps</span><div class="slider"><div class="tr"></div><div class="fi" style="width:65%"></div><div class="kn" style="left:calc(65% - 11px)"></div></div></div>
+      <div class="sl2"><span>Longueur</span><div class="slider"><div class="tr"></div><div class="fi" style="width:55%"></div><div class="kn" style="left:calc(55% - 11px)"></div></div></div>
+      <div class="lbl">Évolution</div>
+      <div class="aro"><div class="ac">Jeune</div><div class="ac on">À point</div><div class="ac">Sur le déclin</div></div>
+    </div>
+    <div class="card" style="font-size:13px;line-height:1.4;background:var(--green-soft);border-color:#C9DCCF">
+      <b style="color:var(--green)">Sommelier :</b> « À point » confirmé. Ta dernière bouteille de ce vin est à boire d'ici 2027 plutôt que 2029. On met à jour ?
+      <div class="row" style="gap:8px"><div class="btn" style="flex:1;background:var(--green)">Mettre à jour</div><div class="btn ghost" style="flex:1;color:var(--green);border-color:var(--green)">Garder</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 5. RÉGLAGES -->
+<div class="phone">
+  <div class="status"><span>19:50</span><span>●●● 100%</span></div>
+  <div class="top"><h1>Réglages</h1></div>
+  <div class="scroll">
+    <div class="sect" style="margin-top:4px">Sites</div>
+    <div class="card" style="margin-top:6px">
+      <div class="seg" style="margin-top:0"><div>Site unique</div><div class="on">Plusieurs sites</div></div>
+      <div class="set"><span class="dot" style="background:var(--green)"></span><div class="it"><b>Ville</b><small>Consommation · 2 espaces · 47 bouteilles</small></div><span class="ed">Renommer</span></div>
+      <div class="set"><span class="dot" style="background:var(--gold)"></span><div class="it"><b>Campagne</b><small>Stockage · 1 espace · 66 bouteilles</small></div><span class="ed">Renommer</span></div>
+      <div class="set" style="border:0;color:var(--bx);font-weight:600;font-size:14px">+ Ajouter un site</div>
+    </div>
+    <div class="sect">Contenu de la cave</div>
+    <div class="card" style="margin-top:6px">
+      <div class="set"><div class="it"><b>Vins</b><small>Toujours actif</small></div><span class="tg on lock"></span></div>
+      <div class="set" style="border:0"><div class="it"><b>Spiritueux</b><small>Whisky, rhum, cognac, armagnac…</small></div><span class="tg on"></span></div>
+    </div>
+    <div class="sect">Intelligence artificielle</div>
+    <div class="card" style="margin-top:6px">
+      <div class="set"><div class="it"><b>Modèle</b><small>Claude Sonnet 5.5</small></div><span class="ed">›</span></div>
+      <div class="set" style="border:0;display:block"><div class="row between"><b style="font-size:14px">Dépense ce mois</b><span style="font-size:13px;font-weight:600">0,42 € / 2,00 €</span></div>
+        <div class="win" style="height:8px;margin-top:8px"><div style="position:absolute;left:0;top:0;bottom:0;width:21%;background:var(--green);border-radius:4px"></div></div></div>
+    </div>
+    <div class="sect">Sauvegarde</div>
+    <div class="card" style="margin-top:6px">
+      <div class="set" style="border:0"><div class="it"><b>Dernière sauvegarde</b><small>Il y a 3 jours · iCloud Drive</small></div><span class="ed">Sauvegarder</span></div>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16"/></svg>Cave</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><path d="M8 3h8l-1 7a3 3 0 0 1-6 0z"/><path d="M12 13v7M8 21h8"/></svg>Sommelier</div>
+    <div class="tab plus"><span>+</span></div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>À boire</div>
+    <div class="tab on"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18" cy="12" r="1.3"/></svg>Plus</div>
+  </div>
+</div>
+
+<div class="caption">MyCellar : Cave (plan) · Sommelier · À boire · Dégustation (roue des arômes) · Réglages</div>
+<script>
+const F=[
+["Fruits rouges","#B8424F",["Fraise","Framboise","Cerise","Groseille","Canneberge"]],
+["Fruits noirs","#5B2340",["Cassis","Mûre","Myrtille","Cerise noire","Prune","Figue"]],
+["Fruits blancs","#CDB46A",["Pomme","Poire","Pêche","Abricot","Coing"]],
+["Agrumes","#DDA93A",["Citron","Pamplemousse","Orange","Zeste"]],
+["Exotiques","#DE8C45",["Ananas","Mangue","Passion","Litchi"]],
+["Fruits secs","#A87B55",["Amande","Noisette","Noix","Pruneau","Raisin sec"]],
+["Floral","#A9719A",["Violette","Rose","Acacia","Tilleul","Pivoine"]],
+["Végétal","#6E8B5A",["Poivron","Herbe","Menthe","Garrigue","Thym"]],
+["Épicé","#A0522D",["Poivre noir","Réglisse","Cannelle","Girofle","Muscade"]],
+["Boisé","#8B6A4A",["Chêne","Vanille","Cèdre","Santal"]],
+["Grillé","#5A4636",["Toast","Café","Cacao","Fumée","Caramel"]],
+["Pâtissier","#C99A5E",["Brioche","Beurre","Miel","Pain grillé"]],
+["Minéral","#8A97A0",["Silex","Craie","Pierre","Iodé"]],
+["Sous-bois","#6B5B4B",["Champignon","Truffe","Cuir","Gibier","Tabac"]]];
+const ACTIVE=1, SEL=new Set(["Cerise noire","Mûre","Poivre noir"]);
+const S=334,C=S/2,R0=40,R1=110,R2=165,ACT=140;
+const others=F.reduce((a,f,i)=>i===ACTIVE?a:a+f[2].length,0);
+const rad=d=>(d-90)*Math.PI/180, pt=(r,d)=>[C+r*Math.cos(rad(d)),C+r*Math.sin(rad(d))];
+function arc(r1,r2,a1,a2){const[x1,y1]=pt(r2,a1),[x2,y2]=pt(r2,a2),[x3,y3]=pt(r1,a2),[x4,y4]=pt(r1,a1),l=a2-a1>180?1:0;
+ return `M${x1},${y1}A${r2},${r2} 0 ${l} 1 ${x2},${y2}L${x3},${y3}A${r1},${r1} 0 ${l} 0 ${x4},${y4}Z`}
+function label(txt,r,a,size,col,w){let rot=a-90;const flip=a>180;if(flip)rot+=180;const[x,y]=pt(r,a);
+ return `<text x="${x}" y="${y}" transform="rotate(${rot} ${x} ${y})" text-anchor="middle" dominant-baseline="central" font-size="${size}" font-weight="${w}" fill="${col}">${txt}</text>`}
+let g='',a=-ACT/2;
+F.forEach((f,i)=>{const span=i===ACTIVE?ACT:(360-ACT)*f[2].length/others,a1=a,a2=a+span;a=a2;
+ const act=i===ACTIVE;
+ g+=`<path d="${arc(R0,R1,a1,a2)}" fill="${f[1]}" opacity="${act?1:.82}" stroke="#fff" stroke-width="${act?2.5:1.2}"/>`;
+ const short=f[0].replace("Fruits rouges","Rouges").replace("Fruits blancs","Blancs").replace("Fruits secs","Secs");
+ g+=label(act?f[0]:short,(R0+R1)/2,(a1+a2)/2,act?11.5:9.2,"#fff",act?700:600);
+ const n=f[2].length,st=span/n;
+ f[2].forEach((ar,k)=>{const b1=a1+k*st,b2=b1+st,sel=SEL.has(ar);
+  if(act){g+=`<path d="${arc(R1+2,R2,b1,b2)}" fill="${sel?'#6E1E2F':'#F6EEE8'}" stroke="#fff" stroke-width="1.5"/>`;
+   g+=label(ar,(R1+R2)/2+1,(b1+b2)/2,ar.length>8?9:10.5,sel?'#fff':'#2A1F1D',sel?700:500);}
+  else{g+=`<path d="${arc(R1+2,R1+14,b1,b2)}" fill="${sel?'#6E1E2F':f[1]}" opacity="${sel?1:.35}" stroke="#fff" stroke-width=".8"/>`;}
+ });
+});
+g+=`<circle cx="${C}" cy="${C}" r="${R0-2}" fill="#fff" stroke="#E7DFD4"/>`;
+g+=`<text x="${C}" y="${C-6}" text-anchor="middle" font-size="22" font-weight="700" fill="#6E1E2F">3</text><text x="${C}" y="${C+13}" text-anchor="middle" font-size="10" fill="#7D716B">arômes</text>`;
+document.getElementById('wheel').innerHTML=`<svg width="${S}" height="${S}" viewBox="0 0 ${S} ${S}" font-family="-apple-system,BlinkMacSystemFont,Inter,Helvetica Neue,Arial,sans-serif">${g}</svg>`;
+</script>
+</body></html>
