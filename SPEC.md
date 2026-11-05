@@ -541,11 +541,59 @@ Le détail est dans `docs/tests/2026-11-04-campagne-v1.6.1/` : `rapport-bugs.md`
 - [x] Le reste ne change pas : réception depuis Réglages › Primeurs ou la fiche de la bouteille, propriétaire « dont N pour un ami » possible aussi en primeur.
 - [x] Tests : primeur depuis chacun des trois écrans, date de livraison, raccourci depuis Réglages › Primeurs, réception.
 
-**v2**
-- Sauvegarde automatique Google Drive.
-- Audit de cave.
-- Statistiques et valeur estimée.
-- Carte des vins à partager.
-- QR codes sur les casiers (scan dans l'app).
-- Export PDF et Excel.
-- Suivi des cadeaux.
+**v2** (demandée le 5 novembre 2026 : « Lance la V2 ». Jusqu'ici, c'était une simple liste. Elle est maintenant découpée en quatre releases et spécifiée ; le développement attend la validation des questions ci-dessous.)
+
+Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (QR codes), v2.3 (sauvegarde automatique). Chaque release est livrée et testée à part.
+
+**v2.0** (statistiques, valeur, cadeaux, audit ; spécifiée, en attente de validation)
+*Statistiques* : un écran Réglages › Ma cave › Statistiques. Seules mes bouteilles sont comptées.
+- [ ] **La cave aujourd'hui** : bouteilles par couleur, par région (les 8 premières, puis « autres »), par pays, par millésime (histogramme), par format, par statut (à boire en priorité, prêt, trop tôt, déclin, inconnu), par site et par espace.
+- [ ] **Consommation** : bouteilles bues par mois sur 12 mois, par couleur ; note moyenne ; les 10 vins les mieux notés ; rythme annuel (bouteilles bues par an).
+- [ ] **Achats** : bouteilles achetées et dépense par année, prix moyen par bouteille, lieux d'achat les plus fréquents.
+- [ ] Chaque graphique se touche pour afficher la liste des vins concernés, comme le graphique d'À boire.
+
+*Valeur estimée* (question 1)
+- [ ] **Champ « valeur actuelle »** sur la fiche d'un vin, saisi à la main, ou proposé par le sommelier avec recherche web. Il affiche sa source, sa date et une fourchette.
+- [ ] **Estimation groupée** « Estimer la valeur des vins sans estimation », avec le coût annoncé avant de lancer (environ 1 centime par vin) et le respect du plafond mensuel.
+- [ ] **Valeur de la cave** : la somme des valeurs actuelles, ou à défaut du prix d'achat, avec la part estimée et la part au prix d'achat. Évolution : valeur actuelle comparée au prix d'achat, par vin et au total.
+
+*Suivi des cadeaux*
+- [ ] **Écran « Cadeaux »** (Réglages › Ma cave) : vins reçus (« Offert par ») et vins offerts (sorties « offerte », avec le destinataire), groupés par personne, avec dates et occasions. Recherche par prénom.
+- [ ] **Éviter les doublons** : au moment d'offrir un vin à quelqu'un, l'app signale « Tu as déjà offert ce vin à Paul en mars 2026 ».
+- [ ] La fiche d'une personne réunit ce qu'elle t'a offert, ce que tu lui as offert, et les bouteilles que tu gardes pour elle.
+
+*Audit de cave* (§7.4)
+- [ ] **Bilan calculé sur l'appareil** : équilibre des couleurs et des régions ; calendrier des années de maturité comparé à ton rythme de consommation (années où trop de vins arrivent à maturité en même temps, années creuses) ; part des vins en déclin ; espaces de garde pleins ou vides.
+- [ ] **Lecture du sommelier** : une synthèse, trois à cinq constats et des suggestions d'achat concrètes (types de vins, millésimes à viser, budget indicatif), à partir de ce bilan. C'est un appel unique, sans recherche web : environ 5 centimes.
+- [ ] Accès : bouton « Audit de ma cave » dans À boire et dans les suggestions du sommelier. Le dernier audit est conservé et daté.
+- [ ] Tests : statistiques sur la cave fictive (totaux justes, vins des amis exclus), valeur avec et sans estimation, cadeaux reçus et offerts, alerte de doublon, audit avec réponse simulée.
+
+**v2.1** (partager et exporter ; spécifiée, en attente de validation)
+- [ ] **Carte des vins à partager** : tu choisis les vins (prêts à boire, un site, des couleurs, ou une sélection à la main) et la mise en forme (avec ou sans prix ni nombre de bouteilles). La carte est rangée par couleur puis par région, sur une jolie page. Elle se partage en image (Messages, WhatsApp…) ou en PDF.
+- [ ] **Partager une dégustation** (§6 bis, « Plus tard ») : une carte image avec le vin, la note, la teinte, les arômes principaux, l'accord et le commentaire, ou la même chose en texte.
+- [ ] **Export Excel** : un vrai fichier .xlsx créé sur l'iPhone, sans service extérieur, avec trois onglets : Inventaire (une ligne par vin, avec quantités par site et emplacements), Dégustations, Mouvements.
+- [ ] **Export PDF** : inventaire imprimable (par site, espace et meuble, avec le plan de chaque meuble), par l'impression iOS (« Enregistrer en PDF »).
+- [ ] Rien ne quitte l'iPhone sans action de ta part : le partage passe par la feuille de partage iOS.
+- [ ] Tests : contenu de la carte selon les filtres, image produite, fichier .xlsx lisible (structure vérifiée), page d'impression.
+
+**v2.2** (QR codes sur les meubles ; spécifiée, en attente de validation, question 2)
+- [ ] **Étiquettes** : pour chaque meuble ou caisse, une étiquette QR avec son nom, à imprimer (planche d'étiquettes en PDF, une ou plusieurs par page).
+- [ ] **Scan dans l'app** : un bouton « Scanner » (onglet Cave) ouvre l'appareil photo. Le meuble scanné s'affiche directement sur le plan, avec son contenu et les actions habituelles (ranger ici, sortir, caisse entière…).
+- [ ] Le scan se fait dans l'app, pas avec l'appareil photo d'iOS : sur iPhone, une app installée et Safari ne partagent pas leurs données, donc un lien ouvert par l'appareil photo ne verrait pas ta cave.
+- [ ] Le code ne contient qu'un identifiant aléatoire du meuble : rien sur le contenu, inutilisable sans ta cave.
+- [ ] Tests : génération et relecture des codes, scan simulé qui ouvre le bon meuble, code inconnu.
+
+**v2.3** (sauvegarde automatique ; spécifiée, en attente de validation, question 3)
+- [ ] **Sauvegarde automatique** chiffrée (le même fichier que la sauvegarde manuelle, illisible sans ton mot de passe), après chaque modification importante et au plus une fois par heure, plus une fois par jour au minimum. Les 30 dernières versions sont gardées.
+- [ ] **Restauration** depuis la liste des versions, avec leur date.
+- [ ] **État visible** dans Réglages › Sauvegarde : dernière sauvegarde réussie, échec éventuel et sa raison. Le rappel des 7 jours ne s'affiche plus quand la sauvegarde automatique fonctionne.
+- [ ] La destination dépend de la question 3.
+- [ ] Tests : envoi, rotation des versions, restauration, absence de réseau, jeton expiré (service simulé).
+
+*Questions à valider avant de lancer*
+1. **Valeur estimée** : saisie à la main, ou estimation par le sommelier à la demande (vin par vin, ou en groupe avec le coût annoncé) ? Pas d'estimation automatique en tâche de fond, pour tenir le plafond de 2 € par mois.
+2. **QR codes** : il faut intégrer dans l'app deux petites bibliothèques libres, l'une pour dessiner les codes, l'autre pour les lire avec l'appareil photo. Safari sur iPhone ne sait pas encore lire les QR codes seul. Elles sont incluses dans l'app, sans appel extérieur.
+3. **Destination de la sauvegarde automatique** :
+   - (a) Google Drive, sans serveur : simple, mais Google demande de se reconnecter environ toutes les heures. La sauvegarde ne serait donc automatique que pendant une session.
+   - (b) Google Drive, avec un petit service Cloudflare (Worker) qui garde l'autorisation : vraiment automatique. Il faut créer un projet Google Cloud et le Worker ; je fournis le code et la marche à suivre pas à pas.
+   - (c) Ton propre espace Cloudflare (Worker et stockage KV), sans Google : vraiment automatique, et le plus simple à installer puisque tu utilises déjà Cloudflare. Le fichier reste chiffré.
