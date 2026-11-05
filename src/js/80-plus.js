@@ -6,7 +6,7 @@ const whyOff = on => on ? `<span class="why-off">${DEMO_OFF}</span>` : '';
 const setRow = (act, title, sub, val = '', extra = '') => `<button class="set" data-act="${act}" ${extra}><div class="it"><b>${title}</b>${sub ? `<small>${sub}</small>` : ''}</div>${val ? `<span class="val">${val}</span>` : ''}<span class="chev">${ICON.chev}</span></button>`;
 function vPlus() {
   const bs = S.bottles.filter(inCave), mine = bs.filter(b => !b.owner);
-  const value = mine.reduce((t, b) => t + (wine(b.wineId).achat?.prix || 0), 0);
+  const value = caveValue().total;
   const drunk = S.moves.filter(m => m.type === 'out' && ['bue', 'bouchonnee', 'terminee'].includes(m.motif) && (m.at || '').startsWith(String(thisYear()))).length;
   const prim = S.bottles.filter(b => b.state === 'primeur').length, friendBs = bs.filter(b => b.owner);
   const ai = aiCfg(), spent = monthSpend(), pct = ai.budget ? Math.min(100, spent / ai.budget * 100) : 0;
@@ -14,12 +14,14 @@ function vPlus() {
   return `<div class="card"><div class="grid2" style="text-align:center">
       <div><div class="score" style="font-size:28px">${mine.length}</div><div class="small">bouteilles à moi</div></div>
       <div><div class="score" style="font-size:28px">${new Set(mine.map(b => b.wineId)).size}</div><div class="small">références</div></div>
-      <div><div class="score" style="font-size:22px">${value ? eur(value) : '–'}</div><div class="small">valeur d’achat</div></div>
+      <div><div class="score" style="font-size:22px">${value ? eur(value) : '–'}</div><div class="small">${caveValue().nEst ? 'valeur estimée' : 'valeur d’achat'}</div></div>
       <div><div class="score" style="font-size:22px">${drunk}</div><div class="small">bues en ${thisYear()}</div></div></div></div>
     <div class="sect">Ma cave</div>
     <div class="card" style="padding:0 12px">
       ${setRow('sitesSheet', 'Sites, espaces et meubles', isMulti() ? `${S.sites.length} sites · ${S.spaces.length} espaces · ${S.units.length} meubles` : `Site unique · ${S.spaces.length} espace${S.spaces.length > 1 ? 's' : ''} · ${S.units.length} meubles`)}
       ${isMulti() ? setRow('transferSheet', 'Transfert entre sites', S.transfer.ids.length ? plural(S.transfer.ids.length, 'bouteille en préparation', 'bouteilles en préparation') : 'Préparer les bouteilles à emporter') : ''}
+      ${setRow('statsSheet', 'Statistiques', 'Ta cave, ta consommation, tes achats, sa valeur')}
+      ${setRow('giftsSheet', 'Cadeaux', 'Vins reçus et offerts, par personne')}
       ${setRow('primeursSheet', 'Primeurs', prim ? plural(prim, 'bouteille attendue', 'bouteilles attendues') : 'Aucun primeur en attente')}
       ${setRow('friendsSheet', 'Vins gardés pour des amis', friendBs.length ? plural(friendBs.length, 'bouteille', 'bouteilles') : 'Aucun')}
       ${setRow('wishSheet', 'Liste d’envies', S.wishes.length ? plural(S.wishes.length, 'vin à acheter', 'vins à acheter') : 'Vins repérés en dégustation')}

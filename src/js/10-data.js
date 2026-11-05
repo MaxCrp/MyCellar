@@ -200,9 +200,18 @@ const isMulti = () => S.settings.multi && S.sites.length > 1;
 const siteSpaces = siteId => S.spaces.filter(s => s.siteId === siteId);
 const spaceUnits = spaceId => S.units.filter(u => u.spaceId === spaceId).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 const inCave = b => b.state === 'cave' || b.state === 'open';
-const wineBottles = (wid, f = inCave) => S.bottles.filter(b => b.wineId === wid && f(b));
+// Index des bouteilles par vin, refait quand la liste change (ajout, suppression) ; l'état de chaque bouteille est lu à l'appel
+let bwIdx = null, bwArr = null, bwLen = -1;
+function bottlesOf(wid) {
+  if (bwArr !== S.bottles || bwLen !== S.bottles.length) {
+    bwIdx = new Map(); bwArr = S.bottles; bwLen = S.bottles.length;
+    for (const b of S.bottles) { let l = bwIdx.get(b.wineId); if (!l) bwIdx.set(b.wineId, l = []); l.push(b); }
+  }
+  return bwIdx.get(wid) || [];
+}
+const wineBottles = (wid, f = inCave) => bottlesOf(wid).filter(f);
 // Propriétaire par bouteille (v1.7.4) : b.owner = prénom de l'ami, vide = à moi
-const heldBottles = wid => S.bottles.filter(b => b.wineId === wid && (inCave(b) || b.state === 'primeur'));
+const heldBottles = wid => bottlesOf(wid).filter(b => inCave(b) || b.state === 'primeur');
 const myBottles = (wid, f = inCave) => wineBottles(wid, f).filter(b => !b.owner);
 const hasFriend = w => heldBottles(w.id).some(b => b.owner);
 const isFriend = w => { const bs = heldBottles(w.id); return bs.length > 0 && bs.every(b => b.owner); };

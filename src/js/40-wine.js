@@ -511,6 +511,7 @@ function wineSheet(id) {
       : `<p class="small" style="margin:0">Pas encore de fenêtre.</p>`}
       <div class="btns2" style="margin-top:10px"><button class="btn small" data-act="estimate" data-id="${id}">${ICON.spark} ${a?.fin ? 'Réestimer' : 'Estimer'}</button><button class="btn small" data-act="editWine" data-id="${id}">Saisir</button></div>
     </div>`}
+    ${valueCard(w)}
     <h3>En cave · ${bs.length}${pr.length ? ` <span class="small">+ ${pr.length} en primeur</span>` : ''}${hasFriend(w) ? ` <span class="small">${esc(ownerSummary(w))}</span>` : ''}</h3>
     ${bs.length || pr.length ? `<div class="list">${[...bs, ...pr].map(b => `<div class="li"><button class="lb" data-act="bottle" data-b="${b.id}"><div class="it"><b style="font-weight:500;font-size:14px">${esc(locLabel(b))}</b>${b.state === 'open' ? `<small>Ouverte · niveau ${b.level ?? 100} %</small>` : ''}</div><span class="chev">${ICON.chev}</span></button>${inCave(b) ? `<button class="icon-btn" style="width:34px;height:34px;color:var(--bx)" data-act="planGo" data-b="${b.id}" aria-label="Voir sur le plan">${ICON.pin}</button>` : ''}</div>`).join('')}</div>` : `<p class="muted small">${S.tastings.some(t => t.wineId === id) && !S.bottles.some(b => b.wineId === id) ? 'Vin dégusté, jamais en cave.' : 'Plus aucune bouteille en cave.'}</p>`}
     <div class="btns2" style="margin-top:10px"><button class="btn" data-act="rebuy" data-id="${id}">${ICON.add} ${bs.length ? 'Ajouter' : 'Ajouter à la cave'}</button><button class="btn" data-act="taste" data-w="${id}">${ICON.cork} Déguster</button></div>
@@ -568,6 +569,7 @@ function outSheet(bid) {
 CHANGES.radioChip = el => { for (const l of $$(`input[name="${el.name}"]`, el.form)) l.closest('.chip').classList.toggle('on', l.checked); };
 FORMS.out = async (f, d) => {
   const b = byId(S.bottles, f.dataset.b), w = wine(b.wineId), from = locOf(b);
+  if (d.motif === 'offerte' && d.who && !giftAgain(w.id, d.who)) return;
   b.state = 'out'; b.outAt = d.at || today();
   logMove(b, 'out', { motif: d.motif, at: d.at || today(), from, who: d.who, plat: d.plat });
   S.transfer.ids = S.transfer.ids.filter(id => id !== b.id);

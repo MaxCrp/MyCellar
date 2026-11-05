@@ -545,28 +545,28 @@ Le détail est dans `docs/tests/2026-11-04-campagne-v1.6.1/` : `rapport-bugs.md`
 
 Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (QR codes), v2.3 (sauvegarde automatique). Chaque release est livrée et testée à part.
 
-**v2.0** (statistiques, valeur, cadeaux, audit ; spécifiée et validée le 5 novembre 2026)
+**v2.0** (statistiques, valeur, cadeaux, audit ; livrée)
 *Statistiques* : un écran Réglages › Ma cave › Statistiques. Seules mes bouteilles sont comptées.
-- [ ] **La cave aujourd'hui** : bouteilles par couleur, par région (les 8 premières, puis « autres »), par pays, par millésime (histogramme), par format, par statut (à boire en priorité, prêt, trop tôt, déclin, inconnu), par site et par espace.
-- [ ] **Consommation** : bouteilles bues par mois sur 12 mois, par couleur ; note moyenne ; les 10 vins les mieux notés ; rythme annuel (bouteilles bues par an).
-- [ ] **Achats** : bouteilles achetées et dépense par année, prix moyen par bouteille, lieux d'achat les plus fréquents.
-- [ ] Chaque graphique se touche pour afficher la liste des vins concernés, comme le graphique d'À boire.
+- [x] **La cave aujourd'hui** : bouteilles par couleur, par région (les 8 premières, puis « autres »), par pays, par millésime (histogramme), par format, par statut (à boire en priorité, prêt, trop tôt, déclin, inconnu), par site et par espace.
+- [x] **Consommation** : bouteilles bues par mois sur 12 mois, par couleur ; note moyenne ; les 10 vins les mieux notés ; rythme annuel (bouteilles bues par an).
+- [x] **Achats** : bouteilles achetées et dépense par année, prix moyen par bouteille, lieux d'achat les plus fréquents.
+- [x] Chaque graphique se touche pour afficher la liste des vins concernés, comme le graphique d'À boire.
 
 *Valeur estimée* (question 1 validée : saisie à la main ou estimation par le sommelier à la demande, jamais en tâche de fond)
-- [ ] **Champ « valeur actuelle »** sur la fiche d'un vin, saisi à la main, ou proposé par le sommelier avec recherche web. Il affiche sa source, sa date et une fourchette.
-- [ ] **Estimation groupée** « Estimer la valeur des vins sans estimation », avec le coût annoncé avant de lancer (environ 1 centime par vin) et le respect du plafond mensuel.
-- [ ] **Valeur de la cave** : la somme des valeurs actuelles, ou à défaut du prix d'achat, avec la part estimée et la part au prix d'achat. Évolution : valeur actuelle comparée au prix d'achat, par vin et au total.
+- [x] **Champ « valeur actuelle »** sur la fiche d'un vin, saisi à la main, ou proposé par le sommelier avec recherche web. Il affiche sa source, sa date et une fourchette.
+- [x] **Estimation groupée** « Estimer la valeur des vins sans estimation », avec le coût annoncé avant de lancer (environ 1 centime par vin) et le respect du plafond mensuel.
+- [x] **Valeur de la cave** : la somme des valeurs actuelles, ou à défaut du prix d'achat, avec la part estimée et la part au prix d'achat. Évolution : valeur actuelle comparée au prix d'achat, par vin et au total.
 
 *Suivi des cadeaux*
-- [ ] **Écran « Cadeaux »** (Réglages › Ma cave) : vins reçus (« Offert par ») et vins offerts (sorties « offerte », avec le destinataire), groupés par personne, avec dates et occasions. Recherche par prénom.
-- [ ] **Éviter les doublons** : au moment d'offrir un vin à quelqu'un, l'app signale « Tu as déjà offert ce vin à Paul en mars 2026 ».
-- [ ] La fiche d'une personne réunit ce qu'elle t'a offert, ce que tu lui as offert, et les bouteilles que tu gardes pour elle.
+- [x] **Écran « Cadeaux »** (Réglages › Ma cave) : vins reçus (« Offert par ») et vins offerts (sorties « offerte », avec le destinataire), groupés par personne, avec dates et occasions. Recherche par prénom.
+- [x] **Éviter les doublons** : au moment d'offrir un vin à quelqu'un, l'app signale « Tu as déjà offert ce vin à Paul en mars 2026 ».
+- [x] La fiche d'une personne réunit ce qu'elle t'a offert, ce que tu lui as offert, et les bouteilles que tu gardes pour elle.
 
 *Audit de cave* (§7.4)
-- [ ] **Bilan calculé sur l'appareil** : équilibre des couleurs et des régions ; calendrier des années de maturité comparé à ton rythme de consommation (années où trop de vins arrivent à maturité en même temps, années creuses) ; part des vins en déclin ; espaces de garde pleins ou vides.
-- [ ] **Lecture du sommelier** : une synthèse, trois à cinq constats et des suggestions d'achat concrètes (types de vins, millésimes à viser, budget indicatif), à partir de ce bilan. C'est un appel unique, sans recherche web : environ 5 centimes.
-- [ ] Accès : bouton « Audit de ma cave » dans À boire et dans les suggestions du sommelier. Le dernier audit est conservé et daté.
-- [ ] Tests : statistiques sur la cave fictive (totaux justes, vins des amis exclus), valeur avec et sans estimation, cadeaux reçus et offerts, alerte de doublon, audit avec réponse simulée.
+- [x] **Bilan calculé sur l'appareil** : équilibre des couleurs et des régions ; calendrier des années de maturité comparé à ton rythme de consommation (années où trop de vins arrivent à maturité en même temps, années creuses) ; part des vins en déclin ; espaces de garde pleins ou vides.
+- [x] **Lecture du sommelier** : une synthèse, trois à cinq constats et des suggestions d'achat concrètes (types de vins, millésimes à viser, budget indicatif), à partir de ce bilan. C'est un appel unique, sans recherche web : environ 5 centimes.
+- [x] Accès : bouton « Audit de ma cave » dans À boire et dans les suggestions du sommelier. Le dernier audit est conservé et daté.
+- [x] Tests : statistiques sur la cave fictive (totaux justes, vins des amis exclus), valeur avec et sans estimation, cadeaux reçus et offerts, alerte de doublon, audit avec réponse simulée.
 
 **v2.1** (partager et exporter ; spécifiée, en attente de validation)
 - [ ] **Carte des vins à partager** : tu choisis les vins (prêts à boire, un site, des couleurs, ou une sélection à la main) et la mise en forme (avec ou sans prix ni nombre de bouteilles). La carte est rangée par couleur puis par région, sur une jolie page. Elle se partage en image (Messages, WhatsApp…) ou en PDF.

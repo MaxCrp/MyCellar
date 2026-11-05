@@ -27,6 +27,9 @@ src/js/*.js         code, assemblé dans l'ordre des noms de fichiers
   62-ploc           import du PDF Ploc : lecture des fiches et du plan, sites, placement, avis du sommelier
   70-boire          vue À boire, conseils de rangement et réassort
   80-plus           réglages, sites et espaces, IA, sauvegarde, sécurité
+  82-stats          statistiques, valeur actuelle des vins
+  83-gifts          cadeaux reçus et offerts
+  84-audit          audit de cave
   85-demo           cave fictive
   87-usage          suivi d'utilisation, rapport, signaler un problème
   88-versions       numéro de version, nouveautés, historique, « Plus d’infos » avant une mise à jour

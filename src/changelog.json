@@ -1,5 +1,17 @@
 [
   {
+    "version": "2.0",
+    "date": "2026-11-05",
+    "titre": "Comprendre sa cave",
+    "items": [
+      "Statistiques (Réglages › Ma cave) : ta cave par couleur, statut, région, pays, millésime, format et emplacement ; ta consommation sur 12 mois et tes vins les mieux notés ; tes achats par année. Touche une barre pour voir les vins.",
+      "Valeur actuelle : sur la fiche d’un vin, saisie à la main ou estimée par le sommelier (avec recherche web), avec une fourchette et l’écart avec le prix d’achat. L’estimation groupée annonce son coût avant de démarrer.",
+      "La valeur de la cave utilise la valeur estimée quand elle existe, sinon le prix d’achat.",
+      "Cadeaux (Réglages › Ma cave) : les vins reçus et offerts, par personne. L’app te prévient si tu t’apprêtes à offrir à quelqu’un un vin que tu lui as déjà offert.",
+      "Audit de ma cave (À boire, ou Sommelier) : équilibre, calendrier de maturité comparé à ton rythme, années d’embouteillage et années creuses, espaces presque pleins, puis la lecture du sommelier avec des suggestions d’achat."
+    ]
+  },
+  {
     "version": "1.7.5",
     "date": "2026-11-05",
     "titre": "Primeurs",

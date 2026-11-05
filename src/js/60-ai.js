@@ -203,7 +203,7 @@ function vSomm() {
   const msgs = S.chat;
   const starters = ['Ce soir : poulet rôti', 'Un apéritif pour 6', 'Que boire en priorité ?', 'Un vin pour un plateau de fromages', 'Que cuisiner avec mon meilleur rouge ?', ...(spiritsOn() ? ['Un digestif après le repas', ...(S.settings.cocktails ? ['Un cocktail avec ma cave'] : [])] : [])];
   const body = msgs.length ? msgs.map(chatMsg).join('') : `<div class="card"><b>Que veux-tu boire ?</b><p class="small" style="margin:6px 0 0">Décris ton plat ou l’occasion. Je choisis dans ta cave${isMulti() ? `, d’abord à ${esc(site(S.settings.site)?.name)}` : ''}, en privilégiant les bouteilles à leur apogée.</p>
-      <div class="chips wrap">${starters.map(s => `<button class="chip" data-act="chatAsk" data-q="${esc(s)}">${esc(s)}</button>`).join('')}</div></div>
+      <div class="chips wrap">${starters.map(s => `<button class="chip" data-act="chatAsk" data-q="${esc(s)}">${esc(s)}</button>`).join('')}<button class="chip" data-act="auditSheet">${ICON.spark} Audit de ma cave</button></div></div>
       ${!aiReady() ? `<div class="banner">Pour activer le sommelier, ajoute une clé API dans Plus › Intelligence artificielle.<br><button class="btn small primary" data-act="aiSettings">Configurer</button></div>` : ''}`;
   return `${body}${chatBusy ? '<div class="bubble ai"><span class="typing"><i></i><i></i><i></i></span></div>' : ''}`;
 }

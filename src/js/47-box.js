@@ -32,6 +32,7 @@ function boxOutSheet(uid_) {
 FORMS.boxOut = async (f, d) => {
   const bs = boxBottles(f.dataset.u), raw = String(d.n || '').replace(/\s/g, '');
   if (!/^\d+$/.test(raw) || +raw < 1 || +raw > bs.length) return formErrors(f, [['n', `Un nombre de 1 à ${bs.length}`]]);
+  if (d.motif === 'offerte' && d.who && !giftAgain(bs[0].wineId, d.who)) return;
   // « Rendue » : d'abord les bouteilles des amis ; sinon d'abord les miennes
   const pick = [...bs].sort((a, b) => d.motif === 'rendue' ? !!b.owner - !!a.owner : !!a.owner - !!b.owner).slice(0, +raw);
   const tasteM = ['bue', 'bouchonnee', 'terminee'].includes(d.motif);

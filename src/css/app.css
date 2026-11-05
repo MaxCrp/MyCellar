@@ -342,3 +342,17 @@ input[type=range].unset::-moz-range-progress{background:#EAE2D6}
 @keyframes slideR{from{transform:translateX(-40px);opacity:.3}to{transform:none;opacity:1}}
 .view.slide-l{animation:slideL .28s ease-out}
 .view.slide-r{animation:slideR .28s ease-out}
+/* v2.0 : statistiques et audit */
+.hb{display:grid;gap:4px;margin-top:6px}
+.hbr{display:grid;grid-template-columns:minmax(0,42%) 1fr auto;gap:8px;align-items:center;background:none;border:0;padding:4px 0;text-align:left;color:inherit;font:inherit;width:100%}
+.hbr .hl{font-size:13px;min-width:0;display:flex;align-items:center;gap:6px}
+.hbr .hbar{height:10px;background:var(--sunk);border-radius:5px;overflow:hidden}
+.hbr .hbar i{display:block;height:100%;border-radius:5px}
+.hbr .hn{font-size:12.5px;font-weight:700;min-width:22px;text-align:right}
+.cal{display:flex;gap:4px;align-items:flex-end;height:90px}
+.calc{flex:1;position:relative;height:100%;display:flex;align-items:flex-end;justify-content:center}
+.calc .cr{position:absolute;bottom:14px;left:0;right:0;background:var(--green-soft);border-radius:3px 3px 0 0}
+.calc .cf{position:absolute;bottom:14px;left:25%;right:25%;background:var(--green);border-radius:3px 3px 0 0}
+.calc.hot .cf{background:var(--bx)}
+.calc.low .cr{background:var(--gold);opacity:.45}
+.calc small{position:relative;font-size:10px;color:var(--muted)}
