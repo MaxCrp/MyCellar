@@ -95,7 +95,7 @@ Site, Espace, Meuble, Settings, AiUsage(mois, coût)
 
 1. **Photo d'étiquette** : Claude lit l'image et pré-remplit la fiche (domaine, cuvée, appellation, millésime, couleur, cépages, degré). L'utilisateur valide, puis choisit la quantité et l'emplacement.
 2. **Saisie manuelle** avec auto-complétion à partir des vins déjà présents en cave. La dictée vocale passe par le micro du clavier iOS.
-3. **Import du PDF Ploc**. Le PDF contient le nom, le domaine, le millésime et l'emplacement.
+3. **Import du PDF Ploc**. Le PDF contient le nom, le domaine, le millésime et l'emplacement. *Format réel constaté le 5 novembre 2026, bien plus riche : voir la release v1.7 (§10).*
    - L'IA lit le PDF, puis complète en lot l'appellation, la couleur, la région, les cépages et une apogée estimée, sans recherche web pour limiter le coût.
    - Un écran de correspondance permet de valider avant l'import, y compris les emplacements.
 4. **Duplication** : « + 1 bouteille identique », ou « ajouter le millésime suivant ».
@@ -410,6 +410,33 @@ Le détail est dans `docs/tests/2026-11-04-campagne-v1.6.1/` : `rapport-bugs.md`
 - [x] C12 · Sommelier : mention quand une recommandation ne correspond plus à la cave (B15).
 - [x] C13 · Contexte du sommelier réduit au-delà de 300 références (B16 ; validé).
 - [x] La campagne `tests/campagne.cjs` rejoint `tests/run.sh` et doit afficher 0 anomalie.
+
+**v1.7** (import Ploc complet, d'après un vrai export reçu le 5 novembre 2026 ; spécifiée, rien n'est développé)
+
+*Format constaté.* Un export Ploc porte sur **une cave** (ex. « Argenteuil - Cave Moyenne ») et contient :
+- **un plan** de la cave : une grille (ici 15 lignes × 5 colonnes) où chaque bouteille est un rond portant le numéro de son vin ;
+- **une légende** : numéro → millésime et nom complet du vin ;
+- **une fiche par vin** : couleur, alcool, apogée (« 2021/2028 »), estimation (« 15 € »), producteur, pays, région, appellation, cépages, stock total, contenance (« 750ml »), caves avec quantités (« Argenteuil - Cave Moyenne : 1, Étagère Gauche Thevray : 2 »), servir à (« 10-12° »), accords, classement, cuvée, référence, tags, une note sur 100 (« 75 », vide sinon), une photo.
+
+*Ce que fait l'import actuel avec ce PDF.* Il fonctionne, mais :
+- toutes les bouteilles arrivent « non placées », alors que le plan donne leur case exacte ;
+- l'IA réinvente couleur, cépages et apogée au lieu de reprendre ceux de Ploc (ta fenêtre « 2021/2028 » serait remplacée par une estimation) ;
+- l'alcool, l'estimation, la contenance, la température de service, les accords et la note sont perdus ;
+- le stock d'une fiche couvre toutes les caves : importer ensuite l'export d'une autre cave créerait des doublons.
+
+*Ce que fait la v1.7.*
+- [ ] **Lecture fidèle des fiches** : chaque champ rempli dans Ploc est repris tel quel (couleur, degré, producteur, pays, région, appellation, cépages, contenance → format, apogée début/fin). L'IA ne complète que les champs vides (ex. producteur ou région absents), et l'écran de vérification les signale « complété par le sommelier ».
+- [ ] **Nom découpé** : le titre Ploc mélange producteur, appellation et cuvée (« Bernard Haegelin Alsace Pinot Gris Bollenberg ») ; la cuvée est ce qui reste une fois le producteur et l'appellation retirés (« Pinot Gris Bollenberg »).
+- [ ] **Apogée de Ploc conservée**, marquée « source : Ploc » ; l'apogée (pic) est placée au milieu de la fenêtre. Pas d'estimation IA si Ploc en donne une, d'où un import moins coûteux.
+- [ ] **Placement exact** : l'écran de vérification propose, pour chaque cave Ploc, de **créer le meuble** à l'identique (rack aux dimensions du plan, nom repris, dans l'espace choisi) ou de l'associer à un meuble existant. Chaque bouteille est posée dans sa case. Si une case est occupée ou hors du meuble, la bouteille reste « non placée », avec son emplacement Ploc en note.
+- [ ] **Bouteilles des autres caves** : les quantités d'une cave sans plan dans le PDF (ex. « Étagère Gauche Thevray : 2 ») sont proposées en « non placées », dans l'espace de ton choix, ou ignorées.
+- [ ] **Pas de doublons entre plusieurs exports** : chaque bouteille garde sa cave Ploc d'origine. Au second export, un vin déjà importé pour une cave n'est pas recréé ; l'écran indique « déjà importé ».
+- [ ] **Estimation** : à valider (question 1).
+- [ ] **Note sur 100** : à valider (question 2).
+- [ ] **Servir à et accords** : à valider (question 3).
+- [ ] **Écran de vérification** : un aperçu du plan importé, avec les vins par numéro, permet de contrôler la lecture avant d'importer.
+- [ ] **Hors périmètre** : les photos des bouteilles (il faudrait embarquer un lecteur PDF dans l'app), le classement, la référence et les tags (vides dans l'export reçu).
+- [ ] Tests : un export Ploc fictif au même format (plan, légende, fiches, deux caves, une note, des champs vides), avec réponses de l'IA simulées, vérifie placement, champs repris, absence de doublons au second import.
 
 **v2**
 - Sauvegarde automatique Google Drive.
