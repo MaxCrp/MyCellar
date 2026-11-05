@@ -193,10 +193,22 @@ function afterAdd(w, ids, primeur) {
   const rest = ids.filter(id => !byId(S.bottles, id).unitId);
   const spId = byId(S.bottles, ids[0]).spaceId;
   save();
+  const ask = stockAskFor(w, spId);
   if (rest.length && spaceUnits(spId).length) {
     closeSheet();
     startPlace(w.id, rest, spId, true);
-  } else { closeSheet(); render(); toast(`${plural(ids.length, 'bouteille ajoutée', 'bouteilles ajoutées')}${autoAI ? ' · estimation de l’apogée en cours' : ''}`); }
+    if (ask) { draft.place.stockAsk = ask; refreshSheet(); }
+  } else {
+    closeSheet(); render(); toast(`${plural(ids.length, 'bouteille ajoutée', 'bouteilles ajoutées')}${autoAI ? ' · estimation de l’apogée en cours' : ''}`);
+    if (ask) showSheet(() => `${head('Vin à garder')}<p>${esc(wineTitle(w))} est encore trop jeune. À emporter au prochain transfert vers ${esc(site(ask).name)} ?</p>
+      <div class="btns"><button class="btn primary wide" data-act="tAdd" data-ids="${ids.join(',')}" data-to="${ask}" data-close="1">${ICON.truck} Oui, au transfert</button><button class="btn ghost wide" data-act="close">Non</button></div>`);
+  }
+}
+// Achat sur un site de consommation d'un vin à garder : on propose de l'emporter vers le stockage
+function stockAskFor(w, spId) {
+  if (!isMulti() || w.kind !== 'vin' || isFriend(w) || status(w) !== 'tot') return null;
+  const here = site(space(spId)?.siteId); if (!here || here.role === 'stock') return null;
+  return S.sites.find(s => s.id !== here.id && s.role === 'stock')?.id || null;
 }
 
 /* ---------- Rangement ---------- */
@@ -208,11 +220,14 @@ function startPlace(wineId, ids, spaceId, fresh) {
 const suggestFor = p => suggestSlots(p.spaceId, p.ids.length, new Set()).filter(s => !occupancyExcept(new Set(p.ids)).has(`${s.unitId}:${s.r}:${s.c}`));
 function placeSheet() {
   const p = draft?.place; if (!p) return null;
-  const w = wine(p.wineId), occ = occupancyExcept(new Set(p.ids)), sp = space(p.spaceId);
+  const w = wine(p.wineId), occ = occupancyExcept(new Set(p.ids)), sp = space(p.spaceId), nw = new Set(p.ids.map(id => byId(S.bottles, id)?.wineId)).size;
+  const ask = p.stockAsk && site(p.stockAsk);
   const ctx = { occ, m: null, pick: p };
   const units = spaceUnits(sp.id), grid = units.filter(u => !UNIT_TYPES[u.type].box), boxes = units.filter(u => UNIT_TYPES[u.type].box);
   return `${head(`Ranger ${p.ids.length > 1 ? p.ids.length + ' bouteilles' : 'la bouteille'}`)}
-    <p class="small" style="margin-top:-6px"><span class="dot" style="background:${wineColor(w)}"></span> ${esc(wineTitle(w))}</p>
+    <p class="small" style="margin-top:-6px">${nw > 1 ? plural(nw, 'vin', 'vins') : `<span class="dot" style="background:${wineColor(w)}"></span> ${esc(wineTitle(w))}`}</p>
+    ${ask ? `<div class="banner green" style="margin-top:6px"><b>Vin à garder</b> : à emporter au prochain transfert vers ${esc(ask.name)} ?
+      <div class="row" style="gap:8px"><button class="btn small green" data-act="placeToTransfer">Oui, au transfert</button><button class="btn small ghost" data-act="placeNoAsk">Non</button></div></div>` : ''}
     <div class="chips">${S.spaces.map(s => `<button class="chip${s.id === p.spaceId ? ' on' : ''}" data-act="placeSpace" data-id="${s.id}">${esc(isMulti() ? site(s.siteId)?.name + ' › ' : '')}${esc(s.name)}</button>`).join('')}</div>
     <p class="small"><b style="color:var(--ink)">${p.sel.length} / ${p.ids.length}</b> place${p.ids.length > 1 ? 's' : ''} choisie${p.sel.length > 1 ? 's' : ''}. Touche les cases libres pour choisir.</p>
     ${!units.length ? `<div class="card small">Aucun meuble dans cet espace : les bouteilles y seront rangées sans emplacement précis.</div>` : placeShortage(p, units, occ)}
@@ -252,6 +267,12 @@ Object.assign(ACT, {
     refreshSheet();
   },
   placeSuggest: () => { draft.place.sel = suggestFor(draft.place); refreshSheet(); },
+  placeNoAsk: () => { draft.place.stockAsk = null; refreshSheet(); },
+  placeToTransfer: async () => {
+    const p = draft?.place; if (!p?.stockAsk) return;
+    transferAdd(p.ids, p.stockAsk); await save(); draft = null; closeSheet(); render();
+    toast(`${plural(p.ids.length, 'bouteille', 'bouteilles')} au transfert vers ${site(p.stockAsk)?.name || ''} · sans emplacement d’ici là`);
+  },
   placeClear: () => { draft.place.sel = []; refreshSheet(); },
   placeOk: async () => {
     const p = draft.place;
@@ -357,7 +378,7 @@ function bottleSheet(bid) {
       : `<button class="btn primary wide" data-act="outBottle" data-b="${bid}">${ICON.out} ${sp && b.state === 'open' ? 'Bouteille terminée' : isFriend(w) ? 'Sortir (rendre, boire…)' : 'Sortir de la cave'}</button>
         ${sp && b.state !== 'open' ? `<button class="btn wide" data-act="openBottle" data-b="${bid}">Ouvrir la bouteille</button>` : ''}
         <div class="btns2"><button class="btn" data-act="moveBottle" data-b="${bid}">${ICON.move} Déplacer</button><button class="btn" data-act="taste" data-w="${w.id}" data-b="${bid}">${ICON.cork} Déguster</button></div>
-        ${isMulti() ? `<button class="btn wide ${inT ? 'outline' : ''}" data-act="toTransfer" data-b="${bid}">${ICON.truck} ${inT ? 'Retirer du transfert' : 'Ajouter au prochain transfert'}</button>` : ''}`}
+        ${isMulti() ? `<button class="btn wide ${inT ? 'outline' : ''}" data-act="toTransfer" data-b="${bid}">${ICON.truck} ${inT ? 'Retirer du transfert vers ' + esc(site(tDest(bid))?.name || '') : S.sites.length === 2 ? 'Ajouter au transfert vers ' + esc(site(defaultDest(b))?.name || '') : 'Ajouter au prochain transfert'}</button>` : ''}`}
       ${inCave(b) ? `<button class="btn wide" data-act="planGo" data-b="${bid}">${ICON.pin} Voir sur le plan</button>` : ''}
       <button class="btn ghost wide" data-act="wine" data-id="${w.id}">Voir la fiche du vin</button>
     </div>`;
@@ -395,45 +416,7 @@ FORMS.out = async (f, d) => {
 };
 
 /* ---------- Transfert entre sites ---------- */
-function transferSheet() {
-  const ids = S.transfer.ids.filter(id => byId(S.bottles, id) && inCave(byId(S.bottles, id)));
-  const bs = ids.map(id => byId(S.bottles, id));
-  const to = S.transfer.to && site(S.transfer.to) ? S.transfer.to : S.sites.find(s => s.role === 'conso')?.id || S.sites[0].id;
-  const sugg = transferSuggestions(to);
-  return `${head('Transfert entre sites')}
-    <label>Destination<select data-ch="transferTo">${S.sites.map(s => `<option value="${s.id}" ${s.id === to ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}</select></label>
-    ${bs.length ? `<div class="list">${bs.map(b => { const w = wine(b.wineId); return `<div class="li"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(locLabel(b))}</small></div><button class="icon-btn" data-act="toTransfer" data-b="${b.id}" aria-label="Retirer">${ICON.close}</button></div>`; }).join('')}</div>` : '<p class="muted small">Aucune bouteille pour l’instant. Ouvre une bouteille et touche « Ajouter au prochain transfert ».</p>'}
-    ${sugg.length ? `<h3>Suggestions</h3><p class="small" style="margin-top:-4px">Vins prêts à boire stockés ailleurs qu’à destination.</p><div class="list">${sugg.slice(0, 8).map(b => { const w = wine(b.wineId); return `<div class="li"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${STATUS[status(w)].short} · ${esc(locLabel(b))}</small></div><button class="btn small" data-act="toTransfer" data-b="${b.id}">Ajouter</button></div>`; }).join('')}</div>` : ''}
-    ${bs.length ? `<button class="btn primary wide" style="margin-top:14px" data-act="transferDone" data-to="${to}">${ICON.check} Arrivées à ${esc(site(to)?.name)}</button><p class="tiny">Les bouteilles passent dans l’espace de consommation de ce site, sans emplacement : tu pourras les ranger ensuite.</p>` : ''}`;
-}
-function transferSuggestions(to) {
-  const seen = new Set();
-  return S.bottles.filter(b => {
-    if (b.state !== 'cave' || S.transfer.ids.includes(b.id) || siteOfBottle(b) === to) return false;
-    const w = wine(b.wineId); if (!w || isFriend(w) || !['prio', 'apogee'].includes(status(w))) return false;
-    if (seen.has(w.id)) return false; seen.add(w.id); return true;
-  }).sort((a, b) => (status(wine(a.wineId)) === 'prio' ? 0 : 1) - (status(wine(b.wineId)) === 'prio' ? 0 : 1));
-}
-CHANGES.transferTo = async el => { S.transfer.to = el.value; await save(); refreshSheet(); };
 Object.assign(ACT, {
-  transferSheet: () => showSheet(transferSheet),
-  toTransfer: async t => {
-    const id = t.dataset.b, i = S.transfer.ids.indexOf(id);
-    if (i >= 0) S.transfer.ids.splice(i, 1); else S.transfer.ids.push(id);
-    await save(); refreshSheet(); render(); toast(i >= 0 ? 'Retirée du transfert' : 'Ajoutée au transfert');
-  },
-  transferDone: async t => {
-    const to = t.dataset.to, sps = siteSpaces(to), dest = sps.find(s => s.use === 'conso') || sps[0];
-    if (!dest) return toast('Ce site n’a pas encore d’espace');
-    let n = 0;
-    for (const id of S.transfer.ids) {
-      const b = byId(S.bottles, id); if (!b || !inCave(b) || siteOfBottle(b) === to) continue;
-      const from = locOf(b); Object.assign(b, { spaceId: dest.id, unitId: null, r: null, c: null });
-      logMove(b, 'transfert', { from, to: locOf(b) }); n++;
-    }
-    S.transfer.ids = []; S.settings.site = to; caveSpace = dest.id;
-    await save(); closeSheet(); view = 'cave'; caveMode = 'plan'; render(); toast(`${plural(n, 'bouteille arrivée', 'bouteilles arrivées')} · à ranger dans « ${dest.name} »`);
-  },
   receive: async t => {
     const b = byId(S.bottles, t.dataset.b), w = wine(b.wineId);
     const ids = S.bottles.filter(x => x.wineId === w.id && x.state === 'primeur').map(x => x.id);

@@ -1,5 +1,17 @@
 [
  {
+  "version": "1.7.2",
+  "date": "2026-11-05",
+  "titre": "Transferts dans les deux sens",
+  "items": [
+   "Transferts : une section par sens (vers la consommation, vers le stockage), chacune avec ses arrivées. Tu peux emporter tes achats à la campagne et rapporter des vins prêts à boire dans le même trajet.",
+   "Arrivées au stockage : les bouteilles vont dans le meilleur espace de garde, avec « Ranger maintenant ».",
+   "Suggestions vers le stockage : les vins à garder achetés récemment en ville. Et quand tu ajoutes un vin trop jeune en ville, l’app propose de l’emporter au prochain transfert.",
+   "Toucher une bouteille dans un transfert ou un conseil de rangement ouvre un résumé du vin : fenêtre, statut, bouteilles par site, dernière note.",
+   "À boire : touche une barre du graphique « À boire avant la fin de… » pour voir les bouteilles et leurs emplacements, avec accès direct à la case."
+  ]
+ },
+ {
   "version": "1.7.1",
   "date": "2026-11-05",
   "titre": "Recherche et sommelier",

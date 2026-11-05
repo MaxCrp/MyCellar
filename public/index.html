@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#F7F3EC">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-qzLcZc+Vuj8wnS0rQki6ue4euzmKjb9lJJ1iAFfLpzY='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-Zn6WJW1NegFqJc1ah3pvjJpDNsllrVWhE3HOiJ+OYik='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>MyCellar</title>
@@ -187,8 +187,10 @@ input[type=date]{display:block}
 .kpi span{font-size:10.5px;color:var(--muted);font-weight:600}
 .kpi.on{border:1.5px solid var(--bx)}
 .bars{display:flex;align-items:flex-end;gap:6px;height:90px}
-.bars div{flex:1;border-radius:4px 4px 0 0;min-height:2px;position:relative}
-.bars div span{position:absolute;top:-16px;left:0;right:0;text-align:center;font-size:10.5px;font-weight:700;color:var(--ink)}
+.bars div,.bars button{flex:1;border-radius:4px 4px 0 0;min-height:2px;position:relative;border:0;padding:0}
+.bars.sel button:not(.on){opacity:.4}
+.bars button.on{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--ink)}
+.bars div span,.bars button span{position:absolute;top:-16px;left:0;right:0;text-align:center;font-size:10.5px;font-weight:700;color:var(--ink)}
 .barl{display:flex;gap:6px;font-size:10.5px;color:var(--muted);margin-top:4px;text-align:center}
 .barl span{flex:1}
 
@@ -362,7 +364,7 @@ input[type=range].unset::-moz-range-progress{background:#EAE2D6}
 <input type="file" id="f-backup" accept="application/json,.json" hidden>
 <script>
 'use strict';
-const CHANGELOG = [{"version":"1.7.1","date":"2026-11-05","titre":"Recherche et sommelier","items":["La recherche de l’onglet Cave porte sur tous tes sites d’un coup. Les résultats s’affichent sous la barre, avec chaque emplacement : touche-en un pour y aller, la case clignote sur le plan.","Une seule bouteille trouvée ? La touche « Rechercher » du clavier t’y emmène directement.","« Voir sur le plan » depuis la fiche d’une bouteille, et l’épingle à côté de chaque emplacement sur la fiche d’un vin.","Une croix efface la recherche d’un coup, sur toutes les barres de recherche.","Sommelier : le bouton « Nouvelle conversation » est dans l’encart de saisie, toujours visible, et demande confirmation. La dernière réponse n’est plus cachée sous l’encart."]},{"version":"1.7","date":"2026-11-05","titre":"Import Ploc complet","items":["Import Ploc : les fiches sont reprises telles quelles (couleur, degré, fenêtre de garde, contenance, cépages). Le sommelier ne complète que les champs vides, et l’écran de vérification les signale.","Les bouteilles sont posées à leur case : le meuble est créé à l’identique du plan Ploc, ou associé à un meuble existant. Un aperçu du plan permet de vérifier la lecture.","Les caves Ploc sont rapprochées de tes sites, sur ton iPhone, sans envoyer la liste de tes sites à l’IA. Un site non reconnu est demandé une fois, et peut prendre le nom utilisé dans Ploc.","Le sommelier donne son avis sur chaque fenêtre de Ploc : s’il la juge décalée, il propose la sienne et tu choisis.","L’estimation de Ploc devient le prix d’achat, et la note sur 100 une dégustation sur 20. Les accords sont ajoutés aux notes du vin.","Plusieurs exports peuvent être importés à la suite, sans doublon.","Nouveau champ « Servir à » sur la fiche vin, affiché au moment de déguster. Le sommelier le voit, ainsi que les accords."]},{"version":"1.6.2","date":"2026-11-05","titre":"Fiabilité","items":["Un double appui sur un bouton ne crée plus deux bouteilles, deux sorties ou deux dégustations.","La fiche vin vérifie le millésime, le prix, le degré et la quantité, et explique sous le champ ce qui ne va pas. Un millésime sur deux chiffres est complété (« 19 » devient 2019), et les nombres comme « 1.234,50 » sont reconnus.","Les fenêtres de dégustation restent cohérentes (début, apogée, fin), qu’elles soient saisies ou proposées par le sommelier.","Une dégustation enregistrée sans toucher au curseur n’a plus de note, au lieu d’un 14/20 par défaut.","Rangement : l’app prévient quand les places manquent et propose l’espace le plus libre.","Spiritueux désactivés : leurs cases restent sur le plan, grisées.","Import Ploc, lecture d’étiquette et restauration de sauvegarde : contrôles et messages plus clairs.","Les très grandes caves restent économes en appels au sommelier."]},{"version":"1.6.1","date":"2026-11-04","titre":"Confort et corrections","items":["Les fenêtres ne clignotent plus et ne remontent plus en haut quand tu touches un choix (fiche de dégustation, rangement, liste d’envies, transfert…).","Fiche de dégustation : le bouton « OK » en haut disparaît, on enregistre avec le bouton du bas. Fermer une fiche commencée demande confirmation.","Dans la cave fictive, les réglages indisponibles (suivi d’utilisation, Face ID, Rester déverrouillé) expliquent pourquoi.","Réglages › Contenu : la ligne « Vins · Toujours actif » est retirée."]},{"version":"1.6","date":"2026-11-04","titre":"Retours d’utilisation et suivi des versions","items":["Suivi d’utilisation (désactivé par défaut, Réglages › Aide) : l’app note, sur ton iPhone uniquement, les écrans et les gestes, jamais tes vins ni tes notes. Tu peux consulter la synthèse et exporter un rapport à envoyer, avec ton avis.","« Signaler un problème » : décris ce qui s’est passé, l’app prépare un rapport avec les dernières minutes d’utilisation et les erreurs récentes. Raccourci aussi dans les messages d’erreur.","Mises à jour : « Plus d’infos » montre le contenu d’une nouvelle version avant de l’installer, une fenêtre « Nouveautés » s’affiche après, et l’historique des versions est dans Réglages › Aide."]},{"version":"1.5.2","date":"2026-11-04","titre":"Dégustation à l’aveugle et finitions","items":["Dégustation à l’aveugle : la fiche d’abord sur un « vin mystère », tes hypothèses, puis la révélation, la comparaison et l’analyse du sommelier.","Le bouton + est le même partout : « Nouvelle dégustation » ou « Nouveau vin ».","Présentation de l’app au premier lancement, à revoir dans Réglages › Aide.","Recherche dans « Racheter un vin ». L’import Ploc est désormais dans les réglages.","Nouvelles icônes : un bouchon pour « Déguster », un carnet pour les dégustations."]},{"version":"1.5","date":"2026-11-04","titre":"Dégustations et conseils de rangement","items":["Onglet Dégustations : le journal de tous tes vins dégustés, en cave ou ailleurs (restaurant, salon, domaine…), avec recherche, filtres et vue par vin.","Séances de dégustation avec classement, et liste d’envies avec « Acheté ».","Conseils de rangement dans À boire : vins à rapprocher, à mettre en garde, réassort de la cave de consommation.","Le sommelier propose d’ajuster la fenêtre d’un vin après une dégustation, et tient compte de tes vins bus ailleurs et de tes accords.","Les réglages passent sous l’icône engrenage."]},{"version":"1.0.1","date":"2026-11-04","titre":"Corrections","items":["L’app se rouvre correctement sur iPhone après un premier lancement.","La création de la cave ne pose plus de question : un site « Site 1 », renommable, et le mode plusieurs sites dans les réglages.","La vue Urgence de la page Cave est retirée : l’onglet À boire fait référence."]},{"version":"1.0","date":"2026-11-04","titre":"Première version","items":["Ta cave sur ton iPhone, chiffrée par ton mot de passe ou Face ID, et utilisable hors ligne.","Sites, espaces et meubles (armoire, rack, étagère, caisses, cartons) avec un plan visuel et une recherche.","Ajout par photo d’étiquette ou saisie, rangement suggéré, sorties, déplacements, transferts, primeurs, vins des amis.","Dégustation rapide ou complète avec la roue des arômes.","Sommelier pour les accords mets-vins, fenêtres de dégustation estimées, onglet À boire.","Option spiritueux, import Ploc, sauvegarde chiffrée."]}];
+const CHANGELOG = [{"version":"1.7.2","date":"2026-11-05","titre":"Transferts dans les deux sens","items":["Transferts : une section par sens (vers la consommation, vers le stockage), chacune avec ses arrivées. Tu peux emporter tes achats à la campagne et rapporter des vins prêts à boire dans le même trajet.","Arrivées au stockage : les bouteilles vont dans le meilleur espace de garde, avec « Ranger maintenant ».","Suggestions vers le stockage : les vins à garder achetés récemment en ville. Et quand tu ajoutes un vin trop jeune en ville, l’app propose de l’emporter au prochain transfert.","Toucher une bouteille dans un transfert ou un conseil de rangement ouvre un résumé du vin : fenêtre, statut, bouteilles par site, dernière note.","À boire : touche une barre du graphique « À boire avant la fin de… » pour voir les bouteilles et leurs emplacements, avec accès direct à la case."]},{"version":"1.7.1","date":"2026-11-05","titre":"Recherche et sommelier","items":["La recherche de l’onglet Cave porte sur tous tes sites d’un coup. Les résultats s’affichent sous la barre, avec chaque emplacement : touche-en un pour y aller, la case clignote sur le plan.","Une seule bouteille trouvée ? La touche « Rechercher » du clavier t’y emmène directement.","« Voir sur le plan » depuis la fiche d’une bouteille, et l’épingle à côté de chaque emplacement sur la fiche d’un vin.","Une croix efface la recherche d’un coup, sur toutes les barres de recherche.","Sommelier : le bouton « Nouvelle conversation » est dans l’encart de saisie, toujours visible, et demande confirmation. La dernière réponse n’est plus cachée sous l’encart."]},{"version":"1.7","date":"2026-11-05","titre":"Import Ploc complet","items":["Import Ploc : les fiches sont reprises telles quelles (couleur, degré, fenêtre de garde, contenance, cépages). Le sommelier ne complète que les champs vides, et l’écran de vérification les signale.","Les bouteilles sont posées à leur case : le meuble est créé à l’identique du plan Ploc, ou associé à un meuble existant. Un aperçu du plan permet de vérifier la lecture.","Les caves Ploc sont rapprochées de tes sites, sur ton iPhone, sans envoyer la liste de tes sites à l’IA. Un site non reconnu est demandé une fois, et peut prendre le nom utilisé dans Ploc.","Le sommelier donne son avis sur chaque fenêtre de Ploc : s’il la juge décalée, il propose la sienne et tu choisis.","L’estimation de Ploc devient le prix d’achat, et la note sur 100 une dégustation sur 20. Les accords sont ajoutés aux notes du vin.","Plusieurs exports peuvent être importés à la suite, sans doublon.","Nouveau champ « Servir à » sur la fiche vin, affiché au moment de déguster. Le sommelier le voit, ainsi que les accords."]},{"version":"1.6.2","date":"2026-11-05","titre":"Fiabilité","items":["Un double appui sur un bouton ne crée plus deux bouteilles, deux sorties ou deux dégustations.","La fiche vin vérifie le millésime, le prix, le degré et la quantité, et explique sous le champ ce qui ne va pas. Un millésime sur deux chiffres est complété (« 19 » devient 2019), et les nombres comme « 1.234,50 » sont reconnus.","Les fenêtres de dégustation restent cohérentes (début, apogée, fin), qu’elles soient saisies ou proposées par le sommelier.","Une dégustation enregistrée sans toucher au curseur n’a plus de note, au lieu d’un 14/20 par défaut.","Rangement : l’app prévient quand les places manquent et propose l’espace le plus libre.","Spiritueux désactivés : leurs cases restent sur le plan, grisées.","Import Ploc, lecture d’étiquette et restauration de sauvegarde : contrôles et messages plus clairs.","Les très grandes caves restent économes en appels au sommelier."]},{"version":"1.6.1","date":"2026-11-04","titre":"Confort et corrections","items":["Les fenêtres ne clignotent plus et ne remontent plus en haut quand tu touches un choix (fiche de dégustation, rangement, liste d’envies, transfert…).","Fiche de dégustation : le bouton « OK » en haut disparaît, on enregistre avec le bouton du bas. Fermer une fiche commencée demande confirmation.","Dans la cave fictive, les réglages indisponibles (suivi d’utilisation, Face ID, Rester déverrouillé) expliquent pourquoi.","Réglages › Contenu : la ligne « Vins · Toujours actif » est retirée."]},{"version":"1.6","date":"2026-11-04","titre":"Retours d’utilisation et suivi des versions","items":["Suivi d’utilisation (désactivé par défaut, Réglages › Aide) : l’app note, sur ton iPhone uniquement, les écrans et les gestes, jamais tes vins ni tes notes. Tu peux consulter la synthèse et exporter un rapport à envoyer, avec ton avis.","« Signaler un problème » : décris ce qui s’est passé, l’app prépare un rapport avec les dernières minutes d’utilisation et les erreurs récentes. Raccourci aussi dans les messages d’erreur.","Mises à jour : « Plus d’infos » montre le contenu d’une nouvelle version avant de l’installer, une fenêtre « Nouveautés » s’affiche après, et l’historique des versions est dans Réglages › Aide."]},{"version":"1.5.2","date":"2026-11-04","titre":"Dégustation à l’aveugle et finitions","items":["Dégustation à l’aveugle : la fiche d’abord sur un « vin mystère », tes hypothèses, puis la révélation, la comparaison et l’analyse du sommelier.","Le bouton + est le même partout : « Nouvelle dégustation » ou « Nouveau vin ».","Présentation de l’app au premier lancement, à revoir dans Réglages › Aide.","Recherche dans « Racheter un vin ». L’import Ploc est désormais dans les réglages.","Nouvelles icônes : un bouchon pour « Déguster », un carnet pour les dégustations."]},{"version":"1.5","date":"2026-11-04","titre":"Dégustations et conseils de rangement","items":["Onglet Dégustations : le journal de tous tes vins dégustés, en cave ou ailleurs (restaurant, salon, domaine…), avec recherche, filtres et vue par vin.","Séances de dégustation avec classement, et liste d’envies avec « Acheté ».","Conseils de rangement dans À boire : vins à rapprocher, à mettre en garde, réassort de la cave de consommation.","Le sommelier propose d’ajuster la fenêtre d’un vin après une dégustation, et tient compte de tes vins bus ailleurs et de tes accords.","Les réglages passent sous l’icône engrenage."]},{"version":"1.0.1","date":"2026-11-04","titre":"Corrections","items":["L’app se rouvre correctement sur iPhone après un premier lancement.","La création de la cave ne pose plus de question : un site « Site 1 », renommable, et le mode plusieurs sites dans les réglages.","La vue Urgence de la page Cave est retirée : l’onglet À boire fait référence."]},{"version":"1.0","date":"2026-11-04","titre":"Première version","items":["Ta cave sur ton iPhone, chiffrée par ton mot de passe ou Face ID, et utilisable hors ligne.","Sites, espaces et meubles (armoire, rack, étagère, caisses, cartons) avec un plan visuel et une recherche.","Ajout par photo d’étiquette ou saisie, rangement suggéré, sorties, déplacements, transferts, primeurs, vins des amis.","Dégustation rapide ou complète avec la roue des arômes.","Sommelier pour les accords mets-vins, fenêtres de dégustation estimées, onglet À boire.","Option spiritueux, import Ploc, sauvegarde chiffrée."]}];
 const APP_VERSION = CHANGELOG[0].version;
 
 /* ===== 00-core.js ===== */
@@ -776,7 +778,7 @@ const emptyData = () => ({
     lockMin: 5, stay: false, lastExport: null, aromas: {}, rate: 0.92, usage: { on: false },
   },
   sites: [], spaces: [], units: [], wines: [], bottles: [], moves: [], tastings: [],
-  transfer: { ids: [], to: null }, chat: [], usage: {}, dismissed: {}, sessions: [], wishes: [], diag: { errors: [] },
+  transfer: { ids: [], to: null, dest: {} }, chat: [], usage: {}, dismissed: {}, sessions: [], wishes: [], diag: { errors: [] },
 });
 function normalize(d) {
   const e = emptyData();
@@ -800,7 +802,9 @@ function cleanData(d) {
   d.wishes = d.wishes.filter(x => wid.has(x.wineId));
   // Fenêtre incohérente déjà enregistrée : on garde la fin si elle est possible, sinon on l'efface
   for (const w of d.wines) if (w.apogee) { const a = w.apogee, cw = cleanWindow(a.debut, a.pic, a.fin, w.millesime) || cleanWindow(null, null, a.fin, w.millesime); w.apogee = cw ? { ...a, ...cw } : null; }
-  d.transfer.ids = d.transfer.ids.filter(id => bid.has(id));
+  d.transfer.ids = (Array.isArray(d.transfer.ids) ? d.transfer.ids : []).filter(id => bid.has(id));
+  const dest = d.transfer.dest && typeof d.transfer.dest === 'object' ? d.transfer.dest : {};
+  d.transfer.dest = Object.fromEntries(Object.entries(dest).filter(([k, v]) => d.transfer.ids.includes(k) && d.sites.some(s => s.id === v)));
   d.tastings = d.tastings.filter(t => !t.wineId || wid.has(t.wineId));
   for (const t of d.tastings) if (t.sessionId && !ses.has(t.sessionId)) t.sessionId = null;
   d.bottles = d.bottles.filter(b => wid.has(b.wineId));
@@ -1279,21 +1283,23 @@ function vCave() {
 }
 /* ---------- Recherche sur tous les sites ---------- */
 // Emplacements des bouteilles trouvées : une ligne par case, par caisse, par lot « non placées » d'un espace, par lot en primeur
+function locGroups(bs) {
+  const cur = S.settings.site, groups = new Map();
+  for (const b of bs) {
+    const u = b.unitId && unit(b.unitId);
+    const k = b.state === 'primeur' ? 'primeur' : !u ? 'np:' + b.spaceId : UNIT_TYPES[u.type].box ? 'box:' + u.id : 'c:' + b.id;
+    if (!groups.has(k)) groups.set(k, { b, n: 0, primeur: b.state === 'primeur' });
+    groups.get(k).n++;
+  }
+  return [...groups.values()].sort((a, b) => (a.primeur - b.primeur) || ((siteOfBottle(b.b) === cur) - (siteOfBottle(a.b) === cur)) || locLabel(a.b, true).localeCompare(locLabel(b.b, true), 'fr'));
+}
 function caveLocs(m) {
-  const cur = S.settings.site, out = [];
+  const out = [];
   for (const w of S.wines) {
     if (!kindOn(w) || !m(w)) continue;
     const bs = S.bottles.filter(b => b.wineId === w.id && (inCave(b) || b.state === 'primeur'));
     if (!bs.length) continue;
-    const groups = new Map();
-    for (const b of bs) {
-      const u = b.unitId && unit(b.unitId);
-      const k = b.state === 'primeur' ? 'primeur' : !u ? 'np:' + b.spaceId : UNIT_TYPES[u.type].box ? 'box:' + u.id : 'c:' + b.id;
-      if (!groups.has(k)) groups.set(k, { b, n: 0, primeur: b.state === 'primeur' });
-      groups.get(k).n++;
-    }
-    const locs = [...groups.values()].sort((a, b) => (a.primeur - b.primeur) || ((siteOfBottle(b.b) === cur) - (siteOfBottle(a.b) === cur)) || locLabel(a.b, true).localeCompare(locLabel(b.b, true), 'fr'));
-    out.push({ w, n: bs.length, locs });
+    out.push({ w, n: bs.length, locs: locGroups(bs) });
   }
   return out.sort((a, b) => norm(wineName(a.w)).localeCompare(norm(wineName(b.w))) || (a.w.millesime || 0) - (b.w.millesime || 0));
 }
@@ -1736,10 +1742,22 @@ function afterAdd(w, ids, primeur) {
   const rest = ids.filter(id => !byId(S.bottles, id).unitId);
   const spId = byId(S.bottles, ids[0]).spaceId;
   save();
+  const ask = stockAskFor(w, spId);
   if (rest.length && spaceUnits(spId).length) {
     closeSheet();
     startPlace(w.id, rest, spId, true);
-  } else { closeSheet(); render(); toast(`${plural(ids.length, 'bouteille ajoutée', 'bouteilles ajoutées')}${autoAI ? ' · estimation de l’apogée en cours' : ''}`); }
+    if (ask) { draft.place.stockAsk = ask; refreshSheet(); }
+  } else {
+    closeSheet(); render(); toast(`${plural(ids.length, 'bouteille ajoutée', 'bouteilles ajoutées')}${autoAI ? ' · estimation de l’apogée en cours' : ''}`);
+    if (ask) showSheet(() => `${head('Vin à garder')}<p>${esc(wineTitle(w))} est encore trop jeune. À emporter au prochain transfert vers ${esc(site(ask).name)} ?</p>
+      <div class="btns"><button class="btn primary wide" data-act="tAdd" data-ids="${ids.join(',')}" data-to="${ask}" data-close="1">${ICON.truck} Oui, au transfert</button><button class="btn ghost wide" data-act="close">Non</button></div>`);
+  }
+}
+// Achat sur un site de consommation d'un vin à garder : on propose de l'emporter vers le stockage
+function stockAskFor(w, spId) {
+  if (!isMulti() || w.kind !== 'vin' || isFriend(w) || status(w) !== 'tot') return null;
+  const here = site(space(spId)?.siteId); if (!here || here.role === 'stock') return null;
+  return S.sites.find(s => s.id !== here.id && s.role === 'stock')?.id || null;
 }
 
 /* ---------- Rangement ---------- */
@@ -1751,11 +1769,14 @@ function startPlace(wineId, ids, spaceId, fresh) {
 const suggestFor = p => suggestSlots(p.spaceId, p.ids.length, new Set()).filter(s => !occupancyExcept(new Set(p.ids)).has(`${s.unitId}:${s.r}:${s.c}`));
 function placeSheet() {
   const p = draft?.place; if (!p) return null;
-  const w = wine(p.wineId), occ = occupancyExcept(new Set(p.ids)), sp = space(p.spaceId);
+  const w = wine(p.wineId), occ = occupancyExcept(new Set(p.ids)), sp = space(p.spaceId), nw = new Set(p.ids.map(id => byId(S.bottles, id)?.wineId)).size;
+  const ask = p.stockAsk && site(p.stockAsk);
   const ctx = { occ, m: null, pick: p };
   const units = spaceUnits(sp.id), grid = units.filter(u => !UNIT_TYPES[u.type].box), boxes = units.filter(u => UNIT_TYPES[u.type].box);
   return `${head(`Ranger ${p.ids.length > 1 ? p.ids.length + ' bouteilles' : 'la bouteille'}`)}
-    <p class="small" style="margin-top:-6px"><span class="dot" style="background:${wineColor(w)}"></span> ${esc(wineTitle(w))}</p>
+    <p class="small" style="margin-top:-6px">${nw > 1 ? plural(nw, 'vin', 'vins') : `<span class="dot" style="background:${wineColor(w)}"></span> ${esc(wineTitle(w))}`}</p>
+    ${ask ? `<div class="banner green" style="margin-top:6px"><b>Vin à garder</b> : à emporter au prochain transfert vers ${esc(ask.name)} ?
+      <div class="row" style="gap:8px"><button class="btn small green" data-act="placeToTransfer">Oui, au transfert</button><button class="btn small ghost" data-act="placeNoAsk">Non</button></div></div>` : ''}
     <div class="chips">${S.spaces.map(s => `<button class="chip${s.id === p.spaceId ? ' on' : ''}" data-act="placeSpace" data-id="${s.id}">${esc(isMulti() ? site(s.siteId)?.name + ' › ' : '')}${esc(s.name)}</button>`).join('')}</div>
     <p class="small"><b style="color:var(--ink)">${p.sel.length} / ${p.ids.length}</b> place${p.ids.length > 1 ? 's' : ''} choisie${p.sel.length > 1 ? 's' : ''}. Touche les cases libres pour choisir.</p>
     ${!units.length ? `<div class="card small">Aucun meuble dans cet espace : les bouteilles y seront rangées sans emplacement précis.</div>` : placeShortage(p, units, occ)}
@@ -1795,6 +1816,12 @@ Object.assign(ACT, {
     refreshSheet();
   },
   placeSuggest: () => { draft.place.sel = suggestFor(draft.place); refreshSheet(); },
+  placeNoAsk: () => { draft.place.stockAsk = null; refreshSheet(); },
+  placeToTransfer: async () => {
+    const p = draft?.place; if (!p?.stockAsk) return;
+    transferAdd(p.ids, p.stockAsk); await save(); draft = null; closeSheet(); render();
+    toast(`${plural(p.ids.length, 'bouteille', 'bouteilles')} au transfert vers ${site(p.stockAsk)?.name || ''} · sans emplacement d’ici là`);
+  },
   placeClear: () => { draft.place.sel = []; refreshSheet(); },
   placeOk: async () => {
     const p = draft.place;
@@ -1900,7 +1927,7 @@ function bottleSheet(bid) {
       : `<button class="btn primary wide" data-act="outBottle" data-b="${bid}">${ICON.out} ${sp && b.state === 'open' ? 'Bouteille terminée' : isFriend(w) ? 'Sortir (rendre, boire…)' : 'Sortir de la cave'}</button>
         ${sp && b.state !== 'open' ? `<button class="btn wide" data-act="openBottle" data-b="${bid}">Ouvrir la bouteille</button>` : ''}
         <div class="btns2"><button class="btn" data-act="moveBottle" data-b="${bid}">${ICON.move} Déplacer</button><button class="btn" data-act="taste" data-w="${w.id}" data-b="${bid}">${ICON.cork} Déguster</button></div>
-        ${isMulti() ? `<button class="btn wide ${inT ? 'outline' : ''}" data-act="toTransfer" data-b="${bid}">${ICON.truck} ${inT ? 'Retirer du transfert' : 'Ajouter au prochain transfert'}</button>` : ''}`}
+        ${isMulti() ? `<button class="btn wide ${inT ? 'outline' : ''}" data-act="toTransfer" data-b="${bid}">${ICON.truck} ${inT ? 'Retirer du transfert vers ' + esc(site(tDest(bid))?.name || '') : S.sites.length === 2 ? 'Ajouter au transfert vers ' + esc(site(defaultDest(b))?.name || '') : 'Ajouter au prochain transfert'}</button>` : ''}`}
       ${inCave(b) ? `<button class="btn wide" data-act="planGo" data-b="${bid}">${ICON.pin} Voir sur le plan</button>` : ''}
       <button class="btn ghost wide" data-act="wine" data-id="${w.id}">Voir la fiche du vin</button>
     </div>`;
@@ -1938,45 +1965,7 @@ FORMS.out = async (f, d) => {
 };
 
 /* ---------- Transfert entre sites ---------- */
-function transferSheet() {
-  const ids = S.transfer.ids.filter(id => byId(S.bottles, id) && inCave(byId(S.bottles, id)));
-  const bs = ids.map(id => byId(S.bottles, id));
-  const to = S.transfer.to && site(S.transfer.to) ? S.transfer.to : S.sites.find(s => s.role === 'conso')?.id || S.sites[0].id;
-  const sugg = transferSuggestions(to);
-  return `${head('Transfert entre sites')}
-    <label>Destination<select data-ch="transferTo">${S.sites.map(s => `<option value="${s.id}" ${s.id === to ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}</select></label>
-    ${bs.length ? `<div class="list">${bs.map(b => { const w = wine(b.wineId); return `<div class="li"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(locLabel(b))}</small></div><button class="icon-btn" data-act="toTransfer" data-b="${b.id}" aria-label="Retirer">${ICON.close}</button></div>`; }).join('')}</div>` : '<p class="muted small">Aucune bouteille pour l’instant. Ouvre une bouteille et touche « Ajouter au prochain transfert ».</p>'}
-    ${sugg.length ? `<h3>Suggestions</h3><p class="small" style="margin-top:-4px">Vins prêts à boire stockés ailleurs qu’à destination.</p><div class="list">${sugg.slice(0, 8).map(b => { const w = wine(b.wineId); return `<div class="li"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${STATUS[status(w)].short} · ${esc(locLabel(b))}</small></div><button class="btn small" data-act="toTransfer" data-b="${b.id}">Ajouter</button></div>`; }).join('')}</div>` : ''}
-    ${bs.length ? `<button class="btn primary wide" style="margin-top:14px" data-act="transferDone" data-to="${to}">${ICON.check} Arrivées à ${esc(site(to)?.name)}</button><p class="tiny">Les bouteilles passent dans l’espace de consommation de ce site, sans emplacement : tu pourras les ranger ensuite.</p>` : ''}`;
-}
-function transferSuggestions(to) {
-  const seen = new Set();
-  return S.bottles.filter(b => {
-    if (b.state !== 'cave' || S.transfer.ids.includes(b.id) || siteOfBottle(b) === to) return false;
-    const w = wine(b.wineId); if (!w || isFriend(w) || !['prio', 'apogee'].includes(status(w))) return false;
-    if (seen.has(w.id)) return false; seen.add(w.id); return true;
-  }).sort((a, b) => (status(wine(a.wineId)) === 'prio' ? 0 : 1) - (status(wine(b.wineId)) === 'prio' ? 0 : 1));
-}
-CHANGES.transferTo = async el => { S.transfer.to = el.value; await save(); refreshSheet(); };
 Object.assign(ACT, {
-  transferSheet: () => showSheet(transferSheet),
-  toTransfer: async t => {
-    const id = t.dataset.b, i = S.transfer.ids.indexOf(id);
-    if (i >= 0) S.transfer.ids.splice(i, 1); else S.transfer.ids.push(id);
-    await save(); refreshSheet(); render(); toast(i >= 0 ? 'Retirée du transfert' : 'Ajoutée au transfert');
-  },
-  transferDone: async t => {
-    const to = t.dataset.to, sps = siteSpaces(to), dest = sps.find(s => s.use === 'conso') || sps[0];
-    if (!dest) return toast('Ce site n’a pas encore d’espace');
-    let n = 0;
-    for (const id of S.transfer.ids) {
-      const b = byId(S.bottles, id); if (!b || !inCave(b) || siteOfBottle(b) === to) continue;
-      const from = locOf(b); Object.assign(b, { spaceId: dest.id, unitId: null, r: null, c: null });
-      logMove(b, 'transfert', { from, to: locOf(b) }); n++;
-    }
-    S.transfer.ids = []; S.settings.site = to; caveSpace = dest.id;
-    await save(); closeSheet(); view = 'cave'; caveMode = 'plan'; render(); toast(`${plural(n, 'bouteille arrivée', 'bouteilles arrivées')} · à ranger dans « ${dest.name} »`);
-  },
   receive: async t => {
     const b = byId(S.bottles, t.dataset.b), w = wine(b.wineId);
     const ids = S.bottles.filter(x => x.wineId === w.id && x.state === 'primeur').map(x => x.id);
@@ -2021,6 +2010,143 @@ function placeShortage(p, units, occ) {
   return `<div class="banner">Il manque ${plural(miss, 'place', 'places')} dans cet espace : ${plural(miss, 'bouteille restera', 'bouteilles resteront')} « non placée${miss > 1 ? 's' : ''} ».
     ${best && best.n > free ? `<br><button class="btn small" data-act="placeSpace" data-id="${best.s.id}">Aller dans « ${esc(best.s.name)} » (${plural(best.n, 'place libre', 'places libres')})</button>` : ''}</div>`;
 }
+
+
+/* ===== 45-transfer.js ===== */
+/* ---------- Transferts entre sites (v1.7.2 : dans les deux sens) ----------
+   Chaque bouteille du transfert a sa destination (S.transfer.dest[id] = site). Une section par site :
+   « Vers Ville · consommation », « Vers Campagne · stockage », chacune avec ses arrivées. */
+function defaultDest(b) {
+  const from = b && siteOfBottle(b), others = S.sites.filter(s => s.id !== from);
+  if (S.transfer.to && S.transfer.to !== from && site(S.transfer.to)) return S.transfer.to;   // transfert préparé avant la v1.7.2
+  const want = site(from)?.role === 'stock' ? 'conso' : 'stock';
+  return (others.length === 1 ? others[0] : others.find(s => s.role === want) || others[0])?.id || null;
+}
+const tDest = id => { const d = S.transfer.dest?.[id]; return d && site(d) ? d : defaultDest(byId(S.bottles, id)); };
+function transferAdd(ids, to) {
+  S.transfer.dest ||= {};
+  for (const id of ids) { const b = byId(S.bottles, id); if (!b || !inCave(b)) continue; if (!S.transfer.ids.includes(id)) S.transfer.ids.push(id); S.transfer.dest[id] = to || defaultDest(b); }
+}
+function transferRemove(id) { S.transfer.ids = S.transfer.ids.filter(x => x !== id); if (S.transfer.dest) delete S.transfer.dest[id]; }
+const transferBottles = () => S.transfer.ids.map(id => byId(S.bottles, id)).filter(b => b && inCave(b));
+const roleLabel = s => s.role === 'stock' ? 'stockage' : 'consommation';
+
+function transferSheet() {
+  const bs = transferBottles(), order = [...S.sites].sort((a, b) => (a.role === 'stock') - (b.role === 'stock'));
+  return `${head('Transferts entre sites')}
+    <p class="small" style="margin-top:-6px">Prépare les bouteilles à emporter, dans chaque sens. Touche une bouteille pour voir son résumé.</p>
+    ${order.map(s => transferSection(s, bs.filter(b => tDest(b.id) === s.id))).join('')}`;
+}
+function transferSection(s, list) {
+  const stock = s.role === 'stock', sugg = transferSuggestions(s.id);
+  const row = b => { const w = wine(b.wineId), st = status(w);
+    return `<div class="li"><button class="lb" data-act="tBrief" data-b="${b.id}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${st && st !== 'inconnu' ? esc(STATUS[st].short) + ' · ' : ''}${esc(locLabel(b, true))}</small></div></button>
+      <button class="icon-btn" data-act="toTransfer" data-b="${b.id}" aria-label="Retirer du transfert">${ICON.close}</button></div>`; };
+  return `<div class="sect" data-tsect="${s.id}">Vers ${esc(s.name)} · ${roleLabel(s)}${list.length ? ' · ' + plural(list.length, 'bouteille', 'bouteilles') : ''}</div>
+    ${list.length ? `<div class="list">${list.map(row).join('')}</div>
+      <button class="btn primary wide" style="margin-top:10px" data-act="transferDone" data-to="${s.id}">${ICON.check} Arrivées à ${esc(s.name)}</button>`
+      : `<p class="muted small" style="margin:2px 4px">Rien à emporter vers ${esc(s.name)} pour l’instant.</p>`}
+    ${sugg.length ? `<p class="small" style="margin:12px 4px 0">${stock ? 'Suggestions : vins à garder, ajoutés récemment sur un autre site.' : 'Suggestions : vins prêts à boire stockés ailleurs.'}</p>
+      <div class="list" style="margin-top:6px">${sugg.slice(0, 6).map(g => { const w = wine(g.b.wineId), st = status(w);
+        return `<div class="li"><button class="lb" data-act="tBrief" data-b="${g.b.id}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(STATUS[st]?.short || '')} · ${esc(locLabel(g.b, true))}</small></div></button>
+          <button class="btn small" data-act="tAdd" data-ids="${g.ids.join(',')}" data-to="${s.id}">Ajouter${g.ids.length > 1 ? ' ×' + g.ids.length : ''}</button></div>`; }).join('')}</div>` : ''}`;
+}
+// Suggestions : vers la consommation, un vin prêt à boire stocké ailleurs (une bouteille) ;
+// vers le stockage, les bouteilles d'un vin à garder (« trop tôt » ou fenêtre inconnue), les plus récentes d'abord
+function transferSuggestions(to) {
+  const dst = site(to); if (!dst) return [];
+  const ok = b => b.state === 'cave' && !S.transfer.ids.includes(b.id) && siteOfBottle(b) && siteOfBottle(b) !== to;
+  if (dst.role !== 'stock') {
+    const seen = new Set();
+    return S.bottles.filter(b => {
+      if (!ok(b)) return false;
+      const w = wine(b.wineId); if (!w || isFriend(w) || !['prio', 'apogee'].includes(status(w)) || seen.has(w.id)) return false;
+      seen.add(w.id); return true;
+    }).sort((a, b) => (status(wine(a.wineId)) === 'prio' ? 0 : 1) - (status(wine(b.wineId)) === 'prio' ? 0 : 1)).map(b => ({ b, ids: [b.id] }));
+  }
+  const groups = new Map();
+  for (const b of S.bottles) {
+    if (!ok(b) || site(siteOfBottle(b))?.role === 'stock') continue;
+    const w = wine(b.wineId); if (!w || w.kind !== 'vin' || isFriend(w) || !['tot', 'inconnu'].includes(status(w))) continue;
+    const k = w.id + '|' + siteOfBottle(b); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(b);
+  }
+  const last = bs => bs.reduce((m, b) => (b.addedAt || '') > m ? b.addedAt || '' : m, '');
+  return [...groups.values()].sort((a, b) => last(b).localeCompare(last(a))).map(bs => ({ b: bs[0], ids: bs.map(b => b.id) }));
+}
+// Espace d'arrivée : consommation → espace de consommation ; stockage → meilleur espace de garde
+function arrivalSpace(to) {
+  const s = site(to), sps = siteSpaces(to);
+  if (s?.role === 'stock') return [...sps].filter(x => x.use !== 'conso').sort((a, b) => spaceQuality(b) - spaceQuality(a))[0] || sps[0];
+  return sps.find(x => x.use === 'conso') || sps[0];
+}
+function transferPick(id) {
+  const b = byId(S.bottles, id), from = siteOfBottle(b);
+  showSheet(() => `${head('Transférer vers…')}<div class="list">${S.sites.filter(s => s.id !== from).map(s => `<button class="li" data-act="tPick" data-b="${id}" data-to="${s.id}"><span class="dot" style="background:${s.role === 'stock' ? 'var(--gold)' : 'var(--green)'}"></span><div class="it"><b>${esc(s.name)}</b><small>Site de ${roleLabel(s)}</small></div><span class="chev">${ICON.chev}</span></button>`).join('')}</div>`);
+}
+// Résumé d'un vin, ouvert depuis les listes de transfert et les conseils de rangement
+function wineBriefSheet(bid) {
+  const b = byId(S.bottles, bid); if (!b) return null;
+  const w = wine(b.wineId), a = w.apogee, st = status(w), y = thisYear(), sp = w.kind === 'spirit';
+  const from = Math.min(a?.debut || y, y) - 1, to = Math.max(a?.fin || y + 5, y + 2) + 1;
+  const bySite = S.sites.map(s => [s, wineBottles(w.id).filter(x => siteOfBottle(x) === s.id).length]).filter(([, n]) => n);
+  const last = S.tastings.filter(t => t.wineId === w.id && t.note != null).sort((p, q) => (q.at || '').localeCompare(p.at || ''))[0];
+  const inT = S.transfer.ids.includes(bid) && inCave(b), d = inT && site(tDest(bid));
+  return `${head(esc(wineTitle(w)))}
+    <p class="small" style="margin:-6px 0 6px">${esc([w.domaine, w.appellation, sp ? SPIRIT_CATS[w.cat] : COLORS[w.couleur]?.label].filter(Boolean).join(' · '))}</p>
+    ${sp ? '' : `<div class="card"><div class="ct">Fenêtre de dégustation ${st && st !== 'inconnu' ? `<span class="tag ${STATUS[st].tag}">${STATUS[st].label}</span>` : ''}</div>
+      ${a?.fin ? `<div class="score" style="font-size:20px;text-align:left">${a.debut || '?'} – ${a.fin}${a.pic ? `<small> · apogée ${a.pic}</small>` : ''}</div>${winBar(a, from, to, true)}<div class="winlab"><span>${from}</span><span>${to}</span></div>` : '<p class="small" style="margin:0">Pas encore de fenêtre.</p>'}</div>`}
+    <dl class="kv">
+      <dt>En cave</dt><dd>${bySite.length ? bySite.map(([s, n]) => `${esc(s.name)} ×${n}`).join(' · ') : 'aucune'}</dd>
+      <dt>Dernière note</dt><dd>${last ? `${numFr(last.note)} / 20 · ${esc(fmtDate(last.at))}` : 'pas encore dégusté'}</dd>
+      <dt>Cette bouteille</dt><dd>${esc(locLabel(b, true))}</dd>
+      ${inT ? `<dt>Transfert</dt><dd>vers ${esc(d?.name || '?')}</dd>` : ''}</dl>
+    <div class="btns" style="margin-top:12px">
+      ${inCave(b) && isMulti() ? `<button class="btn wide ${inT ? 'outline' : 'primary'}" data-act="toTransfer" data-b="${bid}">${ICON.truck} ${inT ? 'Retirer du transfert' : 'Ajouter au transfert' + (S.sites.length === 2 ? ' vers ' + esc(site(defaultDest(b))?.name || '') : '')}</button>` : ''}
+      <button class="btn ghost wide" data-act="wine" data-id="${w.id}">Fiche complète</button></div>`;
+}
+Object.assign(ACT, {
+  transferSheet: () => showSheet(transferSheet),
+  tBrief: t => showSheet(() => wineBriefSheet(t.dataset.b)),
+  toTransfer: async t => {
+    const id = t.dataset.b, inT = S.transfer.ids.includes(id);
+    if (!inT && S.sites.length > 2) return transferPick(id);
+    if (inT) transferRemove(id); else transferAdd([id]);
+    await save(); refreshSheet(); render();
+    toast(inT ? 'Retirée du transfert' : `Ajoutée au transfert vers ${site(tDest(id))?.name || ''}`);
+  },
+  tPick: async t => { transferAdd([t.dataset.b], t.dataset.to); await save(); sheetBack(); refreshSheet(); render(); toast(`Ajoutée au transfert vers ${site(t.dataset.to)?.name || ''}`); },
+  tAdd: async t => {
+    const ids = (t.dataset.ids || '').split(',').filter(Boolean), to = t.dataset.to;
+    transferAdd(ids, to); await save();
+    if (t.dataset.close) closeSheet(); else refreshSheet();
+    render(); toast(`${plural(ids.length, 'bouteille ajoutée', 'bouteilles ajoutées')} au transfert vers ${site(to)?.name || ''}`);
+  },
+  transferDone: async t => {
+    const to = t.dataset.to, dest = arrivalSpace(to), s = site(to);
+    if (!dest) return toast('Ce site n’a pas encore d’espace');
+    const moved = [];
+    for (const b of transferBottles()) {
+      if (tDest(b.id) !== to) continue;
+      if (siteOfBottle(b) !== to) { const from = locOf(b); Object.assign(b, { spaceId: dest.id, unitId: null, r: null, c: null }); logMove(b, 'transfert', { from, to: locOf(b) }); moved.push(b.id); }
+      transferRemove(b.id);
+    }
+    if (!S.transfer.ids.length) S.transfer.to = null;
+    S.settings.site = to; caveSpace = dest.id;
+    await save(); closeSheet(); view = 'cave'; caveMode = 'plan'; render();
+    if (s?.role === 'stock' && moved.length && spaceUnits(dest.id).length) {
+      lastArrival = moved;
+      return showSheet(() => `${head(`Arrivées à ${esc(s.name)}`)}<p>${plural(moved.length, 'bouteille est', 'bouteilles sont')} dans « ${esc(dest.name)} », sans emplacement.</p>
+        <div class="btns"><button class="btn primary wide" data-act="tPlaceNow" data-space="${dest.id}">Ranger maintenant</button><button class="btn ghost wide" data-act="close">Plus tard</button></div>`);
+    }
+    toast(`${plural(moved.length, 'bouteille arrivée', 'bouteilles arrivées')} · à ranger dans « ${dest.name} »`);
+  },
+  tPlaceNow: t => {
+    const ids = (lastArrival || []).filter(id => { const b = byId(S.bottles, id); return b && inCave(b) && !b.unitId; });
+    closeSheet(); if (!ids.length) return;
+    startPlace(byId(S.bottles, ids[0]).wineId, ids, t.dataset.space, true);
+  },
+});
+let lastArrival = null;
 
 
 /* ===== 50-tasting.js ===== */
@@ -3303,7 +3429,7 @@ function plocReview() {
 
 /* ===== 70-boire.js ===== */
 /* ---------- À boire ---------- */
-let boireCat = 'prio';
+let boireCat = 'prio', boireBar = null;
 const drinkable = () => S.wines.filter(w => w.kind === 'vin' && !isFriend(w) && wineBottles(w.id).length);
 function vBoire() {
   const ws = drinkable(), y = thisYear();
@@ -3330,9 +3456,23 @@ function vBoire() {
       <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(w.domaine || '')} · ${esc(windowLabel(w.apogee))}${isMulti() ? ' · ' + esc([...new Set(wineBottles(w.id).map(b => site(siteOfBottle(b))?.name))].join(', ')) : ''}</small>${winBar(w.apogee, from, to)}</div>
       <span class="qty">×${wineBottles(w.id).length}</span></button>`).join('')}</div>` : `<p class="muted small" style="margin:4px">Aucun vin dans cette catégorie.</p>`}
     <div class="sect">À boire avant la fin de…</div>
-    <div class="card"><div class="bars" style="margin-top:14px">${per.map((n, i) => `<div style="height:${Math.max(3, n / max * 100)}%;background:${i === 0 ? 'var(--bx)' : i < 3 ? 'var(--green)' : 'var(--gold)'}"><span>${n || ''}</span></div>`).join('')}</div>
-      <div class="barl">${years.map((yy, i) => `<span>${i === 5 ? yy + '+' : yy}</span>`).join('')}</div></div>
+    <div class="card"><div class="bars${boireBar != null && per[boireBar] ? ' sel' : ''}" style="margin-top:14px">${per.map((n, i) => `<button class="${boireBar === i && n ? 'on' : ''}" style="height:${Math.max(3, n / max * 100)}%;background:${i === 0 ? 'var(--bx)' : i < 3 ? 'var(--green)' : 'var(--gold)'}" ${n ? `data-act="boireBar" data-i="${i}"` : 'disabled'} aria-label="${i === 5 ? 'À partir de ' + years[i] : 'Fin ' + years[i]} : ${plural(n, 'bouteille', 'bouteilles')}"><span>${n || ''}</span></button>`).join('')}</div>
+      <div class="barl">${years.map((yy, i) => `<span>${i === 5 ? yy + '+' : yy}</span>`).join('')}</div>
+      ${boireBar != null && per[boireBar] ? barDetail(ws, years, boireBar, away) : `<p class="tiny" style="margin:8px 0 0">Touche une barre pour voir les bouteilles.</p>`}</div>
     ${spiritsOn() ? spiritsBlock() : ''}`;
+}
+// Détail d'une barre : les vins, puis l'emplacement de chaque bouteille
+function barDetail(ws, years, i, away) {
+  const y = years[0], yy = years[i];
+  const list = ws.filter(w => w.apogee?.fin && (i === 0 ? w.apogee.fin <= yy : i === 5 ? w.apogee.fin >= yy : w.apogee.fin === yy))
+    .sort((a, b) => a.apogee.fin - b.apogee.fin || norm(wineName(a)).localeCompare(norm(wineName(b))));
+  const n = list.reduce((t, w) => t + wineBottles(w.id).length, 0), multi = isMulti();
+  return `<div class="bar-detail"><div class="ct" style="margin:14px 0 0">${i === 5 ? `À boire à partir de ${yy}` : `À boire avant la fin de ${yy}`} · ${plural(n, 'bouteille', 'bouteilles')}</div>
+    ${i === 0 && away.length ? `<button class="btn small" style="margin-top:8px" data-act="awayTransfer">${ICON.truck} Préparer le transfert</button>` : ''}
+    ${list.map(w => { const st = status(w), late = w.apogee.fin < y;
+      return `<div class="list res"><button class="li" data-act="wine" data-id="${w.id}"><span class="dot" style="background:${wineColor(w)}"></span>
+        <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(windowLabel(w.apogee))} · <span style="color:${STATUS[late ? 'declin' : st].hex};font-weight:600">${late ? 'en déclin' : esc(STATUS[st].short)}</span></small></div><span class="qty">×${wineBottles(w.id).length}</span></button>
+        ${locGroups(wineBottles(w.id)).map(g => `<button class="li loc" data-act="caveJump" data-b="${g.b.id}">${ICON.pin}<div class="it"><b>${esc(locLabel(g.b, multi))}</b></div>${g.n > 1 ? `<span class="qty">×${g.n}</span>` : ''}<span class="chev">${ICON.chev}</span></button>`).join('')}</div>`; }).join('')}</div>`;
 }
 const openSpirits = () => S.bottles.filter(b => b.state === 'open' && wine(b.wineId)?.kind === 'spirit' && !isFriend(wine(b.wineId)));
 function spiritsBlock() {
@@ -3347,11 +3487,12 @@ function spiritsBlock() {
 }
 Object.assign(ACT, {
   boireCat: t => { boireCat = t.dataset.k; render(); },
+  boireBar: t => { const i = +t.dataset.i; boireBar = boireBar === i ? null : i; render(); },
   awayTransfer: async () => {
     const stock = new Set(S.sites.filter(s => s.role === 'stock').map(s => s.id));
     const ids = S.bottles.filter(b => b.state === 'cave' && stock.has(siteOfBottle(b)) && ['prio', 'declin'].includes(status(wine(b.wineId) || {})) && !isFriend(wine(b.wineId))).map(b => b.id);
-    for (const id of ids) if (!S.transfer.ids.includes(id)) S.transfer.ids.push(id);
-    S.transfer.to = S.sites.find(s => s.role === 'conso')?.id || S.transfer.to;
+    const to = S.sites.find(s => s.role === 'conso')?.id;
+    for (const b of ids.map(id => byId(S.bottles, id))) if (!S.transfer.ids.includes(b.id)) transferAdd([b.id], to && to !== siteOfBottle(b) ? to : null);
     await save(); showSheet(transferSheet);
   },
 });
@@ -3406,7 +3547,7 @@ function adviceSheet() {
     <p class="small" style="margin-top:-6px">Selon les fenêtres de dégustation, l’usage de chaque espace et ses conditions de stockage${S.spaces.some(s => s.target) ? ', et les places cibles des espaces de consommation' : ''}.</p>
     ${adv.length ? Object.keys(ADVICE_KIND).map(k => { const l = adv.filter(a => a.kind === k); return l.length ? `<h3>${ADVICE_KIND[k]}</h3><div class="list">${l.map(a => {
       const cross = space(a.from)?.siteId !== space(a.to)?.siteId, i = adv.indexOf(a);
-      return `<div class="li"><span class="dot" style="background:${wineColor(a.w)}"></span><div class="it"><b class="ell">${esc(wineTitle(a.w))} ×${a.ids.length}</b><small>${esc(where(a.from))} → <b style="color:var(--green)">${esc(where(a.to))}</b></small><small>${esc(a.why)}</small></div>
+      return `<div class="li"><button class="lb" data-act="tBrief" data-b="${a.ids[0]}"><span class="dot" style="background:${wineColor(a.w)}"></span><div class="it"><b class="ell">${esc(wineTitle(a.w))} ×${a.ids.length}</b><small>${esc(where(a.from))} → <b style="color:var(--green)">${esc(where(a.to))}</b></small><small>${esc(a.why)}</small></div></button>
         <button class="btn small ${cross ? '' : 'primary'}" data-act="adviceGo" data-i="${i}">${cross ? 'Au transfert' : 'Ranger'}</button></div>`; }).join('')}</div>` : ''; }).join('')
     : '<p class="muted">Rien à déplacer pour l’instant : chaque vin est au bon endroit.</p>'}
     ${!S.spaces.some(s => Object.keys(s.q || {}).length) ? '<p class="tiny">Astuce : renseigne les conditions de stockage de tes espaces (Réglages › Sites, espaces et meubles) pour des conseils plus fins.</p>' : ''}`;
@@ -3416,8 +3557,7 @@ Object.assign(ACT, {
   adviceGo: async t => {
     const a = moveAdvice()[+t.dataset.i]; if (!a) return refreshSheet();
     if (space(a.from)?.siteId !== space(a.to)?.siteId) {
-      for (const id of a.ids) if (!S.transfer.ids.includes(id)) S.transfer.ids.push(id);
-      S.transfer.to = space(a.to).siteId; await save(); refreshSheet(); render(); return toast('Ajouté au prochain transfert');
+      transferAdd(a.ids, space(a.to).siteId); await save(); refreshSheet(); render(); return toast(`Ajouté au transfert vers ${site(space(a.to).siteId)?.name || ''}`);
     }
     startPlace(a.w.id, a.ids, a.to, false);
   },
@@ -3557,7 +3697,7 @@ Object.assign(ACT, {
       if (S.sites.length > 1 && !confirm(`Passer en site unique ? Tous les espaces seront regroupés dans « ${S.sites[0].name} » et les autres sites supprimés. Les bouteilles ne bougent pas de leurs meubles.`)) return;
       const keep = S.sites[0];
       for (const sp of S.spaces) sp.siteId = keep.id;
-      S.sites = [keep]; S.settings.multi = false; S.settings.site = keep.id; S.transfer.ids = [];
+      S.sites = [keep]; S.settings.multi = false; S.settings.site = keep.id; S.transfer = { ids: [], to: null, dest: {} };
     }
     await save(); refreshSheet(); render();
   },
@@ -4111,7 +4251,7 @@ Object.assign(ACT, { historySheet: () => showSheet(historySheet) });
 const busyForms = new Set(), busyActs = new Set();
 const GUARDED = new Set(['tasteSave', 'placeOk', 'plocGo', 'transferDone', 'receive', 'applyReeval', 'applyAdvice', 'adviceGo', 'delWine', 'delUnit', 'delTaste',
   'delSession', 'delSite', 'delSpace', 'estimateMissing', 'putHere', 'openBottle', 'wishToggle', 'wishBought', 'toTransfer', 'revealWine', 'blindAI', 'export',
-  'usageClear', 'chatNew', 'tasteAbandon', 'awayTransfer', 'pkOffer', 'pkunlock', 'demo', 'estimate', 'takeIt', 'rateNow', 'rateLater', 'backupLater']);
+  'usageClear', 'chatNew', 'tasteAbandon', 'awayTransfer', 'pkOffer', 'pkunlock', 'demo', 'estimate', 'takeIt', 'rateNow', 'rateLater', 'backupLater', 'tAdd', 'tPick', 'placeToTransfer', 'tPlaceNow']);
 const release = (set, k) => setTimeout(() => set.delete(k), 350);
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-act]'); if (!t || !ACT[t.dataset.act]) return;

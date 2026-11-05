@@ -460,28 +460,41 @@ Le détail est dans `docs/tests/2026-11-04-campagne-v1.6.1/` : `rapport-bugs.md`
 - [x] **Dernier message visible** : la conversation garde en bas un espace égal à la hauteur de l'encart, pour que la dernière réponse ne soit jamais cachée dessous, même quand l'encart s'agrandit (plusieurs lignes, choix d'occasion).
 - [x] Tests : conversation plus longue que l'écran, icône visible et utilisable, confirmation, dernier message entièrement visible au-dessus de l'encart.
 
-**v1.7.2** (transferts dans les deux sens, résumé du vin, détail du graphique « À boire avant la fin de… » ; spécifiée, rien n'est développé)
+**v1.7.2** (transferts dans les deux sens, résumé du vin, détail du graphique « À boire avant la fin de… » ; livrée)
 
 *Constat.* Aujourd'hui, il n'y a qu'une liste de transfert, avec une destination. À l'arrivée, les bouteilles vont toujours dans l'espace de consommation du site, et les suggestions ne proposent que des vins prêts à boire. Ramener vers le stockage des bouteilles achetées en ville n'est pas prévu. Dans les listes, une bouteille n'affiche que son nom et son emplacement : pour voir sa fenêtre, il faut fermer le transfert et chercher le vin.
 
 *Transferts dans les deux sens*
-- [ ] **Deux sections dans le transfert** : « Vers [site de consommation] » et « Vers [site de stockage] », chacune avec ses bouteilles, son total et son bouton « Arrivées à … ». On peut préparer les deux pour un même trajet : prendre des vins prêts à la campagne, et y laisser des achats faits en ville.
-- [ ] **Destination d'une bouteille** : elle part vers l'autre site. S'il y a plus de deux sites, l'app demande lequel au moment de l'ajout. Le bouton de la fiche bouteille le dit : « Ajouter au transfert vers Campagne ».
-- [ ] **Arrivée au stockage** : les bouteilles vont dans l'espace de garde de meilleure qualité du site, non placées. Un bouton « Ranger maintenant » ouvre l'écran de rangement avec des cases suggérées. L'arrivée en consommation ne change pas (espace de consommation, non placées).
-- [ ] **Suggestions vers le stockage** : bouteilles du site de consommation dont le vin est « trop tôt » ou de fenêtre inconnue, en commençant par les plus récemment ajoutées (validé le 5 novembre 2026). Les vins des amis et les bouteilles ouvertes ne sont pas proposés.
-- [ ] **À l'achat** (validé le 5 novembre 2026) : quand on ajoute sur le site de consommation des bouteilles d'un vin à garder (« trop tôt »), l'app propose « À emporter au prochain transfert vers [site de stockage] ? ».
-- [ ] **Données existantes** : le transfert en cours est repris tel quel, vers sa destination actuelle.
+- [x] **Deux sections dans le transfert** : « Vers [site de consommation] » et « Vers [site de stockage] », chacune avec ses bouteilles, son total et son bouton « Arrivées à … ». On peut préparer les deux pour un même trajet : prendre des vins prêts à la campagne, et y laisser des achats faits en ville.
+- [x] **Destination d'une bouteille** : elle part vers l'autre site. S'il y a plus de deux sites, l'app demande lequel au moment de l'ajout. Le bouton de la fiche bouteille le dit : « Ajouter au transfert vers Campagne ».
+- [x] **Arrivée au stockage** : les bouteilles vont dans l'espace de garde de meilleure qualité du site, non placées. Un bouton « Ranger maintenant » ouvre l'écran de rangement avec des cases suggérées. L'arrivée en consommation ne change pas (espace de consommation, non placées).
+- [x] **Suggestions vers le stockage** : bouteilles du site de consommation dont le vin est « trop tôt » ou de fenêtre inconnue, en commençant par les plus récemment ajoutées (validé le 5 novembre 2026). Les vins des amis et les bouteilles ouvertes ne sont pas proposés.
+- [x] **À l'achat** (validé le 5 novembre 2026) : quand on ajoute sur le site de consommation des bouteilles d'un vin à garder (« trop tôt »), l'app propose « À emporter au prochain transfert vers [site de stockage] ? ».
+- [x] **Données existantes** : le transfert en cours est repris tel quel, vers sa destination actuelle.
 
 *Résumé du vin dans les listes*
-- [ ] **Toucher une bouteille** dans une liste de transfert ou dans les suggestions ouvre un résumé, et la flèche retour ramène au transfert. Le résumé contient : nom, millésime, couleur, domaine et appellation ; fenêtre de dégustation avec sa barre et son statut (« Prêt à boire », « Trop tôt »…) ; bouteilles par site ; dernière note de dégustation ; emplacement de cette bouteille. Il propose deux boutons : « Ajouter au transfert » ou « Retirer du transfert », et « Fiche complète ».
-- [ ] **Même résumé** dans « Préparer le transfert » (À boire) et dans les conseils de rangement qui mènent au transfert.
-- [ ] Tests : deux sections préparées en même temps, arrivées séparées (espace de consommation, espace de garde), suggestions vers le stockage, résumé ouvert depuis chaque liste puis retour au transfert, ancien transfert repris.
+- [x] **Toucher une bouteille** dans une liste de transfert ou dans les suggestions ouvre un résumé, et la flèche retour ramène au transfert. Le résumé contient : nom, millésime, couleur, domaine et appellation ; fenêtre de dégustation avec sa barre et son statut (« Prêt à boire », « Trop tôt »…) ; bouteilles par site ; dernière note de dégustation ; emplacement de cette bouteille. Il propose deux boutons : « Ajouter au transfert » ou « Retirer du transfert », et « Fiche complète ».
+- [x] **Même résumé** dans « Préparer le transfert » (À boire) et dans les conseils de rangement qui mènent au transfert.
+- [x] Tests : deux sections préparées en même temps, arrivées séparées (espace de consommation, espace de garde), suggestions vers le stockage, résumé ouvert depuis chaque liste puis retour au transfert, ancien transfert repris.
 
 *Graphique « À boire avant la fin de… »* (onglet À boire, demande du 5 novembre 2026). Aujourd'hui, ses six barres (l'année en cours, qui inclut les vins déjà en retard, puis les quatre suivantes et « +5 ans ») n'affichent qu'un nombre de bouteilles.
-- [ ] **Barre touchée** : elle est mise en évidence, et le détail s'affiche juste sous le graphique : « À boire avant la fin de 2027 · 7 bouteilles ». Toucher la même barre referme le détail ; une barre à zéro ne réagit pas.
-- [ ] **Détail par bouteille** : une ligne par vin (pastille, nom, millésime, fenêtre, statut), triée par fin de fenêtre. Dessous, l'emplacement de chaque bouteille (« Campagne › Cave › Rack mural · Ligne 1, place 2 »). Pour la barre de l'année en cours, les vins déjà en retard sont marqués « en déclin ».
-- [ ] **Actions** : toucher le vin ouvre sa fiche, toucher un emplacement mène à la case sur le plan (comme la recherche de la v1.7.1). Sur une barre de l'année en cours, les bouteilles du site de stockage gardent le raccourci « Préparer le transfert ».
-- [ ] Tests : chaque barre ouvre le bon détail, avec des totaux égaux à la barre ; une barre à zéro est inactive ; accès à la fiche et à la case.
+- [x] **Barre touchée** : elle est mise en évidence, et le détail s'affiche juste sous le graphique : « À boire avant la fin de 2027 · 7 bouteilles ». Toucher la même barre referme le détail ; une barre à zéro ne réagit pas.
+- [x] **Détail par bouteille** : une ligne par vin (pastille, nom, millésime, fenêtre, statut), triée par fin de fenêtre. Dessous, l'emplacement de chaque bouteille (« Campagne › Cave › Rack mural · Ligne 1, place 2 »). Pour la barre de l'année en cours, les vins déjà en retard sont marqués « en déclin ».
+- [x] **Actions** : toucher le vin ouvre sa fiche, toucher un emplacement mène à la case sur le plan (comme la recherche de la v1.7.1). Sur une barre de l'année en cours, les bouteilles du site de stockage gardent le raccourci « Préparer le transfert ».
+- [x] Tests : chaque barre ouvre le bon détail, avec des totaux égaux à la barre ; une barre à zéro est inactive ; accès à la fiche et à la case.
+
+**v1.7.3** (nouveau millésime d'un vin déjà présent ; spécifiée, rien n'est développé)
+
+*Constat.* « Racheter un vin » ajoute des bouteilles au même vin, donc au même millésime. Pour un autre millésime, il faut ressaisir toute la fiche.
+
+- [ ] **Accès** : bouton « Nouveau millésime » sur la fiche d'un vin ; dans « Racheter un vin », chaque vin propose « Mêmes bouteilles » ou « Autre millésime ».
+- [ ] **Saisie courte** : un écran présente d'abord ce qui change : millésime, quantité, source (lieu d'achat, à valider), prix unitaire, date d'achat (aujourd'hui par défaut), espace de rangement. La source et le prix du dernier achat sont proposés en grisé, comme exemple.
+- [ ] **Repris du vin d'origine** : couleur, domaine, cuvée, appellation, région, pays, cépages, degré, format, température de service, bio et nature, nom court et abréviation. Un lien « Modifier les autres informations » ouvre la fiche complète, déjà remplie.
+- [ ] **Non repris** : fenêtre de dégustation (elle dépend du millésime : le sommelier l'estime, comme pour tout nouveau vin), photo d'étiquette, notes, dégustations, propriétaire (vin d'un ami), cadeau.
+- [ ] **Millésime déjà en cave** : l'app le signale et propose d'ajouter les bouteilles à ce vin-là plutôt que de créer un doublon.
+- [ ] **Autres millésimes** : la fiche d'un vin liste ses autres millésimes en cave (même domaine, même cuvée ou appellation), avec le nombre de bouteilles et la fenêtre de chacun.
+- [ ] Rangement ensuite comme pour tout ajout, avec la proposition de transfert vers le stockage de la v1.7.2 si le vin est à garder.
+- [ ] Tests : nouveau millésime depuis la fiche et depuis « Racheter un vin », champs repris et non repris, fenêtre estimée à part, millésime déjà présent, liste des autres millésimes.
 
 **v2**
 - Sauvegarde automatique Google Drive.

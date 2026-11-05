@@ -47,21 +47,23 @@ function vCave() {
 }
 /* ---------- Recherche sur tous les sites ---------- */
 // Emplacements des bouteilles trouvées : une ligne par case, par caisse, par lot « non placées » d'un espace, par lot en primeur
+function locGroups(bs) {
+  const cur = S.settings.site, groups = new Map();
+  for (const b of bs) {
+    const u = b.unitId && unit(b.unitId);
+    const k = b.state === 'primeur' ? 'primeur' : !u ? 'np:' + b.spaceId : UNIT_TYPES[u.type].box ? 'box:' + u.id : 'c:' + b.id;
+    if (!groups.has(k)) groups.set(k, { b, n: 0, primeur: b.state === 'primeur' });
+    groups.get(k).n++;
+  }
+  return [...groups.values()].sort((a, b) => (a.primeur - b.primeur) || ((siteOfBottle(b.b) === cur) - (siteOfBottle(a.b) === cur)) || locLabel(a.b, true).localeCompare(locLabel(b.b, true), 'fr'));
+}
 function caveLocs(m) {
-  const cur = S.settings.site, out = [];
+  const out = [];
   for (const w of S.wines) {
     if (!kindOn(w) || !m(w)) continue;
     const bs = S.bottles.filter(b => b.wineId === w.id && (inCave(b) || b.state === 'primeur'));
     if (!bs.length) continue;
-    const groups = new Map();
-    for (const b of bs) {
-      const u = b.unitId && unit(b.unitId);
-      const k = b.state === 'primeur' ? 'primeur' : !u ? 'np:' + b.spaceId : UNIT_TYPES[u.type].box ? 'box:' + u.id : 'c:' + b.id;
-      if (!groups.has(k)) groups.set(k, { b, n: 0, primeur: b.state === 'primeur' });
-      groups.get(k).n++;
-    }
-    const locs = [...groups.values()].sort((a, b) => (a.primeur - b.primeur) || ((siteOfBottle(b.b) === cur) - (siteOfBottle(a.b) === cur)) || locLabel(a.b, true).localeCompare(locLabel(b.b, true), 'fr'));
-    out.push({ w, n: bs.length, locs });
+    out.push({ w, n: bs.length, locs: locGroups(bs) });
   }
   return out.sort((a, b) => norm(wineName(a.w)).localeCompare(norm(wineName(b.w))) || (a.w.millesime || 0) - (b.w.millesime || 0));
 }

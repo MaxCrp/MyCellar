@@ -1,5 +1,5 @@
 /* ---------- À boire ---------- */
-let boireCat = 'prio';
+let boireCat = 'prio', boireBar = null;
 const drinkable = () => S.wines.filter(w => w.kind === 'vin' && !isFriend(w) && wineBottles(w.id).length);
 function vBoire() {
   const ws = drinkable(), y = thisYear();
@@ -26,9 +26,23 @@ function vBoire() {
       <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(w.domaine || '')} · ${esc(windowLabel(w.apogee))}${isMulti() ? ' · ' + esc([...new Set(wineBottles(w.id).map(b => site(siteOfBottle(b))?.name))].join(', ')) : ''}</small>${winBar(w.apogee, from, to)}</div>
       <span class="qty">×${wineBottles(w.id).length}</span></button>`).join('')}</div>` : `<p class="muted small" style="margin:4px">Aucun vin dans cette catégorie.</p>`}
     <div class="sect">À boire avant la fin de…</div>
-    <div class="card"><div class="bars" style="margin-top:14px">${per.map((n, i) => `<div style="height:${Math.max(3, n / max * 100)}%;background:${i === 0 ? 'var(--bx)' : i < 3 ? 'var(--green)' : 'var(--gold)'}"><span>${n || ''}</span></div>`).join('')}</div>
-      <div class="barl">${years.map((yy, i) => `<span>${i === 5 ? yy + '+' : yy}</span>`).join('')}</div></div>
+    <div class="card"><div class="bars${boireBar != null && per[boireBar] ? ' sel' : ''}" style="margin-top:14px">${per.map((n, i) => `<button class="${boireBar === i && n ? 'on' : ''}" style="height:${Math.max(3, n / max * 100)}%;background:${i === 0 ? 'var(--bx)' : i < 3 ? 'var(--green)' : 'var(--gold)'}" ${n ? `data-act="boireBar" data-i="${i}"` : 'disabled'} aria-label="${i === 5 ? 'À partir de ' + years[i] : 'Fin ' + years[i]} : ${plural(n, 'bouteille', 'bouteilles')}"><span>${n || ''}</span></button>`).join('')}</div>
+      <div class="barl">${years.map((yy, i) => `<span>${i === 5 ? yy + '+' : yy}</span>`).join('')}</div>
+      ${boireBar != null && per[boireBar] ? barDetail(ws, years, boireBar, away) : `<p class="tiny" style="margin:8px 0 0">Touche une barre pour voir les bouteilles.</p>`}</div>
     ${spiritsOn() ? spiritsBlock() : ''}`;
+}
+// Détail d'une barre : les vins, puis l'emplacement de chaque bouteille
+function barDetail(ws, years, i, away) {
+  const y = years[0], yy = years[i];
+  const list = ws.filter(w => w.apogee?.fin && (i === 0 ? w.apogee.fin <= yy : i === 5 ? w.apogee.fin >= yy : w.apogee.fin === yy))
+    .sort((a, b) => a.apogee.fin - b.apogee.fin || norm(wineName(a)).localeCompare(norm(wineName(b))));
+  const n = list.reduce((t, w) => t + wineBottles(w.id).length, 0), multi = isMulti();
+  return `<div class="bar-detail"><div class="ct" style="margin:14px 0 0">${i === 5 ? `À boire à partir de ${yy}` : `À boire avant la fin de ${yy}`} · ${plural(n, 'bouteille', 'bouteilles')}</div>
+    ${i === 0 && away.length ? `<button class="btn small" style="margin-top:8px" data-act="awayTransfer">${ICON.truck} Préparer le transfert</button>` : ''}
+    ${list.map(w => { const st = status(w), late = w.apogee.fin < y;
+      return `<div class="list res"><button class="li" data-act="wine" data-id="${w.id}"><span class="dot" style="background:${wineColor(w)}"></span>
+        <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(windowLabel(w.apogee))} · <span style="color:${STATUS[late ? 'declin' : st].hex};font-weight:600">${late ? 'en déclin' : esc(STATUS[st].short)}</span></small></div><span class="qty">×${wineBottles(w.id).length}</span></button>
+        ${locGroups(wineBottles(w.id)).map(g => `<button class="li loc" data-act="caveJump" data-b="${g.b.id}">${ICON.pin}<div class="it"><b>${esc(locLabel(g.b, multi))}</b></div>${g.n > 1 ? `<span class="qty">×${g.n}</span>` : ''}<span class="chev">${ICON.chev}</span></button>`).join('')}</div>`; }).join('')}</div>`;
 }
 const openSpirits = () => S.bottles.filter(b => b.state === 'open' && wine(b.wineId)?.kind === 'spirit' && !isFriend(wine(b.wineId)));
 function spiritsBlock() {
@@ -43,11 +57,12 @@ function spiritsBlock() {
 }
 Object.assign(ACT, {
   boireCat: t => { boireCat = t.dataset.k; render(); },
+  boireBar: t => { const i = +t.dataset.i; boireBar = boireBar === i ? null : i; render(); },
   awayTransfer: async () => {
     const stock = new Set(S.sites.filter(s => s.role === 'stock').map(s => s.id));
     const ids = S.bottles.filter(b => b.state === 'cave' && stock.has(siteOfBottle(b)) && ['prio', 'declin'].includes(status(wine(b.wineId) || {})) && !isFriend(wine(b.wineId))).map(b => b.id);
-    for (const id of ids) if (!S.transfer.ids.includes(id)) S.transfer.ids.push(id);
-    S.transfer.to = S.sites.find(s => s.role === 'conso')?.id || S.transfer.to;
+    const to = S.sites.find(s => s.role === 'conso')?.id;
+    for (const b of ids.map(id => byId(S.bottles, id))) if (!S.transfer.ids.includes(b.id)) transferAdd([b.id], to && to !== siteOfBottle(b) ? to : null);
     await save(); showSheet(transferSheet);
   },
 });
@@ -102,7 +117,7 @@ function adviceSheet() {
     <p class="small" style="margin-top:-6px">Selon les fenêtres de dégustation, l’usage de chaque espace et ses conditions de stockage${S.spaces.some(s => s.target) ? ', et les places cibles des espaces de consommation' : ''}.</p>
     ${adv.length ? Object.keys(ADVICE_KIND).map(k => { const l = adv.filter(a => a.kind === k); return l.length ? `<h3>${ADVICE_KIND[k]}</h3><div class="list">${l.map(a => {
       const cross = space(a.from)?.siteId !== space(a.to)?.siteId, i = adv.indexOf(a);
-      return `<div class="li"><span class="dot" style="background:${wineColor(a.w)}"></span><div class="it"><b class="ell">${esc(wineTitle(a.w))} ×${a.ids.length}</b><small>${esc(where(a.from))} → <b style="color:var(--green)">${esc(where(a.to))}</b></small><small>${esc(a.why)}</small></div>
+      return `<div class="li"><button class="lb" data-act="tBrief" data-b="${a.ids[0]}"><span class="dot" style="background:${wineColor(a.w)}"></span><div class="it"><b class="ell">${esc(wineTitle(a.w))} ×${a.ids.length}</b><small>${esc(where(a.from))} → <b style="color:var(--green)">${esc(where(a.to))}</b></small><small>${esc(a.why)}</small></div></button>
         <button class="btn small ${cross ? '' : 'primary'}" data-act="adviceGo" data-i="${i}">${cross ? 'Au transfert' : 'Ranger'}</button></div>`; }).join('')}</div>` : ''; }).join('')
     : '<p class="muted">Rien à déplacer pour l’instant : chaque vin est au bon endroit.</p>'}
     ${!S.spaces.some(s => Object.keys(s.q || {}).length) ? '<p class="tiny">Astuce : renseigne les conditions de stockage de tes espaces (Réglages › Sites, espaces et meubles) pour des conseils plus fins.</p>' : ''}`;
@@ -112,8 +127,7 @@ Object.assign(ACT, {
   adviceGo: async t => {
     const a = moveAdvice()[+t.dataset.i]; if (!a) return refreshSheet();
     if (space(a.from)?.siteId !== space(a.to)?.siteId) {
-      for (const id of a.ids) if (!S.transfer.ids.includes(id)) S.transfer.ids.push(id);
-      S.transfer.to = space(a.to).siteId; await save(); refreshSheet(); render(); return toast('Ajouté au prochain transfert');
+      transferAdd(a.ids, space(a.to).siteId); await save(); refreshSheet(); render(); return toast(`Ajouté au transfert vers ${site(space(a.to).siteId)?.name || ''}`);
     }
     startPlace(a.w.id, a.ids, a.to, false);
   },

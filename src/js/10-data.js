@@ -96,7 +96,7 @@ const emptyData = () => ({
     lockMin: 5, stay: false, lastExport: null, aromas: {}, rate: 0.92, usage: { on: false },
   },
   sites: [], spaces: [], units: [], wines: [], bottles: [], moves: [], tastings: [],
-  transfer: { ids: [], to: null }, chat: [], usage: {}, dismissed: {}, sessions: [], wishes: [], diag: { errors: [] },
+  transfer: { ids: [], to: null, dest: {} }, chat: [], usage: {}, dismissed: {}, sessions: [], wishes: [], diag: { errors: [] },
 });
 function normalize(d) {
   const e = emptyData();
@@ -120,7 +120,9 @@ function cleanData(d) {
   d.wishes = d.wishes.filter(x => wid.has(x.wineId));
   // Fenêtre incohérente déjà enregistrée : on garde la fin si elle est possible, sinon on l'efface
   for (const w of d.wines) if (w.apogee) { const a = w.apogee, cw = cleanWindow(a.debut, a.pic, a.fin, w.millesime) || cleanWindow(null, null, a.fin, w.millesime); w.apogee = cw ? { ...a, ...cw } : null; }
-  d.transfer.ids = d.transfer.ids.filter(id => bid.has(id));
+  d.transfer.ids = (Array.isArray(d.transfer.ids) ? d.transfer.ids : []).filter(id => bid.has(id));
+  const dest = d.transfer.dest && typeof d.transfer.dest === 'object' ? d.transfer.dest : {};
+  d.transfer.dest = Object.fromEntries(Object.entries(dest).filter(([k, v]) => d.transfer.ids.includes(k) && d.sites.some(s => s.id === v)));
   d.tastings = d.tastings.filter(t => !t.wineId || wid.has(t.wineId));
   for (const t of d.tastings) if (t.sessionId && !ses.has(t.sessionId)) t.sessionId = null;
   d.bottles = d.bottles.filter(b => wid.has(b.wineId));

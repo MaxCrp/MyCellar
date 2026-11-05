@@ -130,7 +130,7 @@ Object.assign(ACT, {
       if (S.sites.length > 1 && !confirm(`Passer en site unique ? Tous les espaces seront regroupés dans « ${S.sites[0].name} » et les autres sites supprimés. Les bouteilles ne bougent pas de leurs meubles.`)) return;
       const keep = S.sites[0];
       for (const sp of S.spaces) sp.siteId = keep.id;
-      S.sites = [keep]; S.settings.multi = false; S.settings.site = keep.id; S.transfer.ids = [];
+      S.sites = [keep]; S.settings.multi = false; S.settings.site = keep.id; S.transfer = { ids: [], to: null, dest: {} };
     }
     await save(); refreshSheet(); render();
   },
