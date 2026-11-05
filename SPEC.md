@@ -583,11 +583,15 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 - [ ] Le code ne contient qu'un identifiant aléatoire du meuble : rien sur le contenu, inutilisable sans ta cave.
 - [ ] Tests : génération et relecture des codes, scan simulé qui ouvre le bon meuble, code inconnu.
 
-**v2.3** (sauvegarde automatique ; spécifiée, destination en attente de choix, question 3)
+**v2.3** (sauvegarde automatique ; spécifiée et validée le 5 novembre 2026 : option b, Google Drive avec un Worker Cloudflare)
 - [ ] **Sauvegarde automatique** chiffrée (le même fichier que la sauvegarde manuelle, illisible sans ton mot de passe), après chaque modification importante et au plus une fois par heure, plus une fois par jour au minimum. Les 30 dernières versions sont gardées.
 - [ ] **Restauration** depuis la liste des versions, avec leur date.
 - [ ] **État visible** dans Réglages › Sauvegarde : dernière sauvegarde réussie, échec éventuel et sa raison. Le rappel des 7 jours ne s'affiche plus quand la sauvegarde automatique fonctionne.
-- [ ] La destination dépend de la question 3.
+- [ ] **Destination (validée : option b)** : le Google Drive de chaque utilisateur, dans le dossier caché de l'app (`appDataFolder`, droit `drive.appdata`). Chacun se connecte avec son propre compte Google : les sauvegardes sont distinctes par construction.
+- [ ] **Connexion** : Réglages › Sauvegarde › « Connecter Google Drive », une seule fois par appareil. L'autorisation de longue durée est rangée dans le coffre chiffré de l'app.
+- [ ] **Worker Cloudflare** : il échange et renouvelle l'autorisation avec le secret du projet Google, et ne garde rien. Les fichiers vont directement de l'iPhone au Drive. Le code du Worker est livré dans le dépôt (`worker/`), avec sa marche à suivre.
+- [ ] **Mise en place (à faire par toi, une fois)** : un projet Google Cloud, l'écran de consentement en statut « En production », un identifiant OAuth « Application Web » avec l'adresse de l'app, et le Worker avec le secret. Une marche à suivre pas à pas est fournie dans `docs/` au lancement de la v2.3.
+- [ ] **Nouvel appareil** : « Restaurer depuis Google Drive » au premier lancement, puis le mot de passe de la cave.
 - [ ] Tests : envoi, rotation des versions, restauration, absence de réseau, jeton expiré (service simulé).
 
 *Questions à valider avant de lancer*
