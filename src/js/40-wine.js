@@ -69,10 +69,9 @@ function wineFormSheet() {
   const ft = d.forTaste || d.forReveal;
   const stock = editing || ft ? '' : `
     <div class="fieldset"><div class="ft">Bouteilles</div>
-      <div class="grid2"><label>Quantité<input name="qty" inputmode="numeric" value="${d.qty}" required></label>
-        <label>État<select name="state" data-ch="draftState"><option value="cave" ${d.state === 'cave' ? 'selected' : ''}>En cave</option><option value="primeur" ${d.state === 'primeur' ? 'selected' : ''}>Primeur, pas encore livré</option></select></label></div>
-      <div id="primeur-f" ${d.state === 'primeur' ? '' : 'hidden'}><label>Livraison prévue<input type="date" name="delivery" value="${esc(d.delivery || '')}"></label></div>
-      <label>${d.state === 'primeur' ? 'Destination à la livraison' : 'Ranger dans'}<select name="spaceId">${spaceOptions(addTarget ? unit(addTarget.unitId)?.spaceId : d.spaceId || sugg?.id)}</select></label>
+      <label>Quantité<input name="qty" inputmode="numeric" value="${d.qty}" required></label>
+      ${stateFields(d.state, d.delivery)}
+      <label><span class="dest-l">${d.state === 'primeur' ? 'Destination à la livraison' : 'Ranger dans'}</span><select name="spaceId">${spaceOptions(addTarget ? unit(addTarget.unitId)?.spaceId : d.spaceId || sugg?.id)}</select></label>
       ${addTarget ? `<p class="tiny" style="margin:0">La première bouteille ira à la place que tu as touchée.</p>` : ''}
     </div>`;
   const friends = friendNames();
@@ -97,7 +96,18 @@ function wineFormSheet() {
     </form>
     ${dl('dl-dom', uniq(x => x.domaine))}${dl('dl-app', uniq(x => x.appellation))}${dl('dl-reg', uniq(x => x.region))}${dl('dl-lieu', uniq(x => x.achat?.lieu))}${dl('dl-friends', [...new Set(friends)])}`;
 }
-CHANGES.draftState = el => { $('#primeur-f').hidden = el.value !== 'primeur'; };
+// Choix « En cave » / « En primeur » (v1.7.5), dans tous les écrans d'ajout
+const stateFields = (state = 'cave', delivery = '') => `<div class="chips" style="margin:0" role="radiogroup" aria-label="État des bouteilles">${[['cave', 'En cave'], ['primeur', 'En primeur']].map(([k, l]) =>
+  `<label class="chip soft${state === k ? ' on' : ''}" style="cursor:pointer"><input type="radio" name="state" value="${k}" ${state === k ? 'checked' : ''} class="sr-only" data-ch="draftState">${l}</label>`).join('')}</div>
+  <div class="primeur-f" ${state === 'primeur' ? '' : 'hidden'}><label>Livraison prévue<input type="date" name="delivery" value="${esc(delivery || '')}"></label>
+    <p class="tiny" style="margin:4px 0 0">Les bouteilles entreront en cave à leur réception (Réglages › Primeurs).</p></div>`;
+CHANGES.draftState = el => {
+  const f = el.form, pr = el.value === 'primeur';
+  for (const r of f.querySelectorAll('input[name=state]')) r.closest('.chip')?.classList.toggle('on', r.checked);
+  const box = f.querySelector('.primeur-f'); if (box) box.hidden = !pr;
+  const l = f.querySelector('.dest-l'); if (l) l.textContent = pr ? 'Destination à la livraison' : 'Ranger dans';
+  if (draft?.w && !draft.edit) draft.state = el.value;
+};
 function readWineForm(d, w) {
   const sp = w.kind === 'spirit';
   const t = s => s || '';
@@ -261,11 +271,17 @@ Object.assign(ACT, {
     showSheet(plusSheet);
   },
   addWine: () => showSheet(addSheet),
-  newWine: t => { newDraft(t.dataset.kind); showSheet(wineFormSheet, { full: true }); },
-  rebuyList: () => showSheet(() => `${head('Racheter un vin')}
+  newWine: t => { newDraft(t.dataset.kind); if (t.dataset.primeur) draft.state = 'primeur'; showSheet(wineFormSheet, { full: true }); },
+  primeurAdd: () => showSheet(() => `${head('Ajouter un primeur')}
+    <div class="big-actions">
+      ${S.wines.length ? `<button class="big-action" data-act="rebuyList" data-primeur="1">${ICON.copy}<div><b>Un vin de la cave</b><small>Le millésime suivant, ou d’autres bouteilles du même.</small></div></button>` : ''}
+      <button class="big-action" data-act="newWine" data-kind="vin" data-primeur="1">${ICON.edit}<div><b>Un nouveau vin</b><small>Domaine, cuvée, millésime, quantité.</small></div></button>
+    </div>`),
+  rebuyList: t => { const pr = !!t?.dataset?.primeur; showSheet(() => `${head(pr ? 'Primeur d’un vin de la cave' : 'Racheter un vin')}
+    ${pr ? '<p class="small" style="margin-top:-6px">Choisis le vin, puis « Autre millésime » ou « Mêmes bouteilles » : « En primeur » sera déjà choisi.</p>' : ''}
     <div class="search" style="margin:0 0 4px">${ICON.search}<input type="search" placeholder="Domaine, cuvée, appellation, millésime…" data-in="rebuyFind" autocomplete="off">${sx()}</div>
-    <div id="rebuy-list">${rebuyRows('')}</div>`),
-  rebuy: t => showSheet(() => addBottlesSheet(t.dataset.id)),
+    <div id="rebuy-list" ${pr ? 'data-primeur="1"' : ''}>${rebuyRows('', pr)}</div>`); },
+  rebuy: t => { const pr = !!t.dataset.primeur; showSheet(() => addBottlesSheet(t.dataset.id, { primeur: pr })); },
   placeSpace: t => { draft.place.spaceId = t.dataset.id; draft.place.sel = suggestFor(draft.place); refreshSheet(); },
   pickSlot: t => placeToggle(t.dataset.u, +t.dataset.r, +t.dataset.c),
   pickBox: t => {
@@ -322,15 +338,17 @@ function vintageBase(w) { const o = {}; for (const k of VINTAGE_KEEP) if (w[k] !
 const sameVintage = (base, mill) => S.wines.find(x => x.kind === base.kind && norm(x.domaine) === norm(base.domaine) && norm(x.cuvee) === norm(base.cuvee) && norm(x.appellation) === norm(base.appellation) && (x.millesime || null) === (mill || null) && x.format === base.format);
 const siblings = w => S.wines.filter(x => x.id !== w.id && x.kind === w.kind && norm(x.domaine) === norm(w.domaine) && norm(x.cuvee || x.appellation) === norm(w.cuvee || w.appellation) && heldBottles(x.id).length)
   .sort((a, b) => (a.millesime || 0) - (b.millesime || 0));
-function vintageSheet(wid) {
+function vintageSheet(wid, o = {}) {
   const w = wine(wid); if (!w) return null;
+  const st = o.primeur ? 'primeur' : 'cave';
   const last = w.achat || {}, base = { ...w, apogee: null };
   return `${head('Nouveau millésime')}
     <p class="small" style="margin-top:-6px"><span class="dot" style="background:${wineColor(w)}"></span> ${esc(wineName(w))} · ${esc(w.domaine || '')}</p>
     <form class="form" data-form="vintage" data-w="${wid}">
       <div class="grid2"><label>Millésime<input name="millesime" inputmode="numeric" placeholder="${w.millesime ? 'ex. ' + (w.millesime + 1) : 'ex. 2021'}" required autocomplete="off"></label>
         <label>Quantité<input name="qty" inputmode="numeric" value="1" required></label></div>
-      <label>Ranger dans<select name="spaceId">${spaceOptions(suggestSpace(base)?.id)}</select></label>
+      ${stateFields(st)}
+      <label><span class="dest-l">${st === 'primeur' ? 'Destination à la livraison' : 'Ranger dans'}</span><select name="spaceId">${spaceOptions(suggestSpace(base)?.id)}</select></label>
       <div class="fieldset"><div class="ft">Source</div>
         <label>Lieu d’achat<input name="lieu" placeholder="${esc(last.lieu || 'Caviste, domaine, salon…')}" list="dl-lieu" autocomplete="off"></label>
         <label>Offert par<input name="offertPar" placeholder="Si c’est un cadeau" autocomplete="off"></label>
@@ -356,17 +374,19 @@ FORMS.vintage = async (f, d) => {
   if (!w) { w = { id: uid(), ...vintageBase(base), millesime: m.v, createdAt: Date.now(), notes: '' }; S.wines.push(w); }
   if (!same || p != null || lieu) w.achat = { ...(same ? w.achat || {} : {}), ...(p != null ? { prix: p } : {}), date: d.adate || null, ...(lieu ? { lieu } : {}) };
   if (gift) w.cadeau = { de: gift };
-  const ids = createBottles(w, qty, { spaceId: d.spaceId });
+  const primeur = d.state === 'primeur';
+  const ids = createBottles(w, qty, primeur ? { state: 'primeur', delivery: { date: d.delivery || null, spaceId: d.spaceId } } : { spaceId: d.spaceId });
   applyOwners(ids, d);
   S.wishes = S.wishes.filter(x => x.wineId !== w.id);
-  await save(); afterAdd(w, ids, false);
+  await save(); afterAdd(w, ids, primeur);
 };
 Object.assign(ACT, {
-  newVintage: t => showSheet(() => vintageSheet(t.dataset.id)),
+  newVintage: t => { const pr = !!t.dataset.primeur; showSheet(() => vintageSheet(t.dataset.id, { primeur: pr })); },
   vintageFull: t => {
     const base = wine(t.dataset.w), f = t.closest('form'), v = n => f?.elements[n]?.value || '';
     newDraft(base.kind, { ...vintageBase(base), millesime: readYear(v('millesime'), thisYear() + 1).v || null, achat: { prix: num(v('prix')), date: v('adate') || today(), lieu: v('lieu') }, cadeau: v('offertPar') ? { de: v('offertPar') } : null });
     draft.qty = clamp(int(v('qty')) || 1, 1, 500); draft.spaceId = v('spaceId') || null;
+    draft.state = v('state') === 'primeur' ? 'primeur' : 'cave'; draft.delivery = v('delivery') || '';
     showSheet(wineFormSheet, { replace: true, full: true });
   },
 });
@@ -442,15 +462,14 @@ Object.assign(ACT, {
 });
 
 /* ---------- Ajouter des bouteilles à une fiche ---------- */
-function addBottlesSheet(wid) {
-  const w = wine(wid);
+function addBottlesSheet(wid, o = {}) {
+  const w = wine(wid), st = o.primeur ? 'primeur' : 'cave';
   return `${head('Ajouter des bouteilles')}
     <p class="small" style="margin-top:-6px"><span class="dot" style="background:${wineColor(w)}"></span> ${esc(wineTitle(w))}</p>
     <form class="form" data-form="addBottles" data-w="${wid}">
-      <div class="grid2"><label>Quantité<input name="qty" inputmode="numeric" value="1" required></label>
-        <label>État<select name="state" data-ch="draftState"><option value="cave">En cave</option><option value="primeur">Primeur, pas encore livré</option></select></label></div>
-      <div id="primeur-f" hidden><label>Livraison prévue<input type="date" name="delivery"></label></div>
-      <label>Ranger dans<select name="spaceId">${spaceOptions(addTarget ? unit(addTarget.unitId)?.spaceId : suggestSpace(w)?.id)}</select></label>
+      <label>Quantité<input name="qty" inputmode="numeric" value="1" required></label>
+      ${stateFields(st)}
+      <label><span class="dest-l">${st === 'primeur' ? 'Destination à la livraison' : 'Ranger dans'}</span><select name="spaceId">${spaceOptions(addTarget ? unit(addTarget.unitId)?.spaceId : suggestSpace(w)?.id)}</select></label>
       ${ownerFields()}
       <div class="grid2"><label>Prix unitaire (€)<input name="prix" inputmode="decimal" value="${esc(numFr(w.achat?.prix, 2))}"></label><label>Date d’achat<input type="date" name="adate" value="${today()}"></label></div>
       <button class="btn primary wide" type="submit">Ajouter</button>
@@ -593,14 +612,15 @@ Object.assign(ACT, {
   },
 });
 
-function rebuyRows(q) {
+function rebuyRows(q, pr = false) {
+  const P = pr ? ' data-primeur="1"' : '';
   const m = matcher(q);
   const ws = [...S.wines].filter(w => kindOn(w) && (!m || m(w))).sort((a, b) => wineName(a).localeCompare(wineName(b), 'fr') || (a.millesime || 0) - (b.millesime || 0));
   return ws.length ? `<div class="list">${ws.map(w => `<div class="li"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(wineSub(w))} · ${wineBottles(w.id).length ? wineBottles(w.id).length + ' en cave' : 'pas en cave'}</small>
-      <div class="row" style="gap:6px;margin-top:6px"><button class="btn small" data-act="rebuy" data-id="${w.id}">Mêmes bouteilles</button>${w.kind === 'vin' ? `<button class="btn small" data-act="newVintage" data-id="${w.id}">Autre millésime</button>` : ''}</div></div></div>`).join('')}</div>`
+      <div class="row" style="gap:6px;margin-top:6px"><button class="btn small" data-act="rebuy" data-id="${w.id}"${P}>Mêmes bouteilles</button>${w.kind === 'vin' ? `<button class="btn small" data-act="newVintage" data-id="${w.id}"${P}>Autre millésime</button>` : ''}</div></div></div>`).join('')}</div>`
     : '<p class="small" style="margin:10px 4px">Aucun vin ne correspond.</p>';
 }
-INPUTS.rebuyFind = el => { const box = $('#rebuy-list'); if (box) box.innerHTML = rebuyRows(el.value); };
+INPUTS.rebuyFind = el => { const box = $('#rebuy-list'); if (box) box.innerHTML = rebuyRows(el.value, !!box.dataset.primeur); };
 
 // Places libres insuffisantes dans l'espace choisi : on le dit, et on propose l'espace le plus libre
 function placeShortage(p, units, occ) {

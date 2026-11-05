@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#F7F3EC">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-EqOtrT94b3DICmX4Wwhkk4pfbwj6mUqNgbLIU1TT5Oo='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-/81wTbonwHgMO1zAkEXLfh3R0xoInz6Bc7atld/3g8A='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>MyCellar</title>
@@ -372,7 +372,7 @@ input[type=range].unset::-moz-range-progress{background:#EAE2D6}
 <input type="file" id="f-backup" accept="application/json,.json" hidden>
 <script>
 'use strict';
-const CHANGELOG = [{"version":"1.7.4","date":"2026-11-05","titre":"Millésimes, amis et caisses","items":["Nouveau millésime : depuis la fiche d’un vin ou « Racheter un vin », une saisie courte (millésime, quantité, source, prix) reprend tout le reste. La fenêtre est estimée pour le nouveau millésime. Un millésime déjà en cave reçoit les bouteilles, sans doublon.","La fiche d’un vin liste ses autres millésimes en cave.","Bouteilles d’un ami : le propriétaire est désormais fixé bouteille par bouteille. À l’ajout, « dont 6 pour Paul » ; après coup, « Répartir entre propriétaires » sur la fiche du vin, ou « Appartient à » sur une bouteille. Tes données ont été converties sans perte.","Le sommelier, À boire, les conseils et les transferts ne comptent que tes bouteilles.","Caisses et cartons : un seul vin par caisse. Depuis la caisse : sortir plusieurs bouteilles d’un coup, déplacer la caisse avec son contenu, l’ajouter au transfert (elle arrive avec ses bouteilles dedans), attribuer des bouteilles à un ami, modifier le vin ou l’achat."]},{"version":"1.7.3","date":"2026-11-05","titre":"Bouteilles à noter, sites en glissant","items":["Dégustations › À noter : toutes les bouteilles sorties sans fiche t’y attendent, au lieu de la seule dernière. Pour chacune : note rapide, fiche complète (date, plat et convives déjà remplis) ou « Sans fiche ».","Après une sortie, un nouveau choix : « Sortir sans fiche », sans rappel.","Le rappel du lendemain compte les bouteilles à noter, et « Plus tard » ne les oublie plus.","Les bouteilles bues ces 30 derniers jours sans dégustation ont été ajoutées à la liste.","Onglet Cave : glisse vers la gauche ou la droite pour changer de site. Des points sous le titre indiquent le site affiché."]},{"version":"1.7.2","date":"2026-11-05","titre":"Transferts dans les deux sens","items":["Transferts : une section par sens (vers la consommation, vers le stockage), chacune avec ses arrivées. Tu peux emporter tes achats à la campagne et rapporter des vins prêts à boire dans le même trajet.","Arrivées au stockage : les bouteilles vont dans le meilleur espace de garde, avec « Ranger maintenant ».","Suggestions vers le stockage : les vins à garder achetés récemment en ville. Et quand tu ajoutes un vin trop jeune en ville, l’app propose de l’emporter au prochain transfert.","Toucher une bouteille dans un transfert ou un conseil de rangement ouvre un résumé du vin : fenêtre, statut, bouteilles par site, dernière note.","À boire : touche une barre du graphique « À boire avant la fin de… » pour voir les bouteilles et leurs emplacements, avec accès direct à la case."]},{"version":"1.7.1","date":"2026-11-05","titre":"Recherche et sommelier","items":["La recherche de l’onglet Cave porte sur tous tes sites d’un coup. Les résultats s’affichent sous la barre, avec chaque emplacement : touche-en un pour y aller, la case clignote sur le plan.","Une seule bouteille trouvée ? La touche « Rechercher » du clavier t’y emmène directement.","« Voir sur le plan » depuis la fiche d’une bouteille, et l’épingle à côté de chaque emplacement sur la fiche d’un vin.","Une croix efface la recherche d’un coup, sur toutes les barres de recherche.","Sommelier : le bouton « Nouvelle conversation » est dans l’encart de saisie, toujours visible, et demande confirmation. La dernière réponse n’est plus cachée sous l’encart."]},{"version":"1.7","date":"2026-11-05","titre":"Import Ploc complet","items":["Import Ploc : les fiches sont reprises telles quelles (couleur, degré, fenêtre de garde, contenance, cépages). Le sommelier ne complète que les champs vides, et l’écran de vérification les signale.","Les bouteilles sont posées à leur case : le meuble est créé à l’identique du plan Ploc, ou associé à un meuble existant. Un aperçu du plan permet de vérifier la lecture.","Les caves Ploc sont rapprochées de tes sites, sur ton iPhone, sans envoyer la liste de tes sites à l’IA. Un site non reconnu est demandé une fois, et peut prendre le nom utilisé dans Ploc.","Le sommelier donne son avis sur chaque fenêtre de Ploc : s’il la juge décalée, il propose la sienne et tu choisis.","L’estimation de Ploc devient le prix d’achat, et la note sur 100 une dégustation sur 20. Les accords sont ajoutés aux notes du vin.","Plusieurs exports peuvent être importés à la suite, sans doublon.","Nouveau champ « Servir à » sur la fiche vin, affiché au moment de déguster. Le sommelier le voit, ainsi que les accords."]},{"version":"1.6.2","date":"2026-11-05","titre":"Fiabilité","items":["Un double appui sur un bouton ne crée plus deux bouteilles, deux sorties ou deux dégustations.","La fiche vin vérifie le millésime, le prix, le degré et la quantité, et explique sous le champ ce qui ne va pas. Un millésime sur deux chiffres est complété (« 19 » devient 2019), et les nombres comme « 1.234,50 » sont reconnus.","Les fenêtres de dégustation restent cohérentes (début, apogée, fin), qu’elles soient saisies ou proposées par le sommelier.","Une dégustation enregistrée sans toucher au curseur n’a plus de note, au lieu d’un 14/20 par défaut.","Rangement : l’app prévient quand les places manquent et propose l’espace le plus libre.","Spiritueux désactivés : leurs cases restent sur le plan, grisées.","Import Ploc, lecture d’étiquette et restauration de sauvegarde : contrôles et messages plus clairs.","Les très grandes caves restent économes en appels au sommelier."]},{"version":"1.6.1","date":"2026-11-04","titre":"Confort et corrections","items":["Les fenêtres ne clignotent plus et ne remontent plus en haut quand tu touches un choix (fiche de dégustation, rangement, liste d’envies, transfert…).","Fiche de dégustation : le bouton « OK » en haut disparaît, on enregistre avec le bouton du bas. Fermer une fiche commencée demande confirmation.","Dans la cave fictive, les réglages indisponibles (suivi d’utilisation, Face ID, Rester déverrouillé) expliquent pourquoi.","Réglages › Contenu : la ligne « Vins · Toujours actif » est retirée."]},{"version":"1.6","date":"2026-11-04","titre":"Retours d’utilisation et suivi des versions","items":["Suivi d’utilisation (désactivé par défaut, Réglages › Aide) : l’app note, sur ton iPhone uniquement, les écrans et les gestes, jamais tes vins ni tes notes. Tu peux consulter la synthèse et exporter un rapport à envoyer, avec ton avis.","« Signaler un problème » : décris ce qui s’est passé, l’app prépare un rapport avec les dernières minutes d’utilisation et les erreurs récentes. Raccourci aussi dans les messages d’erreur.","Mises à jour : « Plus d’infos » montre le contenu d’une nouvelle version avant de l’installer, une fenêtre « Nouveautés » s’affiche après, et l’historique des versions est dans Réglages › Aide."]},{"version":"1.5.2","date":"2026-11-04","titre":"Dégustation à l’aveugle et finitions","items":["Dégustation à l’aveugle : la fiche d’abord sur un « vin mystère », tes hypothèses, puis la révélation, la comparaison et l’analyse du sommelier.","Le bouton + est le même partout : « Nouvelle dégustation » ou « Nouveau vin ».","Présentation de l’app au premier lancement, à revoir dans Réglages › Aide.","Recherche dans « Racheter un vin ». L’import Ploc est désormais dans les réglages.","Nouvelles icônes : un bouchon pour « Déguster », un carnet pour les dégustations."]},{"version":"1.5","date":"2026-11-04","titre":"Dégustations et conseils de rangement","items":["Onglet Dégustations : le journal de tous tes vins dégustés, en cave ou ailleurs (restaurant, salon, domaine…), avec recherche, filtres et vue par vin.","Séances de dégustation avec classement, et liste d’envies avec « Acheté ».","Conseils de rangement dans À boire : vins à rapprocher, à mettre en garde, réassort de la cave de consommation.","Le sommelier propose d’ajuster la fenêtre d’un vin après une dégustation, et tient compte de tes vins bus ailleurs et de tes accords.","Les réglages passent sous l’icône engrenage."]},{"version":"1.0.1","date":"2026-11-04","titre":"Corrections","items":["L’app se rouvre correctement sur iPhone après un premier lancement.","La création de la cave ne pose plus de question : un site « Site 1 », renommable, et le mode plusieurs sites dans les réglages.","La vue Urgence de la page Cave est retirée : l’onglet À boire fait référence."]},{"version":"1.0","date":"2026-11-04","titre":"Première version","items":["Ta cave sur ton iPhone, chiffrée par ton mot de passe ou Face ID, et utilisable hors ligne.","Sites, espaces et meubles (armoire, rack, étagère, caisses, cartons) avec un plan visuel et une recherche.","Ajout par photo d’étiquette ou saisie, rangement suggéré, sorties, déplacements, transferts, primeurs, vins des amis.","Dégustation rapide ou complète avec la roue des arômes.","Sommelier pour les accords mets-vins, fenêtres de dégustation estimées, onglet À boire.","Option spiritueux, import Ploc, sauvegarde chiffrée."]}];
+const CHANGELOG = [{"version":"1.7.5","date":"2026-11-05","titre":"Primeurs","items":["Le choix « En cave » ou « En primeur » est désormais bien visible sous la quantité, avec la date de livraison prévue.","Il est disponible partout où l’on ajoute des bouteilles : nouveau vin, « Mêmes bouteilles » et « Nouveau millésime ».","Réglages › Primeurs : un bouton « Ajouter un primeur », pour un vin de la cave (millésime suivant) ou un nouveau vin."]},{"version":"1.7.4","date":"2026-11-05","titre":"Millésimes, amis et caisses","items":["Nouveau millésime : depuis la fiche d’un vin ou « Racheter un vin », une saisie courte (millésime, quantité, source, prix) reprend tout le reste. La fenêtre est estimée pour le nouveau millésime. Un millésime déjà en cave reçoit les bouteilles, sans doublon.","La fiche d’un vin liste ses autres millésimes en cave.","Bouteilles d’un ami : le propriétaire est désormais fixé bouteille par bouteille. À l’ajout, « dont 6 pour Paul » ; après coup, « Répartir entre propriétaires » sur la fiche du vin, ou « Appartient à » sur une bouteille. Tes données ont été converties sans perte.","Le sommelier, À boire, les conseils et les transferts ne comptent que tes bouteilles.","Caisses et cartons : un seul vin par caisse. Depuis la caisse : sortir plusieurs bouteilles d’un coup, déplacer la caisse avec son contenu, l’ajouter au transfert (elle arrive avec ses bouteilles dedans), attribuer des bouteilles à un ami, modifier le vin ou l’achat."]},{"version":"1.7.3","date":"2026-11-05","titre":"Bouteilles à noter, sites en glissant","items":["Dégustations › À noter : toutes les bouteilles sorties sans fiche t’y attendent, au lieu de la seule dernière. Pour chacune : note rapide, fiche complète (date, plat et convives déjà remplis) ou « Sans fiche ».","Après une sortie, un nouveau choix : « Sortir sans fiche », sans rappel.","Le rappel du lendemain compte les bouteilles à noter, et « Plus tard » ne les oublie plus.","Les bouteilles bues ces 30 derniers jours sans dégustation ont été ajoutées à la liste.","Onglet Cave : glisse vers la gauche ou la droite pour changer de site. Des points sous le titre indiquent le site affiché."]},{"version":"1.7.2","date":"2026-11-05","titre":"Transferts dans les deux sens","items":["Transferts : une section par sens (vers la consommation, vers le stockage), chacune avec ses arrivées. Tu peux emporter tes achats à la campagne et rapporter des vins prêts à boire dans le même trajet.","Arrivées au stockage : les bouteilles vont dans le meilleur espace de garde, avec « Ranger maintenant ».","Suggestions vers le stockage : les vins à garder achetés récemment en ville. Et quand tu ajoutes un vin trop jeune en ville, l’app propose de l’emporter au prochain transfert.","Toucher une bouteille dans un transfert ou un conseil de rangement ouvre un résumé du vin : fenêtre, statut, bouteilles par site, dernière note.","À boire : touche une barre du graphique « À boire avant la fin de… » pour voir les bouteilles et leurs emplacements, avec accès direct à la case."]},{"version":"1.7.1","date":"2026-11-05","titre":"Recherche et sommelier","items":["La recherche de l’onglet Cave porte sur tous tes sites d’un coup. Les résultats s’affichent sous la barre, avec chaque emplacement : touche-en un pour y aller, la case clignote sur le plan.","Une seule bouteille trouvée ? La touche « Rechercher » du clavier t’y emmène directement.","« Voir sur le plan » depuis la fiche d’une bouteille, et l’épingle à côté de chaque emplacement sur la fiche d’un vin.","Une croix efface la recherche d’un coup, sur toutes les barres de recherche.","Sommelier : le bouton « Nouvelle conversation » est dans l’encart de saisie, toujours visible, et demande confirmation. La dernière réponse n’est plus cachée sous l’encart."]},{"version":"1.7","date":"2026-11-05","titre":"Import Ploc complet","items":["Import Ploc : les fiches sont reprises telles quelles (couleur, degré, fenêtre de garde, contenance, cépages). Le sommelier ne complète que les champs vides, et l’écran de vérification les signale.","Les bouteilles sont posées à leur case : le meuble est créé à l’identique du plan Ploc, ou associé à un meuble existant. Un aperçu du plan permet de vérifier la lecture.","Les caves Ploc sont rapprochées de tes sites, sur ton iPhone, sans envoyer la liste de tes sites à l’IA. Un site non reconnu est demandé une fois, et peut prendre le nom utilisé dans Ploc.","Le sommelier donne son avis sur chaque fenêtre de Ploc : s’il la juge décalée, il propose la sienne et tu choisis.","L’estimation de Ploc devient le prix d’achat, et la note sur 100 une dégustation sur 20. Les accords sont ajoutés aux notes du vin.","Plusieurs exports peuvent être importés à la suite, sans doublon.","Nouveau champ « Servir à » sur la fiche vin, affiché au moment de déguster. Le sommelier le voit, ainsi que les accords."]},{"version":"1.6.2","date":"2026-11-05","titre":"Fiabilité","items":["Un double appui sur un bouton ne crée plus deux bouteilles, deux sorties ou deux dégustations.","La fiche vin vérifie le millésime, le prix, le degré et la quantité, et explique sous le champ ce qui ne va pas. Un millésime sur deux chiffres est complété (« 19 » devient 2019), et les nombres comme « 1.234,50 » sont reconnus.","Les fenêtres de dégustation restent cohérentes (début, apogée, fin), qu’elles soient saisies ou proposées par le sommelier.","Une dégustation enregistrée sans toucher au curseur n’a plus de note, au lieu d’un 14/20 par défaut.","Rangement : l’app prévient quand les places manquent et propose l’espace le plus libre.","Spiritueux désactivés : leurs cases restent sur le plan, grisées.","Import Ploc, lecture d’étiquette et restauration de sauvegarde : contrôles et messages plus clairs.","Les très grandes caves restent économes en appels au sommelier."]},{"version":"1.6.1","date":"2026-11-04","titre":"Confort et corrections","items":["Les fenêtres ne clignotent plus et ne remontent plus en haut quand tu touches un choix (fiche de dégustation, rangement, liste d’envies, transfert…).","Fiche de dégustation : le bouton « OK » en haut disparaît, on enregistre avec le bouton du bas. Fermer une fiche commencée demande confirmation.","Dans la cave fictive, les réglages indisponibles (suivi d’utilisation, Face ID, Rester déverrouillé) expliquent pourquoi.","Réglages › Contenu : la ligne « Vins · Toujours actif » est retirée."]},{"version":"1.6","date":"2026-11-04","titre":"Retours d’utilisation et suivi des versions","items":["Suivi d’utilisation (désactivé par défaut, Réglages › Aide) : l’app note, sur ton iPhone uniquement, les écrans et les gestes, jamais tes vins ni tes notes. Tu peux consulter la synthèse et exporter un rapport à envoyer, avec ton avis.","« Signaler un problème » : décris ce qui s’est passé, l’app prépare un rapport avec les dernières minutes d’utilisation et les erreurs récentes. Raccourci aussi dans les messages d’erreur.","Mises à jour : « Plus d’infos » montre le contenu d’une nouvelle version avant de l’installer, une fenêtre « Nouveautés » s’affiche après, et l’historique des versions est dans Réglages › Aide."]},{"version":"1.5.2","date":"2026-11-04","titre":"Dégustation à l’aveugle et finitions","items":["Dégustation à l’aveugle : la fiche d’abord sur un « vin mystère », tes hypothèses, puis la révélation, la comparaison et l’analyse du sommelier.","Le bouton + est le même partout : « Nouvelle dégustation » ou « Nouveau vin ».","Présentation de l’app au premier lancement, à revoir dans Réglages › Aide.","Recherche dans « Racheter un vin ». L’import Ploc est désormais dans les réglages.","Nouvelles icônes : un bouchon pour « Déguster », un carnet pour les dégustations."]},{"version":"1.5","date":"2026-11-04","titre":"Dégustations et conseils de rangement","items":["Onglet Dégustations : le journal de tous tes vins dégustés, en cave ou ailleurs (restaurant, salon, domaine…), avec recherche, filtres et vue par vin.","Séances de dégustation avec classement, et liste d’envies avec « Acheté ».","Conseils de rangement dans À boire : vins à rapprocher, à mettre en garde, réassort de la cave de consommation.","Le sommelier propose d’ajuster la fenêtre d’un vin après une dégustation, et tient compte de tes vins bus ailleurs et de tes accords.","Les réglages passent sous l’icône engrenage."]},{"version":"1.0.1","date":"2026-11-04","titre":"Corrections","items":["L’app se rouvre correctement sur iPhone après un premier lancement.","La création de la cave ne pose plus de question : un site « Site 1 », renommable, et le mode plusieurs sites dans les réglages.","La vue Urgence de la page Cave est retirée : l’onglet À boire fait référence."]},{"version":"1.0","date":"2026-11-04","titre":"Première version","items":["Ta cave sur ton iPhone, chiffrée par ton mot de passe ou Face ID, et utilisable hors ligne.","Sites, espaces et meubles (armoire, rack, étagère, caisses, cartons) avec un plan visuel et une recherche.","Ajout par photo d’étiquette ou saisie, rangement suggéré, sorties, déplacements, transferts, primeurs, vins des amis.","Dégustation rapide ou complète avec la roue des arômes.","Sommelier pour les accords mets-vins, fenêtres de dégustation estimées, onglet À boire.","Option spiritueux, import Ploc, sauvegarde chiffrée."]}];
 const APP_VERSION = CHANGELOG[0].version;
 
 /* ===== 00-core.js ===== */
@@ -1686,10 +1686,9 @@ function wineFormSheet() {
   const ft = d.forTaste || d.forReveal;
   const stock = editing || ft ? '' : `
     <div class="fieldset"><div class="ft">Bouteilles</div>
-      <div class="grid2"><label>Quantité<input name="qty" inputmode="numeric" value="${d.qty}" required></label>
-        <label>État<select name="state" data-ch="draftState"><option value="cave" ${d.state === 'cave' ? 'selected' : ''}>En cave</option><option value="primeur" ${d.state === 'primeur' ? 'selected' : ''}>Primeur, pas encore livré</option></select></label></div>
-      <div id="primeur-f" ${d.state === 'primeur' ? '' : 'hidden'}><label>Livraison prévue<input type="date" name="delivery" value="${esc(d.delivery || '')}"></label></div>
-      <label>${d.state === 'primeur' ? 'Destination à la livraison' : 'Ranger dans'}<select name="spaceId">${spaceOptions(addTarget ? unit(addTarget.unitId)?.spaceId : d.spaceId || sugg?.id)}</select></label>
+      <label>Quantité<input name="qty" inputmode="numeric" value="${d.qty}" required></label>
+      ${stateFields(d.state, d.delivery)}
+      <label><span class="dest-l">${d.state === 'primeur' ? 'Destination à la livraison' : 'Ranger dans'}</span><select name="spaceId">${spaceOptions(addTarget ? unit(addTarget.unitId)?.spaceId : d.spaceId || sugg?.id)}</select></label>
       ${addTarget ? `<p class="tiny" style="margin:0">La première bouteille ira à la place que tu as touchée.</p>` : ''}
     </div>`;
   const friends = friendNames();
@@ -1714,7 +1713,18 @@ function wineFormSheet() {
     </form>
     ${dl('dl-dom', uniq(x => x.domaine))}${dl('dl-app', uniq(x => x.appellation))}${dl('dl-reg', uniq(x => x.region))}${dl('dl-lieu', uniq(x => x.achat?.lieu))}${dl('dl-friends', [...new Set(friends)])}`;
 }
-CHANGES.draftState = el => { $('#primeur-f').hidden = el.value !== 'primeur'; };
+// Choix « En cave » / « En primeur » (v1.7.5), dans tous les écrans d'ajout
+const stateFields = (state = 'cave', delivery = '') => `<div class="chips" style="margin:0" role="radiogroup" aria-label="État des bouteilles">${[['cave', 'En cave'], ['primeur', 'En primeur']].map(([k, l]) =>
+  `<label class="chip soft${state === k ? ' on' : ''}" style="cursor:pointer"><input type="radio" name="state" value="${k}" ${state === k ? 'checked' : ''} class="sr-only" data-ch="draftState">${l}</label>`).join('')}</div>
+  <div class="primeur-f" ${state === 'primeur' ? '' : 'hidden'}><label>Livraison prévue<input type="date" name="delivery" value="${esc(delivery || '')}"></label>
+    <p class="tiny" style="margin:4px 0 0">Les bouteilles entreront en cave à leur réception (Réglages › Primeurs).</p></div>`;
+CHANGES.draftState = el => {
+  const f = el.form, pr = el.value === 'primeur';
+  for (const r of f.querySelectorAll('input[name=state]')) r.closest('.chip')?.classList.toggle('on', r.checked);
+  const box = f.querySelector('.primeur-f'); if (box) box.hidden = !pr;
+  const l = f.querySelector('.dest-l'); if (l) l.textContent = pr ? 'Destination à la livraison' : 'Ranger dans';
+  if (draft?.w && !draft.edit) draft.state = el.value;
+};
 function readWineForm(d, w) {
   const sp = w.kind === 'spirit';
   const t = s => s || '';
@@ -1878,11 +1888,17 @@ Object.assign(ACT, {
     showSheet(plusSheet);
   },
   addWine: () => showSheet(addSheet),
-  newWine: t => { newDraft(t.dataset.kind); showSheet(wineFormSheet, { full: true }); },
-  rebuyList: () => showSheet(() => `${head('Racheter un vin')}
+  newWine: t => { newDraft(t.dataset.kind); if (t.dataset.primeur) draft.state = 'primeur'; showSheet(wineFormSheet, { full: true }); },
+  primeurAdd: () => showSheet(() => `${head('Ajouter un primeur')}
+    <div class="big-actions">
+      ${S.wines.length ? `<button class="big-action" data-act="rebuyList" data-primeur="1">${ICON.copy}<div><b>Un vin de la cave</b><small>Le millésime suivant, ou d’autres bouteilles du même.</small></div></button>` : ''}
+      <button class="big-action" data-act="newWine" data-kind="vin" data-primeur="1">${ICON.edit}<div><b>Un nouveau vin</b><small>Domaine, cuvée, millésime, quantité.</small></div></button>
+    </div>`),
+  rebuyList: t => { const pr = !!t?.dataset?.primeur; showSheet(() => `${head(pr ? 'Primeur d’un vin de la cave' : 'Racheter un vin')}
+    ${pr ? '<p class="small" style="margin-top:-6px">Choisis le vin, puis « Autre millésime » ou « Mêmes bouteilles » : « En primeur » sera déjà choisi.</p>' : ''}
     <div class="search" style="margin:0 0 4px">${ICON.search}<input type="search" placeholder="Domaine, cuvée, appellation, millésime…" data-in="rebuyFind" autocomplete="off">${sx()}</div>
-    <div id="rebuy-list">${rebuyRows('')}</div>`),
-  rebuy: t => showSheet(() => addBottlesSheet(t.dataset.id)),
+    <div id="rebuy-list" ${pr ? 'data-primeur="1"' : ''}>${rebuyRows('', pr)}</div>`); },
+  rebuy: t => { const pr = !!t.dataset.primeur; showSheet(() => addBottlesSheet(t.dataset.id, { primeur: pr })); },
   placeSpace: t => { draft.place.spaceId = t.dataset.id; draft.place.sel = suggestFor(draft.place); refreshSheet(); },
   pickSlot: t => placeToggle(t.dataset.u, +t.dataset.r, +t.dataset.c),
   pickBox: t => {
@@ -1939,15 +1955,17 @@ function vintageBase(w) { const o = {}; for (const k of VINTAGE_KEEP) if (w[k] !
 const sameVintage = (base, mill) => S.wines.find(x => x.kind === base.kind && norm(x.domaine) === norm(base.domaine) && norm(x.cuvee) === norm(base.cuvee) && norm(x.appellation) === norm(base.appellation) && (x.millesime || null) === (mill || null) && x.format === base.format);
 const siblings = w => S.wines.filter(x => x.id !== w.id && x.kind === w.kind && norm(x.domaine) === norm(w.domaine) && norm(x.cuvee || x.appellation) === norm(w.cuvee || w.appellation) && heldBottles(x.id).length)
   .sort((a, b) => (a.millesime || 0) - (b.millesime || 0));
-function vintageSheet(wid) {
+function vintageSheet(wid, o = {}) {
   const w = wine(wid); if (!w) return null;
+  const st = o.primeur ? 'primeur' : 'cave';
   const last = w.achat || {}, base = { ...w, apogee: null };
   return `${head('Nouveau millésime')}
     <p class="small" style="margin-top:-6px"><span class="dot" style="background:${wineColor(w)}"></span> ${esc(wineName(w))} · ${esc(w.domaine || '')}</p>
     <form class="form" data-form="vintage" data-w="${wid}">
       <div class="grid2"><label>Millésime<input name="millesime" inputmode="numeric" placeholder="${w.millesime ? 'ex. ' + (w.millesime + 1) : 'ex. 2021'}" required autocomplete="off"></label>
         <label>Quantité<input name="qty" inputmode="numeric" value="1" required></label></div>
-      <label>Ranger dans<select name="spaceId">${spaceOptions(suggestSpace(base)?.id)}</select></label>
+      ${stateFields(st)}
+      <label><span class="dest-l">${st === 'primeur' ? 'Destination à la livraison' : 'Ranger dans'}</span><select name="spaceId">${spaceOptions(suggestSpace(base)?.id)}</select></label>
       <div class="fieldset"><div class="ft">Source</div>
         <label>Lieu d’achat<input name="lieu" placeholder="${esc(last.lieu || 'Caviste, domaine, salon…')}" list="dl-lieu" autocomplete="off"></label>
         <label>Offert par<input name="offertPar" placeholder="Si c’est un cadeau" autocomplete="off"></label>
@@ -1973,17 +1991,19 @@ FORMS.vintage = async (f, d) => {
   if (!w) { w = { id: uid(), ...vintageBase(base), millesime: m.v, createdAt: Date.now(), notes: '' }; S.wines.push(w); }
   if (!same || p != null || lieu) w.achat = { ...(same ? w.achat || {} : {}), ...(p != null ? { prix: p } : {}), date: d.adate || null, ...(lieu ? { lieu } : {}) };
   if (gift) w.cadeau = { de: gift };
-  const ids = createBottles(w, qty, { spaceId: d.spaceId });
+  const primeur = d.state === 'primeur';
+  const ids = createBottles(w, qty, primeur ? { state: 'primeur', delivery: { date: d.delivery || null, spaceId: d.spaceId } } : { spaceId: d.spaceId });
   applyOwners(ids, d);
   S.wishes = S.wishes.filter(x => x.wineId !== w.id);
-  await save(); afterAdd(w, ids, false);
+  await save(); afterAdd(w, ids, primeur);
 };
 Object.assign(ACT, {
-  newVintage: t => showSheet(() => vintageSheet(t.dataset.id)),
+  newVintage: t => { const pr = !!t.dataset.primeur; showSheet(() => vintageSheet(t.dataset.id, { primeur: pr })); },
   vintageFull: t => {
     const base = wine(t.dataset.w), f = t.closest('form'), v = n => f?.elements[n]?.value || '';
     newDraft(base.kind, { ...vintageBase(base), millesime: readYear(v('millesime'), thisYear() + 1).v || null, achat: { prix: num(v('prix')), date: v('adate') || today(), lieu: v('lieu') }, cadeau: v('offertPar') ? { de: v('offertPar') } : null });
     draft.qty = clamp(int(v('qty')) || 1, 1, 500); draft.spaceId = v('spaceId') || null;
+    draft.state = v('state') === 'primeur' ? 'primeur' : 'cave'; draft.delivery = v('delivery') || '';
     showSheet(wineFormSheet, { replace: true, full: true });
   },
 });
@@ -2059,15 +2079,14 @@ Object.assign(ACT, {
 });
 
 /* ---------- Ajouter des bouteilles à une fiche ---------- */
-function addBottlesSheet(wid) {
-  const w = wine(wid);
+function addBottlesSheet(wid, o = {}) {
+  const w = wine(wid), st = o.primeur ? 'primeur' : 'cave';
   return `${head('Ajouter des bouteilles')}
     <p class="small" style="margin-top:-6px"><span class="dot" style="background:${wineColor(w)}"></span> ${esc(wineTitle(w))}</p>
     <form class="form" data-form="addBottles" data-w="${wid}">
-      <div class="grid2"><label>Quantité<input name="qty" inputmode="numeric" value="1" required></label>
-        <label>État<select name="state" data-ch="draftState"><option value="cave">En cave</option><option value="primeur">Primeur, pas encore livré</option></select></label></div>
-      <div id="primeur-f" hidden><label>Livraison prévue<input type="date" name="delivery"></label></div>
-      <label>Ranger dans<select name="spaceId">${spaceOptions(addTarget ? unit(addTarget.unitId)?.spaceId : suggestSpace(w)?.id)}</select></label>
+      <label>Quantité<input name="qty" inputmode="numeric" value="1" required></label>
+      ${stateFields(st)}
+      <label><span class="dest-l">${st === 'primeur' ? 'Destination à la livraison' : 'Ranger dans'}</span><select name="spaceId">${spaceOptions(addTarget ? unit(addTarget.unitId)?.spaceId : suggestSpace(w)?.id)}</select></label>
       ${ownerFields()}
       <div class="grid2"><label>Prix unitaire (€)<input name="prix" inputmode="decimal" value="${esc(numFr(w.achat?.prix, 2))}"></label><label>Date d’achat<input type="date" name="adate" value="${today()}"></label></div>
       <button class="btn primary wide" type="submit">Ajouter</button>
@@ -2210,14 +2229,15 @@ Object.assign(ACT, {
   },
 });
 
-function rebuyRows(q) {
+function rebuyRows(q, pr = false) {
+  const P = pr ? ' data-primeur="1"' : '';
   const m = matcher(q);
   const ws = [...S.wines].filter(w => kindOn(w) && (!m || m(w))).sort((a, b) => wineName(a).localeCompare(wineName(b), 'fr') || (a.millesime || 0) - (b.millesime || 0));
   return ws.length ? `<div class="list">${ws.map(w => `<div class="li"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(wineSub(w))} · ${wineBottles(w.id).length ? wineBottles(w.id).length + ' en cave' : 'pas en cave'}</small>
-      <div class="row" style="gap:6px;margin-top:6px"><button class="btn small" data-act="rebuy" data-id="${w.id}">Mêmes bouteilles</button>${w.kind === 'vin' ? `<button class="btn small" data-act="newVintage" data-id="${w.id}">Autre millésime</button>` : ''}</div></div></div>`).join('')}</div>`
+      <div class="row" style="gap:6px;margin-top:6px"><button class="btn small" data-act="rebuy" data-id="${w.id}"${P}>Mêmes bouteilles</button>${w.kind === 'vin' ? `<button class="btn small" data-act="newVintage" data-id="${w.id}"${P}>Autre millésime</button>` : ''}</div></div></div>`).join('')}</div>`
     : '<p class="small" style="margin:10px 4px">Aucun vin ne correspond.</p>';
 }
-INPUTS.rebuyFind = el => { const box = $('#rebuy-list'); if (box) box.innerHTML = rebuyRows(el.value); };
+INPUTS.rebuyFind = el => { const box = $('#rebuy-list'); if (box) box.innerHTML = rebuyRows(el.value, !!box.dataset.primeur); };
 
 // Places libres insuffisantes dans l'espace choisi : on le dit, et on propose l'espace le plus libre
 function placeShortage(p, units, occ) {
@@ -4136,7 +4156,7 @@ Object.assign(ACT, {
   primeursSheet: () => showSheet(() => {
     const bs = S.bottles.filter(b => b.state === 'primeur'), by = new Map();
     for (const b of bs) by.set(b.wineId, [...(by.get(b.wineId) || []), b]);
-    return `${head('Primeurs')}${by.size ? `<div class="list">${[...by].map(([wid, l]) => { const w = wine(wid), d = l[0].delivery; return `<div class="li"><span class="dot" style="background:${wineColor(w)}"></span>
+    return `${head('Primeurs')}<button class="btn primary wide" style="margin-bottom:10px" data-act="primeurAdd">${ICON.add} Ajouter un primeur</button>${by.size ? `<div class="list">${[...by].map(([wid, l]) => { const w = wine(wid), d = l[0].delivery; return `<div class="li"><span class="dot" style="background:${wineColor(w)}"></span>
       <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small>${d?.date ? 'Livraison prévue ' + esc(fmtDate(d.date)) : 'Date de livraison inconnue'}${space(d?.spaceId) ? ' · vers ' + esc(space(d.spaceId).name) : ''}</small></div>
       <span class="qty">×${l.length}</span><button class="btn small primary" data-act="receive" data-b="${l[0].id}">Reçu</button></div>`; }).join('')}</div>` : '<p class="muted">Aucun primeur en attente. À l’ajout d’un vin, choisis l’état « Primeur ».</p>'}`;
   }),

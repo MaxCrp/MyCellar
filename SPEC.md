@@ -531,15 +531,15 @@ Le détail est dans `docs/tests/2026-11-04-campagne-v1.6.1/` : `rapport-bugs.md`
   - **Modifier le vin** (fiche commune) et **Modifier l'achat** (prix, date, source) pour toutes les bouteilles de la caisse.
 - [x] Tests : nouveau millésime depuis la fiche et depuis « Racheter un vin », « Offert par » ; ajout de 12 bouteilles dont 6 pour un ami, puis répartition après coup ; sommelier et À boire limités à mes bouteilles ; caisse à un seul vin au rangement ; sortie, déplacement, transfert et attribution d'une caisse entière.
 
-**v1.7.5** (primeurs plus faciles à trouver ; spécifiée, rien n'est développé)
+**v1.7.5** (primeurs plus faciles à trouver ; livrée)
 
 *Constat* (question du 5 novembre 2026). L'option primeur existe, mais elle se cache dans un menu « État » (« En cave » / « Primeur, pas encore livré »), à côté de la quantité. On la trouve dans « Nouveau vin › Saisie manuelle » et dans « Racheter un vin › Mêmes bouteilles ». Elle manque dans « Nouveau millésime » (v1.7.4), alors que c'est le cas le plus courant : on achète en primeur le millésime suivant d'un vin qu'on a déjà.
 
-- [ ] **Choix visible** : le menu « État » devient deux pastilles bien visibles sous la quantité, « En cave » et « En primeur ». Avec « En primeur », la date de livraison prévue apparaît, et « Ranger dans » devient « Destination à la livraison ».
-- [ ] **Partout où l'on ajoute des bouteilles** : nouveau vin (saisie et photo d'étiquette), « Mêmes bouteilles », « Nouveau millésime ».
-- [ ] **Raccourci** : dans Réglages › Primeurs, un bouton « Ajouter un primeur » ouvre « Racheter un vin » ou « Nouveau vin », avec « En primeur » déjà choisi.
-- [ ] Le reste ne change pas : réception depuis Réglages › Primeurs ou la fiche de la bouteille, propriétaire « dont N pour un ami » possible aussi en primeur.
-- [ ] Tests : primeur depuis chacun des trois écrans, date de livraison, raccourci depuis Réglages › Primeurs, réception.
+- [x] **Choix visible** : le menu « État » devient deux pastilles bien visibles sous la quantité, « En cave » et « En primeur ». Avec « En primeur », la date de livraison prévue apparaît, et « Ranger dans » devient « Destination à la livraison ».
+- [x] **Partout où l'on ajoute des bouteilles** : nouveau vin (saisie et photo d'étiquette), « Mêmes bouteilles », « Nouveau millésime ».
+- [x] **Raccourci** : dans Réglages › Primeurs, un bouton « Ajouter un primeur » ouvre « Racheter un vin » ou « Nouveau vin », avec « En primeur » déjà choisi.
+- [x] Le reste ne change pas : réception depuis Réglages › Primeurs ou la fiche de la bouteille, propriétaire « dont N pour un ami » possible aussi en primeur.
+- [x] Tests : primeur depuis chacun des trois écrans, date de livraison, raccourci depuis Réglages › Primeurs, réception.
 
 **v2**
 - Sauvegarde automatique Google Drive.

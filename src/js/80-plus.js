@@ -160,7 +160,7 @@ Object.assign(ACT, {
   primeursSheet: () => showSheet(() => {
     const bs = S.bottles.filter(b => b.state === 'primeur'), by = new Map();
     for (const b of bs) by.set(b.wineId, [...(by.get(b.wineId) || []), b]);
-    return `${head('Primeurs')}${by.size ? `<div class="list">${[...by].map(([wid, l]) => { const w = wine(wid), d = l[0].delivery; return `<div class="li"><span class="dot" style="background:${wineColor(w)}"></span>
+    return `${head('Primeurs')}<button class="btn primary wide" style="margin-bottom:10px" data-act="primeurAdd">${ICON.add} Ajouter un primeur</button>${by.size ? `<div class="list">${[...by].map(([wid, l]) => { const w = wine(wid), d = l[0].delivery; return `<div class="li"><span class="dot" style="background:${wineColor(w)}"></span>
       <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small>${d?.date ? 'Livraison prévue ' + esc(fmtDate(d.date)) : 'Date de livraison inconnue'}${space(d?.spaceId) ? ' · vers ' + esc(space(d.spaceId).name) : ''}</small></div>
       <span class="qty">×${l.length}</span><button class="btn small primary" data-act="receive" data-b="${l[0].id}">Reçu</button></div>`; }).join('')}</div>` : '<p class="muted">Aucun primeur en attente. À l’ajout d’un vin, choisis l’état « Primeur ».</p>'}`;
   }),
