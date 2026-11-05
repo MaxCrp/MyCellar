@@ -460,6 +460,23 @@ Le détail est dans `docs/tests/2026-11-04-campagne-v1.6.1/` : `rapport-bugs.md`
 - [x] **Dernier message visible** : la conversation garde en bas un espace égal à la hauteur de l'encart, pour que la dernière réponse ne soit jamais cachée dessous, même quand l'encart s'agrandit (plusieurs lignes, choix d'occasion).
 - [x] Tests : conversation plus longue que l'écran, icône visible et utilisable, confirmation, dernier message entièrement visible au-dessus de l'encart.
 
+**v1.7.2** (transferts dans les deux sens, résumé du vin ; spécifiée, rien n'est développé)
+
+*Constat.* Aujourd'hui, il n'y a qu'une liste de transfert, avec une destination. À l'arrivée, les bouteilles vont toujours dans l'espace de consommation du site, et les suggestions ne proposent que des vins prêts à boire. Ramener vers le stockage des bouteilles achetées en ville n'est pas prévu. Dans les listes, une bouteille n'affiche que son nom et son emplacement : pour voir sa fenêtre, il faut fermer le transfert et chercher le vin.
+
+*Transferts dans les deux sens*
+- [ ] **Deux sections dans le transfert** : « Vers [site de consommation] » et « Vers [site de stockage] », chacune avec ses bouteilles, son total et son bouton « Arrivées à … ». On peut préparer les deux pour un même trajet : prendre des vins prêts à la campagne, et y laisser des achats faits en ville.
+- [ ] **Destination d'une bouteille** : elle part vers l'autre site. S'il y a plus de deux sites, l'app demande lequel au moment de l'ajout. Le bouton de la fiche bouteille le dit : « Ajouter au transfert vers Campagne ».
+- [ ] **Arrivée au stockage** : les bouteilles vont dans l'espace de garde de meilleure qualité du site, non placées. Un bouton « Ranger maintenant » ouvre l'écran de rangement avec des cases suggérées. L'arrivée en consommation ne change pas (espace de consommation, non placées).
+- [ ] **Suggestions vers le stockage** : bouteilles du site de consommation dont le vin est « trop tôt » ou de fenêtre inconnue, en commençant par les plus récemment ajoutées (à valider, question 1). Les vins des amis et les bouteilles ouvertes ne sont pas proposés.
+- [ ] **À l'achat** (à valider, question 2) : quand on ajoute sur le site de consommation des bouteilles d'un vin à garder (« trop tôt »), l'app propose « À emporter au prochain transfert vers [site de stockage] ? ».
+- [ ] **Données existantes** : le transfert en cours est repris tel quel, vers sa destination actuelle.
+
+*Résumé du vin dans les listes*
+- [ ] **Toucher une bouteille** dans une liste de transfert ou dans les suggestions ouvre un résumé, et la flèche retour ramène au transfert. Le résumé contient : nom, millésime, couleur, domaine et appellation ; fenêtre de dégustation avec sa barre et son statut (« Prêt à boire », « Trop tôt »…) ; bouteilles par site ; dernière note de dégustation ; emplacement de cette bouteille. Il propose deux boutons : « Ajouter au transfert » ou « Retirer du transfert », et « Fiche complète ».
+- [ ] **Même résumé** dans « Préparer le transfert » (À boire) et dans les conseils de rangement qui mènent au transfert.
+- [ ] Tests : deux sections préparées en même temps, arrivées séparées (espace de consommation, espace de garde), suggestions vers le stockage, résumé ouvert depuis chaque liste puis retour au transfert, ancien transfert repris.
+
 **v2**
 - Sauvegarde automatique Google Drive.
 - Audit de cave.
