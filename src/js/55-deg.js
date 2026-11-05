@@ -20,7 +20,7 @@ function degTastings() {
 function degTools() {
   const f = degF, ch = (act, v, on, l) => `<button class="chip soft${on ? ' on' : ''}" data-act="${act}" data-v="${v}">${l}</button>`;
   const colors = [...new Set(S.tastings.map(t => tastingWine(t)?.couleur).filter(Boolean))];
-  return `<div class="search">${ICON.search}<input type="search" placeholder="Rechercher un vin, un lieu, un plat…" value="${esc(degQuery)}" data-in="degSearch" autocomplete="off" enterkeyhint="search"></div>
+  return `<div class="search">${ICON.search}<input type="search" placeholder="Rechercher un vin, un lieu, un plat…" value="${esc(degQuery)}" data-in="degSearch" autocomplete="off" enterkeyhint="search">${sx(degQuery)}</div>
     <div class="seg"><button class="${degMode === 'journal' ? 'on' : ''}" data-act="degMode" data-m="journal">Journal</button><button class="${degMode === 'vin' ? 'on' : ''}" data-act="degMode" data-m="vin">Par vin</button></div>
     <div class="chips">${ch('dfMin', '1', f.min, '16 et plus')}${ch('dfSrc', 'hors', f.src === 'hors', 'Hors cave')}${ch('dfSrc', 'cave', f.src === 'cave', 'De ma cave')}
       ${Object.entries(TASTE_TYPES).map(([k, l]) => ch('dfType', k, f.type === k, l)).join('')}
@@ -87,7 +87,7 @@ function newTasteSheet(sessionId) {
     ${s ? `<p class="small" style="margin-top:-6px">Séance « ${esc(s.titre)} »</p>` : ''}
     <div class="big-actions">
       <button class="big-action" data-act="scanTaste" data-session="${sessionId || ''}">${ICON.camera}<div><b>Photo de l’étiquette</b><small>${aiReady() && aiClaude() ? 'Le sommelier reconnaît le vin.' : 'Sans clé Claude, la photo est gardée et tu remplis la fiche.'}</small></div></button>
-      <div class="card" style="margin:0"><div class="search" style="margin:0">${ICON.search}<input type="search" placeholder="Un vin déjà connu (cave, dégustations)…" data-in="tasteFind" data-session="${sessionId || ''}" autocomplete="off"></div><div id="taste-find"></div></div>
+      <div class="card" style="margin:0"><div class="search" style="margin:0">${ICON.search}<input type="search" placeholder="Un vin déjà connu (cave, dégustations)…" data-in="tasteFind" data-session="${sessionId || ''}" autocomplete="off">${sx()}</div><div id="taste-find"></div></div>
       <button class="big-action" data-act="newTasteWine" data-kind="vin" data-session="${sessionId || ''}">${ICON.edit}<div><b>Saisie manuelle</b><small>Domaine, cuvée, millésime.</small></div></button>
       ${spiritsOn() ? `<button class="big-action" data-act="newTasteWine" data-kind="spirit" data-session="${sessionId || ''}">${ICON.bottle}<div><b>Un spiritueux</b><small>Whisky, rhum, cognac…</small></div></button>` : ''}
       <button class="big-action" data-act="blindStart" data-session="${sessionId || ''}">${ICON.glass}<div><b>À l’aveugle</b><small>La fiche d’abord, le vin ensuite : compare tes hypothèses.</small></div></button>

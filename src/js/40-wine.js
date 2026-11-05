@@ -238,7 +238,7 @@ Object.assign(ACT, {
   addWine: () => showSheet(addSheet),
   newWine: t => { newDraft(t.dataset.kind); showSheet(wineFormSheet, { full: true }); },
   rebuyList: () => showSheet(() => `${head('Racheter un vin')}
-    <div class="search" style="margin:0 0 4px">${ICON.search}<input type="search" placeholder="Domaine, cuvée, appellation, millésime…" data-in="rebuyFind" autocomplete="off"></div>
+    <div class="search" style="margin:0 0 4px">${ICON.search}<input type="search" placeholder="Domaine, cuvée, appellation, millésime…" data-in="rebuyFind" autocomplete="off">${sx()}</div>
     <div id="rebuy-list">${rebuyRows('')}</div>`),
   rebuy: t => showSheet(() => addBottlesSheet(t.dataset.id)),
   placeSpace: t => { draft.place.spaceId = t.dataset.id; draft.place.sel = suggestFor(draft.place); refreshSheet(); },
@@ -329,7 +329,7 @@ function wineSheet(id) {
       <div class="btns2" style="margin-top:10px"><button class="btn small" data-act="estimate" data-id="${id}">${ICON.spark} ${a?.fin ? 'Réestimer' : 'Estimer'}</button><button class="btn small" data-act="editWine" data-id="${id}">Saisir</button></div>
     </div>`}
     <h3>En cave · ${bs.length}${pr.length ? ` <span class="small">+ ${pr.length} en primeur</span>` : ''}</h3>
-    ${bs.length || pr.length ? `<div class="list">${[...bs, ...pr].map(b => `<button class="li" data-act="bottle" data-b="${b.id}"><span class="chev">${ICON.pin}</span><div class="it"><b style="font-weight:500;font-size:14px">${esc(locLabel(b))}</b>${b.state === 'open' ? `<small>Ouverte · niveau ${b.level ?? 100} %</small>` : ''}</div><span class="chev">${ICON.chev}</span></button>`).join('')}</div>` : `<p class="muted small">${S.tastings.some(t => t.wineId === id) && !S.bottles.some(b => b.wineId === id) ? 'Vin dégusté, jamais en cave.' : 'Plus aucune bouteille en cave.'}</p>`}
+    ${bs.length || pr.length ? `<div class="list">${[...bs, ...pr].map(b => `<div class="li"><button class="lb" data-act="bottle" data-b="${b.id}"><div class="it"><b style="font-weight:500;font-size:14px">${esc(locLabel(b))}</b>${b.state === 'open' ? `<small>Ouverte · niveau ${b.level ?? 100} %</small>` : ''}</div><span class="chev">${ICON.chev}</span></button>${inCave(b) ? `<button class="icon-btn" style="width:34px;height:34px;color:var(--bx)" data-act="planGo" data-b="${b.id}" aria-label="Voir sur le plan">${ICON.pin}</button>` : ''}</div>`).join('')}</div>` : `<p class="muted small">${S.tastings.some(t => t.wineId === id) && !S.bottles.some(b => b.wineId === id) ? 'Vin dégusté, jamais en cave.' : 'Plus aucune bouteille en cave.'}</p>`}
     <div class="btns2" style="margin-top:10px"><button class="btn" data-act="rebuy" data-id="${id}">${ICON.add} ${bs.length ? 'Ajouter' : 'Ajouter à la cave'}</button><button class="btn" data-act="taste" data-w="${id}">${ICON.cork} Déguster</button></div>
     <button class="btn wide ${isWished(id) ? 'outline' : 'ghost'}" style="margin-top:8px" data-act="wishToggle" data-w="${id}">${isWished(id) ? '♥ Dans ma liste d’envies' : '♥ Ajouter à ma liste d’envies'}</button>
     <h3>Fiche</h3>
@@ -358,6 +358,7 @@ function bottleSheet(bid) {
         ${sp && b.state !== 'open' ? `<button class="btn wide" data-act="openBottle" data-b="${bid}">Ouvrir la bouteille</button>` : ''}
         <div class="btns2"><button class="btn" data-act="moveBottle" data-b="${bid}">${ICON.move} Déplacer</button><button class="btn" data-act="taste" data-w="${w.id}" data-b="${bid}">${ICON.cork} Déguster</button></div>
         ${isMulti() ? `<button class="btn wide ${inT ? 'outline' : ''}" data-act="toTransfer" data-b="${bid}">${ICON.truck} ${inT ? 'Retirer du transfert' : 'Ajouter au prochain transfert'}</button>` : ''}`}
+      ${inCave(b) ? `<button class="btn wide" data-act="planGo" data-b="${bid}">${ICON.pin} Voir sur le plan</button>` : ''}
       <button class="btn ghost wide" data-act="wine" data-id="${w.id}">Voir la fiche du vin</button>
     </div>`;
 }

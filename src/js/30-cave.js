@@ -1,5 +1,5 @@
 /* ---------- Vue Cave ---------- */
-let caveMode = 'plan', caveSpace = null, caveQuery = '', caveFilter = { color: null, ready: false, owner: 'all', kind: 'all' };
+let caveMode = 'plan', caveSpace = null, caveQuery = '', caveJumped = false, caveFilter = { color: null, ready: false, owner: 'all', kind: 'all' };
 
 const visibleSpaces = () => isMulti() ? siteSpaces(S.settings.site) : S.spaces;
 function wineText(w) {
@@ -15,7 +15,7 @@ function matcher(q) {
 function caveTools() {
   const sps = visibleSpaces();
   const n = id => S.bottles.filter(b => inCave(b) && b.spaceId === id).length;
-  return `<div class="search">${ICON.search}<input type="search" placeholder="Rechercher un vin, un domaine, un millésime…" value="${esc(caveQuery)}" data-in="caveSearch" autocomplete="off" enterkeyhint="search"></div>
+  return `<div class="search">${ICON.search}<input type="search" placeholder="Rechercher un vin, un domaine, un millésime…" value="${esc(caveQuery)}" data-in="caveSearch" autocomplete="off" enterkeyhint="search">${sx(caveQuery)}</div>
     <div class="seg">${[['plan', 'Plan'], ['liste', 'Liste']].map(([k, l]) => `<button class="${caveMode === k ? 'on' : ''}" data-act="caveMode" data-m="${k}">${l}</button>`).join('')}</div>
     ${caveMode !== 'liste' && sps.length > 1 ? `<div class="chips"><button class="chip${!caveSpace ? ' on' : ''}" data-act="caveSpace" data-id="">Tout · ${sps.reduce((t, s) => t + n(s.id), 0)}</button>${sps.map(s => `<button class="chip${caveSpace === s.id ? ' on' : ''}" data-act="caveSpace" data-id="${s.id}">${esc(s.name)} · ${n(s.id)}</button>`).join('')}</div>` : ''}
     ${caveMode === 'liste' ? listFilters() : ''}`;
@@ -32,6 +32,7 @@ function listFilters() {
 function vCave() {
   if (caveMode === 'liste') return vCaveList();
   const m = matcher(caveQuery), occ = occupancy();
+  if (m && !caveJumped) return caveResults(m);
   let sps = visibleSpaces();
   if (caveSpace && sps.some(s => s.id === caveSpace)) sps = sps.filter(s => s.id === caveSpace);
   const ctx = { occ, m, pick: null };
@@ -40,9 +41,60 @@ function vCave() {
   const nothing = !S.wines.length;
   return `${nothing ? `<div class="card"><b>Bienvenue dans ta cave</b><p class="small" style="margin:6px 0 10px">Commence par décrire tes meubles (armoire, rack, caisses), puis ajoute tes bouteilles avec le bouton +.</p>
       <button class="btn primary small" data-act="addUnit" data-space="${sps[0]?.id || ''}">Ajouter un meuble</button><p class="tiny" style="margin:8px 0 0">Tu viens de Ploc ? L’import se trouve dans les réglages.</p></div>` : ''}
-    ${m ? `<p class="small" style="margin:10px 4px 0">${found ? plural(found, 'bouteille trouvée', 'bouteilles trouvées') + ' : elles sont encadrées sur le plan.' : 'Aucune bouteille ne correspond ici.'}</p>` : ''}
+    ${m ? `<p class="small" style="margin:10px 4px 0">${found ? plural(found, 'bouteille trouvée', 'bouteilles trouvées') + ' ici : elles sont encadrées sur le plan.' : 'Aucune bouteille ne correspond ici.'} <button class="link" style="padding:0;font-size:13px" data-act="caveResults">Tous les résultats</button></p>` : ''}
     ${sps.map(sp => spaceBlock(sp, ctx, sps.length > 1)).join('')}
     ${transferChip()}`;
+}
+/* ---------- Recherche sur tous les sites ---------- */
+// Emplacements des bouteilles trouvées : une ligne par case, par caisse, par lot « non placées » d'un espace, par lot en primeur
+function caveLocs(m) {
+  const cur = S.settings.site, out = [];
+  for (const w of S.wines) {
+    if (!kindOn(w) || !m(w)) continue;
+    const bs = S.bottles.filter(b => b.wineId === w.id && (inCave(b) || b.state === 'primeur'));
+    if (!bs.length) continue;
+    const groups = new Map();
+    for (const b of bs) {
+      const u = b.unitId && unit(b.unitId);
+      const k = b.state === 'primeur' ? 'primeur' : !u ? 'np:' + b.spaceId : UNIT_TYPES[u.type].box ? 'box:' + u.id : 'c:' + b.id;
+      if (!groups.has(k)) groups.set(k, { b, n: 0, primeur: b.state === 'primeur' });
+      groups.get(k).n++;
+    }
+    const locs = [...groups.values()].sort((a, b) => (a.primeur - b.primeur) || ((siteOfBottle(b.b) === cur) - (siteOfBottle(a.b) === cur)) || locLabel(a.b, true).localeCompare(locLabel(b.b, true), 'fr'));
+    out.push({ w, n: bs.length, locs });
+  }
+  return out.sort((a, b) => norm(wineName(a.w)).localeCompare(norm(wineName(b.w))) || (a.w.millesime || 0) - (b.w.millesime || 0));
+}
+function caveResults(m) {
+  const res = caveLocs(m), n = res.reduce((t, r) => t + r.n, 0), multi = S.sites.length > 1;
+  if (!res.length) return `<p class="small" style="margin:12px 4px">Aucune bouteille ne correspond${multi ? ', sur aucun site' : ''}.</p>`;
+  return `<p class="small" style="margin:10px 4px 0">${plural(n, 'bouteille trouvée', 'bouteilles trouvées')}${multi ? ' sur tous les sites' : ''}. Touche un emplacement pour y aller.</p>
+    ${res.map(r => `<div class="list res"><button class="li" data-act="wine" data-id="${r.w.id}"><span class="dot" style="background:${wineColor(r.w)}"></span>
+      <div class="it"><b class="ell">${esc(wineTitle(r.w))}</b><small class="ell">${esc(wineSub(r.w))}${isFriend(r.w) ? ' · à ' + esc(r.w.owner) : ''}</small></div><span class="qty">×${r.n}</span></button>
+      ${r.locs.slice(0, 8).map(g => g.primeur ? `<div class="li loc">${ICON.pin}<div class="it"><b>Primeur, pas encore livrée</b></div><span class="qty">×${g.n}</span></div>`
+        : `<button class="li loc" data-act="caveJump" data-b="${g.b.id}">${ICON.pin}<div class="it"><b>${esc(locLabel(g.b, multi))}</b></div>${g.n > 1 ? `<span class="qty">×${g.n}</span>` : ''}<span class="chev">${ICON.chev}</span></button>`).join('')}
+      ${r.locs.length > 8 ? `<div class="li loc"><div class="it"><small>et ${plural(r.locs.length - 8, 'autre emplacement', 'autres emplacements')} : ouvre la fiche du vin</small></div></div>` : ''}</div>`).join('')}`;
+}
+// Aller à une bouteille : bon site (comme le sélecteur), bon espace, défilement jusqu'à la case qui clignote
+async function jumpToBottle(bid) {
+  const b = byId(S.bottles, bid), sp = b && space(b.spaceId);
+  if (!b || !inCave(b) || !sp) return toast('Cette bouteille n’est plus en cave');
+  if (isMulti() && sp.siteId !== S.settings.site) { S.settings.site = sp.siteId; await save(); }
+  closeSheet();
+  view = 'cave'; caveMode = 'plan'; caveSpace = sp.id; caveJumped = true;
+  render();
+  const u = b.unitId && unit(b.unitId), box = u && UNIT_TYPES[u.type].box, v = $('.view');
+  const el = !u ? v.querySelector(`.unplaced [data-w="${b.wineId}"]`) : box ? v.querySelector(`.crate[data-u="${u.id}"]`) : v.querySelector(`[data-b="${b.id}"]`);
+  if (!el) return;
+  el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+  el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 3300);
+  if (box) setTimeout(() => { if (view === 'cave' && !sheetStack.length) showSheet(() => boxSheet(u.id)); }, 900);
+}
+// Touche « Rechercher » du clavier : un seul emplacement, on y va directement
+function caveEnter() {
+  const m = matcher(caveQuery); if (!m || caveMode !== 'plan' || caveJumped) return;
+  const locs = caveLocs(m).flatMap(r => r.locs).filter(g => !g.primeur);
+  if (locs.length === 1) jumpToBottle(locs[0].b.id);
 }
 function transferChip() {
   const n = S.transfer.ids.filter(id => byId(S.bottles, id)).length;
@@ -222,9 +274,12 @@ Object.assign(ACT, {
   spiritOff: () => toast('Spiritueux masqués : réactive-les dans Réglages › Contenu'),
   emptySlot: t => showSheet(() => emptySlotSheet(t.dataset.u, +t.dataset.r, +t.dataset.c)),
   box: t => showSheet(() => boxSheet(t.dataset.u)),
+  caveJump: t => jumpToBottle(t.dataset.b),
+  planGo: t => jumpToBottle(t.dataset.b),
+  caveResults: () => { caveJumped = false; render(); window.scrollTo(0, 0); },
 });
 INPUTS.caveSearch = el => {
-  caveQuery = el.value;
+  caveQuery = el.value; caveJumped = false;
   const v = $('.view'); if (v) { v.innerHTML = banners() + vCave(); paintPhotos(v); }
 };
 

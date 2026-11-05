@@ -1,5 +1,17 @@
 [
   {
+    "version": "1.7.1",
+    "date": "2026-11-05",
+    "titre": "Recherche et sommelier",
+    "items": [
+      "La recherche de l’onglet Cave porte sur tous tes sites d’un coup. Les résultats s’affichent sous la barre, avec chaque emplacement : touche-en un pour y aller, la case clignote sur le plan.",
+      "Une seule bouteille trouvée ? La touche « Rechercher » du clavier t’y emmène directement.",
+      "« Voir sur le plan » depuis la fiche d’une bouteille, et l’épingle à côté de chaque emplacement sur la fiche d’un vin.",
+      "Une croix efface la recherche d’un coup, sur toutes les barres de recherche.",
+      "Sommelier : le bouton « Nouvelle conversation » est dans l’encart de saisie, toujours visible, et demande confirmation. La dernière réponse n’est plus cachée sous l’encart."
+    ]
+  },
+  {
     "version": "1.7",
     "date": "2026-11-05",
     "titre": "Import Ploc complet",

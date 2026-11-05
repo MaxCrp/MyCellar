@@ -205,8 +205,7 @@ function vSomm() {
   const body = msgs.length ? msgs.map(chatMsg).join('') : `<div class="card"><b>Que veux-tu boire ?</b><p class="small" style="margin:6px 0 0">Décris ton plat ou l’occasion. Je choisis dans ta cave${isMulti() ? `, d’abord à ${esc(site(S.settings.site)?.name)}` : ''}, en privilégiant les bouteilles à leur apogée.</p>
       <div class="chips wrap">${starters.map(s => `<button class="chip" data-act="chatAsk" data-q="${esc(s)}">${esc(s)}</button>`).join('')}</div></div>
       ${!aiReady() ? `<div class="banner">Pour activer le sommelier, ajoute une clé API dans Plus › Intelligence artificielle.<br><button class="btn small primary" data-act="aiSettings">Configurer</button></div>` : ''}`;
-  return `${body}${chatBusy ? '<div class="bubble ai"><span class="typing"><i></i><i></i><i></i></span></div>' : ''}
-    ${msgs.length && !chatBusy ? `<div class="row" style="justify-content:center;margin-top:14px"><button class="link" data-act="chatNew">Nouvelle conversation</button></div>` : ''}`;
+  return `${body}${chatBusy ? '<div class="bubble ai"><span class="typing"><i></i><i></i><i></i></span></div>' : ''}`;
 }
 function chatMsg(m, i) {
   if (m.role === 'user') return `<div class="bubble me">${esc(m.text)}</div>`;
@@ -237,7 +236,7 @@ function composer() {
   return `<div class="composer">
     <div class="chips" style="margin:0 0 6px">${Object.entries(OCCASIONS).map(([k, l]) => `<button class="chip soft${chatOpts.occasion === k ? ' on' : ''}" data-act="chatOcc" data-k="${k}">${l}</button>`).join('')}
       ${isMulti() ? `<button class="chip soft${chatOpts.all ? ' on' : ''}" data-act="chatAll">Inclure tous les sites</button>` : ''}</div>
-    <form class="box" data-form="chat"><textarea name="q" rows="1" placeholder="Demande au sommelier…" data-in="grow" enterkeyhint="send"></textarea>
+    <form class="box" data-form="chat">${S.chat.length ? `<button type="button" class="newc" data-act="chatNew" aria-label="Nouvelle conversation" title="Nouvelle conversation" ${chatBusy ? 'disabled' : ''}>${ICON.newchat}</button>` : ''}<textarea name="q" rows="1" placeholder="Demande au sommelier…" data-in="grow" enterkeyhint="send"></textarea>
       <button class="send" type="submit" aria-label="Envoyer" ${chatBusy ? 'disabled' : ''}>${ICON.send}</button></form></div>`;
 }
 INPUTS.grow = el => { el.style.height = 'auto'; el.style.height = Math.min(120, el.scrollHeight) + 'px'; };
@@ -265,7 +264,10 @@ async function chatSend(q) {
 FORMS.chat = (f, d) => chatSend(d.q);
 Object.assign(ACT, {
   chatAsk: t => chatSend(t.dataset.q),
-  chatNew: async () => { S.chat = []; await save(); render(); },
+  chatNew: async () => {
+    if (chatBusy || !S.chat.length || !confirm('Commencer une nouvelle conversation ? La conversation actuelle sera effacée.')) return;
+    S.chat = []; await save(); render(); window.scrollTo(0, 0);
+  },
   chatOcc: t => { chatOpts.occasion = chatOpts.occasion === t.dataset.k ? '' : t.dataset.k; $$('.composer [data-act=chatOcc]').forEach(b => b.classList.toggle('on', b.dataset.k === chatOpts.occasion)); },
   chatAll: t => { chatOpts.all = !chatOpts.all; t.classList.toggle('on', chatOpts.all); },
   takeIt: t => { const b = pickBottle(wine(t.dataset.w)); if (b) showSheet(() => outSheet(b.id)); },

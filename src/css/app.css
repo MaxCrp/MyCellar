@@ -86,6 +86,10 @@ input[type=date]{display:block}
 .search svg{width:18px;height:18px;color:var(--muted);flex:none}
 .search input{border:0;background:transparent;min-height:40px;padding:8px 0;font-size:16px}
 .search input:focus{outline:none}
+.search input::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
+.sx{flex:none;width:28px;height:28px;border:0;border-radius:50%;background:var(--line);color:var(--ink);display:grid;place-items:center;padding:0;margin-right:-4px}
+.sx svg{width:14px;height:14px}
+.sx[hidden]{display:none}
 .seg{display:flex;background:#EAE2D6;border-radius:10px;padding:2px;margin-top:10px}
 .seg button{flex:1;border:0;background:none;font-size:13.5px;font-weight:600;padding:7px 4px;border-radius:8px;color:var(--muted)}
 .seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
@@ -316,3 +320,15 @@ input[type=range].unset::-moz-range-progress{background:#EAE2D6}
 .pd.lt{color:#3A2E25}
 .pd.e{border:1px dashed var(--line);background:transparent}
 .pd.off{opacity:.3}
+/* Recherche dans la cave : résultats et case retrouvée */
+.res .li.loc{padding:9px 12px 9px 30px}
+.res .li.loc svg{width:16px;height:16px;color:var(--bx);flex:none}
+.res .li.loc .it b{font-weight:500;font-size:13.5px}
+@keyframes flash{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 0 5px var(--bx)}}
+.flash{animation:flash .8s ease-in-out 4;position:relative;z-index:1}
+.li .lb{display:flex;flex:1;gap:10px;align-items:center;background:none;border:0;padding:0;text-align:left;min-width:0;color:inherit;font:inherit}
+/* Sommelier : nouvelle conversation dans l'encart flottant */
+.composer .newc{width:38px;height:38px;border-radius:50%;background:var(--sunk);color:var(--ink);border:0;display:grid;place-items:center;flex:none;margin-left:-10px}
+.composer .newc svg{width:20px;height:20px}
+.composer .newc:disabled{opacity:.4}
+.view.chat{padding-bottom:calc(var(--comp-h, 100px) + 80px + var(--safe-b))}

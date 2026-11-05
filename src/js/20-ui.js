@@ -13,6 +13,7 @@ const ICON = {
   edit: sv('<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>'),
   doc: sv('<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M9.5 12h6M9.5 16h6"/>'),
   copy: sv('<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/>'),
+  newchat: sv('<path d="M20 12.5a7.5 7.5 0 0 1-11 6.6L4 20l1.1-4.2A7.5 7.5 0 1 1 20 12.5z"/><path d="M12.5 9v7M9 12.5h7"/>'),
   pin: sv('<path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>'),
   lock: sv('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'),
   trash: sv('<path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/>'),
@@ -76,6 +77,8 @@ function closeSheet() { sheetStack = []; $('#layer').innerHTML = ''; uScreenChec
 function sheetBack() { sheetStack.pop(); paintSheet(); }
 // Feuille ponctuelle (message, confirmation)
 const openSheet = html => showSheet(() => html);
+// Croix des barres de recherche : visible dès qu'un texte est saisi, efface tout d'un coup
+const sx = v => `<button type="button" class="sx" data-act="searchClear" aria-label="Effacer la recherche"${v ? '' : ' hidden'}>${ICON.close}</button>`;
 const head = (title, extra = '') => `<div class="shead"><!--back--><h2>${title}</h2>${extra}<button class="icon-btn" data-act="close" aria-label="Fermer">${ICON.close}</button></div>`;
 const sheetMsg = (title, msg) => showSheet(() => `${head(esc(title))}<p style="white-space:pre-wrap">${esc(msg)}</p><button class="btn wide" data-act="sheetback">OK</button>`);
 // Branchements effectués après chaque affichage (sliders, roue des arômes)
@@ -182,7 +185,15 @@ function render() {
   afterRender(); uScreenCheck();
   if (keepY) window.scrollTo(0, keepY);
 }
-function afterRender() { if (view === 'somm') { const m = $('.chat'); if (m && chatScroll) { window.scrollTo(0, document.body.scrollHeight); chatScroll = false; } } }
+function afterRender() {
+  if (view !== 'somm') return;
+  // L'espace sous la conversation suit la hauteur de l'encart flottant : la dernière réponse n'est jamais cachée
+  const c = $('.composer');
+  if (c) { compSize(c); if (window.ResizeObserver) { compObs ||= new ResizeObserver(es => es.forEach(e => compSize(e.target))); compObs.disconnect(); compObs.observe(c); } }
+  const m = $('.chat'); if (m && chatScroll) { window.scrollTo(0, document.body.scrollHeight); chatScroll = false; }
+}
+let compObs = null;
+const compSize = c => document.documentElement.style.setProperty('--comp-h', c.offsetHeight + 'px');
 let chatScroll = false;
 
 Object.assign(ACT, {
@@ -190,6 +201,10 @@ Object.assign(ACT, {
   close: () => { if (!guardTaste('close')) closeSheet(); },
   sheetback: () => { if (!guardTaste('back')) sheetBack(); },
   demoOnly: () => toast(DEMO_OFF),
+  searchClear: t => {
+    const i = t.closest('.search')?.querySelector('input'); if (!i) return;
+    i.value = ''; t.hidden = true; i.dispatchEvent(new Event('input', { bubbles: true })); i.blur();
+  },
   codeupdate: () => applyCodeUpdate(),
   codeinfo: () => sheetCode(),
   codelater: () => { code.status = 'ok'; paintCode(); },

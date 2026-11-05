@@ -27,7 +27,11 @@ document.addEventListener('submit', async e => {
   catch (err) { console.error(err); errLog('formulaire:' + name, err); errSheet('Une erreur est survenue', String(err.message || err)); }
   finally { if (btn?.isConnected) btn.disabled = false; release(busyForms, name); }
 });
-document.addEventListener('input', e => { const k = e.target.dataset?.in; if (k && INPUTS[k]) INPUTS[k](e.target, e); });
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.type === 'search') { const x = t.closest('.search')?.querySelector('.sx'); if (x) x.hidden = !t.value; }
+  const k = t.dataset?.in; if (k && INPUTS[k]) INPUTS[k](t, e);
+});
 document.addEventListener('change', e => {
   const t = e.target;
   if (t.id === 'f-photo') return onPhoto(t.files[0]);
@@ -40,6 +44,8 @@ document.addEventListener('change', e => {
 // Entrée envoie la question au sommelier (Maj+Entrée pour aller à la ligne)
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey && e.target.matches?.('.composer textarea')) { e.preventDefault(); e.target.form.requestSubmit(); }
+  // Touche « Rechercher » : un seul emplacement trouvé, on y va ; sinon on replie le clavier
+  if (e.key === 'Enter' && e.target.matches?.('input[data-in=caveSearch]')) { e.preventDefault(); e.target.blur(); caveEnter(); }
 });
 
 /* ---------- Verrou : création, ouverture ---------- */
