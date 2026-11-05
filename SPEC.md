@@ -468,8 +468,8 @@ Le détail est dans `docs/tests/2026-11-04-campagne-v1.6.1/` : `rapport-bugs.md`
 - [ ] **Deux sections dans le transfert** : « Vers [site de consommation] » et « Vers [site de stockage] », chacune avec ses bouteilles, son total et son bouton « Arrivées à … ». On peut préparer les deux pour un même trajet : prendre des vins prêts à la campagne, et y laisser des achats faits en ville.
 - [ ] **Destination d'une bouteille** : elle part vers l'autre site. S'il y a plus de deux sites, l'app demande lequel au moment de l'ajout. Le bouton de la fiche bouteille le dit : « Ajouter au transfert vers Campagne ».
 - [ ] **Arrivée au stockage** : les bouteilles vont dans l'espace de garde de meilleure qualité du site, non placées. Un bouton « Ranger maintenant » ouvre l'écran de rangement avec des cases suggérées. L'arrivée en consommation ne change pas (espace de consommation, non placées).
-- [ ] **Suggestions vers le stockage** : bouteilles du site de consommation dont le vin est « trop tôt » ou de fenêtre inconnue, en commençant par les plus récemment ajoutées (à valider, question 1). Les vins des amis et les bouteilles ouvertes ne sont pas proposés.
-- [ ] **À l'achat** (à valider, question 2) : quand on ajoute sur le site de consommation des bouteilles d'un vin à garder (« trop tôt »), l'app propose « À emporter au prochain transfert vers [site de stockage] ? ».
+- [ ] **Suggestions vers le stockage** : bouteilles du site de consommation dont le vin est « trop tôt » ou de fenêtre inconnue, en commençant par les plus récemment ajoutées (validé le 5 novembre 2026). Les vins des amis et les bouteilles ouvertes ne sont pas proposés.
+- [ ] **À l'achat** (validé le 5 novembre 2026) : quand on ajoute sur le site de consommation des bouteilles d'un vin à garder (« trop tôt »), l'app propose « À emporter au prochain transfert vers [site de stockage] ? ».
 - [ ] **Données existantes** : le transfert en cours est repris tel quel, vers sa destination actuelle.
 
 *Résumé du vin dans les listes*
