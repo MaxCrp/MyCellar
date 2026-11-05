@@ -427,13 +427,16 @@ Le détail est dans `docs/tests/2026-11-04-campagne-v1.6.1/` : `rapport-bugs.md`
 *Ce que fait la v1.7.*
 - [ ] **Lecture fidèle des fiches** : chaque champ rempli dans Ploc est repris tel quel (couleur, degré, producteur, pays, région, appellation, cépages, contenance → format, apogée début/fin). L'IA ne complète que les champs vides (ex. producteur ou région absents), et l'écran de vérification les signale « complété par le sommelier ».
 - [ ] **Nom découpé** : le titre Ploc mélange producteur, appellation et cuvée (« Bernard Haegelin Alsace Pinot Gris Bollenberg ») ; la cuvée est ce qui reste une fois le producteur et l'appellation retirés (« Pinot Gris Bollenberg »).
-- [ ] **Apogée de Ploc conservée**, marquée « source : Ploc » ; l'apogée (pic) est placée au milieu de la fenêtre. Pas d'estimation IA si Ploc en donne une, d'où un import moins coûteux.
+- [ ] **Apogée de Ploc conservée**, marquée « source : Ploc » ; l'apogée (pic) est placée au milieu de la fenêtre.
+- [ ] **Avis du sommelier sur la fenêtre de Ploc** (validé le 5 novembre 2026) : pendant l'import, le sommelier estime aussi la fenêtre de chaque vin, sans recherche web pour limiter le coût. S'il juge celle de Ploc décalée (au moins 2 ans d'écart sur le début ou la fin), l'écran de vérification l'indique sur la ligne : « Le sommelier propose 2022–2032 au lieu de 2021–2028 », avec sa justification en une phrase et un choix « Garder Ploc / Prendre la proposition ». Par défaut, la fenêtre de Ploc est gardée. Sans fenêtre dans Ploc, celle du sommelier s'applique.
+- [ ] **Correspondance des sites** (validé : Argenteuil et Thevray sont les deux sites) : le nom de cave Ploc est rapproché des sites de MyCellar (« Argenteuil - Cave Moyenne » → site Argenteuil, « Étagère Gauche Thevray » → site Thevray). Le site reconnu est présélectionné ; sinon, l'écran demande une fois à quel site rattacher la cave, et propose de renommer le site au nom de Ploc.
 - [ ] **Placement exact** : l'écran de vérification propose, pour chaque cave Ploc, de **créer le meuble** à l'identique (rack aux dimensions du plan, nom repris, dans l'espace choisi) ou de l'associer à un meuble existant. Chaque bouteille est posée dans sa case. Si une case est occupée ou hors du meuble, la bouteille reste « non placée », avec son emplacement Ploc en note.
 - [ ] **Bouteilles des autres caves** : les quantités d'une cave sans plan dans le PDF (ex. « Étagère Gauche Thevray : 2 ») sont proposées en « non placées », dans l'espace de ton choix, ou ignorées.
 - [ ] **Pas de doublons entre plusieurs exports** : chaque bouteille garde sa cave Ploc d'origine. Au second export, un vin déjà importé pour une cave n'est pas recréé ; l'écran indique « déjà importé ».
-- [ ] **Estimation** : à valider (question 1).
-- [ ] **Note sur 100** : à valider (question 2).
-- [ ] **Servir à et accords** : à valider (question 3).
+- [ ] **Estimation** (validé) : l'estimation de Ploc devient le **prix d'achat unitaire** de chaque bouteille (« 8,15 € » → 8,15). Pas de nouveau champ.
+- [ ] **Note sur 100** (validé) : convertie sur 20 (note ÷ 5, arrondie au demi-point : 75 → 15/20, 87 → 17,5/20) et enregistrée comme une dégustation « Note Ploc », datée du jour de l'import. Elle compte dans les moyennes et le sommelier la voit. Une note vide n'est pas importée.
+- [ ] **Température de service** (validé) : nouveau champ de la fiche vin (« 10-12° »), saisissable à la main, rempli depuis Ploc, affiché sur la fiche et au moment de déguster.
+- [ ] **Accords** (validé) : ajoutés aux notes du vin (« Accords Ploc : poissons, volailles »), que le sommelier lit déjà.
 - [ ] **Écran de vérification** : un aperçu du plan importé, avec les vins par numéro, permet de contrôler la lecture avant d'importer.
 - [ ] **Hors périmètre** : les photos des bouteilles (il faudrait embarquer un lecteur PDF dans l'app), le classement, la référence et les tags (vides dans l'export reçu).
 - [ ] Tests : un export Ploc fictif au même format (plan, légende, fiches, deux caves, une note, des champs vides), avec réponses de l'IA simulées, vérifie placement, champs repris, absence de doublons au second import.
