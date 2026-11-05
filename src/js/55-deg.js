@@ -34,12 +34,53 @@ function tasteRow(t, rank) {
     <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(sub)}</small>${t.plat || t.accord ? `<small class="ell">${t.accord ? 'Accord ' + ACCORDS[t.accord].toLowerCase() : ''}${t.accord && t.plat ? ' · ' : ''}${esc(t.plat || '')}</small>` : ''}</div>${noteBadge(t.note)}</button>`;
 }
 const monthLabel = s => s ? cap(new Date(s.slice(0, 7) + '-15').toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })) : 'Sans date';
+/* ---------- Bouteilles sorties à noter (v1.7.3) ---------- */
+const TODO_MOTIFS = ['bue', 'bouchonnee', 'terminee'];
+const outMove = b => [...S.moves].reverse().find(m => m.bottleId === b.id && m.type === 'out');
+const todoBottles = () => S.bottles.filter(b => b.state === 'out' && b.ficheTodo && wine(b.wineId)).sort((a, b) => (b.outAt || '').localeCompare(a.outAt || ''));
+function todoCard() {
+  const n = todoBottles().length;
+  return n ? `<button class="card tap row" style="width:100%;text-align:left" data-act="todoList">${ICON.cork}<div class="grow"><b style="font-size:14px">${plural(n, 'bouteille sortie', 'bouteilles sorties')} à noter</b><div class="small">Note-les, ou passe-les sans fiche.</div></div><span class="chev">${ICON.chev}</span></button>` : '';
+}
+function todoSheet() {
+  const l = todoBottles();
+  return `${head('À noter')}
+    <p class="small" style="margin-top:-6px">Les bouteilles sorties sans fiche de dégustation.</p>
+    ${l.length ? `<div class="list">${l.map(b => { const w = wine(b.wineId), m = outMove(b) || {};
+      return `<button class="li" data-act="todoPick" data-b="${b.id}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b>
+        <small class="ell">${esc([fmtDate(b.outAt || m.at), MOTIFS[m.motif], m.plat, m.who && 'avec ' + m.who].filter(Boolean).join(' · '))}</small></div><span class="chev">${ICON.chev}</span></button>`; }).join('')}</div>
+      <button class="btn ghost wide" style="margin-top:12px" data-act="todoSkipAll">Tout passer sans fiche</button>` : '<p class="muted">Rien à noter : toutes tes bouteilles sorties ont leur fiche.</p>'}`;
+}
+function todoPickSheet(bid) {
+  const b = byId(S.bottles, bid); if (!b?.ficheTodo) return null;
+  const w = wine(b.wineId), m = outMove(b) || {};
+  return `${head(esc(wineTitle(w)))}
+    <p class="small" style="margin-top:-6px">${esc([MOTIFS[m.motif] ? MOTIFS[m.motif] + ' le ' + fmtDate(b.outAt || m.at) : '', m.plat, m.who && 'avec ' + m.who].filter(Boolean).join(' · '))}</p>
+    <div class="btns"><button class="btn primary wide" data-act="taste" data-w="${w.id}" data-b="${b.id}" data-m="quick">Note rapide</button>
+      <button class="btn wide" data-act="taste" data-w="${w.id}" data-b="${b.id}" data-m="full">Fiche complète</button>
+      <button class="btn ghost wide" data-act="todoSkip" data-b="${b.id}">Sans fiche</button></div>`;
+}
+Object.assign(ACT, {
+  todoList: () => showSheet(todoSheet),
+  todoPick: t => showSheet(() => todoPickSheet(t.dataset.b)),
+  todoSkip: async t => {
+    const b = byId(S.bottles, t.dataset.b); if (b) b.ficheTodo = false;
+    await save(); render();
+    if (sheetStack.length > 1 && sheetStack[0].fn === todoSheet) sheetBack(); else closeSheet();
+    toast('Sortie sans fiche');
+  },
+  todoSkipAll: async () => {
+    const l = todoBottles(); if (!l.length || !confirm(`Passer ${plural(l.length, 'bouteille', 'les ' + l.length + ' bouteilles')} sans fiche ?`)) return;
+    for (const b of l) b.ficheTodo = false;
+    await save(); closeSheet(); render(); toast('Liste « À noter » vidée');
+  },
+});
 function vDeg() {
-  if (!S.tastings.length) return `<div class="empty">${ICON.notes}<p>Aucune dégustation pour l’instant.</p><p class="small">Note les vins de ta cave, ou ceux bus au restaurant, chez des amis, dans un salon.</p>
+  if (!S.tastings.length) return `${todoCard()}<div class="empty">${ICON.notes}<p>Aucune dégustation pour l’instant.</p><p class="small">Note les vins de ta cave, ou ceux bus au restaurant, chez des amis, dans un salon.</p>
     <button class="btn primary" data-act="newTaste">${ICON.add} Nouvelle dégustation</button></div>`;
-  const ts = degTastings();
-  if (!ts.length) return '<div class="empty">Aucune dégustation ne correspond.</div>';
-  if (degMode === 'vin') return vDegByWine(ts);
+  const ts = degTastings(), top = degQuery ? '' : todoCard();
+  if (!ts.length) return top + '<div class="empty">Aucune dégustation ne correspond.</div>';
+  if (degMode === 'vin') return top + vDegByWine(ts);
   // Journal : les dégustations d'une séance forment un bloc, daté par la séance
   const items = [], seen = new Set();
   for (const t of ts) {
@@ -67,7 +108,7 @@ function vDeg() {
     }
   }
   if (open) out += '</div>';
-  return `<p class="small" style="margin:10px 4px 0">${plural(ts.length, 'dégustation', 'dégustations')}</p>${out}`;
+  return `${top}<p class="small" style="margin:10px 4px 0">${plural(ts.length, 'dégustation', 'dégustations')}</p>${out}`;
 }
 function vDegByWine(ts) {
   const by = new Map();

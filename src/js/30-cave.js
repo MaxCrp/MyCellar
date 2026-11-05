@@ -308,3 +308,28 @@ function boxSheet(uid_) {
       ${free ? `<button class="btn wide" data-act="add" data-u="${u.id}" data-r="0" data-c="${freeSlots(u, occ)[0][1]}">${ICON.add} Ajouter des bouteilles dans cette caisse</button>` : ''}
     </div>`;
 }
+
+/* ---------- Changer de site en glissant (v1.7.3) ---------- */
+// Glisser vers la gauche : site suivant ; vers la droite : site précédent (en boucle). Mode Plan, plusieurs sites, aucune fenêtre ouverte.
+let caveSwipe = null;
+const siteDots = () => isMulti() && view === 'cave' && caveMode === 'plan' ? `<div class="sdots" aria-hidden="true">${S.sites.map(s => `<i class="${s.id === S.settings.site ? 'on' : ''}"></i>`).join('')}</div>` : '';
+async function switchSite(dir) {
+  const i = S.sites.findIndex(s => s.id === S.settings.site), n = S.sites.length;
+  const next = S.sites[((i < 0 ? 0 : i) + dir + n) % n];
+  S.settings.site = next.id; caveSpace = null; await save();
+  render(); window.scrollTo(0, 0);
+  const v = $('.view'); if (v) { v.classList.remove('slide-l', 'slide-r'); void v.offsetWidth; v.classList.add(dir > 0 ? 'slide-l' : 'slide-r'); }
+  toast(next.name);
+}
+document.addEventListener('touchstart', e => {
+  caveSwipe = null;
+  if ((mode !== 'app' && mode !== 'demo') || view !== 'cave' || caveMode !== 'plan' || !isMulti() || sheetStack.length || introAt != null || e.touches.length !== 1) return;
+  if (e.target.closest?.('.rack-scroll, .chips, .pgrid, input, textarea, select, .sheet, .tabs, #layer')) return;
+  const t = e.touches[0]; caveSwipe = { x: t.clientX, y: t.clientY, at: Date.now() };
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const s0 = caveSwipe; caveSwipe = null;
+  if (!s0 || sheetStack.length) return;
+  const t = e.changedTouches[0], dx = t.clientX - s0.x, dy = t.clientY - s0.y;
+  if (Math.abs(dx) > 70 && Math.abs(dx) > 2 * Math.abs(dy) && Date.now() - s0.at < 800) switchSite(dx < 0 ? 1 : -1);
+}, { passive: true });

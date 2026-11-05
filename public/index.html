@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#F7F3EC">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-Zn6WJW1NegFqJc1ah3pvjJpDNsllrVWhE3HOiJ+OYik='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-PCSJojXIhOv/+G2lOuLkJe5mSQynVfKnKD5BFH1vrp0='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>MyCellar</title>
@@ -350,6 +350,14 @@ input[type=range].unset::-moz-range-progress{background:#EAE2D6}
 .composer .newc svg{width:20px;height:20px}
 .composer .newc:disabled{opacity:.4}
 .view.chat{padding-bottom:calc(var(--comp-h, 100px) + 80px + var(--safe-b))}
+/* Changer de site en glissant */
+.sdots{display:flex;gap:5px;margin:-2px 0 0 2px;height:6px}
+.sdots i{width:6px;height:6px;border-radius:50%;background:var(--line)}
+.sdots i.on{background:var(--ink)}
+@keyframes slideL{from{transform:translateX(40px);opacity:.3}to{transform:none;opacity:1}}
+@keyframes slideR{from{transform:translateX(-40px);opacity:.3}to{transform:none;opacity:1}}
+.view.slide-l{animation:slideL .28s ease-out}
+.view.slide-r{animation:slideR .28s ease-out}
 
 </style>
 </head>
@@ -364,7 +372,7 @@ input[type=range].unset::-moz-range-progress{background:#EAE2D6}
 <input type="file" id="f-backup" accept="application/json,.json" hidden>
 <script>
 'use strict';
-const CHANGELOG = [{"version":"1.7.2","date":"2026-11-05","titre":"Transferts dans les deux sens","items":["Transferts : une section par sens (vers la consommation, vers le stockage), chacune avec ses arrivées. Tu peux emporter tes achats à la campagne et rapporter des vins prêts à boire dans le même trajet.","Arrivées au stockage : les bouteilles vont dans le meilleur espace de garde, avec « Ranger maintenant ».","Suggestions vers le stockage : les vins à garder achetés récemment en ville. Et quand tu ajoutes un vin trop jeune en ville, l’app propose de l’emporter au prochain transfert.","Toucher une bouteille dans un transfert ou un conseil de rangement ouvre un résumé du vin : fenêtre, statut, bouteilles par site, dernière note.","À boire : touche une barre du graphique « À boire avant la fin de… » pour voir les bouteilles et leurs emplacements, avec accès direct à la case."]},{"version":"1.7.1","date":"2026-11-05","titre":"Recherche et sommelier","items":["La recherche de l’onglet Cave porte sur tous tes sites d’un coup. Les résultats s’affichent sous la barre, avec chaque emplacement : touche-en un pour y aller, la case clignote sur le plan.","Une seule bouteille trouvée ? La touche « Rechercher » du clavier t’y emmène directement.","« Voir sur le plan » depuis la fiche d’une bouteille, et l’épingle à côté de chaque emplacement sur la fiche d’un vin.","Une croix efface la recherche d’un coup, sur toutes les barres de recherche.","Sommelier : le bouton « Nouvelle conversation » est dans l’encart de saisie, toujours visible, et demande confirmation. La dernière réponse n’est plus cachée sous l’encart."]},{"version":"1.7","date":"2026-11-05","titre":"Import Ploc complet","items":["Import Ploc : les fiches sont reprises telles quelles (couleur, degré, fenêtre de garde, contenance, cépages). Le sommelier ne complète que les champs vides, et l’écran de vérification les signale.","Les bouteilles sont posées à leur case : le meuble est créé à l’identique du plan Ploc, ou associé à un meuble existant. Un aperçu du plan permet de vérifier la lecture.","Les caves Ploc sont rapprochées de tes sites, sur ton iPhone, sans envoyer la liste de tes sites à l’IA. Un site non reconnu est demandé une fois, et peut prendre le nom utilisé dans Ploc.","Le sommelier donne son avis sur chaque fenêtre de Ploc : s’il la juge décalée, il propose la sienne et tu choisis.","L’estimation de Ploc devient le prix d’achat, et la note sur 100 une dégustation sur 20. Les accords sont ajoutés aux notes du vin.","Plusieurs exports peuvent être importés à la suite, sans doublon.","Nouveau champ « Servir à » sur la fiche vin, affiché au moment de déguster. Le sommelier le voit, ainsi que les accords."]},{"version":"1.6.2","date":"2026-11-05","titre":"Fiabilité","items":["Un double appui sur un bouton ne crée plus deux bouteilles, deux sorties ou deux dégustations.","La fiche vin vérifie le millésime, le prix, le degré et la quantité, et explique sous le champ ce qui ne va pas. Un millésime sur deux chiffres est complété (« 19 » devient 2019), et les nombres comme « 1.234,50 » sont reconnus.","Les fenêtres de dégustation restent cohérentes (début, apogée, fin), qu’elles soient saisies ou proposées par le sommelier.","Une dégustation enregistrée sans toucher au curseur n’a plus de note, au lieu d’un 14/20 par défaut.","Rangement : l’app prévient quand les places manquent et propose l’espace le plus libre.","Spiritueux désactivés : leurs cases restent sur le plan, grisées.","Import Ploc, lecture d’étiquette et restauration de sauvegarde : contrôles et messages plus clairs.","Les très grandes caves restent économes en appels au sommelier."]},{"version":"1.6.1","date":"2026-11-04","titre":"Confort et corrections","items":["Les fenêtres ne clignotent plus et ne remontent plus en haut quand tu touches un choix (fiche de dégustation, rangement, liste d’envies, transfert…).","Fiche de dégustation : le bouton « OK » en haut disparaît, on enregistre avec le bouton du bas. Fermer une fiche commencée demande confirmation.","Dans la cave fictive, les réglages indisponibles (suivi d’utilisation, Face ID, Rester déverrouillé) expliquent pourquoi.","Réglages › Contenu : la ligne « Vins · Toujours actif » est retirée."]},{"version":"1.6","date":"2026-11-04","titre":"Retours d’utilisation et suivi des versions","items":["Suivi d’utilisation (désactivé par défaut, Réglages › Aide) : l’app note, sur ton iPhone uniquement, les écrans et les gestes, jamais tes vins ni tes notes. Tu peux consulter la synthèse et exporter un rapport à envoyer, avec ton avis.","« Signaler un problème » : décris ce qui s’est passé, l’app prépare un rapport avec les dernières minutes d’utilisation et les erreurs récentes. Raccourci aussi dans les messages d’erreur.","Mises à jour : « Plus d’infos » montre le contenu d’une nouvelle version avant de l’installer, une fenêtre « Nouveautés » s’affiche après, et l’historique des versions est dans Réglages › Aide."]},{"version":"1.5.2","date":"2026-11-04","titre":"Dégustation à l’aveugle et finitions","items":["Dégustation à l’aveugle : la fiche d’abord sur un « vin mystère », tes hypothèses, puis la révélation, la comparaison et l’analyse du sommelier.","Le bouton + est le même partout : « Nouvelle dégustation » ou « Nouveau vin ».","Présentation de l’app au premier lancement, à revoir dans Réglages › Aide.","Recherche dans « Racheter un vin ». L’import Ploc est désormais dans les réglages.","Nouvelles icônes : un bouchon pour « Déguster », un carnet pour les dégustations."]},{"version":"1.5","date":"2026-11-04","titre":"Dégustations et conseils de rangement","items":["Onglet Dégustations : le journal de tous tes vins dégustés, en cave ou ailleurs (restaurant, salon, domaine…), avec recherche, filtres et vue par vin.","Séances de dégustation avec classement, et liste d’envies avec « Acheté ».","Conseils de rangement dans À boire : vins à rapprocher, à mettre en garde, réassort de la cave de consommation.","Le sommelier propose d’ajuster la fenêtre d’un vin après une dégustation, et tient compte de tes vins bus ailleurs et de tes accords.","Les réglages passent sous l’icône engrenage."]},{"version":"1.0.1","date":"2026-11-04","titre":"Corrections","items":["L’app se rouvre correctement sur iPhone après un premier lancement.","La création de la cave ne pose plus de question : un site « Site 1 », renommable, et le mode plusieurs sites dans les réglages.","La vue Urgence de la page Cave est retirée : l’onglet À boire fait référence."]},{"version":"1.0","date":"2026-11-04","titre":"Première version","items":["Ta cave sur ton iPhone, chiffrée par ton mot de passe ou Face ID, et utilisable hors ligne.","Sites, espaces et meubles (armoire, rack, étagère, caisses, cartons) avec un plan visuel et une recherche.","Ajout par photo d’étiquette ou saisie, rangement suggéré, sorties, déplacements, transferts, primeurs, vins des amis.","Dégustation rapide ou complète avec la roue des arômes.","Sommelier pour les accords mets-vins, fenêtres de dégustation estimées, onglet À boire.","Option spiritueux, import Ploc, sauvegarde chiffrée."]}];
+const CHANGELOG = [{"version":"1.7.3","date":"2026-11-05","titre":"Bouteilles à noter, sites en glissant","items":["Dégustations › À noter : toutes les bouteilles sorties sans fiche t’y attendent, au lieu de la seule dernière. Pour chacune : note rapide, fiche complète (date, plat et convives déjà remplis) ou « Sans fiche ».","Après une sortie, un nouveau choix : « Sortir sans fiche », sans rappel.","Le rappel du lendemain compte les bouteilles à noter, et « Plus tard » ne les oublie plus.","Les bouteilles bues ces 30 derniers jours sans dégustation ont été ajoutées à la liste.","Onglet Cave : glisse vers la gauche ou la droite pour changer de site. Des points sous le titre indiquent le site affiché."]},{"version":"1.7.2","date":"2026-11-05","titre":"Transferts dans les deux sens","items":["Transferts : une section par sens (vers la consommation, vers le stockage), chacune avec ses arrivées. Tu peux emporter tes achats à la campagne et rapporter des vins prêts à boire dans le même trajet.","Arrivées au stockage : les bouteilles vont dans le meilleur espace de garde, avec « Ranger maintenant ».","Suggestions vers le stockage : les vins à garder achetés récemment en ville. Et quand tu ajoutes un vin trop jeune en ville, l’app propose de l’emporter au prochain transfert.","Toucher une bouteille dans un transfert ou un conseil de rangement ouvre un résumé du vin : fenêtre, statut, bouteilles par site, dernière note.","À boire : touche une barre du graphique « À boire avant la fin de… » pour voir les bouteilles et leurs emplacements, avec accès direct à la case."]},{"version":"1.7.1","date":"2026-11-05","titre":"Recherche et sommelier","items":["La recherche de l’onglet Cave porte sur tous tes sites d’un coup. Les résultats s’affichent sous la barre, avec chaque emplacement : touche-en un pour y aller, la case clignote sur le plan.","Une seule bouteille trouvée ? La touche « Rechercher » du clavier t’y emmène directement.","« Voir sur le plan » depuis la fiche d’une bouteille, et l’épingle à côté de chaque emplacement sur la fiche d’un vin.","Une croix efface la recherche d’un coup, sur toutes les barres de recherche.","Sommelier : le bouton « Nouvelle conversation » est dans l’encart de saisie, toujours visible, et demande confirmation. La dernière réponse n’est plus cachée sous l’encart."]},{"version":"1.7","date":"2026-11-05","titre":"Import Ploc complet","items":["Import Ploc : les fiches sont reprises telles quelles (couleur, degré, fenêtre de garde, contenance, cépages). Le sommelier ne complète que les champs vides, et l’écran de vérification les signale.","Les bouteilles sont posées à leur case : le meuble est créé à l’identique du plan Ploc, ou associé à un meuble existant. Un aperçu du plan permet de vérifier la lecture.","Les caves Ploc sont rapprochées de tes sites, sur ton iPhone, sans envoyer la liste de tes sites à l’IA. Un site non reconnu est demandé une fois, et peut prendre le nom utilisé dans Ploc.","Le sommelier donne son avis sur chaque fenêtre de Ploc : s’il la juge décalée, il propose la sienne et tu choisis.","L’estimation de Ploc devient le prix d’achat, et la note sur 100 une dégustation sur 20. Les accords sont ajoutés aux notes du vin.","Plusieurs exports peuvent être importés à la suite, sans doublon.","Nouveau champ « Servir à » sur la fiche vin, affiché au moment de déguster. Le sommelier le voit, ainsi que les accords."]},{"version":"1.6.2","date":"2026-11-05","titre":"Fiabilité","items":["Un double appui sur un bouton ne crée plus deux bouteilles, deux sorties ou deux dégustations.","La fiche vin vérifie le millésime, le prix, le degré et la quantité, et explique sous le champ ce qui ne va pas. Un millésime sur deux chiffres est complété (« 19 » devient 2019), et les nombres comme « 1.234,50 » sont reconnus.","Les fenêtres de dégustation restent cohérentes (début, apogée, fin), qu’elles soient saisies ou proposées par le sommelier.","Une dégustation enregistrée sans toucher au curseur n’a plus de note, au lieu d’un 14/20 par défaut.","Rangement : l’app prévient quand les places manquent et propose l’espace le plus libre.","Spiritueux désactivés : leurs cases restent sur le plan, grisées.","Import Ploc, lecture d’étiquette et restauration de sauvegarde : contrôles et messages plus clairs.","Les très grandes caves restent économes en appels au sommelier."]},{"version":"1.6.1","date":"2026-11-04","titre":"Confort et corrections","items":["Les fenêtres ne clignotent plus et ne remontent plus en haut quand tu touches un choix (fiche de dégustation, rangement, liste d’envies, transfert…).","Fiche de dégustation : le bouton « OK » en haut disparaît, on enregistre avec le bouton du bas. Fermer une fiche commencée demande confirmation.","Dans la cave fictive, les réglages indisponibles (suivi d’utilisation, Face ID, Rester déverrouillé) expliquent pourquoi.","Réglages › Contenu : la ligne « Vins · Toujours actif » est retirée."]},{"version":"1.6","date":"2026-11-04","titre":"Retours d’utilisation et suivi des versions","items":["Suivi d’utilisation (désactivé par défaut, Réglages › Aide) : l’app note, sur ton iPhone uniquement, les écrans et les gestes, jamais tes vins ni tes notes. Tu peux consulter la synthèse et exporter un rapport à envoyer, avec ton avis.","« Signaler un problème » : décris ce qui s’est passé, l’app prépare un rapport avec les dernières minutes d’utilisation et les erreurs récentes. Raccourci aussi dans les messages d’erreur.","Mises à jour : « Plus d’infos » montre le contenu d’une nouvelle version avant de l’installer, une fenêtre « Nouveautés » s’affiche après, et l’historique des versions est dans Réglages › Aide."]},{"version":"1.5.2","date":"2026-11-04","titre":"Dégustation à l’aveugle et finitions","items":["Dégustation à l’aveugle : la fiche d’abord sur un « vin mystère », tes hypothèses, puis la révélation, la comparaison et l’analyse du sommelier.","Le bouton + est le même partout : « Nouvelle dégustation » ou « Nouveau vin ».","Présentation de l’app au premier lancement, à revoir dans Réglages › Aide.","Recherche dans « Racheter un vin ». L’import Ploc est désormais dans les réglages.","Nouvelles icônes : un bouchon pour « Déguster », un carnet pour les dégustations."]},{"version":"1.5","date":"2026-11-04","titre":"Dégustations et conseils de rangement","items":["Onglet Dégustations : le journal de tous tes vins dégustés, en cave ou ailleurs (restaurant, salon, domaine…), avec recherche, filtres et vue par vin.","Séances de dégustation avec classement, et liste d’envies avec « Acheté ».","Conseils de rangement dans À boire : vins à rapprocher, à mettre en garde, réassort de la cave de consommation.","Le sommelier propose d’ajuster la fenêtre d’un vin après une dégustation, et tient compte de tes vins bus ailleurs et de tes accords.","Les réglages passent sous l’icône engrenage."]},{"version":"1.0.1","date":"2026-11-04","titre":"Corrections","items":["L’app se rouvre correctement sur iPhone après un premier lancement.","La création de la cave ne pose plus de question : un site « Site 1 », renommable, et le mode plusieurs sites dans les réglages.","La vue Urgence de la page Cave est retirée : l’onglet À boire fait référence."]},{"version":"1.0","date":"2026-11-04","titre":"Première version","items":["Ta cave sur ton iPhone, chiffrée par ton mot de passe ou Face ID, et utilisable hors ligne.","Sites, espaces et meubles (armoire, rack, étagère, caisses, cartons) avec un plan visuel et une recherche.","Ajout par photo d’étiquette ou saisie, rangement suggéré, sorties, déplacements, transferts, primeurs, vins des amis.","Dégustation rapide ou complète avec la roue des arômes.","Sommelier pour les accords mets-vins, fenêtres de dégustation estimées, onglet À boire.","Option spiritueux, import Ploc, sauvegarde chiffrée."]}];
 const APP_VERSION = CHANGELOG[0].version;
 
 /* ===== 00-core.js ===== */
@@ -793,6 +801,16 @@ function normalize(d) {
   if (!d.spaces.length) d.spaces.push({ id: uid(), siteId: d.sites[0].id, name: 'Cave', use: 'conso', q: {} });
   if (!d.sites.some(s => s.id === d.settings.site)) d.settings.site = d.sites[0].id;
   cleanData(d);
+  // v1.7.3 : les bouteilles bues dans les 30 derniers jours, jamais notées, entrent dans « À noter » (une seule fois)
+  if (!d.settings.todoInit) {
+    const since = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10), noted = new Set(d.tastings.map(t => t.bottleId).filter(Boolean));
+    for (const b of d.bottles) {
+      if (b.state !== 'out' || noted.has(b.id) || (b.outAt || '') < since || b.ficheTodo != null) continue;
+      const m = [...d.moves].reverse().find(x => x.bottleId === b.id && x.type === 'out'), w = d.wines.find(x => x.id === b.wineId);
+      if (m && ['bue', 'bouchonnee', 'terminee'].includes(m.motif) && w && !w.owner) b.ficheTodo = true;
+    }
+    d.settings.todoInit = true; delete d.dismissed.rate;
+  }
   return d;
 }
 // Références orphelines et positions impossibles (anciennes sauvegardes, données modifiées à la main) :
@@ -1165,9 +1183,10 @@ function banners() {
   if (mode === 'demo') out.push('<p class="banner">Cave fictive : rien n’est enregistré. Touche « Quitter la démo » dans Plus pour créer ta cave.</p>');
   else if (!persistent) out.push('<p class="banner">Aperçu : rien n’est conservé dans cet environnement.</p>');
   // Relance de la note : le lendemain d'une bouteille bue sans dégustation
-  const r = S.dismissed.rate, mid = new Date(); mid.setHours(0, 0, 0, 0);
-  if (r && r.at < mid.getTime() && wine(r.wineId) && (view === 'cave' || view === 'boire')) out.push(`<div class="banner green"><b>${esc(wineTitle(wine(r.wineId)))}</b> : tu l’as ouvert récemment. Une note pour t’en souvenir ?
-    <div class="row" style="gap:8px"><button class="btn small green" data-act="rateNow">Noter</button><button class="btn small ghost" data-act="rateLater">Non merci</button></div></div>`);
+  // Rappel du lendemain : les bouteilles sorties sans fiche (liste « À noter »)
+  const todo = todoBottles(), old = todo.filter(b => (b.outAt || '') < today());
+  if (old.length && S.dismissed.todoDay !== today() && (view === 'cave' || view === 'boire')) out.push(`<div class="banner green">${todo.length === 1 ? `<b>${esc(wineTitle(wine(todo[0].wineId)))}</b> : tu l’as ouvert récemment. Une note pour t’en souvenir ?` : `<b>${plural(todo.length, 'bouteille sortie', 'bouteilles sorties')} à noter</b>. Une note pour t’en souvenir ?`}
+    <div class="row" style="gap:8px"><button class="btn small green" data-act="rateNow">Noter</button><button class="btn small ghost" data-act="rateLater">Plus tard</button></div></div>`);
   const le = S.settings.lastExport;
   if (mode === 'app' && view === 'cave' && S.wines.length && (!le || Date.now() - le > 7 * 864e5) && S.dismissed.backup !== monthKey() + today()) out.push(`<div class="banner">${le ? 'Ta dernière sauvegarde date de plus d’une semaine.' : 'Ta cave n’est pas encore sauvegardée.'} Les données ne sont que sur cet iPhone.
     <div class="row" style="gap:8px"><button class="btn small primary" data-act="export">Sauvegarder</button><button class="btn small ghost" data-act="backupLater">Plus tard</button></div></div>`);
@@ -1183,7 +1202,7 @@ function render() {
   const body = fn();
   app.innerHTML = `
     <header class="top"><div class="top-row">${view === 'plus' ? `<button class="icon-btn" data-act="go" data-v="cave" aria-label="Retour" style="margin-left:-8px">${ICON.back}</button>` : ''}<h1>${title}</h1>${view === 'cave' || view === 'somm' ? sitePill() : ''}
-      ${view !== 'plus' ? `<button class="icon-btn gear" data-act="go" data-v="plus" aria-label="Réglages">${ICON.gear}</button>` : ''}</div>${view === 'cave' ? caveTools() : view === 'deg' ? degTools() : ''}</header>
+      ${view !== 'plus' ? `<button class="icon-btn gear" data-act="go" data-v="plus" aria-label="Réglages">${ICON.gear}</button>` : ''}</div>${view === 'cave' ? siteDots() + caveTools() : view === 'deg' ? degTools() : ''}</header>
     <main class="view${view === 'somm' ? ' chat' : ''}">${banners()}${body}</main>
     ${view === 'somm' ? composer() : ''}
     <nav class="tabs" aria-label="Navigation">${tab('cave', 'Cave', ICON.cave)}${tab('deg', 'Dégustations', ICON.notes)}
@@ -1544,6 +1563,31 @@ function boxSheet(uid_) {
       ${free ? `<button class="btn wide" data-act="add" data-u="${u.id}" data-r="0" data-c="${freeSlots(u, occ)[0][1]}">${ICON.add} Ajouter des bouteilles dans cette caisse</button>` : ''}
     </div>`;
 }
+
+/* ---------- Changer de site en glissant (v1.7.3) ---------- */
+// Glisser vers la gauche : site suivant ; vers la droite : site précédent (en boucle). Mode Plan, plusieurs sites, aucune fenêtre ouverte.
+let caveSwipe = null;
+const siteDots = () => isMulti() && view === 'cave' && caveMode === 'plan' ? `<div class="sdots" aria-hidden="true">${S.sites.map(s => `<i class="${s.id === S.settings.site ? 'on' : ''}"></i>`).join('')}</div>` : '';
+async function switchSite(dir) {
+  const i = S.sites.findIndex(s => s.id === S.settings.site), n = S.sites.length;
+  const next = S.sites[((i < 0 ? 0 : i) + dir + n) % n];
+  S.settings.site = next.id; caveSpace = null; await save();
+  render(); window.scrollTo(0, 0);
+  const v = $('.view'); if (v) { v.classList.remove('slide-l', 'slide-r'); void v.offsetWidth; v.classList.add(dir > 0 ? 'slide-l' : 'slide-r'); }
+  toast(next.name);
+}
+document.addEventListener('touchstart', e => {
+  caveSwipe = null;
+  if ((mode !== 'app' && mode !== 'demo') || view !== 'cave' || caveMode !== 'plan' || !isMulti() || sheetStack.length || introAt != null || e.touches.length !== 1) return;
+  if (e.target.closest?.('.rack-scroll, .chips, .pgrid, input, textarea, select, .sheet, .tabs, #layer')) return;
+  const t = e.touches[0]; caveSwipe = { x: t.clientX, y: t.clientY, at: Date.now() };
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const s0 = caveSwipe; caveSwipe = null;
+  if (!s0 || sheetStack.length) return;
+  const t = e.changedTouches[0], dx = t.clientX - s0.x, dy = t.clientY - s0.y;
+  if (Math.abs(dx) > 70 && Math.abs(dx) > 2 * Math.abs(dy) && Date.now() - s0.at < 800) switchSite(dx < 0 ? 1 : -1);
+}, { passive: true });
 
 
 /* ===== 40-wine.js ===== */
@@ -1956,12 +2000,12 @@ FORMS.out = async (f, d) => {
   logMove(b, 'out', { motif: d.motif, at: d.at || today(), from, who: d.who, plat: d.plat });
   S.transfer.ids = S.transfer.ids.filter(id => id !== b.id);
   const taste = ['bue', 'bouchonnee', 'terminee'].includes(d.motif) && !isFriend(w);
-  if (taste) S.dismissed.rate = { bottleId: b.id, wineId: w.id, at: Date.now(), plat: d.plat };
+  b.ficheTodo = taste;   // dans « À noter » jusqu'à la fiche, ou « Sans fiche »
   await save(); render();
   if (!taste) { closeSheet(); return toast('Bouteille sortie'); }
   showSheet(() => `${head('Bonne dégustation !')}<p>${esc(wineTitle(w))} est sorti${w.kind === 'spirit' ? '' : ''} de la cave. Tu veux noter ce vin ?</p>
-    <div class="btns"><button class="btn primary wide" data-act="taste" data-w="${w.id}" data-b="${b.id}" data-m="quick">Note rapide</button><button class="btn wide" data-act="taste" data-w="${w.id}" data-b="${b.id}" data-m="full">Fiche complète</button><button class="btn ghost wide" data-act="close">Plus tard</button></div>
-    <p class="tiny">Si tu ne notes pas maintenant, je te le rappellerai demain.</p>`, { replace: true });
+    <div class="btns"><button class="btn primary wide" data-act="taste" data-w="${w.id}" data-b="${b.id}" data-m="quick">Note rapide</button><button class="btn wide" data-act="taste" data-w="${w.id}" data-b="${b.id}" data-m="full">Fiche complète</button><button class="btn wide" data-act="close">Plus tard</button><button class="btn ghost wide" data-act="todoSkip" data-b="${b.id}">Sortir sans fiche</button></div>
+    <p class="tiny">« Plus tard » : la bouteille t’attend dans Dégustations › À noter, et je te la rappellerai demain.</p>`, { replace: true });
 };
 
 /* ---------- Transfert entre sites ---------- */
@@ -2169,11 +2213,13 @@ const sliderOut = (k, v, kind = draft?.taste?.kind) => k === 'longueur' && kind 
 // ctx : { sessionId } pour une dégustation dans une séance
 function startTaste(wineId, bottleId, m, ctx = {}) {
   const w = wine(wineId) || mysteryWine();
-  const prev = S.dismissed.rate?.bottleId === bottleId ? S.dismissed.rate : null;
+  // Bouteille déjà sortie (liste « À noter ») : date, plat et convives de la sortie
+  const b0 = bottleId && byId(S.bottles, bottleId), out = b0?.state === 'out' ? outMove(b0) : null, prev = out ? { plat: out.plat || '' } : null;
   const sess = ctx.sessionId && byId(S.sessions, ctx.sessionId);
   draft = { taste: { wineId, bottleId: bottleId || null, kind: w.kind, mode: m === 'full' ? 'full' : 'quick', note: null, comment: '', at: sess?.date || today(), plat: prev?.plat || '',
     type: sess?.type || null, lieu: sess?.lieu || '', convives: sess?.convives || '', prix: '', achatLieu: '', provenance: '', accord: null, sessionId: sess?.id || null, fromCave: false, full: { aromes: [] } } };
   wheelState = { active: null };
+  if (out && !sess) Object.assign(draft.taste, { at: out.at || b0.outAt || today(), convives: out.who || '' });
   draft.taste._snap = tasteSig(draft.taste);
   showSheet(tasteSheet, { full: true });
 }
@@ -2333,7 +2379,7 @@ Object.assign(ACT, {
     rec.horsCave = !rec.bottleId;
     if (t.blind) rec.blind = { ...(rec.blind || {}), kind: t.kind, couleur: w?.couleur || t.couleur, hyp: { ...t.hyp }, revealed: !!rec.wineId };
     if (t.photoBlob) { await photoSave('t-' + rec.id, t.photoBlob); rec.photo = true; }
-    if (S.dismissed.rate && (S.dismissed.rate.bottleId === rec.bottleId || S.dismissed.rate.wineId === rec.wineId)) delete S.dismissed.rate;
+    if (rec.bottleId) { const b = byId(S.bottles, rec.bottleId); if (b) b.ficheTodo = false; }
     await save(); draft = null;
     const sid = rec.sessionId;
     closeSheet(); render(); toast(t.editId ? 'Dégustation modifiée' : 'Dégustation enregistrée');
@@ -2350,8 +2396,8 @@ Object.assign(ACT, {
     const r = byId(S.tastings, t.dataset.id); if (r?.photo) await photoDel('t-' + r.id);
     S.tastings = S.tastings.filter(x => x.id !== t.dataset.id); await save(); sheetBack(); refreshSheet(); render();
   },
-  rateLater: async () => { delete S.dismissed.rate; await save(); render(); },
-  rateNow: () => { const r = S.dismissed.rate; startTaste(r.wineId, r.bottleId, 'quick'); },
+  rateLater: async () => { S.dismissed.todoDay = today(); await save(); render(); },
+  rateNow: () => { const l = todoBottles(); if (l.length === 1) startTaste(l[0].wineId, l[0].id, 'quick'); else showSheet(todoSheet); },
   applyAdvice: async t => {
     const w = wine(t.dataset.w), a = { ...(w.apogee || {}) };
     if (t.dataset.fin) a.fin = +t.dataset.fin; if (t.dataset.deb) a.debut = +t.dataset.deb;
@@ -2552,12 +2598,53 @@ function tasteRow(t, rank) {
     <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(sub)}</small>${t.plat || t.accord ? `<small class="ell">${t.accord ? 'Accord ' + ACCORDS[t.accord].toLowerCase() : ''}${t.accord && t.plat ? ' · ' : ''}${esc(t.plat || '')}</small>` : ''}</div>${noteBadge(t.note)}</button>`;
 }
 const monthLabel = s => s ? cap(new Date(s.slice(0, 7) + '-15').toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })) : 'Sans date';
+/* ---------- Bouteilles sorties à noter (v1.7.3) ---------- */
+const TODO_MOTIFS = ['bue', 'bouchonnee', 'terminee'];
+const outMove = b => [...S.moves].reverse().find(m => m.bottleId === b.id && m.type === 'out');
+const todoBottles = () => S.bottles.filter(b => b.state === 'out' && b.ficheTodo && wine(b.wineId)).sort((a, b) => (b.outAt || '').localeCompare(a.outAt || ''));
+function todoCard() {
+  const n = todoBottles().length;
+  return n ? `<button class="card tap row" style="width:100%;text-align:left" data-act="todoList">${ICON.cork}<div class="grow"><b style="font-size:14px">${plural(n, 'bouteille sortie', 'bouteilles sorties')} à noter</b><div class="small">Note-les, ou passe-les sans fiche.</div></div><span class="chev">${ICON.chev}</span></button>` : '';
+}
+function todoSheet() {
+  const l = todoBottles();
+  return `${head('À noter')}
+    <p class="small" style="margin-top:-6px">Les bouteilles sorties sans fiche de dégustation.</p>
+    ${l.length ? `<div class="list">${l.map(b => { const w = wine(b.wineId), m = outMove(b) || {};
+      return `<button class="li" data-act="todoPick" data-b="${b.id}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b>
+        <small class="ell">${esc([fmtDate(b.outAt || m.at), MOTIFS[m.motif], m.plat, m.who && 'avec ' + m.who].filter(Boolean).join(' · '))}</small></div><span class="chev">${ICON.chev}</span></button>`; }).join('')}</div>
+      <button class="btn ghost wide" style="margin-top:12px" data-act="todoSkipAll">Tout passer sans fiche</button>` : '<p class="muted">Rien à noter : toutes tes bouteilles sorties ont leur fiche.</p>'}`;
+}
+function todoPickSheet(bid) {
+  const b = byId(S.bottles, bid); if (!b?.ficheTodo) return null;
+  const w = wine(b.wineId), m = outMove(b) || {};
+  return `${head(esc(wineTitle(w)))}
+    <p class="small" style="margin-top:-6px">${esc([MOTIFS[m.motif] ? MOTIFS[m.motif] + ' le ' + fmtDate(b.outAt || m.at) : '', m.plat, m.who && 'avec ' + m.who].filter(Boolean).join(' · '))}</p>
+    <div class="btns"><button class="btn primary wide" data-act="taste" data-w="${w.id}" data-b="${b.id}" data-m="quick">Note rapide</button>
+      <button class="btn wide" data-act="taste" data-w="${w.id}" data-b="${b.id}" data-m="full">Fiche complète</button>
+      <button class="btn ghost wide" data-act="todoSkip" data-b="${b.id}">Sans fiche</button></div>`;
+}
+Object.assign(ACT, {
+  todoList: () => showSheet(todoSheet),
+  todoPick: t => showSheet(() => todoPickSheet(t.dataset.b)),
+  todoSkip: async t => {
+    const b = byId(S.bottles, t.dataset.b); if (b) b.ficheTodo = false;
+    await save(); render();
+    if (sheetStack.length > 1 && sheetStack[0].fn === todoSheet) sheetBack(); else closeSheet();
+    toast('Sortie sans fiche');
+  },
+  todoSkipAll: async () => {
+    const l = todoBottles(); if (!l.length || !confirm(`Passer ${plural(l.length, 'bouteille', 'les ' + l.length + ' bouteilles')} sans fiche ?`)) return;
+    for (const b of l) b.ficheTodo = false;
+    await save(); closeSheet(); render(); toast('Liste « À noter » vidée');
+  },
+});
 function vDeg() {
-  if (!S.tastings.length) return `<div class="empty">${ICON.notes}<p>Aucune dégustation pour l’instant.</p><p class="small">Note les vins de ta cave, ou ceux bus au restaurant, chez des amis, dans un salon.</p>
+  if (!S.tastings.length) return `${todoCard()}<div class="empty">${ICON.notes}<p>Aucune dégustation pour l’instant.</p><p class="small">Note les vins de ta cave, ou ceux bus au restaurant, chez des amis, dans un salon.</p>
     <button class="btn primary" data-act="newTaste">${ICON.add} Nouvelle dégustation</button></div>`;
-  const ts = degTastings();
-  if (!ts.length) return '<div class="empty">Aucune dégustation ne correspond.</div>';
-  if (degMode === 'vin') return vDegByWine(ts);
+  const ts = degTastings(), top = degQuery ? '' : todoCard();
+  if (!ts.length) return top + '<div class="empty">Aucune dégustation ne correspond.</div>';
+  if (degMode === 'vin') return top + vDegByWine(ts);
   // Journal : les dégustations d'une séance forment un bloc, daté par la séance
   const items = [], seen = new Set();
   for (const t of ts) {
@@ -2585,7 +2672,7 @@ function vDeg() {
     }
   }
   if (open) out += '</div>';
-  return `<p class="small" style="margin:10px 4px 0">${plural(ts.length, 'dégustation', 'dégustations')}</p>${out}`;
+  return `${top}<p class="small" style="margin:10px 4px 0">${plural(ts.length, 'dégustation', 'dégustations')}</p>${out}`;
 }
 function vDegByWine(ts) {
   const by = new Map();
@@ -4251,7 +4338,7 @@ Object.assign(ACT, { historySheet: () => showSheet(historySheet) });
 const busyForms = new Set(), busyActs = new Set();
 const GUARDED = new Set(['tasteSave', 'placeOk', 'plocGo', 'transferDone', 'receive', 'applyReeval', 'applyAdvice', 'adviceGo', 'delWine', 'delUnit', 'delTaste',
   'delSession', 'delSite', 'delSpace', 'estimateMissing', 'putHere', 'openBottle', 'wishToggle', 'wishBought', 'toTransfer', 'revealWine', 'blindAI', 'export',
-  'usageClear', 'chatNew', 'tasteAbandon', 'awayTransfer', 'pkOffer', 'pkunlock', 'demo', 'estimate', 'takeIt', 'rateNow', 'rateLater', 'backupLater', 'tAdd', 'tPick', 'placeToTransfer', 'tPlaceNow']);
+  'usageClear', 'chatNew', 'tasteAbandon', 'awayTransfer', 'pkOffer', 'pkunlock', 'demo', 'estimate', 'takeIt', 'rateNow', 'rateLater', 'backupLater', 'tAdd', 'tPick', 'placeToTransfer', 'tPlaceNow', 'todoSkip', 'todoSkipAll']);
 const release = (set, k) => setTimeout(() => set.delete(k), 350);
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-act]'); if (!t || !ACT[t.dataset.act]) return;

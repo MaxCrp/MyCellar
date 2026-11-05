@@ -334,3 +334,11 @@ input[type=range].unset::-moz-range-progress{background:#EAE2D6}
 .composer .newc svg{width:20px;height:20px}
 .composer .newc:disabled{opacity:.4}
 .view.chat{padding-bottom:calc(var(--comp-h, 100px) + 80px + var(--safe-b))}
+/* Changer de site en glissant */
+.sdots{display:flex;gap:5px;margin:-2px 0 0 2px;height:6px}
+.sdots i{width:6px;height:6px;border-radius:50%;background:var(--line)}
+.sdots i.on{background:var(--ink)}
+@keyframes slideL{from{transform:translateX(40px);opacity:.3}to{transform:none;opacity:1}}
+@keyframes slideR{from{transform:translateX(-40px);opacity:.3}to{transform:none;opacity:1}}
+.view.slide-l{animation:slideL .28s ease-out}
+.view.slide-r{animation:slideR .28s ease-out}

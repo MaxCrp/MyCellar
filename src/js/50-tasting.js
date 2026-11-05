@@ -17,11 +17,13 @@ const sliderOut = (k, v, kind = draft?.taste?.kind) => k === 'longueur' && kind 
 // ctx : { sessionId } pour une dégustation dans une séance
 function startTaste(wineId, bottleId, m, ctx = {}) {
   const w = wine(wineId) || mysteryWine();
-  const prev = S.dismissed.rate?.bottleId === bottleId ? S.dismissed.rate : null;
+  // Bouteille déjà sortie (liste « À noter ») : date, plat et convives de la sortie
+  const b0 = bottleId && byId(S.bottles, bottleId), out = b0?.state === 'out' ? outMove(b0) : null, prev = out ? { plat: out.plat || '' } : null;
   const sess = ctx.sessionId && byId(S.sessions, ctx.sessionId);
   draft = { taste: { wineId, bottleId: bottleId || null, kind: w.kind, mode: m === 'full' ? 'full' : 'quick', note: null, comment: '', at: sess?.date || today(), plat: prev?.plat || '',
     type: sess?.type || null, lieu: sess?.lieu || '', convives: sess?.convives || '', prix: '', achatLieu: '', provenance: '', accord: null, sessionId: sess?.id || null, fromCave: false, full: { aromes: [] } } };
   wheelState = { active: null };
+  if (out && !sess) Object.assign(draft.taste, { at: out.at || b0.outAt || today(), convives: out.who || '' });
   draft.taste._snap = tasteSig(draft.taste);
   showSheet(tasteSheet, { full: true });
 }
@@ -181,7 +183,7 @@ Object.assign(ACT, {
     rec.horsCave = !rec.bottleId;
     if (t.blind) rec.blind = { ...(rec.blind || {}), kind: t.kind, couleur: w?.couleur || t.couleur, hyp: { ...t.hyp }, revealed: !!rec.wineId };
     if (t.photoBlob) { await photoSave('t-' + rec.id, t.photoBlob); rec.photo = true; }
-    if (S.dismissed.rate && (S.dismissed.rate.bottleId === rec.bottleId || S.dismissed.rate.wineId === rec.wineId)) delete S.dismissed.rate;
+    if (rec.bottleId) { const b = byId(S.bottles, rec.bottleId); if (b) b.ficheTodo = false; }
     await save(); draft = null;
     const sid = rec.sessionId;
     closeSheet(); render(); toast(t.editId ? 'Dégustation modifiée' : 'Dégustation enregistrée');
@@ -198,8 +200,8 @@ Object.assign(ACT, {
     const r = byId(S.tastings, t.dataset.id); if (r?.photo) await photoDel('t-' + r.id);
     S.tastings = S.tastings.filter(x => x.id !== t.dataset.id); await save(); sheetBack(); refreshSheet(); render();
   },
-  rateLater: async () => { delete S.dismissed.rate; await save(); render(); },
-  rateNow: () => { const r = S.dismissed.rate; startTaste(r.wineId, r.bottleId, 'quick'); },
+  rateLater: async () => { S.dismissed.todoDay = today(); await save(); render(); },
+  rateNow: () => { const l = todoBottles(); if (l.length === 1) startTaste(l[0].wineId, l[0].id, 'quick'); else showSheet(todoSheet); },
   applyAdvice: async t => {
     const w = wine(t.dataset.w), a = { ...(w.apogee || {}) };
     if (t.dataset.fin) a.fin = +t.dataset.fin; if (t.dataset.deb) a.debut = +t.dataset.deb;

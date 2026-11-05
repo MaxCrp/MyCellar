@@ -111,6 +111,16 @@ function normalize(d) {
   if (!d.spaces.length) d.spaces.push({ id: uid(), siteId: d.sites[0].id, name: 'Cave', use: 'conso', q: {} });
   if (!d.sites.some(s => s.id === d.settings.site)) d.settings.site = d.sites[0].id;
   cleanData(d);
+  // v1.7.3 : les bouteilles bues dans les 30 derniers jours, jamais notées, entrent dans « À noter » (une seule fois)
+  if (!d.settings.todoInit) {
+    const since = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10), noted = new Set(d.tastings.map(t => t.bottleId).filter(Boolean));
+    for (const b of d.bottles) {
+      if (b.state !== 'out' || noted.has(b.id) || (b.outAt || '') < since || b.ficheTodo != null) continue;
+      const m = [...d.moves].reverse().find(x => x.bottleId === b.id && x.type === 'out'), w = d.wines.find(x => x.id === b.wineId);
+      if (m && ['bue', 'bouchonnee', 'terminee'].includes(m.motif) && w && !w.owner) b.ficheTodo = true;
+    }
+    d.settings.todoInit = true; delete d.dismissed.rate;
+  }
   return d;
 }
 // Références orphelines et positions impossibles (anciennes sauvegardes, données modifiées à la main) :

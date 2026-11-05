@@ -1,5 +1,17 @@
 [
   {
+    "version": "1.7.3",
+    "date": "2026-11-05",
+    "titre": "Bouteilles à noter, sites en glissant",
+    "items": [
+      "Dégustations › À noter : toutes les bouteilles sorties sans fiche t’y attendent, au lieu de la seule dernière. Pour chacune : note rapide, fiche complète (date, plat et convives déjà remplis) ou « Sans fiche ».",
+      "Après une sortie, un nouveau choix : « Sortir sans fiche », sans rappel.",
+      "Le rappel du lendemain compte les bouteilles à noter, et « Plus tard » ne les oublie plus.",
+      "Les bouteilles bues ces 30 derniers jours sans dégustation ont été ajoutées à la liste.",
+      "Onglet Cave : glisse vers la gauche ou la droite pour changer de site. Des points sous le titre indiquent le site affiché."
+    ]
+  },
+  {
     "version": "1.7.2",
     "date": "2026-11-05",
     "titre": "Transferts dans les deux sens",

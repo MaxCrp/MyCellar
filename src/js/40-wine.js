@@ -407,12 +407,12 @@ FORMS.out = async (f, d) => {
   logMove(b, 'out', { motif: d.motif, at: d.at || today(), from, who: d.who, plat: d.plat });
   S.transfer.ids = S.transfer.ids.filter(id => id !== b.id);
   const taste = ['bue', 'bouchonnee', 'terminee'].includes(d.motif) && !isFriend(w);
-  if (taste) S.dismissed.rate = { bottleId: b.id, wineId: w.id, at: Date.now(), plat: d.plat };
+  b.ficheTodo = taste;   // dans « À noter » jusqu'à la fiche, ou « Sans fiche »
   await save(); render();
   if (!taste) { closeSheet(); return toast('Bouteille sortie'); }
   showSheet(() => `${head('Bonne dégustation !')}<p>${esc(wineTitle(w))} est sorti${w.kind === 'spirit' ? '' : ''} de la cave. Tu veux noter ce vin ?</p>
-    <div class="btns"><button class="btn primary wide" data-act="taste" data-w="${w.id}" data-b="${b.id}" data-m="quick">Note rapide</button><button class="btn wide" data-act="taste" data-w="${w.id}" data-b="${b.id}" data-m="full">Fiche complète</button><button class="btn ghost wide" data-act="close">Plus tard</button></div>
-    <p class="tiny">Si tu ne notes pas maintenant, je te le rappellerai demain.</p>`, { replace: true });
+    <div class="btns"><button class="btn primary wide" data-act="taste" data-w="${w.id}" data-b="${b.id}" data-m="quick">Note rapide</button><button class="btn wide" data-act="taste" data-w="${w.id}" data-b="${b.id}" data-m="full">Fiche complète</button><button class="btn wide" data-act="close">Plus tard</button><button class="btn ghost wide" data-act="todoSkip" data-b="${b.id}">Sortir sans fiche</button></div>
+    <p class="tiny">« Plus tard » : la bouteille t’attend dans Dégustations › À noter, et je te la rappellerai demain.</p>`, { replace: true });
 };
 
 /* ---------- Transfert entre sites ---------- */

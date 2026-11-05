@@ -156,9 +156,10 @@ function banners() {
   if (mode === 'demo') out.push('<p class="banner">Cave fictive : rien n’est enregistré. Touche « Quitter la démo » dans Plus pour créer ta cave.</p>');
   else if (!persistent) out.push('<p class="banner">Aperçu : rien n’est conservé dans cet environnement.</p>');
   // Relance de la note : le lendemain d'une bouteille bue sans dégustation
-  const r = S.dismissed.rate, mid = new Date(); mid.setHours(0, 0, 0, 0);
-  if (r && r.at < mid.getTime() && wine(r.wineId) && (view === 'cave' || view === 'boire')) out.push(`<div class="banner green"><b>${esc(wineTitle(wine(r.wineId)))}</b> : tu l’as ouvert récemment. Une note pour t’en souvenir ?
-    <div class="row" style="gap:8px"><button class="btn small green" data-act="rateNow">Noter</button><button class="btn small ghost" data-act="rateLater">Non merci</button></div></div>`);
+  // Rappel du lendemain : les bouteilles sorties sans fiche (liste « À noter »)
+  const todo = todoBottles(), old = todo.filter(b => (b.outAt || '') < today());
+  if (old.length && S.dismissed.todoDay !== today() && (view === 'cave' || view === 'boire')) out.push(`<div class="banner green">${todo.length === 1 ? `<b>${esc(wineTitle(wine(todo[0].wineId)))}</b> : tu l’as ouvert récemment. Une note pour t’en souvenir ?` : `<b>${plural(todo.length, 'bouteille sortie', 'bouteilles sorties')} à noter</b>. Une note pour t’en souvenir ?`}
+    <div class="row" style="gap:8px"><button class="btn small green" data-act="rateNow">Noter</button><button class="btn small ghost" data-act="rateLater">Plus tard</button></div></div>`);
   const le = S.settings.lastExport;
   if (mode === 'app' && view === 'cave' && S.wines.length && (!le || Date.now() - le > 7 * 864e5) && S.dismissed.backup !== monthKey() + today()) out.push(`<div class="banner">${le ? 'Ta dernière sauvegarde date de plus d’une semaine.' : 'Ta cave n’est pas encore sauvegardée.'} Les données ne sont que sur cet iPhone.
     <div class="row" style="gap:8px"><button class="btn small primary" data-act="export">Sauvegarder</button><button class="btn small ghost" data-act="backupLater">Plus tard</button></div></div>`);
@@ -174,7 +175,7 @@ function render() {
   const body = fn();
   app.innerHTML = `
     <header class="top"><div class="top-row">${view === 'plus' ? `<button class="icon-btn" data-act="go" data-v="cave" aria-label="Retour" style="margin-left:-8px">${ICON.back}</button>` : ''}<h1>${title}</h1>${view === 'cave' || view === 'somm' ? sitePill() : ''}
-      ${view !== 'plus' ? `<button class="icon-btn gear" data-act="go" data-v="plus" aria-label="Réglages">${ICON.gear}</button>` : ''}</div>${view === 'cave' ? caveTools() : view === 'deg' ? degTools() : ''}</header>
+      ${view !== 'plus' ? `<button class="icon-btn gear" data-act="go" data-v="plus" aria-label="Réglages">${ICON.gear}</button>` : ''}</div>${view === 'cave' ? siteDots() + caveTools() : view === 'deg' ? degTools() : ''}</header>
     <main class="view${view === 'somm' ? ' chat' : ''}">${banners()}${body}</main>
     ${view === 'somm' ? composer() : ''}
     <nav class="tabs" aria-label="Navigation">${tab('cave', 'Cave', ICON.cave)}${tab('deg', 'Dégustations', ICON.notes)}
