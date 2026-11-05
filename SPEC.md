@@ -442,6 +442,18 @@ Le détail est dans `docs/tests/2026-11-04-campagne-v1.6.1/` : `rapport-bugs.md`
 - [x] **Hors périmètre** : les photos des bouteilles (il faudrait embarquer un lecteur PDF dans l'app), le classement, la référence et les tags (vides dans l'export reçu).
 - [x] Tests : un export Ploc fictif au même format (plan, légende, fiches, deux caves, une note, des champs vides), avec réponses de l'IA simulées, vérifie placement, champs repris, absence de doublons au second import.
 
+**v1.7.1** (recherche dans la cave ; spécifiée, rien n'est développé)
+
+*Constat.* Aujourd'hui, la recherche de l'onglet Cave encadre les bouteilles trouvées sur le plan du site affiché et grise les autres. Il faut faire défiler les meubles pour les repérer, puis changer de site et chercher à nouveau.
+
+- [ ] **Recherche sur tous les sites** : en mode Plan, la recherche porte sur toutes les caves de tous les sites, quel que soit le site affiché. Le mode Liste reste tel quel : il cherche déjà partout.
+- [ ] **Résultats sous la barre** : dès la saisie, une liste apparaît sous la barre de recherche, avec une ligne par vin trouvé (pastille de couleur, nom, millésime, nombre de bouteilles), puis un emplacement par ligne : « Site › Espace › Meuble · Clayette 2, place 3 », « … › Caisse A » ou « … › non placée ». Les bouteilles en primeur apparaissent en « primeur, pas encore livrée », sans lien vers le plan.
+- [ ] **Aller à la bouteille** : toucher un emplacement ferme la liste et affiche le bon site, comme le sélecteur de site en haut de l'écran. L'app ouvre ensuite le bon espace, fait défiler jusqu'au meuble et fait clignoter la case quelques secondes. Pour une caisse, la caisse s'ouvre. Pour une bouteille non placée, l'app défile jusqu'au bloc « non placées ».
+- [ ] **Un seul emplacement trouvé** : la touche « Rechercher » du clavier y emmène directement.
+- [ ] **Vider la recherche** : une croix dans la barre efface la recherche et rend le plan normal.
+- [ ] **Depuis une fiche** : sur la fiche d'une bouteille, et sur chaque emplacement de la fiche vin, un bouton « Voir sur le plan » emmène à la case de la même façon.
+- [ ] Tests : recherche d'un vin présent sur deux sites, saut vers la case du site non affiché, case visible à l'écran et mise en évidence, caisse ouverte, bouteille non placée, « Voir sur le plan » depuis une fiche.
+
 **v2**
 - Sauvegarde automatique Google Drive.
 - Audit de cave.
