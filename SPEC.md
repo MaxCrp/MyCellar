@@ -568,12 +568,21 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 - [x] Accès : bouton « Audit de ma cave » dans À boire et dans les suggestions du sommelier. Le dernier audit est conservé et daté.
 - [x] Tests : statistiques sur la cave fictive (totaux justes, vins des amis exclus), valeur avec et sans estimation, cadeaux reçus et offerts, alerte de doublon, audit avec réponse simulée.
 
-**v2.1** (partager et exporter ; spécifiée, en attente de validation)
+**v2.1** (partager et exporter, import des dégustations Ploc ; spécifiée, en attente du lancement)
 - [ ] **Carte des vins à partager** : tu choisis les vins (prêts à boire, un site, des couleurs, ou une sélection à la main) et la mise en forme (avec ou sans prix ni nombre de bouteilles). La carte est rangée par couleur puis par région, sur une jolie page. Elle se partage en image (Messages, WhatsApp…) ou en PDF.
 - [ ] **Partager une dégustation** (§6 bis, « Plus tard ») : une carte image avec le vin, la note, la teinte, les arômes principaux, l'accord et le commentaire, ou la même chose en texte.
 - [ ] **Export Excel** : un vrai fichier .xlsx créé sur l'iPhone, sans service extérieur, avec trois onglets : Inventaire (une ligne par vin, avec quantités par site et emplacements), Dégustations, Mouvements.
 - [ ] **Export PDF** : inventaire imprimable (par site, espace et meuble, avec le plan de chaque meuble), par l'impression iOS (« Enregistrer en PDF »).
 - [ ] Rien ne quitte l'iPhone sans action de ta part : le partage passe par la feuille de partage iOS.
+- [ ] **Import des dégustations depuis Ploc** (demande du 5 novembre 2026) : à partir du fichier CSV exporté par Ploc, avec une ligne par dégustation et les colonnes date, nom du vin, note, millésime et commentaires. Accès par Réglages › Importer depuis Ploc › « Dégustations (CSV) ».
+  - **Lecture sur l'iPhone, sans IA** : le séparateur (« ; », « , » ou tabulation), les guillemets et l'encodage sont reconnus automatiquement. La ligne d'en-tête est repérée par le nom des colonnes. Les dates aux formats « 12/03/2024 », « 2024-03-12 » ou « 12 mars 2024 » sont acceptées.
+  - **Note** : sur 100 comme dans Ploc, elle est convertie sur 20 au demi-point (75 donne 15/20, comme pour l'import des bouteilles). Une note déjà sur 20 est gardée telle quelle. Une note vide donne une dégustation sans note.
+  - **Rapprochement avec ta cave** : chaque ligne est rapprochée d'un vin existant (nom et millésime, sans tenir compte des accents ni de la casse). Sinon, une fiche « vin dégusté » est créée sans bouteille, comme pour une dégustation hors cave. Le nom est découpé en domaine et cuvée de la même façon que pour l'import des bouteilles. En option, le sommelier peut compléter en lot la couleur, l'appellation et la région des nouveaux vins ; le coût est annoncé, environ 1 centime pour 40 vins.
+  - **Écran de vérification** : une ligne par dégustation, avec date, vin, note et rapprochement (« vin de ta cave », « nouveau vin » ou « déjà importée »). On peut changer le vin rapproché, ou décocher une ligne.
+  - **Sans doublon** : une dégustation de même date, même vin et même note n'est pas réimportée. On peut donc relancer l'import avec un fichier plus récent.
+  - **Effet** : les dégustations rejoignent le journal, marquées « importée de Ploc ». Elles comptent dans les moyennes et le sommelier les voit. Aucune bouteille ne sort du stock.
+  - **À confirmer** sur un vrai fichier : l'ordre exact et le nom des colonnes, le format des dates et l'échelle des notes.
+- [ ] Tests (import CSV) : séparateurs « ; » et « , », guillemets et retours à la ligne dans un commentaire, notes sur 100 et sur 20, dates aux trois formats, vin rapproché et vin nouveau, second import sans doublon, ligne invalide signalée.
 - [ ] Tests : contenu de la carte selon les filtres, image produite, fichier .xlsx lisible (structure vérifiée), page d'impression.
 
 **v2.2** (QR codes sur les meubles ; spécifiée et validée le 5 novembre 2026 : deux bibliothèques libres intégrées)
