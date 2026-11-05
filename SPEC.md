@@ -507,7 +507,7 @@ Le détail est dans `docs/tests/2026-11-04-campagne-v1.6.1/` : `rapport-bugs.md`
 - [ ] **Fiche de la caisse, actions groupées** sur toutes ses bouteilles, ou sur un nombre choisi :
   - **Sortir** N bouteilles d'un coup (bues, offertes, vendues, rendues…) ;
   - **Déplacer la caisse** vers un autre espace ou un autre site : le meuble part avec ses bouteilles, qui restent dedans ;
-  - **Ajouter la caisse au transfert** : à l'arrivée, la caisse est posée dans l'espace d'arrivée avec ses bouteilles, sans avoir à les ranger une par une (à valider, question 1) ;
+  - **Ajouter la caisse au transfert** : à l'arrivée, la caisse est posée dans l'espace d'arrivée avec ses bouteilles, sans avoir à les ranger une par une (validé le 5 novembre 2026) ;
   - **Attribuer** N bouteilles à un ami, ou à moi ;
   - **Modifier le vin** (fiche commune) et **Modifier l'achat** (prix, date, source) pour toutes les bouteilles de la caisse.
 - [ ] Tests : nouveau millésime depuis la fiche et depuis « Racheter un vin », « Offert par » ; ajout de 12 bouteilles dont 6 pour un ami, puis répartition après coup ; sommelier et À boire limités à mes bouteilles ; caisse à un seul vin au rangement ; sortie, déplacement, transfert et attribution d'une caisse entière.
