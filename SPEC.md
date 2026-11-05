@@ -442,7 +442,7 @@ Le détail est dans `docs/tests/2026-11-04-campagne-v1.6.1/` : `rapport-bugs.md`
 - [x] **Hors périmètre** : les photos des bouteilles (il faudrait embarquer un lecteur PDF dans l'app), le classement, la référence et les tags (vides dans l'export reçu).
 - [x] Tests : un export Ploc fictif au même format (plan, légende, fiches, deux caves, une note, des champs vides), avec réponses de l'IA simulées, vérifie placement, champs repris, absence de doublons au second import.
 
-**v1.7.1** (recherche dans la cave ; spécifiée, rien n'est développé)
+**v1.7.1** (recherche dans la cave, conversation avec le sommelier ; spécifiée, rien n'est développé)
 
 *Constat.* Aujourd'hui, la recherche de l'onglet Cave encadre les bouteilles trouvées sur le plan du site affiché et grise les autres. Il faut faire défiler les meubles pour les repérer, puis changer de site et chercher à nouveau.
 
@@ -453,6 +453,12 @@ Le détail est dans `docs/tests/2026-11-04-campagne-v1.6.1/` : `rapport-bugs.md`
 - [ ] **Vider la recherche** : une croix dans la barre efface la recherche et rend le plan normal.
 - [ ] **Depuis une fiche** : sur la fiche d'une bouteille, et sur chaque emplacement de la fiche vin, un bouton « Voir sur le plan » emmène à la case de la même façon.
 - [ ] Tests : recherche d'un vin présent sur deux sites, saut vers la case du site non affiché, case visible à l'écran et mise en évidence, caisse ouverte, bouteille non placée, « Voir sur le plan » depuis une fiche.
+
+*Sommelier : bouton « Nouvelle conversation »* (demande du 5 novembre 2026). Quand la conversation dépasse un écran, le lien « Nouvelle conversation », placé tout en bas, se retrouve caché sous l'encart flottant « Demander au sommelier ».
+- [ ] **Icône dans l'encart flottant** : un bouton rond « nouvelle conversation » (icône bulle avec un +), à gauche du champ de saisie, toujours visible. Il n'apparaît que lorsqu'une conversation est en cours, et il est inactif pendant que le sommelier répond. L'ancien lien en bas de la conversation est retiré.
+- [ ] **Confirmation** : « Commencer une nouvelle conversation ? La conversation actuelle sera effacée. » Sans réponse de l'utilisateur, rien n'est effacé.
+- [ ] **Dernier message visible** : la conversation garde en bas un espace égal à la hauteur de l'encart, pour que la dernière réponse ne soit jamais cachée dessous, même quand l'encart s'agrandit (plusieurs lignes, choix d'occasion).
+- [ ] Tests : conversation plus longue que l'écran, icône visible et utilisable, confirmation, dernier message entièrement visible au-dessus de l'encart.
 
 **v2**
 - Sauvegarde automatique Google Drive.
