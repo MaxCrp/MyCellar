@@ -51,7 +51,8 @@ function wineFormSheet() {
       <div class="grid2"><label>Région<input name="region" value="${v('region')}" list="dl-reg" autocomplete="off"></label><label>Pays<input name="pays" value="${v('pays')}" autocomplete="off"></label></div>
       <label>Cépages<input name="cepages" value="${v('cepages')}" placeholder="Syrah, Grenache…" autocomplete="off"></label>
       <div class="grid2"><label>Degré<input name="degre" inputmode="decimal" value="${esc(numFr(w.degre))}" placeholder="13,5"></label>
-        <div style="display:grid;gap:6px;align-content:end"><label class="check"><input type="checkbox" name="bio" ${w.bio ? 'checked' : ''}> Bio</label><label class="check"><input type="checkbox" name="nature" ${w.nature ? 'checked' : ''}> Nature</label></div></div>
+        <label>Servir à<input name="service" value="${v('service')}" placeholder="16-18 °C" autocomplete="off"></label></div>
+      <div class="grid2"><label class="check"><input type="checkbox" name="bio" ${w.bio ? 'checked' : ''}> Bio</label><label class="check"><input type="checkbox" name="nature" ${w.nature ? 'checked' : ''}> Nature</label></div>
     </div>`;
   const spiritFields = `
     <div class="fieldset"><div class="ft">Le spiritueux</div>
@@ -110,7 +111,7 @@ function readWineForm(d, w) {
   });
   if (sp) Object.assign(w, { cat: d.cat, age: int(d.age), bottled: int(d.bottled), fut: t(d.fut), bruteDeFut: !!d.bruteDeFut, singleCask: !!d.singleCask, independant: t(d.independant), numero: t(d.numero) });
   else {
-    Object.assign(w, { couleur: d.couleur, appellation: t(d.appellation), cepages: t(d.cepages), bio: !!d.bio, nature: !!d.nature });
+    Object.assign(w, { couleur: d.couleur, appellation: t(d.appellation), cepages: t(d.cepages), service: t(d.service).slice(0, 40), bio: !!d.bio, nature: !!d.nature });
     const cw = cleanWindow(int(d.adeb), int(d.apic), int(d.afin), w.millesime), a = w.apogee || {};
     const fin = cw?.fin, deb = cw?.debut, pic = cw?.pic;
     if (fin && (fin !== a.fin || deb !== a.debut || pic !== a.pic)) w.apogee = { ...a, debut: deb, pic, fin, src: 'manuel', at: Date.now() };
@@ -320,7 +321,7 @@ function wineSheet(id) {
     <p class="small" style="margin:-4px 0 6px">${esc(wineSub(w))}</p>
     <div class="tags">${st && st !== 'inconnu' ? `<span class="tag ${STATUS[st].tag}">${STATUS[st].label}</span>` : ''}${isFriend(w) ? `<span class="tag o">Appartient à ${esc(w.owner)}</span>` : ''}${w.bio ? '<span class="tag g">Bio</span>' : ''}${w.nature ? '<span class="tag g">Nature</span>' : ''}${w.cadeau?.de ? `<span class="tag">Offert par ${esc(w.cadeau.de)}</span>` : ''}</div>
     ${sp ? '' : `<div class="card">
-      <div class="ct">Fenêtre de dégustation ${a?.src === 'ia' ? '<span class="tag">estimée par le sommelier</span>' : a?.src === 'manuel' ? '<span class="tag">saisie manuelle</span>' : ''}</div>
+      <div class="ct">Fenêtre de dégustation ${a?.src === 'ia' ? '<span class="tag">estimée par le sommelier</span>' : a?.src === 'manuel' ? '<span class="tag">saisie manuelle</span>' : a?.src === 'ploc' ? '<span class="tag">reprise de Ploc</span>' : ''}</div>
       ${a?.fin ? `<div class="score" style="font-size:22px;text-align:left">${a.debut || '?'} – ${a.fin}${a.pic ? `<small> · apogée ${a.pic}</small>` : ''}</div>${winBar(a, from, to, true)}<div class="winlab"><span>${from}</span><span>${to}</span></div>
         ${a.why ? `<p class="small" style="margin:8px 0 0">${esc(a.why)}</p>` : ''}
         ${a.sources?.length ? `<p class="tiny" style="margin:6px 0 0">Sources : ${a.sources.slice(0, 3).map(s => esc(s.title || s.url)).join(' · ')}</p>` : ''}`
@@ -334,7 +335,7 @@ function wineSheet(id) {
     <h3>Fiche</h3>
     <dl class="kv">${dlrow(sp ? 'Distillerie' : 'Domaine', w.domaine)}${dlrow(sp ? 'Expression' : 'Cuvée', w.cuvee)}${dlrow('Appellation', w.appellation)}${dlrow('Région', [w.region, w.pays].filter(Boolean).join(', '))}
       ${dlrow('Cépages', w.cepages)}${dlrow(sp ? 'Distillé en' : 'Millésime', w.millesime)}${dlrow('Âge', w.age ? w.age + ' ans' : '')}${dlrow('Embouteillé en', w.bottled)}${dlrow('Fût', w.fut)}
-      ${dlrow('Embouteilleur', w.independant)}${dlrow('Numéro', w.numero)}${dlrow('Degré', w.degre ? numFr(w.degre) + ' %' : '')}${dlrow('Format', (FORMATS[w.kind] || FORMATS.vin).find(f => f[0] === w.format)?.[1])}
+      ${dlrow('Embouteilleur', w.independant)}${dlrow('Numéro', w.numero)}${dlrow('Degré', w.degre ? numFr(w.degre) + ' %' : '')}${dlrow('Servir à', w.service)}${dlrow('Format', (FORMATS[w.kind] || FORMATS.vin).find(f => f[0] === w.format)?.[1])}
       ${dlrow('Prix', w.achat?.prix != null ? fmtE2.format(w.achat.prix) : '')}${dlrow('Acheté', [w.achat?.lieu, w.achat?.date && fmtDate(w.achat.date)].filter(Boolean).join(', '))}</dl>
     ${w.notes ? `<p class="small" style="white-space:pre-wrap">${esc(w.notes)}</p>` : ''}
     ${tastes.length ? `<h3>Dégustations</h3><div class="list">${tastes.map(t => `<button class="li" data-act="tasteView" data-id="${t.id}"><div class="it"><b>${t.note != null ? numFr(t.note) + ' / 20' : 'Sans note'}${t.full?.evolution ? ' · ' + esc({ jeune: 'jeune', apoint: 'à point', declin: 'sur le déclin' }[t.full.evolution] || '') : ''}</b><small class="ell">${esc(fmtDate(t.at))}${t.plat ? ' · ' + esc(t.plat) : ''}${t.comment ? ' · ' + esc(t.comment) : ''}</small></div><span class="chev">${ICON.chev}</span></button>`).join('')}</div>` : ''}

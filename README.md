@@ -21,7 +21,8 @@ src/js/*.js         code, assemblé dans l'ordre des noms de fichiers
   40-wine           ajout, fiche vin et bouteille, rangement, sortie, transferts, primeurs
   50-tasting        dégustation rapide ou complète, contexte, roue des arômes
   55-deg            onglet Dégustations : journal, vue par vin, séances, liste d'envies
-  60-ai             IA : sommelier, apogées, lecture d'étiquette, import Ploc, coûts
+  60-ai             IA : sommelier, apogées, lecture d'étiquette, coûts
+  62-ploc           import du PDF Ploc : lecture des fiches et du plan, sites, placement, avis du sommelier
   70-boire          vue À boire, conseils de rangement et réassort
   80-plus           réglages, sites et espaces, IA, sauvegarde, sécurité
   85-demo           cave fictive

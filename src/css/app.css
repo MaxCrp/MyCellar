@@ -310,3 +310,9 @@ input[type=range].unset::-moz-range-progress{background:#EAE2D6}
 .slot.off i{background:#C9C1B6}
 .rc.off{background:#DDD5CB;border-color:#DDD5CB;opacity:.6}
 .crate.off{opacity:.55}
+/* Import Ploc : aperçu du plan */
+.pgrid{display:grid;gap:4px;justify-content:start;padding:2px}
+.pd{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:700;color:#fff}
+.pd.lt{color:#3A2E25}
+.pd.e{border:1px dashed var(--line);background:transparent}
+.pd.off{opacity:.3}

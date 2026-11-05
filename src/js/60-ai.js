@@ -140,6 +140,7 @@ function caveContext(allSites) {
       w.cepages && `cépages ${w.cepages}`, `${bs.length} bouteille(s) ici${bs.length ? ' : ' + locs : ''}${elsewhere ? `, ${elsewhere} sur l’autre site` : ''}`,
       w.kind !== 'spirit' && (a?.fin ? `fenêtre ${a.debut || '?'}–${a.fin}${a.pic ? ' apogée ' + a.pic : ''} (${STATUS[st].label.toLowerCase()})` : 'fenêtre inconnue'),
       bs.some(b => b.state === 'open') && `ouverte, niveau ${bs.find(b => b.state === 'open').level ?? 100} %`,
+      w.service && `servir à ${w.service}`, w.notes && /Accords Ploc/.test(w.notes) && w.notes.match(/Accords Ploc : [^\n]{0,160}/)?.[0],
       w.achat?.prix != null && `prix ${Math.round(w.achat.prix)} €`, w.format && w.format !== '75' && w.format !== '70' && `format ${w.format} cl`,
       avg != null && `déjà dégusté : ${numFr(avg)}/20${ts.at(-1)?.comment ? ' « ' + ts.at(-1).comment.slice(0, 80) + ' »' : ''}`];
     rows.push({ w, line: '- ' + parts.filter(Boolean).join(' | ') });
@@ -378,76 +379,6 @@ async function onPhoto(file) {
     for (const k of Object.keys(f)) if (f[k] === '') delete f[k];
     closeSheet(); go(f);
   } catch (e) { closeSheet(); go({}); errSheet('Lecture impossible', (e.message || String(e)) + '\n\nTu peux remplir la fiche à la main : la photo est conservée.'); }
-}
-
-/* ---------- Import depuis Ploc (PDF) ---------- */
-const PLOC_SCHEMA = { type: 'object', additionalProperties: false, required: ['items'], properties: { items: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['domaine', 'nom', 'millesime', 'quantite', 'emplacement'], properties: { domaine: { type: 'string' }, nom: { type: 'string' }, millesime: { type: 'string' }, quantite: { type: 'integer' }, emplacement: { type: 'string' } } } } } };
-const ENRICH_SCHEMA = { type: 'object', additionalProperties: false, required: ['items'], properties: { items: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['i', 'couleur', 'appellation', 'cuvee', 'region', 'pays', 'cepages', 'debut', 'pic', 'fin'], properties: { i: { type: 'integer' }, couleur: { type: 'string', enum: ['rouge', 'blanc', 'rose', 'effervescent', 'liquoreux', 'orange'] }, appellation: { type: 'string' }, cuvee: { type: 'string' }, region: { type: 'string' }, pays: { type: 'string' }, cepages: { type: 'string' }, debut: { type: 'integer' }, pic: { type: 'integer' }, fin: { type: 'integer' } } } } } };
-let plocItems = null;
-Object.assign(ACT, {
-  importPloc: () => {
-    if (!aiReady() || !aiClaude()) return sheetMsg('Import depuis Ploc', 'L’import lit le PDF avec Claude : ajoute une clé Anthropic dans Plus › Intelligence artificielle, puis recommence.');
-    showSheet(() => `${head('Importer depuis Ploc')}
-      <p>Dans Ploc, exporte ou imprime ta cave en PDF (liste des bouteilles par emplacement), puis choisis le fichier ici.</p>
-      <p class="small">Le sommelier lit le PDF, reconnaît chaque vin, puis complète la couleur, l’appellation, les cépages et une fenêtre de dégustation estimée. Tu vérifies tout avant l’import. Coût indicatif : 10 à 30 centimes pour 120 bouteilles.</p>
-      <button class="btn primary wide" data-act="plocPick">${ICON.doc} Choisir le PDF</button>`);
-  },
-  plocPick: () => { const i = $('#f-pdf'); i.value = ''; i.click(); },
-  plocToggle: t => { const it = plocItems[+t.dataset.i]; it.skip = !it.skip; refreshSheet(); },
-  plocGo: async () => {
-    const sp = $('#ploc-space')?.value, items = plocItems.filter(x => !x.skip);
-    let nw = 0, nb = 0;
-    for (const it of items) {
-      const mill = readYear(it.millesime, thisYear() + 1).v || null;
-      let w = S.wines.find(x => x.kind === 'vin' && norm(x.domaine) === norm(it.domaine) && norm(x.cuvee || x.appellation) === norm(it.cuvee || it.appellation) && (x.millesime || null) === mill);
-      if (!w) {
-        w = { id: uid(), kind: 'vin', domaine: it.domaine, cuvee: it.cuvee || '', appellation: it.appellation || (it.cuvee ? '' : it.nom), region: it.region || '', pays: it.pays || 'France', couleur: it.couleur || 'rouge', cepages: it.cepages || '', millesime: mill, format: '75', createdAt: Date.now(), notes: 'Importé depuis Ploc' };
-        const cw = cleanWindow(it.debut, it.pic, it.fin, mill);
-        if (cw) w.apogee = { ...cw, src: 'ia', why: 'Estimation à l’import, sans recherche web.', at: Date.now() };
-        S.wines.push(w); nw++;
-      }
-      const ids = createBottles(w, it.quantite, { spaceId: sp });
-      for (const id of ids) byId(S.bottles, id).note = it.emplacement ? 'Emplacement Ploc : ' + it.emplacement : '';
-      nb += ids.length;
-    }
-    plocItems = null; await save(); closeSheet(); caveSpace = sp; view = 'cave'; caveMode = 'plan'; render();
-    toast(`${plural(nb, 'bouteille importée', 'bouteilles importées')} (${plural(nw, 'nouvelle référence', 'nouvelles références')}) · à ranger`);
-  },
-});
-async function onPdf(file) {
-  if (!file) return;
-  if (file.size > 25e6) return toast('PDF trop volumineux (25 Mo maximum)');
-  const step = msg => showSheet(() => `${head('Import depuis Ploc')}<p>${esc(msg)}</p><div class="bubble ai"><span class="typing"><i></i><i></i><i></i></span></div>`, { replace: true });
-  step('Lecture du PDF…');
-  try {
-    const data = b64(await file.arrayBuffer());
-    const r = await aiCall({ tag: 'ploc', system: 'Tu extrais l’inventaire d’une cave à vin depuis un PDF exporté par l’application Ploc. Liste chaque vin distinct avec sa quantité par emplacement (une ligne par vin et par emplacement). « nom » : nom du vin tel qu’écrit (appellation, cuvée). « millesime » : année ou chaîne vide. « emplacement » : emplacement indiqué (casier, rangée…), vide si absent. N’invente rien.', content: [{ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data } }, { type: 'text', text: 'Extrais toutes les bouteilles de ce PDF.' }], schema: PLOC_SCHEMA, maxTokens: 16000, effort: 'low' });
-    const items = (r.json.items || []).filter(x => (x.domaine || x.nom || '').trim());
-    for (const it of items) { const q = int(it.quantite); if (!q || q < 1) { it.quantite = 1; it.qfix = true; } else if (q > 200) { it.quantite = 200; it.qfix = true; } else it.quantite = q; }
-    if (!items.length) throw new AIError('Aucune bouteille trouvée dans ce PDF.');
-    step(`${plural(items.length, 'ligne trouvée', 'lignes trouvées')}. Le sommelier complète les fiches…`);
-    for (let k = 0; k < items.length; k += 40) {
-      const chunk = items.slice(k, k + 40);
-      try {
-        const e = await aiCall({ tag: 'ploc-fiches', system: `Pour chaque vin, donne sa couleur, son appellation, sa cuvée éventuelle (nom de cuvée distinct de l’appellation, sinon vide), sa région, son pays, ses cépages habituels, et une fenêtre de dégustation estimée (début, apogée, fin) en années, pour un stockage correct. Année actuelle : ${thisYear()}. Réponds pour chaque vin avec son numéro i.`, content: chunk.map((x, i) => `#${i} ${x.domaine} | ${x.nom} | ${x.millesime || 'NM'}`).join('\n'), schema: ENRICH_SCHEMA, maxTokens: 12000, effort: 'low' });
-        for (const it of e.json.items || []) if (chunk[it.i]) Object.assign(chunk[it.i], { ...it, i: undefined });
-      } catch (err) { /* l'import reste possible sans enrichissement */ }
-      step(`Fiches complétées : ${Math.min(items.length, k + 40)} / ${items.length}…`);
-    }
-    plocItems = items;
-    showSheet(plocReview, { replace: true, full: true });
-  } catch (e) { showSheet(() => `${head('Import impossible')}<p style="white-space:pre-wrap">${esc(e.message || String(e))}</p><button class="btn wide" data-act="close">Fermer</button>`, { replace: true }); }
-}
-function plocReview() {
-  if (!plocItems) return null;
-  const n = plocItems.filter(x => !x.skip).reduce((t, x) => t + x.quantite, 0);
-  return `${head('Vérifier l’import')}
-    <p class="small" style="margin-top:-6px">Décoche les lignes à ignorer. Les bouteilles arrivent « non placées » dans l’espace choisi ; l’emplacement Ploc est noté sur chaque bouteille pour t’aider à les ranger.</p>
-    <label>Espace de destination<select id="ploc-space">${spaceOptions(visibleSpaces()[0]?.id)}</select></label>
-    <div class="list">${plocItems.map((x, i) => `<button class="li" data-act="plocToggle" data-i="${i}" style="${x.skip ? 'opacity:.4' : ''}"><span class="dot" style="background:${COLORS[x.couleur]?.c || '#B9AFA6'}"></span>
-      <div class="it"><b class="ell">${esc(x.domaine)} · ${esc(x.nom)} ${esc(x.millesime || '')}</b><small class="ell">${esc([x.appellation, x.region, x.fin ? `fenêtre ${x.debut}–${x.fin}` : ''].filter(Boolean).join(' · '))}${x.emplacement ? ' · Ploc : ' + esc(x.emplacement) : ''}${x.qfix ? ' · <b style="color:var(--bx)">quantité corrigée</b>' : ''}</small></div>
-      <span class="qty">×${x.quantite || 1}</span><span class="chev">${x.skip ? '' : ICON.check}</span></button>`).join('')}</div>
-    <button class="btn primary wide" style="margin-top:14px;position:sticky;bottom:0" data-act="plocGo">Importer ${plural(n, 'bouteille', 'bouteilles')}</button>`;
 }
 
 /* ---------- Réévaluation de la fenêtre après une dégustation ---------- */

@@ -37,9 +37,14 @@ async function mockAI(page) {
       ? { kind: 'biere', couleur: 'violet', domaine: XSS, cuvee: '', appellation: '', region: '', pays: '', millesime: '20xx', cepages: '', degre: 'fort', format: '9999', cat: 'vodka', age: '-3', fut: '' }
       : { kind: 'vin', couleur: 'rouge', domaine: 'Test', cuvee: '', appellation: 'Test', region: '', pays: '', millesime: '2020', cepages: '', degre: '13', format: '75', cat: '', age: '', fut: '' }));
     if (schema?.properties?.changer) return reply(JSON.stringify(aiMode === 'weird' ? { changer: true, debut: 2090, pic: 1500, fin: 2030, justification: XSS } : { changer: false, debut: 0, pic: 0, fin: 0, justification: '' }));
-    if (schema?.properties?.items?.items?.properties?.emplacement) return reply(JSON.stringify({ items: aiMode === 'weird'
-      ? [{ domaine: XSS, nom: '', millesime: '2O19', quantite: 999999, emplacement: XSS }, { domaine: '', nom: '', millesime: '', quantite: -4, emplacement: '' }, { domaine: 'Ok', nom: 'Ok', millesime: '2018', quantite: 0, emplacement: '' }]
-      : [] }));
+    if (schema?.properties?.vins) {
+      const V = o => ({ numero: 0, titre: '', millesime: '', couleur: '', alcool: '', apogee: '', estimation: '', producteur: '', pays: '', region: '', appellation: '', cepages: '', cuvee: '', contenance: '', stock: 0, caves: [], servir: '', accords: '', note: '', ...o });
+      return reply(JSON.stringify(aiMode === 'weird'
+        ? { caves: [{ nom: XSS, lignes: 999, colonnes: -3, cases: [{ ligne: 1, colonne: 1, numero: 1 }] }, { nom: 'Cave B', lignes: 3, colonnes: 3, cases: [{ ligne: 9, colonne: 9, numero: 1 }, { ligne: 1, colonne: 1, numero: -2 }, { ligne: 2, colonne: 2, numero: 1 }, { ligne: 2, colonne: 2, numero: 3 }] }],
+          vins: [V({ numero: 1, titre: XSS, millesime: '2O19', couleur: 'violet', alcool: 'fort', apogee: '2040/2010', estimation: '-9€', note: '999', stock: 999999, caves: [{ nom: XSS, quantite: 999999 }], servir: XSS, accords: XSS }),
+            V({ titre: '', caves: [{ nom: 'Cave B', quantite: -4 }] }), V({ numero: 3, titre: 'Ok', millesime: '2018', caves: [{ nom: 'Cave B', quantite: 0 }], contenance: '99 litres' })] }
+        : { caves: [], vins: [] }));
+    }
     if (schema?.properties?.items?.items?.properties?.couleur) return reply(JSON.stringify({ items: [{ i: 0, couleur: 'rouge', appellation: '', cuvee: '', region: '', pays: '', cepages: '', debut: 3000, pic: -5, fin: 1200 }] }));
     if (schema?.properties?.items) return reply(JSON.stringify({ items: [{ i: 0, debut: 2030, pic: 2020, fin: 2010 }, { i: 99, debut: 1, pic: 1, fin: 1 }] }));
     if (aiMode === 'weird') return reply('Voici : ```json\n{"debut": 2040, "pic": 2025, "fin": 2030, "justification": "' + XSS.replace(/"/g, '\\"') + '"}\n```');
@@ -319,8 +324,8 @@ const setKey = p => p.evaluate(() => { S.settings.ai.key = 'sk-ant-test'; S.sett
     // Import Ploc : quantités absurdes, lignes vides
     await act(p, async () => { await onPdf(new File([new Uint8Array([37, 80, 68, 70])], 'p.pdf', { type: 'application/pdf' })); });
     await p.waitForTimeout(600);
-    const pl = await act(p, () => ({ rows: plocItems?.length, q: plocItems?.map(x => x.quantite), x: document.querySelectorAll('[data-xss]').length, btn: document.querySelector('[data-act=plocGo]')?.textContent }));
-    note('IA', 'Import Ploc : quantité 999 999, quantité négative, ligne vide, injection', !pl.x && !/999/.test(pl.btn || ''), JSON.stringify(pl));
+    const pl = await act(p, () => ({ rows: plocData?.wines.length, q: plocData?.wines.map(x => x.per.map(y => y.q)), x: document.querySelectorAll('[data-xss]').length, btn: document.querySelector('[data-act=plocGo]')?.textContent }));
+    note('IA', 'Import Ploc : quantité 999 999, quantité négative, ligne vide, grille absurde, injection', !pl.x && !/999/.test(pl.btn || ''), JSON.stringify(pl));
     await closeAll(p);
     // Budget dépassé
     aiMode = 'ok';

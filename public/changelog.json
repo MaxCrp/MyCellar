@@ -1,5 +1,19 @@
 [
  {
+  "version": "1.7",
+  "date": "2026-11-05",
+  "titre": "Import Ploc complet",
+  "items": [
+   "Import Ploc : les fiches sont reprises telles quelles (couleur, degré, fenêtre de garde, contenance, cépages). Le sommelier ne complète que les champs vides, et l’écran de vérification les signale.",
+   "Les bouteilles sont posées à leur case : le meuble est créé à l’identique du plan Ploc, ou associé à un meuble existant. Un aperçu du plan permet de vérifier la lecture.",
+   "Les caves Ploc sont rapprochées de tes sites, sur ton iPhone, sans envoyer la liste de tes sites à l’IA. Un site non reconnu est demandé une fois, et peut prendre le nom utilisé dans Ploc.",
+   "Le sommelier donne son avis sur chaque fenêtre de Ploc : s’il la juge décalée, il propose la sienne et tu choisis.",
+   "L’estimation de Ploc devient le prix d’achat, et la note sur 100 une dégustation sur 20. Les accords sont ajoutés aux notes du vin.",
+   "Plusieurs exports peuvent être importés à la suite, sans doublon.",
+   "Nouveau champ « Servir à » sur la fiche vin, affiché au moment de déguster. Le sommelier le voit, ainsi que les accords."
+  ]
+ },
+ {
   "version": "1.6.2",
   "date": "2026-11-05",
   "titre": "Fiabilité",

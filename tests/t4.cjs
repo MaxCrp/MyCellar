@@ -14,14 +14,13 @@ const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true })
     if (req.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
     const body = JSON.parse(req.postData()), schema = body.output_config?.format?.schema;
     let text;
-    if (schema?.properties?.items?.items?.properties?.emplacement) text = JSON.stringify({ items: [
-      { domaine: 'Domaine Jamet', nom: 'Côte-Rôtie', millesime: '2019', quantite: 3, emplacement: 'Casier A, rangée 2' },
-      { domaine: 'Château Palmer', nom: 'Margaux', millesime: '2015', quantite: 2, emplacement: 'Casier B' },
-      { domaine: 'Dagueneau', nom: 'Pouilly-Fumé Silex', millesime: '2020', quantite: 1, emplacement: '' }] });
-    else if (schema?.properties?.items?.items?.properties?.couleur) text = JSON.stringify({ items: [
-      { i: 0, couleur: 'rouge', appellation: 'Côte-Rôtie', cuvee: '', region: 'Rhône', pays: 'France', cepages: 'Syrah', debut: 2025, pic: 2030, fin: 2038 },
-      { i: 1, couleur: 'rouge', appellation: 'Margaux', cuvee: '', region: 'Bordeaux', pays: 'France', cepages: 'Cabernet sauvignon, Merlot', debut: 2027, pic: 2035, fin: 2050 },
-      { i: 2, couleur: 'blanc', appellation: 'Pouilly-Fumé', cuvee: 'Silex', region: 'Loire', pays: 'France', cepages: 'Sauvignon', debut: 2023, pic: 2027, fin: 2032 }] });
+    const V = o => ({ numero: 0, titre: '', millesime: '', couleur: '', alcool: '', apogee: '', estimation: '', producteur: '', pays: '', region: '', appellation: '', cepages: '', cuvee: '', contenance: '750ml', stock: 1, caves: [], servir: '', accords: '', note: '', ...o });
+    if (schema?.properties?.vins) text = JSON.stringify({ caves: [{ nom: 'Cave A', lignes: 4, colonnes: 4, cases: [{ ligne: 1, colonne: 1, numero: 1 }, { ligne: 1, colonne: 2, numero: 1 }, { ligne: 2, colonne: 1, numero: 2 }] }], vins: [
+      V({ numero: 1, titre: 'Domaine Jamet Côte-Rôtie', millesime: '2019', couleur: 'Rouge', apogee: '2025/2038', estimation: '60€', producteur: 'Domaine Jamet', appellation: 'Côte-Rôtie', caves: [{ nom: 'Cave A', quantite: 2 }] }),
+      V({ numero: 2, titre: 'Château Palmer Margaux', millesime: '2015', couleur: 'Rouge', apogee: '2027/2050', producteur: 'Château Palmer', appellation: 'Margaux', caves: [{ nom: 'Cave A', quantite: 1 }], note: '92' })] });
+    else if (schema?.properties?.items?.items?.properties?.justification) text = JSON.stringify({ items: [
+      { i: 0, producteur: '', appellation: '', region: 'Rhône', pays: '', cepages: 'Syrah', couleur: '', debut: 2025, pic: 2030, fin: 2038, justification: 'Syrah de garde.' },
+      { i: 1, producteur: '', appellation: '', region: 'Bordeaux', pays: '', cepages: 'Cabernet sauvignon, Merlot', couleur: '', debut: 2030, pic: 2038, fin: 2055, justification: 'Grand millésime, encore fermé.' }] });
     else text = 'OK';
     return route.fulfill({ status: 200, headers: { ...cors, 'content-type': 'application/json' }, body: JSON.stringify({ model: body.model, stop_reason: 'end_turn', content: [{ type: 'text', text }], usage: { input_tokens: 3000, output_tokens: 800 } }) });
   });
