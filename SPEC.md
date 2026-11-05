@@ -545,14 +545,14 @@ Le détail est dans `docs/tests/2026-11-04-campagne-v1.6.1/` : `rapport-bugs.md`
 
 Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (QR codes), v2.3 (sauvegarde automatique). Chaque release est livrée et testée à part.
 
-**v2.0** (statistiques, valeur, cadeaux, audit ; spécifiée, en attente de validation)
+**v2.0** (statistiques, valeur, cadeaux, audit ; spécifiée et validée le 5 novembre 2026)
 *Statistiques* : un écran Réglages › Ma cave › Statistiques. Seules mes bouteilles sont comptées.
 - [ ] **La cave aujourd'hui** : bouteilles par couleur, par région (les 8 premières, puis « autres »), par pays, par millésime (histogramme), par format, par statut (à boire en priorité, prêt, trop tôt, déclin, inconnu), par site et par espace.
 - [ ] **Consommation** : bouteilles bues par mois sur 12 mois, par couleur ; note moyenne ; les 10 vins les mieux notés ; rythme annuel (bouteilles bues par an).
 - [ ] **Achats** : bouteilles achetées et dépense par année, prix moyen par bouteille, lieux d'achat les plus fréquents.
 - [ ] Chaque graphique se touche pour afficher la liste des vins concernés, comme le graphique d'À boire.
 
-*Valeur estimée* (question 1)
+*Valeur estimée* (question 1 validée : saisie à la main ou estimation par le sommelier à la demande, jamais en tâche de fond)
 - [ ] **Champ « valeur actuelle »** sur la fiche d'un vin, saisi à la main, ou proposé par le sommelier avec recherche web. Il affiche sa source, sa date et une fourchette.
 - [ ] **Estimation groupée** « Estimer la valeur des vins sans estimation », avec le coût annoncé avant de lancer (environ 1 centime par vin) et le respect du plafond mensuel.
 - [ ] **Valeur de la cave** : la somme des valeurs actuelles, ou à défaut du prix d'achat, avec la part estimée et la part au prix d'achat. Évolution : valeur actuelle comparée au prix d'achat, par vin et au total.
@@ -576,14 +576,14 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 - [ ] Rien ne quitte l'iPhone sans action de ta part : le partage passe par la feuille de partage iOS.
 - [ ] Tests : contenu de la carte selon les filtres, image produite, fichier .xlsx lisible (structure vérifiée), page d'impression.
 
-**v2.2** (QR codes sur les meubles ; spécifiée, en attente de validation, question 2)
+**v2.2** (QR codes sur les meubles ; spécifiée et validée le 5 novembre 2026 : deux bibliothèques libres intégrées)
 - [ ] **Étiquettes** : pour chaque meuble ou caisse, une étiquette QR avec son nom, à imprimer (planche d'étiquettes en PDF, une ou plusieurs par page).
 - [ ] **Scan dans l'app** : un bouton « Scanner » (onglet Cave) ouvre l'appareil photo. Le meuble scanné s'affiche directement sur le plan, avec son contenu et les actions habituelles (ranger ici, sortir, caisse entière…).
 - [ ] Le scan se fait dans l'app, pas avec l'appareil photo d'iOS : sur iPhone, une app installée et Safari ne partagent pas leurs données, donc un lien ouvert par l'appareil photo ne verrait pas ta cave.
 - [ ] Le code ne contient qu'un identifiant aléatoire du meuble : rien sur le contenu, inutilisable sans ta cave.
 - [ ] Tests : génération et relecture des codes, scan simulé qui ouvre le bon meuble, code inconnu.
 
-**v2.3** (sauvegarde automatique ; spécifiée, en attente de validation, question 3)
+**v2.3** (sauvegarde automatique ; spécifiée, destination en attente de choix, question 3)
 - [ ] **Sauvegarde automatique** chiffrée (le même fichier que la sauvegarde manuelle, illisible sans ton mot de passe), après chaque modification importante et au plus une fois par heure, plus une fois par jour au minimum. Les 30 dernières versions sont gardées.
 - [ ] **Restauration** depuis la liste des versions, avec leur date.
 - [ ] **État visible** dans Réglages › Sauvegarde : dernière sauvegarde réussie, échec éventuel et sa raison. Le rappel des 7 jours ne s'affiche plus quand la sauvegarde automatique fonctionne.
@@ -597,3 +597,8 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
    - (a) Google Drive, sans serveur : simple, mais Google demande de se reconnecter environ toutes les heures. La sauvegarde ne serait donc automatique que pendant une session.
    - (b) Google Drive, avec un petit service Cloudflare (Worker) qui garde l'autorisation : vraiment automatique. Il faut créer un projet Google Cloud et le Worker ; je fournis le code et la marche à suivre pas à pas.
    - (c) Ton propre espace Cloudflare (Worker et stockage KV), sans Google : vraiment automatique, et le plus simple à installer puisque tu utilises déjà Cloudflare. Le fichier reste chiffré.
+
+   *Précision du 5 novembre 2026* : l'app est aussi utilisée par des amis, chacun avec sa propre cave. Il faut donc que chacun ait sa sauvegarde distincte.
+   - Avec Google Drive (a ou b), chacun se connecte avec son propre compte Google. Sa sauvegarde va dans un dossier caché de son Drive, propre à l'app (`appDataFolder`), que personne d'autre ne voit. Sur un nouvel iPhone, il suffit de se reconnecter à Google, puis de saisir le mot de passe de la cave.
+   - Avec (c), les sauvegardes de tous sont stockées sur ton compte Cloudflare. Chacune est rangée sous une clé personnelle tirée au hasard sur l'iPhone. Personne ne peut lire la sauvegarde d'un autre, ni toi, puisqu'elle est chiffrée. En revanche, chacun doit garder sa clé de récupération pour restaurer sur un autre appareil.
+   - Pour (b) : un seul projet Google Cloud sert à tous. Le droit demandé (`drive.appdata`) est classé « non sensible » par Google, donc une vérification de base suffit. L'app doit passer en statut « En production », sinon l'autorisation expire tous les 7 jours. Le projet est limité à 100 utilisateurs tant qu'il n'est pas vérifié. Le Worker ne fait que renouveler l'autorisation : il ne voit jamais les données, qui vont directement de l'iPhone au Drive de chacun.
