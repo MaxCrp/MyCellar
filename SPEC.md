@@ -512,6 +512,19 @@ Le détail est dans `docs/tests/2026-11-04-campagne-v1.6.1/` : `rapport-bugs.md`
   - **Modifier le vin** (fiche commune) et **Modifier l'achat** (prix, date, source) pour toutes les bouteilles de la caisse.
 - [ ] Tests : nouveau millésime depuis la fiche et depuis « Racheter un vin », « Offert par » ; ajout de 12 bouteilles dont 6 pour un ami, puis répartition après coup ; sommelier et À boire limités à mes bouteilles ; caisse à un seul vin au rangement ; sortie, déplacement, transfert et attribution d'une caisse entière.
 
+**v1.7.4** (bouteilles sorties à noter ; spécifiée, rien n'est développé)
+
+*Constat.* Après une sortie « bue », « bouchonnée » ou « terminée », l'app propose « Note rapide », « Fiche complète » ou « Plus tard ». Mais elle ne retient que la dernière bouteille : le lendemain, une bannière la rappelle, et « Non merci » l'oublie. Si plusieurs bouteilles sont sorties sans fiche, les précédentes sont perdues, et rien dans l'onglet Dégustations ne permet de les retrouver.
+
+- [ ] **Liste « À noter »** : chaque bouteille sortie sans fiche y reste jusqu'à ce qu'on la note ou qu'on choisisse « Sans fiche ». Une ligne par bouteille : vin, date de sortie, motif, plat ou occasion, et avec qui.
+- [ ] **Bouton dans Dégustations** : en haut de l'onglet, une carte « 3 bouteilles sorties à noter » ouvre la liste. Elle n'apparaît que s'il y a des bouteilles à noter. La liste est aussi accessible quand le journal est vide.
+- [ ] **Choix pour une bouteille** : « Note rapide », « Fiche complète » (contexte prérempli avec la date de sortie, le plat et les convives) ou « Sans fiche » (la bouteille quitte la liste, sans dégustation). En bas de la liste, « Tout passer sans fiche » demande confirmation.
+- [ ] **Au moment de la sortie** : l'écran « Bonne dégustation ! » propose « Note rapide », « Fiche complète », « Plus tard » (la bouteille va dans « À noter ») et « Sortir sans fiche » (rien à noter, aucun rappel).
+- [ ] **Rappel du lendemain** : la bannière compte les bouteilles à noter (« 2 bouteilles sorties à noter »). « Noter » ouvre la liste, ou directement la fiche s'il n'y en a qu'une. « Plus tard » masque la bannière jusqu'au lendemain sans rien retirer de la liste.
+- [ ] **Sorties passées** : à l'installation, les bouteilles bues, bouchonnées ou terminées dans les 30 derniers jours sans dégustation entrent dans la liste (à valider). Les sorties plus anciennes n'y apparaissent pas.
+- [ ] Non concernés : les bouteilles d'un ami, et les sorties « offerte », « vendue », « cassée » ou « rendue ».
+- [ ] Tests : trois sorties successives toutes retrouvées, chaque choix (rapide, complète, sans fiche), « Plus tard » à la sortie et dans la bannière, « Tout passer sans fiche », reprise des sorties récentes.
+
 **v2**
 - Sauvegarde automatique Google Drive.
 - Audit de cave.
