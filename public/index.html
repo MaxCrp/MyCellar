@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#F7F3EC">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-pKZsWdOtF7B68X7V4OxJyq4PBAMphtBxTnWgr5+S4Hk='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-kuh4yCWWkmX0MVMXH5mXbs0l5qV9CLnFexH/yAron/U='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>MyCellar</title>
@@ -317,6 +317,15 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .switch[data-act]{cursor:not-allowed}
 .switch input:disabled{pointer-events:none}
 .why-off{display:block;font-size:12px;color:var(--bx);margin-top:2px}
+.ferr{display:block;color:var(--red);font-size:12.5px;font-weight:500;margin-top:2px}
+input.bad,select.bad,textarea.bad{border-color:var(--red);box-shadow:0 0 0 1px var(--red)}
+input[type=range].unset::-webkit-slider-runnable-track{background:#EAE2D6}
+input[type=range].unset::-webkit-slider-thumb{opacity:.55}
+input[type=range].unset::-moz-range-progress{background:#EAE2D6}
+.slot.off{background:#EFEBE5;opacity:.55}
+.slot.off i{background:#C9C1B6}
+.rc.off{background:#DDD5CB;border-color:#DDD5CB;opacity:.6}
+.crate.off{opacity:.55}
 
 </style>
 </head>
@@ -331,7 +340,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 <input type="file" id="f-backup" accept="application/json,.json" hidden>
 <script>
 'use strict';
-const CHANGELOG = [{"version":"1.6.1","date":"2026-11-04","titre":"Confort et corrections","items":["Les fenêtres ne clignotent plus et ne remontent plus en haut quand tu touches un choix (fiche de dégustation, rangement, liste d’envies, transfert…).","Fiche de dégustation : le bouton « OK » en haut disparaît, on enregistre avec le bouton du bas. Fermer une fiche commencée demande confirmation.","Dans la cave fictive, les réglages indisponibles (suivi d’utilisation, Face ID, Rester déverrouillé) expliquent pourquoi.","Réglages › Contenu : la ligne « Vins · Toujours actif » est retirée."]},{"version":"1.6","date":"2026-11-04","titre":"Retours d’utilisation et suivi des versions","items":["Suivi d’utilisation (désactivé par défaut, Réglages › Aide) : l’app note, sur ton iPhone uniquement, les écrans et les gestes, jamais tes vins ni tes notes. Tu peux consulter la synthèse et exporter un rapport à envoyer, avec ton avis.","« Signaler un problème » : décris ce qui s’est passé, l’app prépare un rapport avec les dernières minutes d’utilisation et les erreurs récentes. Raccourci aussi dans les messages d’erreur.","Mises à jour : « Plus d’infos » montre le contenu d’une nouvelle version avant de l’installer, une fenêtre « Nouveautés » s’affiche après, et l’historique des versions est dans Réglages › Aide."]},{"version":"1.5.2","date":"2026-11-04","titre":"Dégustation à l’aveugle et finitions","items":["Dégustation à l’aveugle : la fiche d’abord sur un « vin mystère », tes hypothèses, puis la révélation, la comparaison et l’analyse du sommelier.","Le bouton + est le même partout : « Nouvelle dégustation » ou « Nouveau vin ».","Présentation de l’app au premier lancement, à revoir dans Réglages › Aide.","Recherche dans « Racheter un vin ». L’import Ploc est désormais dans les réglages.","Nouvelles icônes : un bouchon pour « Déguster », un carnet pour les dégustations."]},{"version":"1.5","date":"2026-11-04","titre":"Dégustations et conseils de rangement","items":["Onglet Dégustations : le journal de tous tes vins dégustés, en cave ou ailleurs (restaurant, salon, domaine…), avec recherche, filtres et vue par vin.","Séances de dégustation avec classement, et liste d’envies avec « Acheté ».","Conseils de rangement dans À boire : vins à rapprocher, à mettre en garde, réassort de la cave de consommation.","Le sommelier propose d’ajuster la fenêtre d’un vin après une dégustation, et tient compte de tes vins bus ailleurs et de tes accords.","Les réglages passent sous l’icône engrenage."]},{"version":"1.0.1","date":"2026-11-04","titre":"Corrections","items":["L’app se rouvre correctement sur iPhone après un premier lancement.","La création de la cave ne pose plus de question : un site « Site 1 », renommable, et le mode plusieurs sites dans les réglages.","La vue Urgence de la page Cave est retirée : l’onglet À boire fait référence."]},{"version":"1.0","date":"2026-11-04","titre":"Première version","items":["Ta cave sur ton iPhone, chiffrée par ton mot de passe ou Face ID, et utilisable hors ligne.","Sites, espaces et meubles (armoire, rack, étagère, caisses, cartons) avec un plan visuel et une recherche.","Ajout par photo d’étiquette ou saisie, rangement suggéré, sorties, déplacements, transferts, primeurs, vins des amis.","Dégustation rapide ou complète avec la roue des arômes.","Sommelier pour les accords mets-vins, fenêtres de dégustation estimées, onglet À boire.","Option spiritueux, import Ploc, sauvegarde chiffrée."]}];
+const CHANGELOG = [{"version":"1.6.2","date":"2026-11-05","titre":"Fiabilité","items":["Un double appui sur un bouton ne crée plus deux bouteilles, deux sorties ou deux dégustations.","La fiche vin vérifie le millésime, le prix, le degré et la quantité, et explique sous le champ ce qui ne va pas. Un millésime sur deux chiffres est complété (« 19 » devient 2019), et les nombres comme « 1.234,50 » sont reconnus.","Les fenêtres de dégustation restent cohérentes (début, apogée, fin), qu’elles soient saisies ou proposées par le sommelier.","Une dégustation enregistrée sans toucher au curseur n’a plus de note, au lieu d’un 14/20 par défaut.","Rangement : l’app prévient quand les places manquent et propose l’espace le plus libre.","Spiritueux désactivés : leurs cases restent sur le plan, grisées.","Import Ploc, lecture d’étiquette et restauration de sauvegarde : contrôles et messages plus clairs.","Les très grandes caves restent économes en appels au sommelier."]},{"version":"1.6.1","date":"2026-11-04","titre":"Confort et corrections","items":["Les fenêtres ne clignotent plus et ne remontent plus en haut quand tu touches un choix (fiche de dégustation, rangement, liste d’envies, transfert…).","Fiche de dégustation : le bouton « OK » en haut disparaît, on enregistre avec le bouton du bas. Fermer une fiche commencée demande confirmation.","Dans la cave fictive, les réglages indisponibles (suivi d’utilisation, Face ID, Rester déverrouillé) expliquent pourquoi.","Réglages › Contenu : la ligne « Vins · Toujours actif » est retirée."]},{"version":"1.6","date":"2026-11-04","titre":"Retours d’utilisation et suivi des versions","items":["Suivi d’utilisation (désactivé par défaut, Réglages › Aide) : l’app note, sur ton iPhone uniquement, les écrans et les gestes, jamais tes vins ni tes notes. Tu peux consulter la synthèse et exporter un rapport à envoyer, avec ton avis.","« Signaler un problème » : décris ce qui s’est passé, l’app prépare un rapport avec les dernières minutes d’utilisation et les erreurs récentes. Raccourci aussi dans les messages d’erreur.","Mises à jour : « Plus d’infos » montre le contenu d’une nouvelle version avant de l’installer, une fenêtre « Nouveautés » s’affiche après, et l’historique des versions est dans Réglages › Aide."]},{"version":"1.5.2","date":"2026-11-04","titre":"Dégustation à l’aveugle et finitions","items":["Dégustation à l’aveugle : la fiche d’abord sur un « vin mystère », tes hypothèses, puis la révélation, la comparaison et l’analyse du sommelier.","Le bouton + est le même partout : « Nouvelle dégustation » ou « Nouveau vin ».","Présentation de l’app au premier lancement, à revoir dans Réglages › Aide.","Recherche dans « Racheter un vin ». L’import Ploc est désormais dans les réglages.","Nouvelles icônes : un bouchon pour « Déguster », un carnet pour les dégustations."]},{"version":"1.5","date":"2026-11-04","titre":"Dégustations et conseils de rangement","items":["Onglet Dégustations : le journal de tous tes vins dégustés, en cave ou ailleurs (restaurant, salon, domaine…), avec recherche, filtres et vue par vin.","Séances de dégustation avec classement, et liste d’envies avec « Acheté ».","Conseils de rangement dans À boire : vins à rapprocher, à mettre en garde, réassort de la cave de consommation.","Le sommelier propose d’ajuster la fenêtre d’un vin après une dégustation, et tient compte de tes vins bus ailleurs et de tes accords.","Les réglages passent sous l’icône engrenage."]},{"version":"1.0.1","date":"2026-11-04","titre":"Corrections","items":["L’app se rouvre correctement sur iPhone après un premier lancement.","La création de la cave ne pose plus de question : un site « Site 1 », renommable, et le mode plusieurs sites dans les réglages.","La vue Urgence de la page Cave est retirée : l’onglet À boire fait référence."]},{"version":"1.0","date":"2026-11-04","titre":"Première version","items":["Ta cave sur ton iPhone, chiffrée par ton mot de passe ou Face ID, et utilisable hors ligne.","Sites, espaces et meubles (armoire, rack, étagère, caisses, cartons) avec un plan visuel et une recherche.","Ajout par photo d’étiquette ou saisie, rangement suggéré, sorties, déplacements, transferts, primeurs, vins des amis.","Dégustation rapide ou complète avec la roue des arômes.","Sommelier pour les accords mets-vins, fenêtres de dégustation estimées, onglet À boire.","Option spiritueux, import Ploc, sauvegarde chiffrée."]}];
 const APP_VERSION = CHANGELOG[0].version;
 
 /* ===== 00-core.js ===== */
@@ -360,10 +369,15 @@ const fmtE2 = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR
 const eur = v => fmtE.format(Math.round(v || 0));
 const numFr = (v, d = 1) => v == null ? '' : Number(v).toLocaleString('fr-FR', { maximumFractionDigits: d });
 // Saisie d'un nombre au format français : « 12,5 », « 1 234 », « 25 € »
+// « 1.234,50 » : point des milliers et virgule décimale ; « 1.234 » seul = 1234
 function num(s) {
   if (s == null) return null;
-  s = String(s).replace(/[\s  €%]/g, '').replace(',', '.');
+  s = String(s).replace(/[\s\u00a0\u202f€%]/g, '');
   if (s === '') return null;
+  if (s.includes(',') && s.includes('.')) s = s.replace(/\./g, '').replace(',', '.');
+  else if (/^-?\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, '');
+  else s = s.replace(',', '.');
+  if (!/^[-+]?(\d+\.?\d*|\.\d+)(e[-+]?\d+)?$/i.test(s)) return null;
   const n = Number(s);
   return Number.isFinite(n) ? n : null;
 }
@@ -754,7 +768,49 @@ function normalize(d) {
   if (!d.sites.length) d.sites.push({ id: uid(), name: 'Site 1', role: 'conso' });
   if (!d.spaces.length) d.spaces.push({ id: uid(), siteId: d.sites[0].id, name: 'Cave', use: 'conso', q: {} });
   if (!d.sites.some(s => s.id === d.settings.site)) d.settings.site = d.sites[0].id;
+  cleanData(d);
   return d;
+}
+// Références orphelines et positions impossibles (anciennes sauvegardes, données modifiées à la main) :
+// une bouteille placée hors de son meuble redevient « non placée » au lieu de disparaître du plan.
+function cleanData(d) {
+  const wid = new Set(d.wines.map(w => w.id)), bid = new Set(d.bottles.map(b => b.id)), sid = new Set(d.spaces.map(s => s.id)), ses = new Set(d.sessions.map(s => s.id));
+  d.wishes = d.wishes.filter(x => wid.has(x.wineId));
+  // Fenêtre incohérente déjà enregistrée : on garde la fin si elle est possible, sinon on l'efface
+  for (const w of d.wines) if (w.apogee) { const a = w.apogee, cw = cleanWindow(a.debut, a.pic, a.fin, w.millesime) || cleanWindow(null, null, a.fin, w.millesime); w.apogee = cw ? { ...a, ...cw } : null; }
+  d.transfer.ids = d.transfer.ids.filter(id => bid.has(id));
+  d.tastings = d.tastings.filter(t => !t.wineId || wid.has(t.wineId));
+  for (const t of d.tastings) if (t.sessionId && !ses.has(t.sessionId)) t.sessionId = null;
+  d.bottles = d.bottles.filter(b => wid.has(b.wineId));
+  const units = new Map(d.units.filter(u => sid.has(u.spaceId)).map(u => [u.id, u])), taken = new Set();
+  d.units = d.units.filter(u => units.has(u.id));
+  for (const b of d.bottles) {
+    if (b.state !== 'cave' && b.state !== 'open') continue;
+    if (!sid.has(b.spaceId)) { b.spaceId = d.spaces[0].id; b.unitId = null; b.r = b.c = null; }
+    if (!b.unitId) continue;
+    const u = units.get(b.unitId), k = `${b.unitId}:${b.r}:${b.c}`;
+    const ok = u && u.spaceId === b.spaceId && !taken.has(k) && positions(u).some(([r, c]) => r === b.r && c === b.c);
+    if (ok) taken.add(k); else { b.unitId = null; b.r = b.c = null; }
+  }
+}
+// Fenêtre de dégustation : début ≤ apogée ≤ fin, années possibles et pas avant le millésime.
+// Renvoie null si l'ensemble est incohérent (on n'en garde pas la moitié).
+function cleanWindow(deb, pic, fin, mill) {
+  const z = v => v == null || v === '' || +v === 0 ? null : +v;
+  deb = z(deb); pic = z(pic); fin = z(fin);
+  const lo = Math.max(1900, mill || 1900), ok = y => Number.isInteger(y) && y >= lo && y <= 2200;
+  if (!ok(fin)) return null;
+  if (deb != null && (!ok(deb) || deb > fin)) return null;
+  if (pic != null && (!ok(pic) || pic > fin || (deb != null && pic < deb))) return null;
+  return { debut: deb, pic, fin };
+}
+// Année saisie : « 19 » → 2019, « 98 » → 1998 ; renvoie { v } , { err } ou { bad }
+function readYear(raw, max) {
+  raw = String(raw ?? '').trim();
+  if (!raw) return { v: null };
+  if (/^\d{2}$/.test(raw)) { const n = +raw, v = 2000 + n <= max ? 2000 + n : 1900 + n; return { v, filled: true }; }
+  if (/^\d{4}$/.test(raw)) { const v = +raw; return v >= 1900 && v <= max ? { v } : { err: `Une année entre 1900 et ${max}` }; }
+  return { bad: true };
 }
 // Structure de départ : un seul site, « Site 1 ». Le mode plusieurs sites se règle dans Plus.
 function seedStructure(d) {
@@ -1016,6 +1072,22 @@ function setRangeFill(r) { const p = (r.value - r.min) / (r.max - r.min) * 100; 
    Les boutons portent data-act="nom" ; chaque module ajoute ses actions à ACT.
    Les formulaires portent data-form="nom" ; FORMS reçoit (formulaire, données). */
 const ACT = {}, FORMS = {}, INPUTS = {}, CHANGES = {};
+// Affiche les erreurs sous les champs concernés ; renvoie vrai s'il y en a
+function formErrors(f, errs) {
+  $$('.ferr', f).forEach(e => e.remove()); $$('.bad', f).forEach(e => e.classList.remove('bad'));
+  for (const [n, m] of errs) {
+    const el = f.elements[n]; if (!el) continue;
+    el.classList.add('bad');
+    const s = document.createElement('span'); s.className = 'ferr'; s.textContent = m;
+    (el.closest('label') || el.parentNode).appendChild(s);
+  }
+  if (errs.length) {
+    const first = f.elements[errs[0][0]]; first?.closest('details')?.setAttribute('open', '');
+    first?.scrollIntoView({ block: 'center' });
+    toast(errs.length > 1 ? `${errs.length} champs à corriger` : errs[0][1]);
+  }
+  return errs.length > 0;
+}
 const formData = f => Object.fromEntries([...new FormData(f).entries()].map(([k, v]) => [k, typeof v === 'string' ? v.trim() : v]));
 
 /* ---------- Verrou ---------- */
@@ -1183,7 +1255,8 @@ function spaceBlock(sp, ctx, titled) {
 }
 function unitHead(u, ctx) {
   const t = UNIT_TYPES[u.type], used = capacity(u) - freeSlots(u, ctx.occ).length;
-  const meta = `${u.rows} ${(u.rows > 1 ? t.rows : t.row1).toLowerCase()} · ${capacity(u)} places · ${used} occupée${used > 1 ? 's' : ''}`;
+  const hid = spiritsOn() ? 0 : S.bottles.filter(b => b.unitId === u.id && inCave(b) && !kindOn(wine(b.wineId))).length;
+  const meta = `${u.rows} ${(u.rows > 1 ? t.rows : t.row1).toLowerCase()} · ${capacity(u)} places · ${used} occupée${used > 1 ? 's' : ''}${hid ? ` · ${plural(hid, 'spiritueux masqué', 'spiritueux masqués')}` : ''}`;
   return `<div class="ct" style="margin-bottom:2px"><span class="ell">${esc(u.name || t.label)}</span>${ctx.pick ? '' : `<button class="icon-btn" data-act="editUnit" data-id="${u.id}" aria-label="Modifier le meuble">${ICON.edit}</button>`}</div><div class="tiny">${meta}</div>`;
 }
 function slotState(b, ctx) {
@@ -1202,12 +1275,14 @@ function renderGrid(u, ctx) {
       if (u.type === 'rack') {
         if (!b) { cells.push(`<button class="rc${sel ? ' sel' : ''}" ${ctx.pick ? `data-act="pickSlot" data-u="${u.id}" data-r="${r}" data-c="${c}"` : `data-act="emptySlot" data-u="${u.id}" data-r="${r}" data-c="${c}"`} aria-label="${t.row1} ${r + 1}, place ${c + 1} : libre"></button>`); continue; }
         const { w, cls } = slotState(b, ctx);
+        if (!kindOn(w)) { cells.push(`<button class="rc off" ${ctx.pick ? 'disabled' : 'data-act="spiritOff"'} aria-label="Spiritueux masqué"></button>`); continue; }
         const bg = wineColor(w), light = wineLight(w);
         cells.push(`<button class="rc ${cls.join(' ')}${light ? ' light' : ''}${ctx.pick ? ' dim' : ''}" style="background:${bg};border-color:${bg}" ${isFriend(w) ? `data-ini="${esc(ownerInitial(w))}"` : ''} ${ctx.pick ? 'disabled' : `data-act="slot" data-b="${b.id}"`} aria-label="${esc(wineTitle(w))}">${esc(abbr(w))}</button>`);
         continue;
       }
       if (!b) { cells.push(`<button class="slot empty${sel ? ' sel' : ''}" ${ctx.pick ? `data-act="pickSlot" data-u="${u.id}" data-r="${r}" data-c="${c}"` : `data-act="emptySlot" data-u="${u.id}" data-r="${r}" data-c="${c}"`} aria-label="Place libre"></button>`); continue; }
       const { w, cls } = slotState(b, ctx);
+      if (!kindOn(w)) { cells.push(`<button class="slot off" ${ctx.pick ? 'disabled' : 'data-act="spiritOff"'} aria-label="Spiritueux masqué"><i></i><b>&nbsp;</b><small>&nbsp;</small></button>`); continue; }
       cells.push(`<button class="slot ${cls.join(' ')}${ctx.pick ? ' dim' : ''}" ${ctx.pick ? 'disabled' : `data-act="slot" data-b="${b.id}"`}><i style="background:${wineColor(w)}"></i><b>${esc(shortName(w))}</b><small>${esc(shortSub(w))}${b.state === 'open' ? ' · ouverte' : ''}</small>${isFriend(w) ? `<span class="ini">${esc(ownerInitial(w))}</span>` : ''}</button>`);
     }
     const cols = u.type === 'rack' ? `repeat(${u.cols},minmax(26px,1fr))` : `repeat(${u.cols},minmax(${u.cols > 6 ? 54 : 0}px,1fr))`;
@@ -1222,7 +1297,8 @@ function renderBoxes(boxes, ctx) {
   const sorted = [...boxes].sort((a, b) => String(a.pile || '').localeCompare(String(b.pile || '')) || (b.level || 0) - (a.level || 0));
   return `<div class="pile">${sorted.map(u => {
     const bs = boxContents(u, ctx.occ), ws = [...new Set(bs.map(b => b.wineId))].map(wine);
-    const title = ws.length === 1 ? wineTitle(ws[0]) : ws.length ? 'Assortiment' : 'Vide';
+    const off = ws.length && ws.every(w => !kindOn(w));
+    const title = off ? 'Spiritueux masqués' : ws.length === 1 ? wineTitle(ws[0]) : ws.length ? 'Assortiment' : 'Vide';
     const hit = ctx.m && ws.some(ctx.m), dim = ctx.m && !hit;
     const act = ctx.pick ? `data-act="pickBox" data-u="${u.id}"` : `data-act="box" data-u="${u.id}"`;
     const picked = ctx.pick?.sel.filter(s => s.unitId === u.id).length || 0;
@@ -1233,6 +1309,8 @@ function renderBoxes(boxes, ctx) {
   }).join('')}</div>`;
 }
 function unplacedBlock(list, ctx) {
+  list = list.filter(b => kindOn(wine(b.wineId)));
+  if (!list.length) return '';
   const by = new Map();
   for (const b of list) by.set(b.wineId, (by.get(b.wineId) || 0) + 1);
   return `<div class="card"><div class="ct">Non placées <span class="small">${list.length}</span></div><div class="unplaced">${[...by].map(([wid, n]) => {
@@ -1336,6 +1414,7 @@ Object.assign(ACT, {
     await save(); closeSheet(); render(); toast('Meuble supprimé');
   },
   slot: t => showSheet(() => bottleSheet(t.dataset.b)),
+  spiritOff: () => toast('Spiritueux masqués : réactive-les dans Réglages › Contenu'),
   emptySlot: t => showSheet(() => emptySlotSheet(t.dataset.u, +t.dataset.r, +t.dataset.c)),
   box: t => showSheet(() => boxSheet(t.dataset.u)),
 });
@@ -1477,20 +1556,43 @@ function readWineForm(d, w) {
   const t = s => s || '';
   Object.assign(w, {
     domaine: t(d.domaine), cuvee: t(d.cuvee), region: t(d.region), pays: t(d.pays), format: d.format,
-    millesime: int(d.millesime) || null, degre: num(d.degre), owner: t(d.owner) || null, short: t(d.short), abbr: t(d.abbr).toUpperCase(), notes: t(d.notes),
+    millesime: readYear(d.millesime, thisYear() + 1).v || null, degre: num(d.degre), owner: t(d.owner) || null, short: t(d.short), abbr: t(d.abbr).toUpperCase(), notes: t(d.notes),
     achat: { prix: num(d.prix), date: d.adate || null, lieu: t(d.lieu) }, cadeau: d.offertPar ? { de: d.offertPar } : null,
   });
   if (sp) Object.assign(w, { cat: d.cat, age: int(d.age), bottled: int(d.bottled), fut: t(d.fut), bruteDeFut: !!d.bruteDeFut, singleCask: !!d.singleCask, independant: t(d.independant), numero: t(d.numero) });
   else {
     Object.assign(w, { couleur: d.couleur, appellation: t(d.appellation), cepages: t(d.cepages), bio: !!d.bio, nature: !!d.nature });
-    const deb = int(d.adeb), pic = int(d.apic), fin = int(d.afin), a = w.apogee || {};
+    const cw = cleanWindow(int(d.adeb), int(d.apic), int(d.afin), w.millesime), a = w.apogee || {};
+    const fin = cw?.fin, deb = cw?.debut, pic = cw?.pic;
     if (fin && (fin !== a.fin || deb !== a.debut || pic !== a.pic)) w.apogee = { ...a, debut: deb, pic, fin, src: 'manuel', at: Date.now() };
     else if (!fin && a.src === 'manuel') w.apogee = null;
   }
   if (w.owner && !S.settings.friends.includes(w.owner)) S.settings.friends.push(w.owner);
 }
+// Contrôles de la fiche vin : valeurs hors bornes signalées sous le champ, fiche non enregistrée
+function checkWineForm(f, d, kind, creating) {
+  const errs = [], add = (n, m) => errs.push([n, m]), sp = kind === 'spirit', yr = thisYear();
+  const m = readYear(d.millesime, sp ? yr : yr + 1);
+  if (m.err) add('millesime', m.err);
+  else if (m.bad) {
+    if (confirm(`« ${d.millesime} » n’est pas une année. ${sp ? 'Laisser sans année de distillation' : 'Laisser ce vin non millésimé'} ?`)) { d.millesime = ''; f.elements.millesime.value = ''; }
+    else add('millesime', 'Une année, par exemple 2019');
+  } else if (m.filled) { d.millesime = String(m.v); f.elements.millesime.value = d.millesime; }
+  if (d.prix) { const p = num(d.prix); if (p == null) add('prix', 'Prix non reconnu (ex. 24,50)'); else if (p < 0 || p > 100000) add('prix', 'Un prix entre 0 et 100 000 €'); }
+  if (d.degre) { const g = num(d.degre), mx = sp ? 80 : 25; if (g == null || g <= 0 || g > mx) add('degre', `Un degré entre 0 et ${mx} %`); }
+  if (creating && 'qty' in d) { const q = String(d.qty).replace(/\s/g, ''); if (!/^\d+$/.test(q) || +q < 1 || +q > 500) add('qty', 'Un nombre entier de 1 à 500'); }
+  if (sp) {
+    if (d.age) { const a = num(d.age); if (a == null || !Number.isInteger(a) || a < 0 || a > 100) add('age', 'De 0 à 100 ans'); }
+    if (d.bottled) { const b = readYear(d.bottled, yr); if (b.err || b.bad) add('bottled', `Une année entre 1900 et ${yr}`); else if (b.filled) { d.bottled = String(b.v); f.elements.bottled.value = d.bottled; } }
+  } else if (d.adeb || d.apic || d.afin) {
+    if (!int(d.afin)) add('afin', 'Indique au moins l’année de fin');
+    else if (!cleanWindow(int(d.adeb), int(d.apic), int(d.afin), readYear(d.millesime, yr + 1).v)) add('afin', 'Fenêtre incohérente : début ≤ apogée ≤ fin, et pas avant le millésime');
+  }
+  return !formErrors(f, errs);
+}
 FORMS.wine = async (f, d) => {
   const dr = draft; if (!dr) return closeSheet();
+  if (!checkWineForm(f, d, dr.w.kind, !dr.edit)) return;
   if (dr.edit) {
     const w = wine(dr.edit); readWineForm(d, w); w.updatedAt = Date.now();
     if (dr.photo) { await photoSave(w.id, dr.photo); w.photo = true; }
@@ -1563,7 +1665,7 @@ function placeSheet() {
     <p class="small" style="margin-top:-6px"><span class="dot" style="background:${wineColor(w)}"></span> ${esc(wineTitle(w))}</p>
     <div class="chips">${S.spaces.map(s => `<button class="chip${s.id === p.spaceId ? ' on' : ''}" data-act="placeSpace" data-id="${s.id}">${esc(isMulti() ? site(s.siteId)?.name + ' › ' : '')}${esc(s.name)}</button>`).join('')}</div>
     <p class="small"><b style="color:var(--ink)">${p.sel.length} / ${p.ids.length}</b> place${p.ids.length > 1 ? 's' : ''} choisie${p.sel.length > 1 ? 's' : ''}. Touche les cases libres pour choisir.</p>
-    ${!units.length ? `<div class="card small">Aucun meuble dans cet espace : les bouteilles y seront rangées sans emplacement précis.</div>` : ''}
+    ${!units.length ? `<div class="card small">Aucun meuble dans cet espace : les bouteilles y seront rangées sans emplacement précis.</div>` : placeShortage(p, units, occ)}
     ${grid.map(u => `<div class="card">${unitHead(u, ctx)}${renderGrid(u, ctx)}</div>`).join('')}
     ${boxes.length ? `<div class="card"><div class="ct">Caisses et cartons</div>${renderBoxes(boxes, ctx)}</div>` : ''}
     <div class="btns" style="margin-top:14px;position:sticky;bottom:0;background:var(--bg);padding:8px 0">
@@ -1643,7 +1745,11 @@ function addBottlesSheet(wid) {
     </form>`;
 }
 FORMS.addBottles = async (f, d) => {
-  const w = wine(f.dataset.w), qty = clamp(int(d.qty) || 1, 1, 500);
+  const errs = [], q = String(d.qty).replace(/\s/g, ''), p = d.prix ? num(d.prix) : null;
+  if (!/^\d+$/.test(q) || +q < 1 || +q > 500) errs.push(['qty', 'Un nombre entier de 1 à 500']);
+  if (d.prix && (p == null || p < 0 || p > 100000)) errs.push(['prix', 'Un prix entre 0 et 100 000 €']);
+  if (formErrors(f, errs)) return;
+  const w = wine(f.dataset.w), qty = +q;
   if (num(d.prix) != null) w.achat = { ...(w.achat || {}), prix: num(d.prix), date: d.adate || w.achat?.date };
   const ids = createBottles(w, qty, d.state === 'primeur' ? { state: 'primeur', delivery: { date: d.delivery || null, spaceId: d.spaceId } } : { spaceId: d.spaceId });
   S.wishes = S.wishes.filter(x => x.wineId !== w.id);   // acheté : il sort de la liste d'envies
@@ -1798,6 +1904,7 @@ Object.assign(ACT, {
     S.wines = S.wines.filter(x => x.id !== w.id); S.bottles = S.bottles.filter(b => b.wineId !== w.id);
     S.moves = S.moves.filter(m => m.wineId !== w.id); S.tastings = S.tastings.filter(x => x.wineId !== w.id);
     S.transfer.ids = S.transfer.ids.filter(id => !ids.has(id));
+    S.wishes = S.wishes.filter(x => x.wineId !== w.id);
     if (w.photo) await photoDel(w.id);
     await save(); closeSheet(); render(); toast('Référence supprimée');
   },
@@ -1810,6 +1917,16 @@ function rebuyRows(q) {
     : '<p class="small" style="margin:10px 4px">Aucun vin ne correspond.</p>';
 }
 INPUTS.rebuyFind = el => { const box = $('#rebuy-list'); if (box) box.innerHTML = rebuyRows(el.value); };
+
+// Places libres insuffisantes dans l'espace choisi : on le dit, et on propose l'espace le plus libre
+function placeShortage(p, units, occ) {
+  const free = units.reduce((n, u) => n + freeSlots(u, occ).length, 0), miss = p.ids.length - free;
+  if (miss <= 0) return '';
+  const others = S.spaces.filter(s => s.id !== p.spaceId).map(s => ({ s, n: spaceUnits(s.id).reduce((t, u) => t + freeSlots(u, occ).length, 0) })).sort((a, b) => b.n - a.n);
+  const best = others[0];
+  return `<div class="banner">Il manque ${plural(miss, 'place', 'places')} dans cet espace : ${plural(miss, 'bouteille restera', 'bouteilles resteront')} « non placée${miss > 1 ? 's' : ''} ».
+    ${best && best.n > free ? `<br><button class="btn small" data-act="placeSpace" data-id="${best.s.id}">Aller dans « ${esc(best.s.name)} » (${plural(best.n, 'place libre', 'places libres')})</button>` : ''}</div>`;
+}
 
 
 /* ===== 50-tasting.js ===== */
@@ -1834,7 +1951,7 @@ function startTaste(wineId, bottleId, m, ctx = {}) {
   const w = wine(wineId) || mysteryWine();
   const prev = S.dismissed.rate?.bottleId === bottleId ? S.dismissed.rate : null;
   const sess = ctx.sessionId && byId(S.sessions, ctx.sessionId);
-  draft = { taste: { wineId, bottleId: bottleId || null, kind: w.kind, mode: m === 'full' ? 'full' : 'quick', note: 14, comment: '', at: sess?.date || today(), plat: prev?.plat || '',
+  draft = { taste: { wineId, bottleId: bottleId || null, kind: w.kind, mode: m === 'full' ? 'full' : 'quick', note: null, comment: '', at: sess?.date || today(), plat: prev?.plat || '',
     type: sess?.type || null, lieu: sess?.lieu || '', convives: sess?.convives || '', prix: '', achatLieu: '', provenance: '', accord: null, sessionId: sess?.id || null, fromCave: false, full: { aromes: [] } } };
   wheelState = { active: null };
   draft.taste._snap = tasteSig(draft.taste);
@@ -1908,15 +2025,16 @@ function tasteSheet() {
       <div class="seg"><button class="${t.mode === 'quick' ? 'on' : ''}" data-act="tmode" data-m="quick">Rapide</button><button class="${t.mode === 'full' ? 'on' : ''}" data-act="tmode" data-m="full">Complète</button></div></div>
     ${tasteContext(t, w)}
     ${t.blind ? blindHypCard(t) : ''}
-    <div class="card"><div class="score" id="t-score">${numFr(t.note)}<small> / 20</small></div>
-      <input type="range" min="0" max="20" step="0.5" value="${t.note}" data-in="tnote" aria-label="Note sur 20"></div>
+    <div class="card"><div class="score" id="t-score">${t.note != null ? numFr(t.note) : '–'}<small> / 20</small></div>
+      <input type="range" min="0" max="20" step="0.5" value="${t.note ?? 14}" data-in="tnote" class="${t.note == null ? 'unset' : ''}" aria-label="Note sur 20">
+      ${t.note == null ? '<p class="tiny" id="t-hint" style="text-align:center;margin:2px 0 0">Touche pour noter · sans note si tu n’y touches pas</p>' : ''}</div>
     ${full}
     <div class="card form">
       <label>Commentaire<textarea data-in="tf" data-k="comment" placeholder="Tes impressions…">${esc(t.comment)}</textarea></label>
     </div>
     <button class="btn primary wide" style="margin-top:12px" data-act="tasteSave">Enregistrer la dégustation</button>`;
 }
-INPUTS.tnote = el => { draft.taste.note = +el.value; $('#t-score').innerHTML = `${numFr(+el.value)}<small> / 20</small>`; setRangeFill(el); };
+INPUTS.tnote = el => { draft.taste.note = +el.value; $('#t-score').innerHTML = `${numFr(+el.value)}<small> / 20</small>`; el.classList.remove('unset'); $('#t-hint')?.remove(); setRangeFill(el); };
 INPUTS.tv = el => { draft.taste.full[el.dataset.k] = +el.value; const o = $('#o-' + el.dataset.k); if (o) o.textContent = sliderOut(el.dataset.k, +el.value); setRangeFill(el); };
 INPUTS.tf = el => { draft.taste[el.dataset.k] = el.value; };
 
@@ -2309,6 +2427,7 @@ function sessionForm(id) {
     </form>`;
 }
 FORMS.session = async (f, d) => {
+  if (formErrors(f, d.titre ? [] : [['titre', 'Donne un titre à la séance']])) return;
   const id = f.dataset.id, o = { titre: d.titre, type: d.type, lieu: d.lieu, date: d.date || today(), convives: d.convives };
   if (id) {
     Object.assign(byId(S.sessions, id), o);
@@ -2494,13 +2613,13 @@ function lastJson(t) {
 /* ---------- Contexte de cave envoyé au sommelier ---------- */
 function caveContext(allSites) {
   const y = thisYear(), cur = S.settings.site, multi = isMulti();
-  const lines = [], ws = S.wines.filter(w => !isFriend(w) && kindOn(w) && wineBottles(w.id).length);
+  const rows = [], ws = S.wines.filter(w => !isFriend(w) && kindOn(w) && wineBottles(w.id).length);
   for (const w of ws) {
     const bs = wineBottles(w.id).filter(b => allSites || !multi || siteOfBottle(b) === cur);
     const elsewhere = multi && !allSites ? wineBottles(w.id).length - bs.length : 0;
     if (!bs.length && !elsewhere) continue;
     const locs = [...new Set(bs.map(b => locLabel(b, multi)))].map(l => `${l} ×${bs.filter(b => locLabel(b, multi) === l).length}`).join(' ; ');
-    const ts = S.tastings.filter(t => t.wineId === w.id), avg = ts.length ? ts.reduce((n, t) => n + (t.note || 0), 0) / ts.length : null;
+    const ts = S.tastings.filter(t => t.wineId === w.id), tn = ts.filter(t => t.note != null), avg = tn.length ? tn.reduce((n, t) => n + t.note, 0) / tn.length : null;
     const st = status(w), a = w.apogee;
     const parts = [`id=${w.id}`, w.kind === 'spirit' ? `SPIRITUEUX ${SPIRIT_CATS[w.cat]}` : COLORS[w.couleur]?.label, wineTitle(w), w.domaine && `domaine ${w.domaine}`,
       w.kind === 'spirit' ? [w.age && w.age + ' ans', w.fut, w.degre && w.degre + ' %'].filter(Boolean).join(', ') : [w.appellation, w.region].filter(Boolean).join(', '),
@@ -2509,7 +2628,18 @@ function caveContext(allSites) {
       bs.some(b => b.state === 'open') && `ouverte, niveau ${bs.find(b => b.state === 'open').level ?? 100} %`,
       w.achat?.prix != null && `prix ${Math.round(w.achat.prix)} €`, w.format && w.format !== '75' && w.format !== '70' && `format ${w.format} cl`,
       avg != null && `déjà dégusté : ${numFr(avg)}/20${ts.at(-1)?.comment ? ' « ' + ts.at(-1).comment.slice(0, 80) + ' »' : ''}`];
-    lines.push('- ' + parts.filter(Boolean).join(' | '));
+    rows.push({ w, line: '- ' + parts.filter(Boolean).join(' | ') });
+  }
+  // Grosse cave : on ne détaille que les vins les plus utiles (à boire, prêts, bientôt prêts, dégustés récemment), 300 au plus
+  let lines = rows.map(o => o.line), reduced = '';
+  if (rows.length > 300) {
+    const since = new Date(Date.now() - 180 * 864e5).toISOString().slice(0, 10), recent = new Set(S.tastings.filter(t => (t.at || '') >= since).map(t => t.wineId));
+    const rank = w => { const st = status(w); return w.kind === 'spirit' ? 2 : st === 'prio' ? 0 : st === 'apogee' ? 1 : st === 'tot' && w.apogee?.debut <= y + 1 ? 2 : recent.has(w.id) ? 3 : 9; };
+    const keep = rows.filter(o => rank(o.w) < 9).sort((a, b) => rank(a.w) - rank(b.w) || (a.w.apogee?.fin || 9999) - (b.w.apogee?.fin || 9999)).slice(0, 300);
+    const kept = new Set(keep.map(o => o.w.id)), rest = rows.filter(o => !kept.has(o.w.id));
+    const count = f => Object.entries(rest.reduce((m, o) => { const k = f(o.w); m[k] = (m[k] || 0) + 1; return m; }, {})).map(([k, n]) => `${k} ${n}`).join(', ');
+    lines = keep.map(o => o.line);
+    reduced = `\nCave volumineuse : ${rest.length} autres références ne sont pas détaillées (par couleur : ${count(w => w.kind === 'spirit' ? 'spiritueux' : COLORS[w.couleur]?.label || '?')} ; par statut : ${count(w => STATUS[status(w) || 'inconnu']?.short || '?')}). Si la demande porte sur elles, dis-le à l’utilisateur.`;
   }
   const sites = S.sites.map(s => `${s.name} (${s.role === 'stock' ? 'stockage' : 'consommation'}${s.id === cur ? ', l’utilisateur y est actuellement' : ''})`).join(' ; ');
   const top = [...S.tastings].filter(t => t.note != null && wine(t.wineId)).sort((a, b) => b.note - a.note);
@@ -2526,7 +2656,7 @@ ${accords.length ? `Accords déjà essayés par l’utilisateur : ${accords.join
 ${wishes.length ? `Liste d’envies (vins qu’il veut acheter) : ${wishes.join(' ; ')}.` : ''}
 ${multi ? `Sites : ${sites}.${allSites ? ' Bouteilles de tous les sites.' : ' Liste limitée au site actuel.'}` : ''}
 ${liked.length ? `Vins les mieux notés par l’utilisateur : ${liked.join(' ; ')}.` : ''}${disliked.length ? `\nVins peu appréciés : ${disliked.join(' ; ')}.` : ''}
-Cave disponible (${lines.length} références) :
+Cave disponible (${lines.length} références détaillées)${reduced} :
 ${lines.join('\n') || '(aucune bouteille)'}`;
 }
 
@@ -2577,7 +2707,8 @@ function chatMsg(m, i) {
       ${b ? `<div class="loc">${ICON.pin}${esc(locLabel(b))}</div>` : ''}
       ${b ? `<div class="btns2" style="margin-top:10px"><button class="btn primary small" data-act="takeIt" data-w="${w.id}">Je la prends</button><button class="btn small" data-act="wine" data-id="${w.id}">Fiche</button></div>` : '<p class="tiny">Plus de bouteille disponible.</p>'}</div>`;
   }).join('');
-  return `<div class="bubble ai">${esc(d.message || '')}</div>${recos}
+  const gone = (d.recos || []).filter(r => !wine(r.id)).length;
+  return `<div class="bubble ai">${esc(d.message || '')}</div>${recos}${gone ? `<p class="tiny" style="margin:6px 4px 0">${gone > 1 ? gone + ' recommandations ne correspondent' : 'Une recommandation ne correspond'} plus à ta cave.</p>` : ''}
     ${d.achats?.length ? `<div class="card"><div class="ct">À acheter</div>${d.achats.map(a => `<p class="small" style="margin:4px 0;color:var(--ink)">• ${esc(a)}</p>`).join('')}</div>` : ''}
     ${last && d.relances?.length ? `<div class="chips wrap">${d.relances.map(q => `<button class="chip" data-act="chatAsk" data-q="${esc(q)}">${esc(q)}</button>`).join('')}</div>` : ''}`;
 }
@@ -2647,9 +2778,10 @@ async function estimateApogee(wid, { quiet = false } = {}) {
   try {
     const r = await aiCall({ tag: 'apogee', system: APO_SYS, content: wineBrief(w), maxTokens: 6000, effort: 'medium', web: aiClaude() && aiCfg().web });
     const j = lastJson(r.text);
-    if (!j || !yearOk(+j.fin, w)) throw new AIError('Estimation illisible. Réessaie.');
-    const deb = yearOk(+j.debut, w) ? +j.debut : null, pic = yearOk(+j.pic, w) ? +j.pic : null, fin = +j.fin;
-    w.apogee = { debut: deb && deb <= fin ? deb : null, pic: pic && pic <= fin ? pic : null, fin, why: String(j.justification || '').slice(0, 400), conf: j.confiance, src: 'ia', sources: r.sources.slice(0, 5), at: Date.now() };
+    if (!j) throw new AIError('Estimation illisible. Réessaie.');
+    const cw = cleanWindow(j.debut, j.pic, j.fin, w.millesime);
+    if (!cw) throw new AIError('Estimation incohérente (années dans le désordre ou impossibles) : elle a été ignorée. Réessaie.');
+    w.apogee = { ...cw, why: String(j.justification || '').slice(0, 400), conf: j.confiance, src: 'ia', sources: r.sources.slice(0, 5), at: Date.now() };
     await save(); render(); if (sheetStack.length) refreshSheet();
     toast(`Fenêtre estimée : ${windowLabel(w.apogee)}`);
   } catch (e) {
@@ -2665,8 +2797,8 @@ async function estimateBatch(ws, onStep) {
     const chunk = ws.slice(k, k + 30);
     const r = await aiCall({ tag: 'apogee-lot', system: APO_SYS.replace(/Si un outil[\s\S]*?conclure\.\n/, '').replace(/Termine ta réponse[\s\S]*$/, 'Réponds pour chaque vin avec son numéro i.'), content: chunk.map((w, i) => `#${i}\n${wineBrief(w)}`).join('\n\n'), schema: BATCH_SCHEMA, maxTokens: 6000, effort: 'low' });
     for (const it of r.json.items || []) {
-      const w = chunk[it.i]; if (!w || !yearOk(it.fin, w)) continue;
-      w.apogee = { debut: yearOk(it.debut, w) && it.debut <= it.fin ? it.debut : null, pic: yearOk(it.pic, w) && it.pic <= it.fin ? it.pic : null, fin: it.fin, src: 'ia', why: 'Estimation groupée, sans recherche web.', at: Date.now() };
+      const w = chunk[it.i], cw = w && cleanWindow(it.debut, it.pic, it.fin, w.millesime); if (!cw) continue;
+      w.apogee = { ...cw, src: 'ia', why: 'Estimation groupée, sans recherche web.', at: Date.now() };
       done++;
     }
     onStep?.(Math.min(ws.length, k + 30), ws.length);
@@ -2720,10 +2852,15 @@ async function onPhoto(file) {
   showSheet(() => `${head('Lecture de l’étiquette…')}<p class="small">Le sommelier déchiffre l’étiquette. Quelques secondes.</p><div class="bubble ai"><span class="typing"><i></i><i></i><i></i></span></div>`);
   try {
     const r = await aiCall({ tag: 'etiquette', system: LABEL_SYS, content: [{ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: await blobB64(big) } }, { type: 'text', text: 'Fiche de cette bouteille.' }], schema: LABEL_SCHEMA, maxTokens: 2000, effort: 'low' });
-    const j = r.json, f = { ...j };
-    f.millesime = int(j.millesime) || null; f.degre = num(j.degre); f.age = int(j.age) || null;
-    f.format = j.kind === 'spirit' ? (FORMATS.spirit.some(x => x[0] === j.format) ? j.format : '70') : (FORMATS.vin.some(x => x[0] === j.format) ? j.format : '75');
-    if (!f.couleur) delete f.couleur; if (!f.cat) delete f.cat;
+    const j = r.json, f = {};
+    for (const k of ['domaine', 'cuvee', 'appellation', 'region', 'pays', 'cepages', 'fut']) if (typeof j[k] === 'string') f[k] = j[k].trim().slice(0, 120);
+    f.kind = j.kind === 'spirit' ? 'spirit' : 'vin';
+    f.millesime = readYear(j.millesime, thisYear() + 1).v || null;
+    const deg = num(j.degre); f.degre = deg > 0 && deg <= (f.kind === 'spirit' ? 80 : 25) ? deg : null;
+    const age = int(j.age); f.age = age >= 0 && age <= 100 ? age || null : null;
+    f.format = f.kind === 'spirit' ? (FORMATS.spirit.some(x => x[0] === j.format) ? j.format : '70') : (FORMATS.vin.some(x => x[0] === j.format) ? j.format : '75');
+    if (f.kind === 'vin' && COLORS[j.couleur]) f.couleur = j.couleur;
+    if (f.kind === 'spirit') f.cat = SPIRIT_CATS[j.cat] ? j.cat : 'autre';
     for (const k of Object.keys(f)) if (f[k] === '') delete f[k];
     closeSheet(); go(f);
   } catch (e) { closeSheet(); go({}); errSheet('Lecture impossible', (e.message || String(e)) + '\n\nTu peux remplir la fiche à la main : la photo est conservée.'); }
@@ -2747,14 +2884,15 @@ Object.assign(ACT, {
     const sp = $('#ploc-space')?.value, items = plocItems.filter(x => !x.skip);
     let nw = 0, nb = 0;
     for (const it of items) {
-      const mill = int(it.millesime) || null;
+      const mill = readYear(it.millesime, thisYear() + 1).v || null;
       let w = S.wines.find(x => x.kind === 'vin' && norm(x.domaine) === norm(it.domaine) && norm(x.cuvee || x.appellation) === norm(it.cuvee || it.appellation) && (x.millesime || null) === mill);
       if (!w) {
         w = { id: uid(), kind: 'vin', domaine: it.domaine, cuvee: it.cuvee || '', appellation: it.appellation || (it.cuvee ? '' : it.nom), region: it.region || '', pays: it.pays || 'France', couleur: it.couleur || 'rouge', cepages: it.cepages || '', millesime: mill, format: '75', createdAt: Date.now(), notes: 'Importé depuis Ploc' };
-        if (yearOk(it.fin, w)) w.apogee = { debut: yearOk(it.debut, w) ? it.debut : null, pic: yearOk(it.pic, w) ? it.pic : null, fin: it.fin, src: 'ia', why: 'Estimation à l’import, sans recherche web.', at: Date.now() };
+        const cw = cleanWindow(it.debut, it.pic, it.fin, mill);
+        if (cw) w.apogee = { ...cw, src: 'ia', why: 'Estimation à l’import, sans recherche web.', at: Date.now() };
         S.wines.push(w); nw++;
       }
-      const ids = createBottles(w, clamp(it.quantite || 1, 1, 200), { spaceId: sp });
+      const ids = createBottles(w, it.quantite, { spaceId: sp });
       for (const id of ids) byId(S.bottles, id).note = it.emplacement ? 'Emplacement Ploc : ' + it.emplacement : '';
       nb += ids.length;
     }
@@ -2770,7 +2908,8 @@ async function onPdf(file) {
   try {
     const data = b64(await file.arrayBuffer());
     const r = await aiCall({ tag: 'ploc', system: 'Tu extrais l’inventaire d’une cave à vin depuis un PDF exporté par l’application Ploc. Liste chaque vin distinct avec sa quantité par emplacement (une ligne par vin et par emplacement). « nom » : nom du vin tel qu’écrit (appellation, cuvée). « millesime » : année ou chaîne vide. « emplacement » : emplacement indiqué (casier, rangée…), vide si absent. N’invente rien.', content: [{ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data } }, { type: 'text', text: 'Extrais toutes les bouteilles de ce PDF.' }], schema: PLOC_SCHEMA, maxTokens: 16000, effort: 'low' });
-    const items = (r.json.items || []).filter(x => x.domaine || x.nom);
+    const items = (r.json.items || []).filter(x => (x.domaine || x.nom || '').trim());
+    for (const it of items) { const q = int(it.quantite); if (!q || q < 1) { it.quantite = 1; it.qfix = true; } else if (q > 200) { it.quantite = 200; it.qfix = true; } else it.quantite = q; }
     if (!items.length) throw new AIError('Aucune bouteille trouvée dans ce PDF.');
     step(`${plural(items.length, 'ligne trouvée', 'lignes trouvées')}. Le sommelier complète les fiches…`);
     for (let k = 0; k < items.length; k += 40) {
@@ -2787,12 +2926,12 @@ async function onPdf(file) {
 }
 function plocReview() {
   if (!plocItems) return null;
-  const n = plocItems.filter(x => !x.skip).reduce((t, x) => t + (x.quantite || 1), 0);
+  const n = plocItems.filter(x => !x.skip).reduce((t, x) => t + x.quantite, 0);
   return `${head('Vérifier l’import')}
     <p class="small" style="margin-top:-6px">Décoche les lignes à ignorer. Les bouteilles arrivent « non placées » dans l’espace choisi ; l’emplacement Ploc est noté sur chaque bouteille pour t’aider à les ranger.</p>
     <label>Espace de destination<select id="ploc-space">${spaceOptions(visibleSpaces()[0]?.id)}</select></label>
     <div class="list">${plocItems.map((x, i) => `<button class="li" data-act="plocToggle" data-i="${i}" style="${x.skip ? 'opacity:.4' : ''}"><span class="dot" style="background:${COLORS[x.couleur]?.c || '#B9AFA6'}"></span>
-      <div class="it"><b class="ell">${esc(x.domaine)} · ${esc(x.nom)} ${esc(x.millesime || '')}</b><small class="ell">${esc([x.appellation, x.region, x.fin ? `fenêtre ${x.debut}–${x.fin}` : ''].filter(Boolean).join(' · '))}${x.emplacement ? ' · Ploc : ' + esc(x.emplacement) : ''}</small></div>
+      <div class="it"><b class="ell">${esc(x.domaine)} · ${esc(x.nom)} ${esc(x.millesime || '')}</b><small class="ell">${esc([x.appellation, x.region, x.fin ? `fenêtre ${x.debut}–${x.fin}` : ''].filter(Boolean).join(' · '))}${x.emplacement ? ' · Ploc : ' + esc(x.emplacement) : ''}${x.qfix ? ' · <b style="color:var(--bx)">quantité corrigée</b>' : ''}</small></div>
       <span class="qty">×${x.quantite || 1}</span><span class="chev">${x.skip ? '' : ICON.check}</span></button>`).join('')}</div>
     <button class="btn primary wide" style="margin-top:14px;position:sticky;bottom:0" data-act="plocGo">Importer ${plural(n, 'bouteille', 'bouteilles')}</button>`;
 }
@@ -2811,8 +2950,8 @@ async function reevaluate(w, rec) {
       `\nOn vient de déguster ce vin. Dis s'il faut modifier sa fenêtre actuelle (${a?.fin ? `${a.debut || '?'}–${a.fin}, apogée ${a.pic || '?'}` : 'inconnue'}) pour les ${left} bouteille(s) restantes. Ne la change que si la dégustation l'apporte vraiment (changer = false sinon, et recopie la fenêtre actuelle). Justification en une ou deux phrases, en français, en tutoyant.`,
       content: wineBrief(w) + '\n' + note, schema: REEVAL_SCHEMA, maxTokens: 2000, effort: 'low' });
     const j = r.json;
-    if (!j.changer || !yearOk(j.fin, w) || (a && j.fin === a.fin && j.debut === a.debut && j.pic === a.pic)) return;
-    const prop = { debut: yearOk(j.debut, w) && j.debut <= j.fin ? j.debut : null, pic: yearOk(j.pic, w) && j.pic <= j.fin ? j.pic : null, fin: j.fin };
+    const prop = j.changer && cleanWindow(j.debut, j.pic, j.fin, w.millesime);
+    if (!prop || (a && prop.fin === a.fin && prop.debut === (a.debut ?? null) && prop.pic === (a.pic ?? null))) return;
     showSheet(() => `${head('Le sommelier')}
       <div class="card" style="background:var(--green-soft);border-color:#C9DCCF"><p style="margin:0 0 6px"><b>${esc(wineTitle(w))}</b> · ${plural(left, 'bouteille restante', 'bouteilles restantes')}</p>
         <p style="margin:0">${esc(j.justification)}</p>
@@ -3054,12 +3193,15 @@ function spaceSheet(id, siteId) {
     </form>`;
 }
 FORMS.site = async (f, d) => {
+  if (formErrors(f, d.name ? [] : [['name', 'Donne un nom à ce site']])) return;
   const id = f.dataset.id;
   if (id) Object.assign(site(id), { name: d.name, role: d.role || site(id).role });
   else { const s = { id: uid(), name: d.name, role: d.role || 'stock' }; S.sites.push(s); S.spaces.push({ id: uid(), siteId: s.id, name: 'Cave', use: s.role === 'stock' ? 'garde' : 'conso', q: {} }); }
   await save(); sheetBack(); refreshSheet(); render(); toast('Site enregistré');
 };
 FORMS.space = async (f, d) => {
+  const tg = d.target ? num(d.target) : null;
+  if (formErrors(f, [...(d.name ? [] : [['name', 'Donne un nom à cet espace']]), ...(d.target && !(Number.isInteger(tg) && tg >= 1 && tg <= 5000) ? [['target', 'Au moins 1 place, ou laisse vide']] : [])])) return;
   const id = f.dataset.id, q = {};
   for (const k of Object.keys(QUALITY)) if (d['q_' + k]) q[k] = d['q_' + k];
   const o = { name: d.name, siteId: d.siteId, use: d.use, q, target: int(d.target) };
@@ -3231,7 +3373,11 @@ FORMS.import = async (f, d) => {
     S.settings.stay = false; S.settings.lastExport = pendingImport.savedAt || Date.now();
     await save(); navigator.storage?.persist?.(); pendingImport = null;
     closeSheet(); enterApp('restauration'); toast('Cave restaurée');
-  } catch { btn.disabled = false; btn.textContent = 'Restaurer'; const er = $('#ierr'); er.hidden = false; er.textContent = 'Mot de passe incorrect pour cette sauvegarde.'; }
+  } catch (e) {
+    btn.disabled = false; btn.textContent = 'Restaurer'; const er = $('#ierr'); er.hidden = false;
+    // Une structure invalide se repère ; un déchiffrement refusé peut venir du mot de passe ou d'un fichier altéré
+    er.textContent = e?.message === 'format' ? 'Sauvegarde incomplète ou endommagée : elle ne peut pas être restaurée.' : 'Mot de passe incorrect, ou fichier endommagé.';
+  }
 };
 Object.assign(ACT, {
   export: () => exportBackup(),
@@ -3625,21 +3771,33 @@ Object.assign(ACT, { historySheet: () => showSheet(historySheet) });
 
 /* ===== 90-boot.js ===== */
 /* ---------- Événements ---------- */
+// Un double appui ne doit pas enregistrer deux fois : les formulaires et les actions qui écrivent
+// des données sont bloqués pendant leur exécution, puis encore 350 ms.
+const busyForms = new Set(), busyActs = new Set();
+const GUARDED = new Set(['tasteSave', 'placeOk', 'plocGo', 'transferDone', 'receive', 'applyReeval', 'applyAdvice', 'adviceGo', 'delWine', 'delUnit', 'delTaste',
+  'delSession', 'delSite', 'delSpace', 'estimateMissing', 'putHere', 'openBottle', 'wishToggle', 'wishBought', 'toTransfer', 'revealWine', 'blindAI', 'export',
+  'usageClear', 'chatNew', 'tasteAbandon', 'awayTransfer', 'pkOffer', 'pkunlock', 'demo', 'estimate', 'takeIt', 'rateNow', 'rateLater', 'backupLater']);
+const release = (set, k) => setTimeout(() => set.delete(k), 350);
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-act]'); if (!t || !ACT[t.dataset.act]) return;
   if (t.tagName === 'INPUT' || t.tagName === 'SELECT') return;
   e.preventDefault();
-  const act = t.dataset.act; uPending = act; uLog('tap', act, uDetail(t));
-  Promise.resolve(ACT[act](t, e)).catch(err => { console.error(err); errLog('action:' + act, err); errSheet('Une erreur est survenue', String(err.message || err)); });
+  const act = t.dataset.act;
+  if (GUARDED.has(act)) { if (busyActs.has(act)) return; busyActs.add(act); }
+  uPending = act; uLog('tap', act, uDetail(t));
+  Promise.resolve().then(() => ACT[act](t, e)).catch(err => { console.error(err); errLog('action:' + act, err); errSheet('Une erreur est survenue', String(err.message || err)); })
+    .finally(() => { if (GUARDED.has(act)) release(busyActs, act); });
 });
 document.addEventListener('submit', async e => {
   e.preventDefault();
   const f = e.target, name = f.dataset.form; if (!FORMS[name]) return;
   const btn = f.querySelector('[type=submit]');
-  if (btn?.disabled) return;
+  if (btn?.disabled || busyForms.has(name)) return;
+  busyForms.add(name); if (btn) btn.disabled = true;
   uPending = name; uLog('submit', name);
   try { await FORMS[name](f, formData(f)); }
-  catch (err) { console.error(err); errLog('formulaire:' + name, err); if (btn) btn.disabled = false; errSheet('Une erreur est survenue', String(err.message || err)); }
+  catch (err) { console.error(err); errLog('formulaire:' + name, err); errSheet('Une erreur est survenue', String(err.message || err)); }
+  finally { if (btn?.isConnected) btn.disabled = false; release(busyForms, name); }
 });
 document.addEventListener('input', e => { const k = e.target.dataset?.in; if (k && INPUTS[k]) INPUTS[k](e.target, e); });
 document.addEventListener('change', e => {

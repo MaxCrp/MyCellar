@@ -127,13 +127,13 @@ function lastJson(t) {
 /* ---------- Contexte de cave envoyé au sommelier ---------- */
 function caveContext(allSites) {
   const y = thisYear(), cur = S.settings.site, multi = isMulti();
-  const lines = [], ws = S.wines.filter(w => !isFriend(w) && kindOn(w) && wineBottles(w.id).length);
+  const rows = [], ws = S.wines.filter(w => !isFriend(w) && kindOn(w) && wineBottles(w.id).length);
   for (const w of ws) {
     const bs = wineBottles(w.id).filter(b => allSites || !multi || siteOfBottle(b) === cur);
     const elsewhere = multi && !allSites ? wineBottles(w.id).length - bs.length : 0;
     if (!bs.length && !elsewhere) continue;
     const locs = [...new Set(bs.map(b => locLabel(b, multi)))].map(l => `${l} ×${bs.filter(b => locLabel(b, multi) === l).length}`).join(' ; ');
-    const ts = S.tastings.filter(t => t.wineId === w.id), avg = ts.length ? ts.reduce((n, t) => n + (t.note || 0), 0) / ts.length : null;
+    const ts = S.tastings.filter(t => t.wineId === w.id), tn = ts.filter(t => t.note != null), avg = tn.length ? tn.reduce((n, t) => n + t.note, 0) / tn.length : null;
     const st = status(w), a = w.apogee;
     const parts = [`id=${w.id}`, w.kind === 'spirit' ? `SPIRITUEUX ${SPIRIT_CATS[w.cat]}` : COLORS[w.couleur]?.label, wineTitle(w), w.domaine && `domaine ${w.domaine}`,
       w.kind === 'spirit' ? [w.age && w.age + ' ans', w.fut, w.degre && w.degre + ' %'].filter(Boolean).join(', ') : [w.appellation, w.region].filter(Boolean).join(', '),
@@ -142,7 +142,18 @@ function caveContext(allSites) {
       bs.some(b => b.state === 'open') && `ouverte, niveau ${bs.find(b => b.state === 'open').level ?? 100} %`,
       w.achat?.prix != null && `prix ${Math.round(w.achat.prix)} €`, w.format && w.format !== '75' && w.format !== '70' && `format ${w.format} cl`,
       avg != null && `déjà dégusté : ${numFr(avg)}/20${ts.at(-1)?.comment ? ' « ' + ts.at(-1).comment.slice(0, 80) + ' »' : ''}`];
-    lines.push('- ' + parts.filter(Boolean).join(' | '));
+    rows.push({ w, line: '- ' + parts.filter(Boolean).join(' | ') });
+  }
+  // Grosse cave : on ne détaille que les vins les plus utiles (à boire, prêts, bientôt prêts, dégustés récemment), 300 au plus
+  let lines = rows.map(o => o.line), reduced = '';
+  if (rows.length > 300) {
+    const since = new Date(Date.now() - 180 * 864e5).toISOString().slice(0, 10), recent = new Set(S.tastings.filter(t => (t.at || '') >= since).map(t => t.wineId));
+    const rank = w => { const st = status(w); return w.kind === 'spirit' ? 2 : st === 'prio' ? 0 : st === 'apogee' ? 1 : st === 'tot' && w.apogee?.debut <= y + 1 ? 2 : recent.has(w.id) ? 3 : 9; };
+    const keep = rows.filter(o => rank(o.w) < 9).sort((a, b) => rank(a.w) - rank(b.w) || (a.w.apogee?.fin || 9999) - (b.w.apogee?.fin || 9999)).slice(0, 300);
+    const kept = new Set(keep.map(o => o.w.id)), rest = rows.filter(o => !kept.has(o.w.id));
+    const count = f => Object.entries(rest.reduce((m, o) => { const k = f(o.w); m[k] = (m[k] || 0) + 1; return m; }, {})).map(([k, n]) => `${k} ${n}`).join(', ');
+    lines = keep.map(o => o.line);
+    reduced = `\nCave volumineuse : ${rest.length} autres références ne sont pas détaillées (par couleur : ${count(w => w.kind === 'spirit' ? 'spiritueux' : COLORS[w.couleur]?.label || '?')} ; par statut : ${count(w => STATUS[status(w) || 'inconnu']?.short || '?')}). Si la demande porte sur elles, dis-le à l’utilisateur.`;
   }
   const sites = S.sites.map(s => `${s.name} (${s.role === 'stock' ? 'stockage' : 'consommation'}${s.id === cur ? ', l’utilisateur y est actuellement' : ''})`).join(' ; ');
   const top = [...S.tastings].filter(t => t.note != null && wine(t.wineId)).sort((a, b) => b.note - a.note);
@@ -159,7 +170,7 @@ ${accords.length ? `Accords déjà essayés par l’utilisateur : ${accords.join
 ${wishes.length ? `Liste d’envies (vins qu’il veut acheter) : ${wishes.join(' ; ')}.` : ''}
 ${multi ? `Sites : ${sites}.${allSites ? ' Bouteilles de tous les sites.' : ' Liste limitée au site actuel.'}` : ''}
 ${liked.length ? `Vins les mieux notés par l’utilisateur : ${liked.join(' ; ')}.` : ''}${disliked.length ? `\nVins peu appréciés : ${disliked.join(' ; ')}.` : ''}
-Cave disponible (${lines.length} références) :
+Cave disponible (${lines.length} références détaillées)${reduced} :
 ${lines.join('\n') || '(aucune bouteille)'}`;
 }
 
@@ -210,7 +221,8 @@ function chatMsg(m, i) {
       ${b ? `<div class="loc">${ICON.pin}${esc(locLabel(b))}</div>` : ''}
       ${b ? `<div class="btns2" style="margin-top:10px"><button class="btn primary small" data-act="takeIt" data-w="${w.id}">Je la prends</button><button class="btn small" data-act="wine" data-id="${w.id}">Fiche</button></div>` : '<p class="tiny">Plus de bouteille disponible.</p>'}</div>`;
   }).join('');
-  return `<div class="bubble ai">${esc(d.message || '')}</div>${recos}
+  const gone = (d.recos || []).filter(r => !wine(r.id)).length;
+  return `<div class="bubble ai">${esc(d.message || '')}</div>${recos}${gone ? `<p class="tiny" style="margin:6px 4px 0">${gone > 1 ? gone + ' recommandations ne correspondent' : 'Une recommandation ne correspond'} plus à ta cave.</p>` : ''}
     ${d.achats?.length ? `<div class="card"><div class="ct">À acheter</div>${d.achats.map(a => `<p class="small" style="margin:4px 0;color:var(--ink)">• ${esc(a)}</p>`).join('')}</div>` : ''}
     ${last && d.relances?.length ? `<div class="chips wrap">${d.relances.map(q => `<button class="chip" data-act="chatAsk" data-q="${esc(q)}">${esc(q)}</button>`).join('')}</div>` : ''}`;
 }
@@ -280,9 +292,10 @@ async function estimateApogee(wid, { quiet = false } = {}) {
   try {
     const r = await aiCall({ tag: 'apogee', system: APO_SYS, content: wineBrief(w), maxTokens: 6000, effort: 'medium', web: aiClaude() && aiCfg().web });
     const j = lastJson(r.text);
-    if (!j || !yearOk(+j.fin, w)) throw new AIError('Estimation illisible. Réessaie.');
-    const deb = yearOk(+j.debut, w) ? +j.debut : null, pic = yearOk(+j.pic, w) ? +j.pic : null, fin = +j.fin;
-    w.apogee = { debut: deb && deb <= fin ? deb : null, pic: pic && pic <= fin ? pic : null, fin, why: String(j.justification || '').slice(0, 400), conf: j.confiance, src: 'ia', sources: r.sources.slice(0, 5), at: Date.now() };
+    if (!j) throw new AIError('Estimation illisible. Réessaie.');
+    const cw = cleanWindow(j.debut, j.pic, j.fin, w.millesime);
+    if (!cw) throw new AIError('Estimation incohérente (années dans le désordre ou impossibles) : elle a été ignorée. Réessaie.');
+    w.apogee = { ...cw, why: String(j.justification || '').slice(0, 400), conf: j.confiance, src: 'ia', sources: r.sources.slice(0, 5), at: Date.now() };
     await save(); render(); if (sheetStack.length) refreshSheet();
     toast(`Fenêtre estimée : ${windowLabel(w.apogee)}`);
   } catch (e) {
@@ -298,8 +311,8 @@ async function estimateBatch(ws, onStep) {
     const chunk = ws.slice(k, k + 30);
     const r = await aiCall({ tag: 'apogee-lot', system: APO_SYS.replace(/Si un outil[\s\S]*?conclure\.\n/, '').replace(/Termine ta réponse[\s\S]*$/, 'Réponds pour chaque vin avec son numéro i.'), content: chunk.map((w, i) => `#${i}\n${wineBrief(w)}`).join('\n\n'), schema: BATCH_SCHEMA, maxTokens: 6000, effort: 'low' });
     for (const it of r.json.items || []) {
-      const w = chunk[it.i]; if (!w || !yearOk(it.fin, w)) continue;
-      w.apogee = { debut: yearOk(it.debut, w) && it.debut <= it.fin ? it.debut : null, pic: yearOk(it.pic, w) && it.pic <= it.fin ? it.pic : null, fin: it.fin, src: 'ia', why: 'Estimation groupée, sans recherche web.', at: Date.now() };
+      const w = chunk[it.i], cw = w && cleanWindow(it.debut, it.pic, it.fin, w.millesime); if (!cw) continue;
+      w.apogee = { ...cw, src: 'ia', why: 'Estimation groupée, sans recherche web.', at: Date.now() };
       done++;
     }
     onStep?.(Math.min(ws.length, k + 30), ws.length);
@@ -353,10 +366,15 @@ async function onPhoto(file) {
   showSheet(() => `${head('Lecture de l’étiquette…')}<p class="small">Le sommelier déchiffre l’étiquette. Quelques secondes.</p><div class="bubble ai"><span class="typing"><i></i><i></i><i></i></span></div>`);
   try {
     const r = await aiCall({ tag: 'etiquette', system: LABEL_SYS, content: [{ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: await blobB64(big) } }, { type: 'text', text: 'Fiche de cette bouteille.' }], schema: LABEL_SCHEMA, maxTokens: 2000, effort: 'low' });
-    const j = r.json, f = { ...j };
-    f.millesime = int(j.millesime) || null; f.degre = num(j.degre); f.age = int(j.age) || null;
-    f.format = j.kind === 'spirit' ? (FORMATS.spirit.some(x => x[0] === j.format) ? j.format : '70') : (FORMATS.vin.some(x => x[0] === j.format) ? j.format : '75');
-    if (!f.couleur) delete f.couleur; if (!f.cat) delete f.cat;
+    const j = r.json, f = {};
+    for (const k of ['domaine', 'cuvee', 'appellation', 'region', 'pays', 'cepages', 'fut']) if (typeof j[k] === 'string') f[k] = j[k].trim().slice(0, 120);
+    f.kind = j.kind === 'spirit' ? 'spirit' : 'vin';
+    f.millesime = readYear(j.millesime, thisYear() + 1).v || null;
+    const deg = num(j.degre); f.degre = deg > 0 && deg <= (f.kind === 'spirit' ? 80 : 25) ? deg : null;
+    const age = int(j.age); f.age = age >= 0 && age <= 100 ? age || null : null;
+    f.format = f.kind === 'spirit' ? (FORMATS.spirit.some(x => x[0] === j.format) ? j.format : '70') : (FORMATS.vin.some(x => x[0] === j.format) ? j.format : '75');
+    if (f.kind === 'vin' && COLORS[j.couleur]) f.couleur = j.couleur;
+    if (f.kind === 'spirit') f.cat = SPIRIT_CATS[j.cat] ? j.cat : 'autre';
     for (const k of Object.keys(f)) if (f[k] === '') delete f[k];
     closeSheet(); go(f);
   } catch (e) { closeSheet(); go({}); errSheet('Lecture impossible', (e.message || String(e)) + '\n\nTu peux remplir la fiche à la main : la photo est conservée.'); }
@@ -380,14 +398,15 @@ Object.assign(ACT, {
     const sp = $('#ploc-space')?.value, items = plocItems.filter(x => !x.skip);
     let nw = 0, nb = 0;
     for (const it of items) {
-      const mill = int(it.millesime) || null;
+      const mill = readYear(it.millesime, thisYear() + 1).v || null;
       let w = S.wines.find(x => x.kind === 'vin' && norm(x.domaine) === norm(it.domaine) && norm(x.cuvee || x.appellation) === norm(it.cuvee || it.appellation) && (x.millesime || null) === mill);
       if (!w) {
         w = { id: uid(), kind: 'vin', domaine: it.domaine, cuvee: it.cuvee || '', appellation: it.appellation || (it.cuvee ? '' : it.nom), region: it.region || '', pays: it.pays || 'France', couleur: it.couleur || 'rouge', cepages: it.cepages || '', millesime: mill, format: '75', createdAt: Date.now(), notes: 'Importé depuis Ploc' };
-        if (yearOk(it.fin, w)) w.apogee = { debut: yearOk(it.debut, w) ? it.debut : null, pic: yearOk(it.pic, w) ? it.pic : null, fin: it.fin, src: 'ia', why: 'Estimation à l’import, sans recherche web.', at: Date.now() };
+        const cw = cleanWindow(it.debut, it.pic, it.fin, mill);
+        if (cw) w.apogee = { ...cw, src: 'ia', why: 'Estimation à l’import, sans recherche web.', at: Date.now() };
         S.wines.push(w); nw++;
       }
-      const ids = createBottles(w, clamp(it.quantite || 1, 1, 200), { spaceId: sp });
+      const ids = createBottles(w, it.quantite, { spaceId: sp });
       for (const id of ids) byId(S.bottles, id).note = it.emplacement ? 'Emplacement Ploc : ' + it.emplacement : '';
       nb += ids.length;
     }
@@ -403,7 +422,8 @@ async function onPdf(file) {
   try {
     const data = b64(await file.arrayBuffer());
     const r = await aiCall({ tag: 'ploc', system: 'Tu extrais l’inventaire d’une cave à vin depuis un PDF exporté par l’application Ploc. Liste chaque vin distinct avec sa quantité par emplacement (une ligne par vin et par emplacement). « nom » : nom du vin tel qu’écrit (appellation, cuvée). « millesime » : année ou chaîne vide. « emplacement » : emplacement indiqué (casier, rangée…), vide si absent. N’invente rien.', content: [{ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data } }, { type: 'text', text: 'Extrais toutes les bouteilles de ce PDF.' }], schema: PLOC_SCHEMA, maxTokens: 16000, effort: 'low' });
-    const items = (r.json.items || []).filter(x => x.domaine || x.nom);
+    const items = (r.json.items || []).filter(x => (x.domaine || x.nom || '').trim());
+    for (const it of items) { const q = int(it.quantite); if (!q || q < 1) { it.quantite = 1; it.qfix = true; } else if (q > 200) { it.quantite = 200; it.qfix = true; } else it.quantite = q; }
     if (!items.length) throw new AIError('Aucune bouteille trouvée dans ce PDF.');
     step(`${plural(items.length, 'ligne trouvée', 'lignes trouvées')}. Le sommelier complète les fiches…`);
     for (let k = 0; k < items.length; k += 40) {
@@ -420,12 +440,12 @@ async function onPdf(file) {
 }
 function plocReview() {
   if (!plocItems) return null;
-  const n = plocItems.filter(x => !x.skip).reduce((t, x) => t + (x.quantite || 1), 0);
+  const n = plocItems.filter(x => !x.skip).reduce((t, x) => t + x.quantite, 0);
   return `${head('Vérifier l’import')}
     <p class="small" style="margin-top:-6px">Décoche les lignes à ignorer. Les bouteilles arrivent « non placées » dans l’espace choisi ; l’emplacement Ploc est noté sur chaque bouteille pour t’aider à les ranger.</p>
     <label>Espace de destination<select id="ploc-space">${spaceOptions(visibleSpaces()[0]?.id)}</select></label>
     <div class="list">${plocItems.map((x, i) => `<button class="li" data-act="plocToggle" data-i="${i}" style="${x.skip ? 'opacity:.4' : ''}"><span class="dot" style="background:${COLORS[x.couleur]?.c || '#B9AFA6'}"></span>
-      <div class="it"><b class="ell">${esc(x.domaine)} · ${esc(x.nom)} ${esc(x.millesime || '')}</b><small class="ell">${esc([x.appellation, x.region, x.fin ? `fenêtre ${x.debut}–${x.fin}` : ''].filter(Boolean).join(' · '))}${x.emplacement ? ' · Ploc : ' + esc(x.emplacement) : ''}</small></div>
+      <div class="it"><b class="ell">${esc(x.domaine)} · ${esc(x.nom)} ${esc(x.millesime || '')}</b><small class="ell">${esc([x.appellation, x.region, x.fin ? `fenêtre ${x.debut}–${x.fin}` : ''].filter(Boolean).join(' · '))}${x.emplacement ? ' · Ploc : ' + esc(x.emplacement) : ''}${x.qfix ? ' · <b style="color:var(--bx)">quantité corrigée</b>' : ''}</small></div>
       <span class="qty">×${x.quantite || 1}</span><span class="chev">${x.skip ? '' : ICON.check}</span></button>`).join('')}</div>
     <button class="btn primary wide" style="margin-top:14px;position:sticky;bottom:0" data-act="plocGo">Importer ${plural(n, 'bouteille', 'bouteilles')}</button>`;
 }
@@ -444,8 +464,8 @@ async function reevaluate(w, rec) {
       `\nOn vient de déguster ce vin. Dis s'il faut modifier sa fenêtre actuelle (${a?.fin ? `${a.debut || '?'}–${a.fin}, apogée ${a.pic || '?'}` : 'inconnue'}) pour les ${left} bouteille(s) restantes. Ne la change que si la dégustation l'apporte vraiment (changer = false sinon, et recopie la fenêtre actuelle). Justification en une ou deux phrases, en français, en tutoyant.`,
       content: wineBrief(w) + '\n' + note, schema: REEVAL_SCHEMA, maxTokens: 2000, effort: 'low' });
     const j = r.json;
-    if (!j.changer || !yearOk(j.fin, w) || (a && j.fin === a.fin && j.debut === a.debut && j.pic === a.pic)) return;
-    const prop = { debut: yearOk(j.debut, w) && j.debut <= j.fin ? j.debut : null, pic: yearOk(j.pic, w) && j.pic <= j.fin ? j.pic : null, fin: j.fin };
+    const prop = j.changer && cleanWindow(j.debut, j.pic, j.fin, w.millesime);
+    if (!prop || (a && prop.fin === a.fin && prop.debut === (a.debut ?? null) && prop.pic === (a.pic ?? null))) return;
     showSheet(() => `${head('Le sommelier')}
       <div class="card" style="background:var(--green-soft);border-color:#C9DCCF"><p style="margin:0 0 6px"><b>${esc(wineTitle(w))}</b> · ${plural(left, 'bouteille restante', 'bouteilles restantes')}</p>
         <p style="margin:0">${esc(j.justification)}</p>

@@ -101,12 +101,15 @@ function spaceSheet(id, siteId) {
     </form>`;
 }
 FORMS.site = async (f, d) => {
+  if (formErrors(f, d.name ? [] : [['name', 'Donne un nom à ce site']])) return;
   const id = f.dataset.id;
   if (id) Object.assign(site(id), { name: d.name, role: d.role || site(id).role });
   else { const s = { id: uid(), name: d.name, role: d.role || 'stock' }; S.sites.push(s); S.spaces.push({ id: uid(), siteId: s.id, name: 'Cave', use: s.role === 'stock' ? 'garde' : 'conso', q: {} }); }
   await save(); sheetBack(); refreshSheet(); render(); toast('Site enregistré');
 };
 FORMS.space = async (f, d) => {
+  const tg = d.target ? num(d.target) : null;
+  if (formErrors(f, [...(d.name ? [] : [['name', 'Donne un nom à cet espace']]), ...(d.target && !(Number.isInteger(tg) && tg >= 1 && tg <= 5000) ? [['target', 'Au moins 1 place, ou laisse vide']] : [])])) return;
   const id = f.dataset.id, q = {};
   for (const k of Object.keys(QUALITY)) if (d['q_' + k]) q[k] = d['q_' + k];
   const o = { name: d.name, siteId: d.siteId, use: d.use, q, target: int(d.target) };
@@ -278,7 +281,11 @@ FORMS.import = async (f, d) => {
     S.settings.stay = false; S.settings.lastExport = pendingImport.savedAt || Date.now();
     await save(); navigator.storage?.persist?.(); pendingImport = null;
     closeSheet(); enterApp('restauration'); toast('Cave restaurée');
-  } catch { btn.disabled = false; btn.textContent = 'Restaurer'; const er = $('#ierr'); er.hidden = false; er.textContent = 'Mot de passe incorrect pour cette sauvegarde.'; }
+  } catch (e) {
+    btn.disabled = false; btn.textContent = 'Restaurer'; const er = $('#ierr'); er.hidden = false;
+    // Une structure invalide se repère ; un déchiffrement refusé peut venir du mot de passe ou d'un fichier altéré
+    er.textContent = e?.message === 'format' ? 'Sauvegarde incomplète ou endommagée : elle ne peut pas être restaurée.' : 'Mot de passe incorrect, ou fichier endommagé.';
+  }
 };
 Object.assign(ACT, {
   export: () => exportBackup(),

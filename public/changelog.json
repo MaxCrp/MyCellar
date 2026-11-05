@@ -1,5 +1,20 @@
 [
  {
+  "version": "1.6.2",
+  "date": "2026-11-05",
+  "titre": "Fiabilité",
+  "items": [
+   "Un double appui sur un bouton ne crée plus deux bouteilles, deux sorties ou deux dégustations.",
+   "La fiche vin vérifie le millésime, le prix, le degré et la quantité, et explique sous le champ ce qui ne va pas. Un millésime sur deux chiffres est complété (« 19 » devient 2019), et les nombres comme « 1.234,50 » sont reconnus.",
+   "Les fenêtres de dégustation restent cohérentes (début, apogée, fin), qu’elles soient saisies ou proposées par le sommelier.",
+   "Une dégustation enregistrée sans toucher au curseur n’a plus de note, au lieu d’un 14/20 par défaut.",
+   "Rangement : l’app prévient quand les places manquent et propose l’espace le plus libre.",
+   "Spiritueux désactivés : leurs cases restent sur le plan, grisées.",
+   "Import Ploc, lecture d’étiquette et restauration de sauvegarde : contrôles et messages plus clairs.",
+   "Les très grandes caves restent économes en appels au sommelier."
+  ]
+ },
+ {
   "version": "1.6.1",
   "date": "2026-11-04",
   "titre": "Confort et corrections",

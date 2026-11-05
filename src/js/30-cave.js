@@ -60,7 +60,8 @@ function spaceBlock(sp, ctx, titled) {
 }
 function unitHead(u, ctx) {
   const t = UNIT_TYPES[u.type], used = capacity(u) - freeSlots(u, ctx.occ).length;
-  const meta = `${u.rows} ${(u.rows > 1 ? t.rows : t.row1).toLowerCase()} · ${capacity(u)} places · ${used} occupée${used > 1 ? 's' : ''}`;
+  const hid = spiritsOn() ? 0 : S.bottles.filter(b => b.unitId === u.id && inCave(b) && !kindOn(wine(b.wineId))).length;
+  const meta = `${u.rows} ${(u.rows > 1 ? t.rows : t.row1).toLowerCase()} · ${capacity(u)} places · ${used} occupée${used > 1 ? 's' : ''}${hid ? ` · ${plural(hid, 'spiritueux masqué', 'spiritueux masqués')}` : ''}`;
   return `<div class="ct" style="margin-bottom:2px"><span class="ell">${esc(u.name || t.label)}</span>${ctx.pick ? '' : `<button class="icon-btn" data-act="editUnit" data-id="${u.id}" aria-label="Modifier le meuble">${ICON.edit}</button>`}</div><div class="tiny">${meta}</div>`;
 }
 function slotState(b, ctx) {
@@ -79,12 +80,14 @@ function renderGrid(u, ctx) {
       if (u.type === 'rack') {
         if (!b) { cells.push(`<button class="rc${sel ? ' sel' : ''}" ${ctx.pick ? `data-act="pickSlot" data-u="${u.id}" data-r="${r}" data-c="${c}"` : `data-act="emptySlot" data-u="${u.id}" data-r="${r}" data-c="${c}"`} aria-label="${t.row1} ${r + 1}, place ${c + 1} : libre"></button>`); continue; }
         const { w, cls } = slotState(b, ctx);
+        if (!kindOn(w)) { cells.push(`<button class="rc off" ${ctx.pick ? 'disabled' : 'data-act="spiritOff"'} aria-label="Spiritueux masqué"></button>`); continue; }
         const bg = wineColor(w), light = wineLight(w);
         cells.push(`<button class="rc ${cls.join(' ')}${light ? ' light' : ''}${ctx.pick ? ' dim' : ''}" style="background:${bg};border-color:${bg}" ${isFriend(w) ? `data-ini="${esc(ownerInitial(w))}"` : ''} ${ctx.pick ? 'disabled' : `data-act="slot" data-b="${b.id}"`} aria-label="${esc(wineTitle(w))}">${esc(abbr(w))}</button>`);
         continue;
       }
       if (!b) { cells.push(`<button class="slot empty${sel ? ' sel' : ''}" ${ctx.pick ? `data-act="pickSlot" data-u="${u.id}" data-r="${r}" data-c="${c}"` : `data-act="emptySlot" data-u="${u.id}" data-r="${r}" data-c="${c}"`} aria-label="Place libre"></button>`); continue; }
       const { w, cls } = slotState(b, ctx);
+      if (!kindOn(w)) { cells.push(`<button class="slot off" ${ctx.pick ? 'disabled' : 'data-act="spiritOff"'} aria-label="Spiritueux masqué"><i></i><b>&nbsp;</b><small>&nbsp;</small></button>`); continue; }
       cells.push(`<button class="slot ${cls.join(' ')}${ctx.pick ? ' dim' : ''}" ${ctx.pick ? 'disabled' : `data-act="slot" data-b="${b.id}"`}><i style="background:${wineColor(w)}"></i><b>${esc(shortName(w))}</b><small>${esc(shortSub(w))}${b.state === 'open' ? ' · ouverte' : ''}</small>${isFriend(w) ? `<span class="ini">${esc(ownerInitial(w))}</span>` : ''}</button>`);
     }
     const cols = u.type === 'rack' ? `repeat(${u.cols},minmax(26px,1fr))` : `repeat(${u.cols},minmax(${u.cols > 6 ? 54 : 0}px,1fr))`;
@@ -99,7 +102,8 @@ function renderBoxes(boxes, ctx) {
   const sorted = [...boxes].sort((a, b) => String(a.pile || '').localeCompare(String(b.pile || '')) || (b.level || 0) - (a.level || 0));
   return `<div class="pile">${sorted.map(u => {
     const bs = boxContents(u, ctx.occ), ws = [...new Set(bs.map(b => b.wineId))].map(wine);
-    const title = ws.length === 1 ? wineTitle(ws[0]) : ws.length ? 'Assortiment' : 'Vide';
+    const off = ws.length && ws.every(w => !kindOn(w));
+    const title = off ? 'Spiritueux masqués' : ws.length === 1 ? wineTitle(ws[0]) : ws.length ? 'Assortiment' : 'Vide';
     const hit = ctx.m && ws.some(ctx.m), dim = ctx.m && !hit;
     const act = ctx.pick ? `data-act="pickBox" data-u="${u.id}"` : `data-act="box" data-u="${u.id}"`;
     const picked = ctx.pick?.sel.filter(s => s.unitId === u.id).length || 0;
@@ -110,6 +114,8 @@ function renderBoxes(boxes, ctx) {
   }).join('')}</div>`;
 }
 function unplacedBlock(list, ctx) {
+  list = list.filter(b => kindOn(wine(b.wineId)));
+  if (!list.length) return '';
   const by = new Map();
   for (const b of list) by.set(b.wineId, (by.get(b.wineId) || 0) + 1);
   return `<div class="card"><div class="ct">Non placées <span class="small">${list.length}</span></div><div class="unplaced">${[...by].map(([wid, n]) => {
@@ -213,6 +219,7 @@ Object.assign(ACT, {
     await save(); closeSheet(); render(); toast('Meuble supprimé');
   },
   slot: t => showSheet(() => bottleSheet(t.dataset.b)),
+  spiritOff: () => toast('Spiritueux masqués : réactive-les dans Réglages › Contenu'),
   emptySlot: t => showSheet(() => emptySlotSheet(t.dataset.u, +t.dataset.r, +t.dataset.c)),
   box: t => showSheet(() => boxSheet(t.dataset.u)),
 });

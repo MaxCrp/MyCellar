@@ -301,3 +301,12 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .switch[data-act]{cursor:not-allowed}
 .switch input:disabled{pointer-events:none}
 .why-off{display:block;font-size:12px;color:var(--bx);margin-top:2px}
+.ferr{display:block;color:var(--red);font-size:12.5px;font-weight:500;margin-top:2px}
+input.bad,select.bad,textarea.bad{border-color:var(--red);box-shadow:0 0 0 1px var(--red)}
+input[type=range].unset::-webkit-slider-runnable-track{background:#EAE2D6}
+input[type=range].unset::-webkit-slider-thumb{opacity:.55}
+input[type=range].unset::-moz-range-progress{background:#EAE2D6}
+.slot.off{background:#EFEBE5;opacity:.55}
+.slot.off i{background:#C9C1B6}
+.rc.off{background:#DDD5CB;border-color:#DDD5CB;opacity:.6}
+.crate.off{opacity:.55}

@@ -72,12 +72,16 @@ const setKey = p => p.evaluate(() => { S.settings.ai.key = 'sk-ant-test'; S.sett
   console.log('A. Fuzzing des saisies');
   {
     const { p, ctx } = await newPage(b); await demo(p);
-    // A1. Fiche vin avec des valeurs hostiles
+    // A1. Fiche vin avec des valeurs hostiles : refus avec message, ou valeur complétée de façon visible
     const cases = [
-      { label: 'quantité négative', qty: '-5' }, { label: 'quantité texte', qty: 'abc' }, { label: 'quantité 1e9', qty: '1e9' }, { label: 'quantité 0', qty: '0' },
-      { label: 'quantité décimale', qty: '2,7' }, { label: 'millésime 3000', mill: '3000' }, { label: 'millésime 1800', mill: '1800' }, { label: 'millésime texte', mill: 'abcd' },
-      { label: 'millésime 2 chiffres', mill: '19' }, { label: 'prix négatif', prix: '-5' }, { label: 'prix énorme', prix: '1e12' }, { label: 'degré 300', degre: '300' },
-      { label: 'fenêtre fin < début', adeb: '2035', afin: '2020' }, { label: 'apogée hors fenêtre', adeb: '2020', apic: '2050', afin: '2030' },
+      { label: 'quantité négative', qty: '-5', refus: true }, { label: 'quantité texte', qty: 'abc', refus: true }, { label: 'quantité 1e9', qty: '1e9', refus: true },
+      { label: 'quantité 0', qty: '0', refus: true }, { label: 'quantité décimale', qty: '2,7', refus: true }, { label: 'millésime 3000', mill: '3000', refus: true },
+      { label: 'millésime 1800', mill: '1800', refus: true }, { label: 'millésime texte (confirmé non millésimé)', mill: 'abcd', want: r => r.mill === null },
+      { label: 'millésime 2 chiffres « 19 »', mill: '19', want: r => r.mill === 2019 }, { label: 'millésime 2 chiffres « 98 »', mill: '98', want: r => r.mill === 1998 },
+      { label: 'prix négatif', prix: '-5', refus: true }, { label: 'prix énorme', prix: '1e12', refus: true }, { label: 'prix « 1.234,50 »', prix: '1.234,50', want: r => r.prix === 1234.5 },
+      { label: 'degré 300', degre: '300', refus: true }, { label: 'fenêtre fin < début', adeb: '2035', afin: '2020', refus: true },
+      { label: 'apogée hors fenêtre', adeb: '2020', apic: '2050', afin: '2030', refus: true }, { label: 'fenêtre sans fin', adeb: '2024', refus: true },
+      { label: 'fenêtre correcte', adeb: '2024', apic: '2027', afin: '2032', want: r => r.apogee?.fin === 2032 && r.apogee?.pic === 2027 },
     ];
     for (const c of cases) {
       const before = await act(p, () => ({ w: S.wines.length, b: S.bottles.length }));
@@ -89,25 +93,19 @@ const setKey = p => p.evaluate(() => { S.settings.ai.key = 'sk-ant-test'; S.sett
       if (c.degre) await p.fill('.sheet input[name=degre]', c.degre);
       if (c.adeb || c.afin) { await p.click('.sheet summary'); if (c.adeb) await p.fill('.sheet input[name=adeb]', c.adeb); if (c.apic) await p.fill('.sheet input[name=apic]', c.apic); if (c.afin) await p.fill('.sheet input[name=afin]', c.afin); }
       await p.click('.sheet [type=submit]'); await p.waitForTimeout(250);
-      if (await p.$('.sheet [data-act=placeOk]')) await p.click('.sheet [data-act=placeOk]');
+      const msg = await p.$eval('.sheet .ferr', e => e.textContent).catch(() => '');
+      if (msg) await closeAll(p);
+      else if (await p.$('.sheet [data-act=placeOk]')) await p.click('.sheet [data-act=placeOk]');
       await p.waitForTimeout(150);
-      const r = await act(p, b0 => { const w = S.wines.at(-1); return { added: S.bottles.length - b0.b, newWine: S.wines.length > b0.w, mill: w.millesime, prix: w.achat?.prix, degre: w.degre, apogee: w.apogee, status: status(w) }; }, before);
+      const r = await act(p, b0 => { const w = S.wines.at(-1); return { added: S.bottles.length - b0.b, newWine: S.wines.length > b0.w, mill: w.millesime, prix: w.achat?.prix, apogee: w.apogee }; }, before);
       const e = errs(p);
-      let ok = !e, why = '';
-      if (c.qty === '1e9' && r.added > 100) { ok = false; why = `${r.added} bouteilles créées d’un coup`; }
-      if (c.qty === '0' && r.added !== 0) { why = `quantité 0 → ${r.added} bouteille créée sans prévenir`; }
-      if (c.qty === '2,7') why = `quantité 2,7 → ${r.added} bouteilles`;
-      if (c.mill === '3000' && r.mill === 3000) { ok = false; why = 'millésime 3000 accepté'; }
-      if (c.mill === '1800' && r.mill === 1800) { ok = false; why = 'millésime 1800 accepté'; }
-      if (c.mill === '19' && r.mill === 19) { ok = false; why = 'millésime « 19 » accepté tel quel'; }
-      if (c.mill === 'abcd') why = `millésime texte → ${r.mill === null ? 'non millésimé, sans avertissement' : r.mill}`;
-      if (c.prix === '-5' && r.prix < 0) { ok = false; why = 'prix négatif accepté'; }
-      if (c.prix === '1e12' && r.prix > 1e6) { ok = false; why = `prix ${r.prix} accepté`; }
-      if (c.degre === '300' && r.degre === 300) { ok = false; why = 'degré 300 % accepté'; }
-      if (c.afin === '2020' && r.apogee?.debut > r.apogee?.fin) { ok = false; why = `fenêtre ${r.apogee.debut}–${r.apogee.fin} acceptée (statut « ${r.status} »)`; }
-      if (c.apic === '2050' && r.apogee?.pic > r.apogee?.fin) { ok = false; why = `apogée ${r.apogee.pic} après la fin ${r.apogee.fin} acceptée`; }
-      note('Saisie', 'Fiche vin : ' + c.label, ok, why || e);
+      const ok = !e && (c.refus ? !!msg && !r.newWine : !msg && r.newWine && c.want(r));
+      note('Saisie', 'Fiche vin : ' + c.label, ok, (c.refus ? (msg ? `refusée : « ${msg} »` : `acceptée (${r.added} bouteille(s))`) : msg ? `refusée à tort : « ${msg} »` : JSON.stringify({ mill: r.mill, prix: r.prix, apogee: r.apogee && [r.apogee.debut, r.apogee.pic, r.apogee.fin] })) + (e ? ' · ' + e : ''));
     }
+    // A1 bis. Lecture des nombres au format français
+    const nums = await act(p, () => [['1 234,50', 1234.5], ['1.234,50', 1234.5], ['1.234', 1234], ['12,5', 12.5], ['12.5', 12.5], ['25 €', 25], ['1,2,3', null], ['abc', null], ['', null]].map(([s, v]) => [s, num(s), v]));
+    const badNums = nums.filter(([, got, want]) => got !== want);
+    note('Saisie', 'Nombres au format français (9 écritures)', !badNums.length, badNums.map(([s, g, w]) => `« ${s} » → ${g} au lieu de ${w}`).join(' ; '));
     // A2. Injection HTML dans tous les champs texte d'une fiche vin, puis affichage partout
     await p.click('[data-act=add]'); await p.click('.sheet [data-act=addWine]'); await p.click('.sheet [data-act=newWine][data-kind=vin]'); await p.waitForTimeout(80);
     for (const n of ['domaine', 'cuvee', 'appellation', 'region', 'pays', 'cepages', 'lieu', 'offertPar']) await p.fill(`.sheet input[name=${n}]`, XSS);
@@ -165,12 +163,12 @@ const setKey = p => p.evaluate(() => { S.settings.ai.key = 'sk-ant-test'; S.sett
     // A6. Sites et espaces : noms vides ou faits d'espaces, cible négative
     await act(p, () => showSheet(() => siteSheet(S.sites[0].id)));
     await p.fill('.sheet input[name=name]', '    '); await p.click('.sheet [type=submit]'); await p.waitForTimeout(150);
-    const nm = await act(p, () => S.sites[0].name); await closeAll(p);
-    note('Saisie', 'Site : nom composé uniquement d’espaces', nm.trim() !== '', `nom enregistré : « ${nm} »`);
+    const nm = await act(p, () => S.sites[0].name), nmMsg = await p.$eval('.sheet .ferr', e => e.textContent).catch(() => ''); await closeAll(p);
+    note('Saisie', 'Site : nom composé uniquement d’espaces', nm.trim() !== '' && !!nmMsg, `nom conservé : « ${nm} » · message : « ${nmMsg} »`);
     await act(p, () => showSheet(() => spaceSheet(S.spaces[0].id)));
     await p.fill('.sheet input[name=target]', '-3'); await p.click('.sheet [type=submit]'); await p.waitForTimeout(150);
-    const tg = await act(p, () => S.spaces[0].target); await closeAll(p);
-    note('Saisie', 'Espace : places cibles négatives', !(tg < 0), `cible enregistrée : ${tg}`);
+    const tg = await act(p, () => S.spaces[0].target), tgMsg = await p.$eval('.sheet .ferr', e => e.textContent).catch(() => ''); await closeAll(p);
+    note('Saisie', 'Espace : places cibles négatives', !(tg < 0) && !!tgMsg, `cible : ${tg} · message : « ${tgMsg} »`);
     await ctx.close();
   }
 
@@ -220,18 +218,17 @@ const setKey = p => p.evaluate(() => { S.settings.ai.key = 'sk-ant-test'; S.sett
     await act(p, () => showSheet(wishSheet)); await closeAll(p);
     await act(p, () => showSheet(transferSheet)); await closeAll(p);
     e = e || errs(p);
-    note('Combinaisons', 'Supprimer un vin à la fois dans le transfert, les envies et une séance', !e && !r.crash, r.crash || (r.wishLeft ? `l’envie du vin supprimé reste enregistrée (${r.wishLeft})` : '') + (e ? ' · ' + e : ''));
+    note('Combinaisons', 'Supprimer un vin à la fois dans le transfert, les envies et une séance', !e && !r.crash && !r.wishLeft, r.crash || (r.wishLeft ? `l’envie du vin supprimé reste enregistrée (${r.wishLeft})` : 'envie et transfert nettoyés') + (e ? ' · ' + e : ''));
     // C2. Réduire un rack plein, changer le type d'un meuble, supprimer un meuble plein
     ({ r, e } = await run('', () => {
       const u = S.units.find(x => x.type === 'rack'); const n = S.bottles.filter(b => b.unitId === u.id && inCave(b)).length;
       const tot = S.bottles.filter(inCave).length;
       Object.assign(u, { rows: 1, cols: 2 });
-      const valid = new Set(positions(u).map(([r, c]) => `${r}:${c}`)); let un = 0;
-      for (const b of S.bottles) if (b.unitId === u.id && inCave(b) && !valid.has(`${b.r}:${b.c}`)) un++;
-      render();
-      return { n, un, tot, after: S.bottles.filter(inCave).length };
+      cleanData(S); render();
+      const inUnit = S.bottles.filter(b => b.unitId === u.id && inCave(b)).length, unplaced = S.bottles.filter(b => inCave(b) && b.spaceId === u.spaceId && !b.unitId).length;
+      return { n, inUnit, unplaced, tot, after: S.bottles.filter(inCave).length };
     }));
-    note('Combinaisons', 'Rack réduit (dimensions modifiées hors du formulaire) avec des bouteilles hors dimensions', !e, `${r.un} bouteilles sur ${r.n} se retrouvent hors du meuble : elles ne sont plus visibles sur le plan (ni « non placées »)` + (e ? ' · ' + e : ''));
+    note('Combinaisons', 'Positions impossibles (meuble réduit hors formulaire) corrigées au chargement', !e && r.after === r.tot && r.inUnit <= 2 && r.unplaced >= r.n - 2, `${r.n} bouteilles dans le meuble → ${r.inUnit} gardées à leur place, ${r.unplaced} « non placées », aucune perdue` + (e ? ' · ' + e : ''));
     // C3. Passer en site unique avec un transfert en cours et un site actuel sur le 2e site
     ({ r, e } = await run('', () => { S.settings.site = S.sites[1].id; S.transfer.ids = S.bottles.filter(inCave).slice(0, 3).map(b => b.id); window.confirm = () => true; return ACT.setMulti({ dataset: { v: '0' } }).then(() => ({ sites: S.sites.length, site: S.settings.site === S.sites[0].id, tr: S.transfer.ids.length })); }));
     await act(p, () => { view = 'cave'; render(); });
@@ -239,13 +236,13 @@ const setKey = p => p.evaluate(() => { S.settings.ai.key = 'sk-ant-test'; S.sett
     note('Combinaisons', 'Passage en site unique avec un transfert en cours', !e && r.site && r.tr === 0, JSON.stringify(r) + (e ? ' · ' + e : ''));
     // C4. Spiritueux désactivés alors qu'il y en a en cave
     ({ r, e } = await run('', () => { S.settings.spirits = false; view = 'cave'; caveMode = 'plan'; render();
-      const onPlan = [...document.querySelectorAll('.slot b')].some(x => /Lagavulin|Clément|Glenfarclas/.test(x.textContent));
+      const onPlan = [...document.querySelectorAll('.slot b')].some(x => /Lagavulin|Clément|Glenfarclas/.test(x.textContent)), greyed = document.querySelectorAll('.slot.off').length;
       caveMode = 'liste'; render();
       const inList = [...document.querySelectorAll('.li b')].some(x => /Lagavulin|Clément|Glenfarclas/.test(x.textContent));
       const ctx = caveContext(true).includes('SPIRITUEUX');
       view = 'boire'; render(); const openBlock = !!document.querySelector('.bottle-level');
-      return { onPlan, inList, ctx, openBlock }; }));
-    note('Combinaisons', 'Spiritueux désactivés avec des spiritueux en cave', !r.inList && !r.ctx, `plan : ${r.onPlan ? 'visibles' : 'masqués'} · liste : ${r.inList ? 'visibles' : 'masqués'} · sommelier : ${r.ctx ? 'inclus' : 'exclus'} · bloc « ouverts » : ${r.openBlock ? 'affiché' : 'masqué'}` + (e ? ' · ' + e : ''));
+      return { onPlan, greyed, inList, ctx, openBlock }; }));
+    note('Combinaisons', 'Spiritueux désactivés avec des spiritueux en cave', !r.inList && !r.ctx && !r.onPlan && r.greyed > 0, `plan : ${r.onPlan ? 'noms visibles' : r.greyed + ' cases grisées sans nom'} · liste : ${r.inList ? 'visibles' : 'masqués'} · sommelier : ${r.ctx ? 'inclus' : 'exclus'} · bloc « ouverts » : ${r.openBlock ? 'affiché' : 'masqué'}` + (e ? ' · ' + e : ''));
     await act(p, () => { S.settings.spirits = true; caveMode = 'plan'; });
     // C5. Primeur dont l'espace de livraison a été supprimé
     ({ r, e } = await run('', () => { const pr = S.bottles.find(b => b.state === 'primeur'); if (!pr) return { none: true }; pr.delivery.spaceId = 'disparu'; return ACT.receive({ dataset: { b: pr.id } }).then(() => ({ ok: true, placed: !!document.querySelector('.sheet [data-act=placeOk]') })); }));
@@ -253,9 +250,9 @@ const setKey = p => p.evaluate(() => { S.settings.ai.key = 'sk-ant-test'; S.sett
     note('Combinaisons', 'Réceptionner un primeur dont l’espace de destination n’existe plus', !e && !r.crash, JSON.stringify(r) + (e ? ' · ' + e : ''));
     // C6. Ranger plus de bouteilles qu'il n'y a de places libres
     ({ r, e } = await run('', () => { const w = S.wines.find(x => x.kind === 'vin' && !x.owner); const sp = S.spaces[0]; const ids = createBottles(w, 120, { spaceId: sp.id }); startPlace(w.id, ids, sp.id, true);
-      const sel = draft.place.sel.length; ACT.placeOk(); return { sel, unplaced: S.bottles.filter(b => ids.includes(b.id) && !b.unitId).length }; }));
+      const sel = draft.place.sel.length, warn = document.querySelector('.sheet .banner')?.textContent.trim().slice(0, 90) || ''; ACT.placeOk(); return { sel, warn, unplaced: S.bottles.filter(b => ids.includes(b.id) && !b.unitId).length }; }));
     await p.waitForTimeout(200); await closeAll(p);
-    note('Combinaisons', 'Ranger 120 bouteilles dans un espace presque plein', !e, `${r.sel} places proposées, ${r.unplaced} bouteilles laissées « non placées » sans avertissement explicite` + (e ? ' · ' + e : ''));
+    note('Combinaisons', 'Ranger 120 bouteilles dans un espace presque plein', !e && /manque/.test(r.warn), `${r.sel} places proposées · avertissement : « ${r.warn} »` + (e ? ' · ' + e : ''));
     // C7. Vins des amis jamais envoyés au sommelier
     ({ r, e } = await run('', () => { const f = S.wines.filter(isFriend); return { friends: f.length, leak: f.some(w => caveContext(true).includes(w.id) || caveContext(true).includes(w.domaine)) }; }));
     note('Combinaisons', 'Vins des amis exclus du contexte du sommelier', !r.leak, `${r.friends} vin(s) d’ami testé(s)`);
@@ -273,8 +270,15 @@ const setKey = p => p.evaluate(() => { S.settings.ai.key = 'sk-ant-test'; S.sett
     await closeAll(p);
     note('Combinaisons', 'Modifier une dégustation à l’aveugle non révélée', !e && r.open, e);
     // C10. Fenêtre incohérente : statut et barre
-    ({ r, e } = await run('', () => { const w = S.wines.find(x => x.kind === 'vin'); w.apogee = { debut: 2035, pic: 2040, fin: 2020 }; const st = status(w); const bar = winBar(w.apogee, 2015, 2045); return { st, neg: /right:-|left:-|right:1\d\d|width:-/.test(bar), bar: bar.slice(0, 120) }; }));
-    note('Combinaisons', 'Fenêtre début > fin : statut et barre de fenêtre', false, `statut calculé « ${r.st} » pour une fenêtre 2035–2020 ; aucune validation à la saisie ni après une réponse de l’IA` + (e ? ' · ' + e : ''));
+    ({ r, e } = await run('', () => { const w = S.wines.find(x => x.kind === 'vin'); w.apogee = { debut: 2035, pic: 2040, fin: 2020, src: 'manuel' }; cleanData(S); return { a: w.apogee && [w.apogee.debut, w.apogee.pic, w.apogee.fin], st: status(w) }; }));
+    note('Combinaisons', 'Fenêtre incohérente déjà enregistrée (2035–2020) : corrigée au chargement', !e && r.a && !(r.a[0] > r.a[2]), `fenêtre après chargement : ${JSON.stringify(r.a)} · statut « ${r.st} »` + (e ? ' · ' + e : ''));
+    // C11. Dégustation enregistrée sans toucher au curseur : sans note
+    ({ r, e } = await run('', () => { closeSheet(); const w = S.wines.find(x => x.kind === 'vin'); startTaste(w.id, null, 'quick'); draft.taste.comment = 'Sans note'; const hint = !!document.querySelector('#t-hint'); return ACT.tasteSave().then(() => ({ hint, note: S.tastings.at(-1).note })); }));
+    await closeAll(p);
+    note('Combinaisons', 'Dégustation enregistrée sans toucher au curseur', !e && r.note == null && r.hint, `note enregistrée : ${r.note} · mention « Touche pour noter » : ${r.hint}` + (e ? ' · ' + e : ''));
+    // C12. Recommandation du sommelier qui ne correspond plus à la cave
+    ({ r, e } = await run('', () => { S.chat = [{ role: 'user', text: 'x' }, { role: 'assistant', data: { message: 'Voici', recos: [{ id: 'disparu', role: 'x', raison: 'x', temperature: '', carafe: '', plat: '' }], achats: [], relances: [] } }]; view = 'somm'; render(); return { txt: [...document.querySelectorAll('.tiny')].map(x => x.textContent).find(t => /ne correspond/.test(t)) || '' }; }));
+    note('Combinaisons', 'Recommandation qui ne correspond plus à la cave', !e && !!r.txt, `mention : « ${r.txt} »` + (e ? ' · ' + e : ''));
     await ctx.close();
   }
 
@@ -316,7 +320,7 @@ const setKey = p => p.evaluate(() => { S.settings.ai.key = 'sk-ant-test'; S.sett
     await act(p, async () => { await onPdf(new File([new Uint8Array([37, 80, 68, 70])], 'p.pdf', { type: 'application/pdf' })); });
     await p.waitForTimeout(600);
     const pl = await act(p, () => ({ rows: plocItems?.length, q: plocItems?.map(x => x.quantite), x: document.querySelectorAll('[data-xss]').length, btn: document.querySelector('[data-act=plocGo]')?.textContent }));
-    note('IA', 'Import Ploc : quantité 999 999, quantité négative, ligne vide, injection', !pl.x && !/999/.test(pl.btn || ''), JSON.stringify(pl) + ' (l’import limite ensuite à 200 par ligne, mais le bouton annonce le total brut)');
+    note('IA', 'Import Ploc : quantité 999 999, quantité négative, ligne vide, injection', !pl.x && !/999/.test(pl.btn || ''), JSON.stringify(pl));
     await closeAll(p);
     // Budget dépassé
     aiMode = 'ok';
@@ -348,7 +352,8 @@ const setKey = p => p.evaluate(() => { S.settings.ai.key = 'sk-ant-test'; S.sett
       else msg = await q.textContent('#toast').catch(() => '');
       const opened = await q.evaluate(() => mode === 'app');
       const e = errs(q);
-      note('Sauvegarde', `Restaurer : ${label}`, !e && (!opened || label === 'photos piégées'), `${opened ? 'cave ouverte' : 'refusée'} · message : « ${(msg || '').trim().slice(0, 80)} »` + (e ? ' · ' + e : ''));
+      const wantMsg = { 'données altérées': /incorrect, ou fichier endommagé/, 'sans emplacement de mot de passe': /endommagée/, 'itérations piégées': /endommagée/ }[label];
+      note('Sauvegarde', `Restaurer : ${label}`, !e && (!opened || label === 'photos piégées') && (!wantMsg || wantMsg.test(msg || '')), `${opened ? 'cave ouverte' : 'refusée'} · message : « ${(msg || '').trim().slice(0, 80)} »` + (e ? ' · ' + e : ''));
       await c2.close();
     }
     await ctx.close();
@@ -392,7 +397,7 @@ const setKey = p => p.evaluate(() => { S.settings.ai.key = 'sk-ant-test'; S.sett
       return t;
     });
     const slow = Object.entries(r).filter(([k, v]) => !k.includes('caract') && v > 400);
-    note('Volume', '1 000 vins, 3 000 bouteilles, 2 000 dégustations', !slow.length && r['contexte sommelier (caractères)'] < 150000, Object.entries(r).map(([k, v]) => `${k} ${v}${k.includes('caract') ? '' : ' ms'}`).join(' · ') + (errs(p) ? ' · ' + errs(p) : ''));
+    note('Volume', '1 000 vins, 3 000 bouteilles, 2 000 dégustations', !slow.length && r['contexte sommelier (caractères)'] < 80000, Object.entries(r).map(([k, v]) => `${k} ${v}${k.includes('caract') ? '' : ' ms'}`).join(' · ') + (errs(p) ? ' · ' + errs(p) : ''));
     await ctx.close();
   }
 

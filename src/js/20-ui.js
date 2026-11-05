@@ -89,6 +89,22 @@ function setRangeFill(r) { const p = (r.value - r.min) / (r.max - r.min) * 100; 
    Les boutons portent data-act="nom" ; chaque module ajoute ses actions à ACT.
    Les formulaires portent data-form="nom" ; FORMS reçoit (formulaire, données). */
 const ACT = {}, FORMS = {}, INPUTS = {}, CHANGES = {};
+// Affiche les erreurs sous les champs concernés ; renvoie vrai s'il y en a
+function formErrors(f, errs) {
+  $$('.ferr', f).forEach(e => e.remove()); $$('.bad', f).forEach(e => e.classList.remove('bad'));
+  for (const [n, m] of errs) {
+    const el = f.elements[n]; if (!el) continue;
+    el.classList.add('bad');
+    const s = document.createElement('span'); s.className = 'ferr'; s.textContent = m;
+    (el.closest('label') || el.parentNode).appendChild(s);
+  }
+  if (errs.length) {
+    const first = f.elements[errs[0][0]]; first?.closest('details')?.setAttribute('open', '');
+    first?.scrollIntoView({ block: 'center' });
+    toast(errs.length > 1 ? `${errs.length} champs à corriger` : errs[0][1]);
+  }
+  return errs.length > 0;
+}
 const formData = f => Object.fromEntries([...new FormData(f).entries()].map(([k, v]) => [k, typeof v === 'string' ? v.trim() : v]));
 
 /* ---------- Verrou ---------- */

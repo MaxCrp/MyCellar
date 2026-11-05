@@ -105,20 +105,43 @@ function readWineForm(d, w) {
   const t = s => s || '';
   Object.assign(w, {
     domaine: t(d.domaine), cuvee: t(d.cuvee), region: t(d.region), pays: t(d.pays), format: d.format,
-    millesime: int(d.millesime) || null, degre: num(d.degre), owner: t(d.owner) || null, short: t(d.short), abbr: t(d.abbr).toUpperCase(), notes: t(d.notes),
+    millesime: readYear(d.millesime, thisYear() + 1).v || null, degre: num(d.degre), owner: t(d.owner) || null, short: t(d.short), abbr: t(d.abbr).toUpperCase(), notes: t(d.notes),
     achat: { prix: num(d.prix), date: d.adate || null, lieu: t(d.lieu) }, cadeau: d.offertPar ? { de: d.offertPar } : null,
   });
   if (sp) Object.assign(w, { cat: d.cat, age: int(d.age), bottled: int(d.bottled), fut: t(d.fut), bruteDeFut: !!d.bruteDeFut, singleCask: !!d.singleCask, independant: t(d.independant), numero: t(d.numero) });
   else {
     Object.assign(w, { couleur: d.couleur, appellation: t(d.appellation), cepages: t(d.cepages), bio: !!d.bio, nature: !!d.nature });
-    const deb = int(d.adeb), pic = int(d.apic), fin = int(d.afin), a = w.apogee || {};
+    const cw = cleanWindow(int(d.adeb), int(d.apic), int(d.afin), w.millesime), a = w.apogee || {};
+    const fin = cw?.fin, deb = cw?.debut, pic = cw?.pic;
     if (fin && (fin !== a.fin || deb !== a.debut || pic !== a.pic)) w.apogee = { ...a, debut: deb, pic, fin, src: 'manuel', at: Date.now() };
     else if (!fin && a.src === 'manuel') w.apogee = null;
   }
   if (w.owner && !S.settings.friends.includes(w.owner)) S.settings.friends.push(w.owner);
 }
+// Contrôles de la fiche vin : valeurs hors bornes signalées sous le champ, fiche non enregistrée
+function checkWineForm(f, d, kind, creating) {
+  const errs = [], add = (n, m) => errs.push([n, m]), sp = kind === 'spirit', yr = thisYear();
+  const m = readYear(d.millesime, sp ? yr : yr + 1);
+  if (m.err) add('millesime', m.err);
+  else if (m.bad) {
+    if (confirm(`« ${d.millesime} » n’est pas une année. ${sp ? 'Laisser sans année de distillation' : 'Laisser ce vin non millésimé'} ?`)) { d.millesime = ''; f.elements.millesime.value = ''; }
+    else add('millesime', 'Une année, par exemple 2019');
+  } else if (m.filled) { d.millesime = String(m.v); f.elements.millesime.value = d.millesime; }
+  if (d.prix) { const p = num(d.prix); if (p == null) add('prix', 'Prix non reconnu (ex. 24,50)'); else if (p < 0 || p > 100000) add('prix', 'Un prix entre 0 et 100 000 €'); }
+  if (d.degre) { const g = num(d.degre), mx = sp ? 80 : 25; if (g == null || g <= 0 || g > mx) add('degre', `Un degré entre 0 et ${mx} %`); }
+  if (creating && 'qty' in d) { const q = String(d.qty).replace(/\s/g, ''); if (!/^\d+$/.test(q) || +q < 1 || +q > 500) add('qty', 'Un nombre entier de 1 à 500'); }
+  if (sp) {
+    if (d.age) { const a = num(d.age); if (a == null || !Number.isInteger(a) || a < 0 || a > 100) add('age', 'De 0 à 100 ans'); }
+    if (d.bottled) { const b = readYear(d.bottled, yr); if (b.err || b.bad) add('bottled', `Une année entre 1900 et ${yr}`); else if (b.filled) { d.bottled = String(b.v); f.elements.bottled.value = d.bottled; } }
+  } else if (d.adeb || d.apic || d.afin) {
+    if (!int(d.afin)) add('afin', 'Indique au moins l’année de fin');
+    else if (!cleanWindow(int(d.adeb), int(d.apic), int(d.afin), readYear(d.millesime, yr + 1).v)) add('afin', 'Fenêtre incohérente : début ≤ apogée ≤ fin, et pas avant le millésime');
+  }
+  return !formErrors(f, errs);
+}
 FORMS.wine = async (f, d) => {
   const dr = draft; if (!dr) return closeSheet();
+  if (!checkWineForm(f, d, dr.w.kind, !dr.edit)) return;
   if (dr.edit) {
     const w = wine(dr.edit); readWineForm(d, w); w.updatedAt = Date.now();
     if (dr.photo) { await photoSave(w.id, dr.photo); w.photo = true; }
@@ -191,7 +214,7 @@ function placeSheet() {
     <p class="small" style="margin-top:-6px"><span class="dot" style="background:${wineColor(w)}"></span> ${esc(wineTitle(w))}</p>
     <div class="chips">${S.spaces.map(s => `<button class="chip${s.id === p.spaceId ? ' on' : ''}" data-act="placeSpace" data-id="${s.id}">${esc(isMulti() ? site(s.siteId)?.name + ' › ' : '')}${esc(s.name)}</button>`).join('')}</div>
     <p class="small"><b style="color:var(--ink)">${p.sel.length} / ${p.ids.length}</b> place${p.ids.length > 1 ? 's' : ''} choisie${p.sel.length > 1 ? 's' : ''}. Touche les cases libres pour choisir.</p>
-    ${!units.length ? `<div class="card small">Aucun meuble dans cet espace : les bouteilles y seront rangées sans emplacement précis.</div>` : ''}
+    ${!units.length ? `<div class="card small">Aucun meuble dans cet espace : les bouteilles y seront rangées sans emplacement précis.</div>` : placeShortage(p, units, occ)}
     ${grid.map(u => `<div class="card">${unitHead(u, ctx)}${renderGrid(u, ctx)}</div>`).join('')}
     ${boxes.length ? `<div class="card"><div class="ct">Caisses et cartons</div>${renderBoxes(boxes, ctx)}</div>` : ''}
     <div class="btns" style="margin-top:14px;position:sticky;bottom:0;background:var(--bg);padding:8px 0">
@@ -271,7 +294,11 @@ function addBottlesSheet(wid) {
     </form>`;
 }
 FORMS.addBottles = async (f, d) => {
-  const w = wine(f.dataset.w), qty = clamp(int(d.qty) || 1, 1, 500);
+  const errs = [], q = String(d.qty).replace(/\s/g, ''), p = d.prix ? num(d.prix) : null;
+  if (!/^\d+$/.test(q) || +q < 1 || +q > 500) errs.push(['qty', 'Un nombre entier de 1 à 500']);
+  if (d.prix && (p == null || p < 0 || p > 100000)) errs.push(['prix', 'Un prix entre 0 et 100 000 €']);
+  if (formErrors(f, errs)) return;
+  const w = wine(f.dataset.w), qty = +q;
   if (num(d.prix) != null) w.achat = { ...(w.achat || {}), prix: num(d.prix), date: d.adate || w.achat?.date };
   const ids = createBottles(w, qty, d.state === 'primeur' ? { state: 'primeur', delivery: { date: d.delivery || null, spaceId: d.spaceId } } : { spaceId: d.spaceId });
   S.wishes = S.wishes.filter(x => x.wineId !== w.id);   // acheté : il sort de la liste d'envies
@@ -426,6 +453,7 @@ Object.assign(ACT, {
     S.wines = S.wines.filter(x => x.id !== w.id); S.bottles = S.bottles.filter(b => b.wineId !== w.id);
     S.moves = S.moves.filter(m => m.wineId !== w.id); S.tastings = S.tastings.filter(x => x.wineId !== w.id);
     S.transfer.ids = S.transfer.ids.filter(id => !ids.has(id));
+    S.wishes = S.wishes.filter(x => x.wineId !== w.id);
     if (w.photo) await photoDel(w.id);
     await save(); closeSheet(); render(); toast('Référence supprimée');
   },
@@ -438,3 +466,13 @@ function rebuyRows(q) {
     : '<p class="small" style="margin:10px 4px">Aucun vin ne correspond.</p>';
 }
 INPUTS.rebuyFind = el => { const box = $('#rebuy-list'); if (box) box.innerHTML = rebuyRows(el.value); };
+
+// Places libres insuffisantes dans l'espace choisi : on le dit, et on propose l'espace le plus libre
+function placeShortage(p, units, occ) {
+  const free = units.reduce((n, u) => n + freeSlots(u, occ).length, 0), miss = p.ids.length - free;
+  if (miss <= 0) return '';
+  const others = S.spaces.filter(s => s.id !== p.spaceId).map(s => ({ s, n: spaceUnits(s.id).reduce((t, u) => t + freeSlots(u, occ).length, 0) })).sort((a, b) => b.n - a.n);
+  const best = others[0];
+  return `<div class="banner">Il manque ${plural(miss, 'place', 'places')} dans cet espace : ${plural(miss, 'bouteille restera', 'bouteilles resteront')} « non placée${miss > 1 ? 's' : ''} ».
+    ${best && best.n > free ? `<br><button class="btn small" data-act="placeSpace" data-id="${best.s.id}">Aller dans « ${esc(best.s.name)} » (${plural(best.n, 'place libre', 'places libres')})</button>` : ''}</div>`;
+}

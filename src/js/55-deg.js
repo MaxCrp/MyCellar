@@ -129,6 +129,7 @@ function sessionForm(id) {
     </form>`;
 }
 FORMS.session = async (f, d) => {
+  if (formErrors(f, d.titre ? [] : [['titre', 'Donne un titre à la séance']])) return;
   const id = f.dataset.id, o = { titre: d.titre, type: d.type, lieu: d.lieu, date: d.date || today(), convives: d.convives };
   if (id) {
     Object.assign(byId(S.sessions, id), o);

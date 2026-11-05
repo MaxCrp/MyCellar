@@ -5,7 +5,7 @@ Ce document part du [rapport de bugs](rapport-bugs.md) du 4 novembre 2026. Il se
 2. **Préparer le journal des versions** : le texte prêt à copier dans `src/changelog.json`.
 3. **Alimenter le rapport de mise à jour** : le tableau de suivi en fin de document, à cocher à la livraison.
 
-Rien n'est encore développé. La release ne démarre que sur « lance la v1.6.2 ».
+Livré dans la 1.6.2 le 5 novembre 2026 : les 13 correctifs sont faits, et la campagne rejouée affiche 0 anomalie sur 71 tests.
 
 ## Décisions (validées le 4 novembre 2026)
 
@@ -126,20 +126,20 @@ Rien n'est encore développé. La release ne démarre que sur « lance la v1.6.2
 }
 ```
 
-## Suivi pour le rapport de mise à jour
+## Suivi pour le rapport de mise à jour (release 1.6.2 livrée)
 
 | Correctif | Bug | Gravité | Fait | Vérifié |
 |---|---|---|---|---|
-| C01 | B01 | Majeur | ☐ | ☐ |
-| C02 | B02, B09 | Moyen | ☐ | ☐ |
-| C03 | B03, B06 | Moyen | ☐ | ☐ |
-| C04 | B04 | Moyen | ☐ | ☐ |
-| C05 | B05 | Moyen | ☐ | ☐ |
-| C06 | B07 | Mineur | ☐ | ☐ |
-| C07 | B08 | Mineur | ☐ | ☐ |
-| C08 | B10, B13 | Mineur | ☐ | ☐ |
-| C09 | B11 | Mineur | ☐ | ☐ |
-| C10 | B12 | Mineur | ☐ | ☐ |
-| C11 | B14 | Observation | ☐ | ☐ |
-| C12 | B15 | Observation | ☐ | ☐ |
-| C13 | B16 | Observation | ☐ | ☐ |
+| C01 | B01 | Majeur | ☑ | ☑ |
+| C02 | B02, B09 | Moyen | ☑ | ☑ |
+| C03 | B03, B06 | Moyen | ☑ | ☑ |
+| C04 | B04 | Moyen | ☑ | ☑ |
+| C05 | B05 | Moyen | ☑ | ☑ |
+| C06 | B07 | Mineur | ☑ | ☑ |
+| C07 | B08 | Mineur | ☑ | ☑ |
+| C08 | B10, B13 | Mineur | ☑ | ☑ |
+| C09 | B11 | Mineur | ☑ | ☑ |
+| C10 | B12 | Mineur | ☑ | ☑ |
+| C11 | B14 | Observation | ☑ | ☑ |
+| C12 | B15 | Observation | ☑ | ☑ |
+| C13 | B16 | Observation | ☑ | ☑ |

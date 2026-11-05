@@ -41,6 +41,7 @@ tests/              tests de bout en bout (Playwright)
 ```bash
 node build.mjs          # régénère public/
 tests/run.sh            # build + serveur local + tests de bout en bout (captures dans tests/shots/)
+node tests/campagne.cjs # campagne de robustesse seule (fuzzing, doubles appuis, IA anormale…), serveur lancé à part
 ```
 
 Le script est intégré dans la page et la politique de sécurité (CSP) n'autorise que lui, par son empreinte SHA-256. Ne modifie jamais `public/` à la main : modifie `src/`, puis relance `node build.mjs`.

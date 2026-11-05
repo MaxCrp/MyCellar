@@ -23,10 +23,15 @@ const fmtE2 = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR
 const eur = v => fmtE.format(Math.round(v || 0));
 const numFr = (v, d = 1) => v == null ? '' : Number(v).toLocaleString('fr-FR', { maximumFractionDigits: d });
 // Saisie d'un nombre au format français : « 12,5 », « 1 234 », « 25 € »
+// « 1.234,50 » : point des milliers et virgule décimale ; « 1.234 » seul = 1234
 function num(s) {
   if (s == null) return null;
-  s = String(s).replace(/[\s  €%]/g, '').replace(',', '.');
+  s = String(s).replace(/[\s\u00a0\u202f€%]/g, '');
   if (s === '') return null;
+  if (s.includes(',') && s.includes('.')) s = s.replace(/\./g, '').replace(',', '.');
+  else if (/^-?\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, '');
+  else s = s.replace(',', '.');
+  if (!/^[-+]?(\d+\.?\d*|\.\d+)(e[-+]?\d+)?$/i.test(s)) return null;
   const n = Number(s);
   return Number.isFinite(n) ? n : null;
 }

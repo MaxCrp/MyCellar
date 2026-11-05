@@ -110,7 +110,49 @@ function normalize(d) {
   if (!d.sites.length) d.sites.push({ id: uid(), name: 'Site 1', role: 'conso' });
   if (!d.spaces.length) d.spaces.push({ id: uid(), siteId: d.sites[0].id, name: 'Cave', use: 'conso', q: {} });
   if (!d.sites.some(s => s.id === d.settings.site)) d.settings.site = d.sites[0].id;
+  cleanData(d);
   return d;
+}
+// Références orphelines et positions impossibles (anciennes sauvegardes, données modifiées à la main) :
+// une bouteille placée hors de son meuble redevient « non placée » au lieu de disparaître du plan.
+function cleanData(d) {
+  const wid = new Set(d.wines.map(w => w.id)), bid = new Set(d.bottles.map(b => b.id)), sid = new Set(d.spaces.map(s => s.id)), ses = new Set(d.sessions.map(s => s.id));
+  d.wishes = d.wishes.filter(x => wid.has(x.wineId));
+  // Fenêtre incohérente déjà enregistrée : on garde la fin si elle est possible, sinon on l'efface
+  for (const w of d.wines) if (w.apogee) { const a = w.apogee, cw = cleanWindow(a.debut, a.pic, a.fin, w.millesime) || cleanWindow(null, null, a.fin, w.millesime); w.apogee = cw ? { ...a, ...cw } : null; }
+  d.transfer.ids = d.transfer.ids.filter(id => bid.has(id));
+  d.tastings = d.tastings.filter(t => !t.wineId || wid.has(t.wineId));
+  for (const t of d.tastings) if (t.sessionId && !ses.has(t.sessionId)) t.sessionId = null;
+  d.bottles = d.bottles.filter(b => wid.has(b.wineId));
+  const units = new Map(d.units.filter(u => sid.has(u.spaceId)).map(u => [u.id, u])), taken = new Set();
+  d.units = d.units.filter(u => units.has(u.id));
+  for (const b of d.bottles) {
+    if (b.state !== 'cave' && b.state !== 'open') continue;
+    if (!sid.has(b.spaceId)) { b.spaceId = d.spaces[0].id; b.unitId = null; b.r = b.c = null; }
+    if (!b.unitId) continue;
+    const u = units.get(b.unitId), k = `${b.unitId}:${b.r}:${b.c}`;
+    const ok = u && u.spaceId === b.spaceId && !taken.has(k) && positions(u).some(([r, c]) => r === b.r && c === b.c);
+    if (ok) taken.add(k); else { b.unitId = null; b.r = b.c = null; }
+  }
+}
+// Fenêtre de dégustation : début ≤ apogée ≤ fin, années possibles et pas avant le millésime.
+// Renvoie null si l'ensemble est incohérent (on n'en garde pas la moitié).
+function cleanWindow(deb, pic, fin, mill) {
+  const z = v => v == null || v === '' || +v === 0 ? null : +v;
+  deb = z(deb); pic = z(pic); fin = z(fin);
+  const lo = Math.max(1900, mill || 1900), ok = y => Number.isInteger(y) && y >= lo && y <= 2200;
+  if (!ok(fin)) return null;
+  if (deb != null && (!ok(deb) || deb > fin)) return null;
+  if (pic != null && (!ok(pic) || pic > fin || (deb != null && pic < deb))) return null;
+  return { debut: deb, pic, fin };
+}
+// Année saisie : « 19 » → 2019, « 98 » → 1998 ; renvoie { v } , { err } ou { bad }
+function readYear(raw, max) {
+  raw = String(raw ?? '').trim();
+  if (!raw) return { v: null };
+  if (/^\d{2}$/.test(raw)) { const n = +raw, v = 2000 + n <= max ? 2000 + n : 1900 + n; return { v, filled: true }; }
+  if (/^\d{4}$/.test(raw)) { const v = +raw; return v >= 1900 && v <= max ? { v } : { err: `Une année entre 1900 et ${max}` }; }
+  return { bad: true };
 }
 // Structure de départ : un seul site, « Site 1 ». Le mode plusieurs sites se règle dans Plus.
 function seedStructure(d) {

@@ -19,7 +19,7 @@ function startTaste(wineId, bottleId, m, ctx = {}) {
   const w = wine(wineId) || mysteryWine();
   const prev = S.dismissed.rate?.bottleId === bottleId ? S.dismissed.rate : null;
   const sess = ctx.sessionId && byId(S.sessions, ctx.sessionId);
-  draft = { taste: { wineId, bottleId: bottleId || null, kind: w.kind, mode: m === 'full' ? 'full' : 'quick', note: 14, comment: '', at: sess?.date || today(), plat: prev?.plat || '',
+  draft = { taste: { wineId, bottleId: bottleId || null, kind: w.kind, mode: m === 'full' ? 'full' : 'quick', note: null, comment: '', at: sess?.date || today(), plat: prev?.plat || '',
     type: sess?.type || null, lieu: sess?.lieu || '', convives: sess?.convives || '', prix: '', achatLieu: '', provenance: '', accord: null, sessionId: sess?.id || null, fromCave: false, full: { aromes: [] } } };
   wheelState = { active: null };
   draft.taste._snap = tasteSig(draft.taste);
@@ -93,15 +93,16 @@ function tasteSheet() {
       <div class="seg"><button class="${t.mode === 'quick' ? 'on' : ''}" data-act="tmode" data-m="quick">Rapide</button><button class="${t.mode === 'full' ? 'on' : ''}" data-act="tmode" data-m="full">Complète</button></div></div>
     ${tasteContext(t, w)}
     ${t.blind ? blindHypCard(t) : ''}
-    <div class="card"><div class="score" id="t-score">${numFr(t.note)}<small> / 20</small></div>
-      <input type="range" min="0" max="20" step="0.5" value="${t.note}" data-in="tnote" aria-label="Note sur 20"></div>
+    <div class="card"><div class="score" id="t-score">${t.note != null ? numFr(t.note) : '–'}<small> / 20</small></div>
+      <input type="range" min="0" max="20" step="0.5" value="${t.note ?? 14}" data-in="tnote" class="${t.note == null ? 'unset' : ''}" aria-label="Note sur 20">
+      ${t.note == null ? '<p class="tiny" id="t-hint" style="text-align:center;margin:2px 0 0">Touche pour noter · sans note si tu n’y touches pas</p>' : ''}</div>
     ${full}
     <div class="card form">
       <label>Commentaire<textarea data-in="tf" data-k="comment" placeholder="Tes impressions…">${esc(t.comment)}</textarea></label>
     </div>
     <button class="btn primary wide" style="margin-top:12px" data-act="tasteSave">Enregistrer la dégustation</button>`;
 }
-INPUTS.tnote = el => { draft.taste.note = +el.value; $('#t-score').innerHTML = `${numFr(+el.value)}<small> / 20</small>`; setRangeFill(el); };
+INPUTS.tnote = el => { draft.taste.note = +el.value; $('#t-score').innerHTML = `${numFr(+el.value)}<small> / 20</small>`; el.classList.remove('unset'); $('#t-hint')?.remove(); setRangeFill(el); };
 INPUTS.tv = el => { draft.taste.full[el.dataset.k] = +el.value; const o = $('#o-' + el.dataset.k); if (o) o.textContent = sliderOut(el.dataset.k, +el.value); setRangeFill(el); };
 INPUTS.tf = el => { draft.taste[el.dataset.k] = el.value; };
 

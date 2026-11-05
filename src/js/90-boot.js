@@ -1,19 +1,31 @@
 /* ---------- Événements ---------- */
+// Un double appui ne doit pas enregistrer deux fois : les formulaires et les actions qui écrivent
+// des données sont bloqués pendant leur exécution, puis encore 350 ms.
+const busyForms = new Set(), busyActs = new Set();
+const GUARDED = new Set(['tasteSave', 'placeOk', 'plocGo', 'transferDone', 'receive', 'applyReeval', 'applyAdvice', 'adviceGo', 'delWine', 'delUnit', 'delTaste',
+  'delSession', 'delSite', 'delSpace', 'estimateMissing', 'putHere', 'openBottle', 'wishToggle', 'wishBought', 'toTransfer', 'revealWine', 'blindAI', 'export',
+  'usageClear', 'chatNew', 'tasteAbandon', 'awayTransfer', 'pkOffer', 'pkunlock', 'demo', 'estimate', 'takeIt', 'rateNow', 'rateLater', 'backupLater']);
+const release = (set, k) => setTimeout(() => set.delete(k), 350);
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-act]'); if (!t || !ACT[t.dataset.act]) return;
   if (t.tagName === 'INPUT' || t.tagName === 'SELECT') return;
   e.preventDefault();
-  const act = t.dataset.act; uPending = act; uLog('tap', act, uDetail(t));
-  Promise.resolve(ACT[act](t, e)).catch(err => { console.error(err); errLog('action:' + act, err); errSheet('Une erreur est survenue', String(err.message || err)); });
+  const act = t.dataset.act;
+  if (GUARDED.has(act)) { if (busyActs.has(act)) return; busyActs.add(act); }
+  uPending = act; uLog('tap', act, uDetail(t));
+  Promise.resolve().then(() => ACT[act](t, e)).catch(err => { console.error(err); errLog('action:' + act, err); errSheet('Une erreur est survenue', String(err.message || err)); })
+    .finally(() => { if (GUARDED.has(act)) release(busyActs, act); });
 });
 document.addEventListener('submit', async e => {
   e.preventDefault();
   const f = e.target, name = f.dataset.form; if (!FORMS[name]) return;
   const btn = f.querySelector('[type=submit]');
-  if (btn?.disabled) return;
+  if (btn?.disabled || busyForms.has(name)) return;
+  busyForms.add(name); if (btn) btn.disabled = true;
   uPending = name; uLog('submit', name);
   try { await FORMS[name](f, formData(f)); }
-  catch (err) { console.error(err); errLog('formulaire:' + name, err); if (btn) btn.disabled = false; errSheet('Une erreur est survenue', String(err.message || err)); }
+  catch (err) { console.error(err); errLog('formulaire:' + name, err); errSheet('Une erreur est survenue', String(err.message || err)); }
+  finally { if (btn?.isConnected) btn.disabled = false; release(busyForms, name); }
 });
 document.addEventListener('input', e => { const k = e.target.dataset?.in; if (k && INPUTS[k]) INPUTS[k](e.target, e); });
 document.addEventListener('change', e => {
