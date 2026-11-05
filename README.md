@@ -18,8 +18,9 @@ src/js/*.js         code, assemblé dans l'ordre des noms de fichiers
   10-data           référentiels (couleurs, formats, meubles, arômes), modèle, emplacements
   20-ui             icônes, feuilles, verrou, rendu principal
   30-cave           vue Cave : plan, liste, recherche, meubles
-  40-wine           ajout, fiche vin et bouteille, rangement, sortie, primeurs
+  40-wine           ajout, nouveau millésime, propriétaires, fiche vin et bouteille, rangement, sortie, primeurs
   45-transfer       transferts entre sites dans les deux sens, résumé du vin
+  47-box            caisses et cartons : actions sur toute la caisse
   50-tasting        dégustation rapide ou complète, contexte, roue des arômes
   55-deg            onglet Dégustations : journal, vue par vin, séances, liste d'envies
   60-ai             IA : sommelier, apogées, lecture d'étiquette, coûts

@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#F7F3EC">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-PCSJojXIhOv/+G2lOuLkJe5mSQynVfKnKD5BFH1vrp0='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-EqOtrT94b3DICmX4Wwhkk4pfbwj6mUqNgbLIU1TT5Oo='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>MyCellar</title>
@@ -372,7 +372,7 @@ input[type=range].unset::-moz-range-progress{background:#EAE2D6}
 <input type="file" id="f-backup" accept="application/json,.json" hidden>
 <script>
 'use strict';
-const CHANGELOG = [{"version":"1.7.3","date":"2026-11-05","titre":"Bouteilles à noter, sites en glissant","items":["Dégustations › À noter : toutes les bouteilles sorties sans fiche t’y attendent, au lieu de la seule dernière. Pour chacune : note rapide, fiche complète (date, plat et convives déjà remplis) ou « Sans fiche ».","Après une sortie, un nouveau choix : « Sortir sans fiche », sans rappel.","Le rappel du lendemain compte les bouteilles à noter, et « Plus tard » ne les oublie plus.","Les bouteilles bues ces 30 derniers jours sans dégustation ont été ajoutées à la liste.","Onglet Cave : glisse vers la gauche ou la droite pour changer de site. Des points sous le titre indiquent le site affiché."]},{"version":"1.7.2","date":"2026-11-05","titre":"Transferts dans les deux sens","items":["Transferts : une section par sens (vers la consommation, vers le stockage), chacune avec ses arrivées. Tu peux emporter tes achats à la campagne et rapporter des vins prêts à boire dans le même trajet.","Arrivées au stockage : les bouteilles vont dans le meilleur espace de garde, avec « Ranger maintenant ».","Suggestions vers le stockage : les vins à garder achetés récemment en ville. Et quand tu ajoutes un vin trop jeune en ville, l’app propose de l’emporter au prochain transfert.","Toucher une bouteille dans un transfert ou un conseil de rangement ouvre un résumé du vin : fenêtre, statut, bouteilles par site, dernière note.","À boire : touche une barre du graphique « À boire avant la fin de… » pour voir les bouteilles et leurs emplacements, avec accès direct à la case."]},{"version":"1.7.1","date":"2026-11-05","titre":"Recherche et sommelier","items":["La recherche de l’onglet Cave porte sur tous tes sites d’un coup. Les résultats s’affichent sous la barre, avec chaque emplacement : touche-en un pour y aller, la case clignote sur le plan.","Une seule bouteille trouvée ? La touche « Rechercher » du clavier t’y emmène directement.","« Voir sur le plan » depuis la fiche d’une bouteille, et l’épingle à côté de chaque emplacement sur la fiche d’un vin.","Une croix efface la recherche d’un coup, sur toutes les barres de recherche.","Sommelier : le bouton « Nouvelle conversation » est dans l’encart de saisie, toujours visible, et demande confirmation. La dernière réponse n’est plus cachée sous l’encart."]},{"version":"1.7","date":"2026-11-05","titre":"Import Ploc complet","items":["Import Ploc : les fiches sont reprises telles quelles (couleur, degré, fenêtre de garde, contenance, cépages). Le sommelier ne complète que les champs vides, et l’écran de vérification les signale.","Les bouteilles sont posées à leur case : le meuble est créé à l’identique du plan Ploc, ou associé à un meuble existant. Un aperçu du plan permet de vérifier la lecture.","Les caves Ploc sont rapprochées de tes sites, sur ton iPhone, sans envoyer la liste de tes sites à l’IA. Un site non reconnu est demandé une fois, et peut prendre le nom utilisé dans Ploc.","Le sommelier donne son avis sur chaque fenêtre de Ploc : s’il la juge décalée, il propose la sienne et tu choisis.","L’estimation de Ploc devient le prix d’achat, et la note sur 100 une dégustation sur 20. Les accords sont ajoutés aux notes du vin.","Plusieurs exports peuvent être importés à la suite, sans doublon.","Nouveau champ « Servir à » sur la fiche vin, affiché au moment de déguster. Le sommelier le voit, ainsi que les accords."]},{"version":"1.6.2","date":"2026-11-05","titre":"Fiabilité","items":["Un double appui sur un bouton ne crée plus deux bouteilles, deux sorties ou deux dégustations.","La fiche vin vérifie le millésime, le prix, le degré et la quantité, et explique sous le champ ce qui ne va pas. Un millésime sur deux chiffres est complété (« 19 » devient 2019), et les nombres comme « 1.234,50 » sont reconnus.","Les fenêtres de dégustation restent cohérentes (début, apogée, fin), qu’elles soient saisies ou proposées par le sommelier.","Une dégustation enregistrée sans toucher au curseur n’a plus de note, au lieu d’un 14/20 par défaut.","Rangement : l’app prévient quand les places manquent et propose l’espace le plus libre.","Spiritueux désactivés : leurs cases restent sur le plan, grisées.","Import Ploc, lecture d’étiquette et restauration de sauvegarde : contrôles et messages plus clairs.","Les très grandes caves restent économes en appels au sommelier."]},{"version":"1.6.1","date":"2026-11-04","titre":"Confort et corrections","items":["Les fenêtres ne clignotent plus et ne remontent plus en haut quand tu touches un choix (fiche de dégustation, rangement, liste d’envies, transfert…).","Fiche de dégustation : le bouton « OK » en haut disparaît, on enregistre avec le bouton du bas. Fermer une fiche commencée demande confirmation.","Dans la cave fictive, les réglages indisponibles (suivi d’utilisation, Face ID, Rester déverrouillé) expliquent pourquoi.","Réglages › Contenu : la ligne « Vins · Toujours actif » est retirée."]},{"version":"1.6","date":"2026-11-04","titre":"Retours d’utilisation et suivi des versions","items":["Suivi d’utilisation (désactivé par défaut, Réglages › Aide) : l’app note, sur ton iPhone uniquement, les écrans et les gestes, jamais tes vins ni tes notes. Tu peux consulter la synthèse et exporter un rapport à envoyer, avec ton avis.","« Signaler un problème » : décris ce qui s’est passé, l’app prépare un rapport avec les dernières minutes d’utilisation et les erreurs récentes. Raccourci aussi dans les messages d’erreur.","Mises à jour : « Plus d’infos » montre le contenu d’une nouvelle version avant de l’installer, une fenêtre « Nouveautés » s’affiche après, et l’historique des versions est dans Réglages › Aide."]},{"version":"1.5.2","date":"2026-11-04","titre":"Dégustation à l’aveugle et finitions","items":["Dégustation à l’aveugle : la fiche d’abord sur un « vin mystère », tes hypothèses, puis la révélation, la comparaison et l’analyse du sommelier.","Le bouton + est le même partout : « Nouvelle dégustation » ou « Nouveau vin ».","Présentation de l’app au premier lancement, à revoir dans Réglages › Aide.","Recherche dans « Racheter un vin ». L’import Ploc est désormais dans les réglages.","Nouvelles icônes : un bouchon pour « Déguster », un carnet pour les dégustations."]},{"version":"1.5","date":"2026-11-04","titre":"Dégustations et conseils de rangement","items":["Onglet Dégustations : le journal de tous tes vins dégustés, en cave ou ailleurs (restaurant, salon, domaine…), avec recherche, filtres et vue par vin.","Séances de dégustation avec classement, et liste d’envies avec « Acheté ».","Conseils de rangement dans À boire : vins à rapprocher, à mettre en garde, réassort de la cave de consommation.","Le sommelier propose d’ajuster la fenêtre d’un vin après une dégustation, et tient compte de tes vins bus ailleurs et de tes accords.","Les réglages passent sous l’icône engrenage."]},{"version":"1.0.1","date":"2026-11-04","titre":"Corrections","items":["L’app se rouvre correctement sur iPhone après un premier lancement.","La création de la cave ne pose plus de question : un site « Site 1 », renommable, et le mode plusieurs sites dans les réglages.","La vue Urgence de la page Cave est retirée : l’onglet À boire fait référence."]},{"version":"1.0","date":"2026-11-04","titre":"Première version","items":["Ta cave sur ton iPhone, chiffrée par ton mot de passe ou Face ID, et utilisable hors ligne.","Sites, espaces et meubles (armoire, rack, étagère, caisses, cartons) avec un plan visuel et une recherche.","Ajout par photo d’étiquette ou saisie, rangement suggéré, sorties, déplacements, transferts, primeurs, vins des amis.","Dégustation rapide ou complète avec la roue des arômes.","Sommelier pour les accords mets-vins, fenêtres de dégustation estimées, onglet À boire.","Option spiritueux, import Ploc, sauvegarde chiffrée."]}];
+const CHANGELOG = [{"version":"1.7.4","date":"2026-11-05","titre":"Millésimes, amis et caisses","items":["Nouveau millésime : depuis la fiche d’un vin ou « Racheter un vin », une saisie courte (millésime, quantité, source, prix) reprend tout le reste. La fenêtre est estimée pour le nouveau millésime. Un millésime déjà en cave reçoit les bouteilles, sans doublon.","La fiche d’un vin liste ses autres millésimes en cave.","Bouteilles d’un ami : le propriétaire est désormais fixé bouteille par bouteille. À l’ajout, « dont 6 pour Paul » ; après coup, « Répartir entre propriétaires » sur la fiche du vin, ou « Appartient à » sur une bouteille. Tes données ont été converties sans perte.","Le sommelier, À boire, les conseils et les transferts ne comptent que tes bouteilles.","Caisses et cartons : un seul vin par caisse. Depuis la caisse : sortir plusieurs bouteilles d’un coup, déplacer la caisse avec son contenu, l’ajouter au transfert (elle arrive avec ses bouteilles dedans), attribuer des bouteilles à un ami, modifier le vin ou l’achat."]},{"version":"1.7.3","date":"2026-11-05","titre":"Bouteilles à noter, sites en glissant","items":["Dégustations › À noter : toutes les bouteilles sorties sans fiche t’y attendent, au lieu de la seule dernière. Pour chacune : note rapide, fiche complète (date, plat et convives déjà remplis) ou « Sans fiche ».","Après une sortie, un nouveau choix : « Sortir sans fiche », sans rappel.","Le rappel du lendemain compte les bouteilles à noter, et « Plus tard » ne les oublie plus.","Les bouteilles bues ces 30 derniers jours sans dégustation ont été ajoutées à la liste.","Onglet Cave : glisse vers la gauche ou la droite pour changer de site. Des points sous le titre indiquent le site affiché."]},{"version":"1.7.2","date":"2026-11-05","titre":"Transferts dans les deux sens","items":["Transferts : une section par sens (vers la consommation, vers le stockage), chacune avec ses arrivées. Tu peux emporter tes achats à la campagne et rapporter des vins prêts à boire dans le même trajet.","Arrivées au stockage : les bouteilles vont dans le meilleur espace de garde, avec « Ranger maintenant ».","Suggestions vers le stockage : les vins à garder achetés récemment en ville. Et quand tu ajoutes un vin trop jeune en ville, l’app propose de l’emporter au prochain transfert.","Toucher une bouteille dans un transfert ou un conseil de rangement ouvre un résumé du vin : fenêtre, statut, bouteilles par site, dernière note.","À boire : touche une barre du graphique « À boire avant la fin de… » pour voir les bouteilles et leurs emplacements, avec accès direct à la case."]},{"version":"1.7.1","date":"2026-11-05","titre":"Recherche et sommelier","items":["La recherche de l’onglet Cave porte sur tous tes sites d’un coup. Les résultats s’affichent sous la barre, avec chaque emplacement : touche-en un pour y aller, la case clignote sur le plan.","Une seule bouteille trouvée ? La touche « Rechercher » du clavier t’y emmène directement.","« Voir sur le plan » depuis la fiche d’une bouteille, et l’épingle à côté de chaque emplacement sur la fiche d’un vin.","Une croix efface la recherche d’un coup, sur toutes les barres de recherche.","Sommelier : le bouton « Nouvelle conversation » est dans l’encart de saisie, toujours visible, et demande confirmation. La dernière réponse n’est plus cachée sous l’encart."]},{"version":"1.7","date":"2026-11-05","titre":"Import Ploc complet","items":["Import Ploc : les fiches sont reprises telles quelles (couleur, degré, fenêtre de garde, contenance, cépages). Le sommelier ne complète que les champs vides, et l’écran de vérification les signale.","Les bouteilles sont posées à leur case : le meuble est créé à l’identique du plan Ploc, ou associé à un meuble existant. Un aperçu du plan permet de vérifier la lecture.","Les caves Ploc sont rapprochées de tes sites, sur ton iPhone, sans envoyer la liste de tes sites à l’IA. Un site non reconnu est demandé une fois, et peut prendre le nom utilisé dans Ploc.","Le sommelier donne son avis sur chaque fenêtre de Ploc : s’il la juge décalée, il propose la sienne et tu choisis.","L’estimation de Ploc devient le prix d’achat, et la note sur 100 une dégustation sur 20. Les accords sont ajoutés aux notes du vin.","Plusieurs exports peuvent être importés à la suite, sans doublon.","Nouveau champ « Servir à » sur la fiche vin, affiché au moment de déguster. Le sommelier le voit, ainsi que les accords."]},{"version":"1.6.2","date":"2026-11-05","titre":"Fiabilité","items":["Un double appui sur un bouton ne crée plus deux bouteilles, deux sorties ou deux dégustations.","La fiche vin vérifie le millésime, le prix, le degré et la quantité, et explique sous le champ ce qui ne va pas. Un millésime sur deux chiffres est complété (« 19 » devient 2019), et les nombres comme « 1.234,50 » sont reconnus.","Les fenêtres de dégustation restent cohérentes (début, apogée, fin), qu’elles soient saisies ou proposées par le sommelier.","Une dégustation enregistrée sans toucher au curseur n’a plus de note, au lieu d’un 14/20 par défaut.","Rangement : l’app prévient quand les places manquent et propose l’espace le plus libre.","Spiritueux désactivés : leurs cases restent sur le plan, grisées.","Import Ploc, lecture d’étiquette et restauration de sauvegarde : contrôles et messages plus clairs.","Les très grandes caves restent économes en appels au sommelier."]},{"version":"1.6.1","date":"2026-11-04","titre":"Confort et corrections","items":["Les fenêtres ne clignotent plus et ne remontent plus en haut quand tu touches un choix (fiche de dégustation, rangement, liste d’envies, transfert…).","Fiche de dégustation : le bouton « OK » en haut disparaît, on enregistre avec le bouton du bas. Fermer une fiche commencée demande confirmation.","Dans la cave fictive, les réglages indisponibles (suivi d’utilisation, Face ID, Rester déverrouillé) expliquent pourquoi.","Réglages › Contenu : la ligne « Vins · Toujours actif » est retirée."]},{"version":"1.6","date":"2026-11-04","titre":"Retours d’utilisation et suivi des versions","items":["Suivi d’utilisation (désactivé par défaut, Réglages › Aide) : l’app note, sur ton iPhone uniquement, les écrans et les gestes, jamais tes vins ni tes notes. Tu peux consulter la synthèse et exporter un rapport à envoyer, avec ton avis.","« Signaler un problème » : décris ce qui s’est passé, l’app prépare un rapport avec les dernières minutes d’utilisation et les erreurs récentes. Raccourci aussi dans les messages d’erreur.","Mises à jour : « Plus d’infos » montre le contenu d’une nouvelle version avant de l’installer, une fenêtre « Nouveautés » s’affiche après, et l’historique des versions est dans Réglages › Aide."]},{"version":"1.5.2","date":"2026-11-04","titre":"Dégustation à l’aveugle et finitions","items":["Dégustation à l’aveugle : la fiche d’abord sur un « vin mystère », tes hypothèses, puis la révélation, la comparaison et l’analyse du sommelier.","Le bouton + est le même partout : « Nouvelle dégustation » ou « Nouveau vin ».","Présentation de l’app au premier lancement, à revoir dans Réglages › Aide.","Recherche dans « Racheter un vin ». L’import Ploc est désormais dans les réglages.","Nouvelles icônes : un bouchon pour « Déguster », un carnet pour les dégustations."]},{"version":"1.5","date":"2026-11-04","titre":"Dégustations et conseils de rangement","items":["Onglet Dégustations : le journal de tous tes vins dégustés, en cave ou ailleurs (restaurant, salon, domaine…), avec recherche, filtres et vue par vin.","Séances de dégustation avec classement, et liste d’envies avec « Acheté ».","Conseils de rangement dans À boire : vins à rapprocher, à mettre en garde, réassort de la cave de consommation.","Le sommelier propose d’ajuster la fenêtre d’un vin après une dégustation, et tient compte de tes vins bus ailleurs et de tes accords.","Les réglages passent sous l’icône engrenage."]},{"version":"1.0.1","date":"2026-11-04","titre":"Corrections","items":["L’app se rouvre correctement sur iPhone après un premier lancement.","La création de la cave ne pose plus de question : un site « Site 1 », renommable, et le mode plusieurs sites dans les réglages.","La vue Urgence de la page Cave est retirée : l’onglet À boire fait référence."]},{"version":"1.0","date":"2026-11-04","titre":"Première version","items":["Ta cave sur ton iPhone, chiffrée par ton mot de passe ou Face ID, et utilisable hors ligne.","Sites, espaces et meubles (armoire, rack, étagère, caisses, cartons) avec un plan visuel et une recherche.","Ajout par photo d’étiquette ou saisie, rangement suggéré, sorties, déplacements, transferts, primeurs, vins des amis.","Dégustation rapide ou complète avec la roue des arômes.","Sommelier pour les accords mets-vins, fenêtres de dégustation estimées, onglet À boire.","Option spiritueux, import Ploc, sauvegarde chiffrée."]}];
 const APP_VERSION = CHANGELOG[0].version;
 
 /* ===== 00-core.js ===== */
@@ -786,7 +786,7 @@ const emptyData = () => ({
     lockMin: 5, stay: false, lastExport: null, aromas: {}, rate: 0.92, usage: { on: false },
   },
   sites: [], spaces: [], units: [], wines: [], bottles: [], moves: [], tastings: [],
-  transfer: { ids: [], to: null, dest: {} }, chat: [], usage: {}, dismissed: {}, sessions: [], wishes: [], diag: { errors: [] },
+  transfer: { ids: [], to: null, dest: {}, units: {} }, chat: [], usage: {}, dismissed: {}, sessions: [], wishes: [], diag: { errors: [] },
 });
 function normalize(d) {
   const e = emptyData();
@@ -801,13 +801,19 @@ function normalize(d) {
   if (!d.spaces.length) d.spaces.push({ id: uid(), siteId: d.sites[0].id, name: 'Cave', use: 'conso', q: {} });
   if (!d.sites.some(s => s.id === d.settings.site)) d.settings.site = d.sites[0].id;
   cleanData(d);
+  // v1.7.4 : le propriétaire passe du vin à chaque bouteille (un vin « à Paul » donne des bouteilles « à Paul »)
+  for (const w of d.wines) if (w.owner) {
+    for (const b of d.bottles) if (b.wineId === w.id && b.owner === undefined) b.owner = w.owner;
+    if (!d.settings.friends.includes(w.owner)) d.settings.friends.push(w.owner);
+    delete w.owner;
+  }
   // v1.7.3 : les bouteilles bues dans les 30 derniers jours, jamais notées, entrent dans « À noter » (une seule fois)
   if (!d.settings.todoInit) {
     const since = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10), noted = new Set(d.tastings.map(t => t.bottleId).filter(Boolean));
     for (const b of d.bottles) {
       if (b.state !== 'out' || noted.has(b.id) || (b.outAt || '') < since || b.ficheTodo != null) continue;
       const m = [...d.moves].reverse().find(x => x.bottleId === b.id && x.type === 'out'), w = d.wines.find(x => x.id === b.wineId);
-      if (m && ['bue', 'bouchonnee', 'terminee'].includes(m.motif) && w && !w.owner) b.ficheTodo = true;
+      if (m && ['bue', 'bouchonnee', 'terminee'].includes(m.motif) && w && !b.owner) b.ficheTodo = true;
     }
     d.settings.todoInit = true; delete d.dismissed.rate;
   }
@@ -823,6 +829,8 @@ function cleanData(d) {
   d.transfer.ids = (Array.isArray(d.transfer.ids) ? d.transfer.ids : []).filter(id => bid.has(id));
   const dest = d.transfer.dest && typeof d.transfer.dest === 'object' ? d.transfer.dest : {};
   d.transfer.dest = Object.fromEntries(Object.entries(dest).filter(([k, v]) => d.transfer.ids.includes(k) && d.sites.some(s => s.id === v)));
+  const tu = d.transfer.units && typeof d.transfer.units === 'object' ? d.transfer.units : {};
+  d.transfer.units = Object.fromEntries(Object.entries(tu).filter(([k, v]) => d.units.some(u => u.id === k) && d.sites.some(s => s.id === v)));
   d.tastings = d.tastings.filter(t => !t.wineId || wid.has(t.wineId));
   for (const t of d.tastings) if (t.sessionId && !ses.has(t.sessionId)) t.sessionId = null;
   d.bottles = d.bottles.filter(b => wid.has(b.wineId));
@@ -883,7 +891,19 @@ const siteSpaces = siteId => S.spaces.filter(s => s.siteId === siteId);
 const spaceUnits = spaceId => S.units.filter(u => u.spaceId === spaceId).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 const inCave = b => b.state === 'cave' || b.state === 'open';
 const wineBottles = (wid, f = inCave) => S.bottles.filter(b => b.wineId === wid && f(b));
-const isFriend = w => !!w.owner;
+// Propriétaire par bouteille (v1.7.4) : b.owner = prénom de l'ami, vide = à moi
+const heldBottles = wid => S.bottles.filter(b => b.wineId === wid && (inCave(b) || b.state === 'primeur'));
+const myBottles = (wid, f = inCave) => wineBottles(wid, f).filter(b => !b.owner);
+const hasFriend = w => heldBottles(w.id).some(b => b.owner);
+const isFriend = w => { const bs = heldBottles(w.id); return bs.length > 0 && bs.every(b => b.owner); };
+const friendNames = () => [...new Set([...(S.settings.friends || []), ...S.bottles.map(b => b.owner).filter(Boolean)])].sort((a, b) => a.localeCompare(b, 'fr'));
+// « à Paul » (toutes ses bouteilles), « dont 6 à Paul, 2 à Léa » (partagé), ou vide
+function ownerSummary(w, bs = heldBottles(w.id)) {
+  const by = new Map(); for (const b of bs) if (b.owner) by.set(b.owner, (by.get(b.owner) || 0) + 1);
+  if (!by.size) return '';
+  if ([...by.values()].reduce((t, n) => t + n, 0) === bs.length && by.size === 1) return 'à ' + [...by.keys()][0];
+  return 'dont ' + [...by].map(([o, n]) => `${n} à ${o}`).join(', ');
+}
 const spiritsOn = () => !!S.settings.spirits;
 // Vins visibles selon les options : les spiritueux disparaissent si l'option est coupée
 const kindOn = w => w.kind !== 'spirit' || spiritsOn();
@@ -934,7 +954,7 @@ function abbr(w) {
   const s = ws.length >= 2 ? ws.slice(0, 3).map(x => x[0]).join('') : ws[0].slice(0, 3);
   return s.toUpperCase();
 }
-const ownerInitial = w => w.owner ? w.owner.trim().charAt(0).toUpperCase() : '';
+const ownerInitial = b => b?.owner ? b.owner.trim().charAt(0).toUpperCase() : '';
 
 /* ---------- Fenêtre de dégustation ---------- */
 function status(w) {
@@ -1002,9 +1022,11 @@ function suggestSpace(w) {
 }
 // Cases libres conseillées dans un espace : on remplit les meubles dans l'ordre, une caisse vide d'abord
 // si l'on range au moins six bouteilles d'un même vin
-function suggestSlots(spaceId, n, exclude = new Set()) {
-  const occ = occupancy(), out = [];
-  const units = spaceUnits(spaceId);
+// Une caisse ou un carton ne contient qu'un seul vin (v1.7.4) : une caisse déjà entamée par un autre vin n'est pas proposée
+const boxFor = (u, wineId, occ) => !UNIT_TYPES[u.type].box || !wineId || positions(u).every(([r, c]) => { const b = occ.get(`${u.id}:${r}:${c}`); return !b || b.wineId === wineId; });
+function suggestSlots(spaceId, n, exclude = new Set(), wineId = null, occ = occupancy()) {
+  const out = [];
+  const units = spaceUnits(spaceId).filter(u => boxFor(u, wineId, occ));
   const boxes = units.filter(u => UNIT_TYPES[u.type].box && freeSlots(u, occ).length === capacity(u) && capacity(u) <= n);
   const order = n >= 6 ? [...boxes, ...units.filter(u => !boxes.includes(u))] : [...units.filter(u => !UNIT_TYPES[u.type].box), ...units.filter(u => UNIT_TYPES[u.type].box)];
   for (const u of order) for (const [r, c] of freeSlots(u, occ)) {
@@ -1258,7 +1280,7 @@ let caveMode = 'plan', caveSpace = null, caveQuery = '', caveJumped = false, cav
 
 const visibleSpaces = () => isMulti() ? siteSpaces(S.settings.site) : S.spaces;
 function wineText(w) {
-  return norm([w.domaine, w.cuvee, w.appellation, w.region, w.pays, w.millesime, w.cepages, COLORS[w.couleur]?.label, SPIRIT_CATS[w.cat], w.owner, w.notes, w.short].filter(Boolean).join(' '));
+  return norm([w.domaine, w.cuvee, w.appellation, w.region, w.pays, w.millesime, w.cepages, COLORS[w.couleur]?.label, SPIRIT_CATS[w.cat], ...new Set(heldBottles(w.id).map(b => b.owner).filter(Boolean)), w.notes, w.short].filter(Boolean).join(' '));
 }
 function matcher(q) {
   const toks = norm(q).split(/\s+/).filter(Boolean);
@@ -1281,7 +1303,7 @@ function listFilters() {
   return `<div class="chips">${ch('lf', 'ready', f.ready, 'Prêts à boire')}
     ${usedColors.map(c => ch('lfc', c, f.color === c, `<span class="dot" style="background:${COLORS[c].c}"></span>${COLORS[c].label}`)).join('')}
     ${spiritsOn() ? ch('lfk', 'spirit', f.kind === 'spirit', 'Spiritueux') + ch('lfk', 'vin', f.kind === 'vin', 'Vins') : ''}
-    ${S.wines.some(isFriend) ? ch('lfo', 'moi', f.owner === 'moi', 'Mes vins') + ch('lfo', 'amis', f.owner === 'amis', 'Vins des amis') : ''}</div>`;
+    ${S.wines.some(hasFriend) ? ch('lfo', 'moi', f.owner === 'moi', 'Mes vins') + ch('lfo', 'amis', f.owner === 'amis', 'Vins des amis') : ''}</div>`;
 }
 
 function vCave() {
@@ -1327,7 +1349,7 @@ function caveResults(m) {
   if (!res.length) return `<p class="small" style="margin:12px 4px">Aucune bouteille ne correspond${multi ? ', sur aucun site' : ''}.</p>`;
   return `<p class="small" style="margin:10px 4px 0">${plural(n, 'bouteille trouvée', 'bouteilles trouvées')}${multi ? ' sur tous les sites' : ''}. Touche un emplacement pour y aller.</p>
     ${res.map(r => `<div class="list res"><button class="li" data-act="wine" data-id="${r.w.id}"><span class="dot" style="background:${wineColor(r.w)}"></span>
-      <div class="it"><b class="ell">${esc(wineTitle(r.w))}</b><small class="ell">${esc(wineSub(r.w))}${isFriend(r.w) ? ' · à ' + esc(r.w.owner) : ''}</small></div><span class="qty">×${r.n}</span></button>
+      <div class="it"><b class="ell">${esc(wineTitle(r.w))}</b><small class="ell">${esc(wineSub(r.w))}${hasFriend(r.w) ? ' · ' + esc(ownerSummary(r.w)) : ''}</small></div><span class="qty">×${r.n}</span></button>
       ${r.locs.slice(0, 8).map(g => g.primeur ? `<div class="li loc">${ICON.pin}<div class="it"><b>Primeur, pas encore livrée</b></div><span class="qty">×${g.n}</span></div>`
         : `<button class="li loc" data-act="caveJump" data-b="${g.b.id}">${ICON.pin}<div class="it"><b>${esc(locLabel(g.b, multi))}</b></div>${g.n > 1 ? `<span class="qty">×${g.n}</span>` : ''}<span class="chev">${ICON.chev}</span></button>`).join('')}
       ${r.locs.length > 8 ? `<div class="li loc"><div class="it"><small>et ${plural(r.locs.length - 8, 'autre emplacement', 'autres emplacements')} : ouvre la fiche du vin</small></div></div>` : ''}</div>`).join('')}`;
@@ -1376,7 +1398,7 @@ function unitHead(u, ctx) {
 function slotState(b, ctx) {
   const w = wine(b.wineId), cls = [];
   if (ctx.m) cls.push(ctx.m(w) ? 'hl' : 'dim');
-  if (isFriend(w)) cls.push('ami');
+  if (b.owner) cls.push('ami');
   return { w, cls };
 }
 function renderGrid(u, ctx) {
@@ -1391,13 +1413,13 @@ function renderGrid(u, ctx) {
         const { w, cls } = slotState(b, ctx);
         if (!kindOn(w)) { cells.push(`<button class="rc off" ${ctx.pick ? 'disabled' : 'data-act="spiritOff"'} aria-label="Spiritueux masqué"></button>`); continue; }
         const bg = wineColor(w), light = wineLight(w);
-        cells.push(`<button class="rc ${cls.join(' ')}${light ? ' light' : ''}${ctx.pick ? ' dim' : ''}" style="background:${bg};border-color:${bg}" ${isFriend(w) ? `data-ini="${esc(ownerInitial(w))}"` : ''} ${ctx.pick ? 'disabled' : `data-act="slot" data-b="${b.id}"`} aria-label="${esc(wineTitle(w))}">${esc(abbr(w))}</button>`);
+        cells.push(`<button class="rc ${cls.join(' ')}${light ? ' light' : ''}${ctx.pick ? ' dim' : ''}" style="background:${bg};border-color:${bg}" ${b.owner ? `data-ini="${esc(ownerInitial(b))}"` : ''} ${ctx.pick ? 'disabled' : `data-act="slot" data-b="${b.id}"`} aria-label="${esc(wineTitle(w))}">${esc(abbr(w))}</button>`);
         continue;
       }
       if (!b) { cells.push(`<button class="slot empty${sel ? ' sel' : ''}" ${ctx.pick ? `data-act="pickSlot" data-u="${u.id}" data-r="${r}" data-c="${c}"` : `data-act="emptySlot" data-u="${u.id}" data-r="${r}" data-c="${c}"`} aria-label="Place libre"></button>`); continue; }
       const { w, cls } = slotState(b, ctx);
       if (!kindOn(w)) { cells.push(`<button class="slot off" ${ctx.pick ? 'disabled' : 'data-act="spiritOff"'} aria-label="Spiritueux masqué"><i></i><b>&nbsp;</b><small>&nbsp;</small></button>`); continue; }
-      cells.push(`<button class="slot ${cls.join(' ')}${ctx.pick ? ' dim' : ''}" ${ctx.pick ? 'disabled' : `data-act="slot" data-b="${b.id}"`}><i style="background:${wineColor(w)}"></i><b>${esc(shortName(w))}</b><small>${esc(shortSub(w))}${b.state === 'open' ? ' · ouverte' : ''}</small>${isFriend(w) ? `<span class="ini">${esc(ownerInitial(w))}</span>` : ''}</button>`);
+      cells.push(`<button class="slot ${cls.join(' ')}${ctx.pick ? ' dim' : ''}" ${ctx.pick ? 'disabled' : `data-act="slot" data-b="${b.id}"`}><i style="background:${wineColor(w)}"></i><b>${esc(shortName(w))}</b><small>${esc(shortSub(w))}${b.state === 'open' ? ' · ouverte' : ''}</small>${b.owner ? `<span class="ini">${esc(ownerInitial(b))}</span>` : ''}</button>`);
     }
     const cols = u.type === 'rack' ? `repeat(${u.cols},minmax(26px,1fr))` : `repeat(${u.cols},minmax(${u.cols > 6 ? 54 : 0}px,1fr))`;
     const cls = u.type === 'rack' ? 'rack' : 'shelf';
@@ -1412,13 +1434,13 @@ function renderBoxes(boxes, ctx) {
   return `<div class="pile">${sorted.map(u => {
     const bs = boxContents(u, ctx.occ), ws = [...new Set(bs.map(b => b.wineId))].map(wine);
     const off = ws.length && ws.every(w => !kindOn(w));
-    const title = off ? 'Spiritueux masqués' : ws.length === 1 ? wineTitle(ws[0]) : ws.length ? 'Assortiment' : 'Vide';
+    const title = off ? 'Spiritueux masqués' : ws.length === 1 ? wineTitle(ws[0]) : ws.length ? 'Assortiment · à répartir' : 'Vide';
     const hit = ctx.m && ws.some(ctx.m), dim = ctx.m && !hit;
     const act = ctx.pick ? `data-act="pickBox" data-u="${u.id}"` : `data-act="box" data-u="${u.id}"`;
     const picked = ctx.pick?.sel.filter(s => s.unitId === u.id).length || 0;
     return `<button class="crate${u.type === 'carton' ? ' carton' : ''}${hit ? ' hl' : ''}${dim ? ' dim' : ''}" ${act}>
       <span class="ell" style="display:block">${esc(title)}</span>
-      <small class="ell">${esc(u.name || UNIT_TYPES[u.type].label)}${u.pile ? ' · ' + esc(u.pile) + (u.level ? ' niv. ' + u.level : '') : ''}${ws.length === 1 && isFriend(ws[0]) ? ' · ' + esc(ws[0].owner) : ''}</small>
+      <small class="ell">${esc(u.name || UNIT_TYPES[u.type].label)}${u.pile ? ' · ' + esc(u.pile) + (u.level ? ' niv. ' + u.level : '') : ''}${ws.length === 1 && bs.some(b => b.owner) ? ' · ' + esc(ownerSummary(ws[0], bs)) : ''}</small>
       <span class="cnt">${bs.length} / ${capacity(u)}${picked ? ' · +' + picked : ''}</span></button>`;
   }).join('')}</div>`;
 }
@@ -1442,7 +1464,7 @@ function listWines() {
     && (!f.color || w.couleur === f.color)
     && (!f.ready || ['prio', 'apogee'].includes(status(w)))
     && (f.kind === 'all' || w.kind === f.kind)
-    && (f.owner === 'all' || (f.owner === 'amis' ? isFriend(w) : !isFriend(w))))
+    && (f.owner === 'all' || (f.owner === 'amis' ? hasFriend(w) : heldBottles(w.id).some(b => !b.owner))))
     .sort((a, b) => norm(wineName(a)).localeCompare(norm(wineName(b))) || (a.millesime || 0) - (b.millesime || 0));
 }
 function wineRow(w, extra = '') {
@@ -1450,7 +1472,7 @@ function wineRow(w, extra = '') {
   const where = isMulti() ? [...new Set(bs.map(siteOfBottle))].map(id => `${site(id)?.name || '?'} ×${bs.filter(b => siteOfBottle(b) === id).length}`).join(' · ') : '';
   return `<button class="li" data-act="wine" data-id="${w.id}">${w.photo ? `<img class="thumb" data-photo="${w.id}" alt="" hidden>` : `<span class="dot" style="background:${wineColor(w)}"></span>`}
     <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(wineSub(w))}</small>
-      <small class="ell">${st && st !== 'inconnu' ? `<span style="color:${STATUS[st].hex};font-weight:600">${STATUS[st].short}</span> · ${esc(windowLabel(w.apogee))}` : ''}${where ? (st && st !== 'inconnu' ? ' · ' : '') + esc(where) : ''}${isFriend(w) ? ' · à ' + esc(w.owner) : ''}${pr ? ' · ' + pr + ' en primeur' : ''}</small>${extra}</div>
+      <small class="ell">${st && st !== 'inconnu' ? `<span style="color:${STATUS[st].hex};font-weight:600">${STATUS[st].short}</span> · ${esc(windowLabel(w.apogee))}` : ''}${where ? (st && st !== 'inconnu' ? ' · ' : '') + esc(where) : ''}${hasFriend(w) ? ' · ' + esc(ownerSummary(w)) : ''}${pr ? ' · ' + pr + ' en primeur' : ''}</small>${extra}</div>
     <span class="qty">×${bs.length}</span></button>`;
 }
 function vCaveList() {
@@ -1555,12 +1577,14 @@ function boxSheet(uid_) {
   const by = new Map(); for (const b of bs) by.set(b.wineId, [...(by.get(b.wineId) || []), b]);
   return `${head(esc(u.name || UNIT_TYPES[u.type].label), `<button class="icon-btn" data-act="editUnit" data-id="${u.id}" aria-label="Modifier">${ICON.edit}</button>`)}
     <p class="small" style="margin-top:-4px">${bs.length} / ${capacity(u)} bouteilles${u.pile ? ' · pile ' + esc(u.pile) + (u.level ? ', niveau ' + u.level : '') : ''}</p>
+    ${by.size > 1 ? `<p class="banner" style="margin:8px 0">Cette caisse contient plusieurs vins : à répartir. Une caisse ou un carton ne contient qu’un seul vin ; pour un assortiment, utilise une étagère ou un rack.</p>` : ''}
     ${by.size ? `<div class="list">${[...by].map(([wid, list]) => { const w = wine(wid); return `<div class="li"><span class="dot" style="background:${wineColor(w)}"></span>
-      <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(wineSub(w))}</small></div><span class="qty">×${list.length}</span>
-      <button class="btn small primary" data-act="outBottle" data-b="${list[0].id}">Sortir</button></div>`; }).join('')}</div>` : '<p class="muted">Cette caisse est vide.</p>'}
-    <div class="btns" style="margin-top:12px">
-      ${by.size === 1 ? `<button class="btn wide" data-act="wine" data-id="${[...by.keys()][0]}">Voir la fiche du vin</button>` : ''}
-      ${free ? `<button class="btn wide" data-act="add" data-u="${u.id}" data-r="0" data-c="${freeSlots(u, occ)[0][1]}">${ICON.add} Ajouter des bouteilles dans cette caisse</button>` : ''}
+      <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(wineSub(w))}${list.some(b => b.owner) ? ' · ' + esc(ownerSummary(w, list)) : ''}</small></div><span class="qty">×${list.length}</span>
+      ${by.size > 1 ? `<button class="btn small primary" data-act="outBottle" data-b="${list[0].id}">Sortir</button>` : ''}</div>`; }).join('')}</div>` : '<p class="muted">Cette caisse est vide.</p>'}
+    ${by.size === 1 ? boxActions(u, [...by.values()][0]) : ''}
+    <div class="btns" style="margin-top:10px">
+      ${free ? by.size === 1 ? `<button class="btn wide" data-act="boxAdd" data-u="${u.id}" data-w="${[...by.keys()][0]}">${ICON.add} Ajouter des bouteilles de ce vin</button>`
+        : !by.size ? `<button class="btn wide" data-act="add" data-u="${u.id}" data-r="0" data-c="${freeSlots(u, occ)[0][1]}">${ICON.add} Ajouter des bouteilles dans cette caisse</button>` : '' : ''}
     </div>`;
 }
 
@@ -1668,7 +1692,7 @@ function wineFormSheet() {
       <label>${d.state === 'primeur' ? 'Destination à la livraison' : 'Ranger dans'}<select name="spaceId">${spaceOptions(addTarget ? unit(addTarget.unitId)?.spaceId : d.spaceId || sugg?.id)}</select></label>
       ${addTarget ? `<p class="tiny" style="margin:0">La première bouteille ira à la place que tu as touchée.</p>` : ''}
     </div>`;
-  const friends = uniq(x => x.owner).concat(S.settings.friends || []);
+  const friends = friendNames();
   return `${head(editing ? 'Modifier' : ft ? 'Quel vin ?' : sp ? 'Nouveau spiritueux' : 'Nouveau vin')}
     <form class="form" data-form="wine">
       ${d.photo || (editing && w.photo) ? `<img class="photo" ${d.photo ? `src="${d.photoUrl}"` : `data-photo="${w.id}" hidden`} alt="Étiquette">` : ''}
@@ -1679,10 +1703,7 @@ function wineFormSheet() {
         <label>Lieu d’achat<input name="lieu" value="${esc(w.achat?.lieu || '')}" list="dl-lieu" autocomplete="off"></label>
         <label>Offert par<input name="offertPar" value="${esc(w.cadeau?.de || '')}" placeholder="Si c’est un cadeau" autocomplete="off"></label>
       </div>
-      <div class="fieldset"><div class="ft">Propriétaire</div>
-        <label>À qui appartiennent ces bouteilles ?<input name="owner" value="${esc(w.owner || '')}" list="dl-friends" placeholder="Vide = à moi · sinon prénom de l’ami" autocomplete="off"></label>
-        <p class="tiny" style="margin:0">Les bouteilles gardées pour un ami ne sont jamais proposées par le sommelier.</p>
-      </div>`}
+      ${editing ? '' : `<div class="fieldset"><div class="ft">Propriétaire</div>${ownerFields(false)}</div>`}`}
       <details class="fieldset"><summary class="ft" style="cursor:pointer">Plus de détails</summary>
         ${sp ? '' : `<div class="grid3"><label>Début<input name="adeb" inputmode="numeric" value="${esc(w.apogee?.debut || '')}"></label><label>Apogée<input name="apic" inputmode="numeric" value="${esc(w.apogee?.pic || '')}"></label><label>Fin<input name="afin" inputmode="numeric" value="${esc(w.apogee?.fin || '')}"></label></div>
         <p class="tiny" style="margin:0">Fenêtre de dégustation. Laisse vide : le sommelier l’estimera.</p>`}
@@ -1699,7 +1720,7 @@ function readWineForm(d, w) {
   const t = s => s || '';
   Object.assign(w, {
     domaine: t(d.domaine), cuvee: t(d.cuvee), region: t(d.region), pays: t(d.pays), format: d.format,
-    millesime: readYear(d.millesime, thisYear() + 1).v || null, degre: num(d.degre), owner: t(d.owner) || null, short: t(d.short), abbr: t(d.abbr).toUpperCase(), notes: t(d.notes),
+    millesime: readYear(d.millesime, thisYear() + 1).v || null, degre: num(d.degre), short: t(d.short), abbr: t(d.abbr).toUpperCase(), notes: t(d.notes),
     achat: { prix: num(d.prix), date: d.adate || null, lieu: t(d.lieu) }, cadeau: d.offertPar ? { de: d.offertPar } : null,
   });
   if (sp) Object.assign(w, { cat: d.cat, age: int(d.age), bottled: int(d.bottled), fut: t(d.fut), bruteDeFut: !!d.bruteDeFut, singleCask: !!d.singleCask, independant: t(d.independant), numero: t(d.numero) });
@@ -1710,7 +1731,6 @@ function readWineForm(d, w) {
     if (fin && (fin !== a.fin || deb !== a.debut || pic !== a.pic)) w.apogee = { ...a, debut: deb, pic, fin, src: 'manuel', at: Date.now() };
     else if (!fin && a.src === 'manuel') w.apogee = null;
   }
-  if (w.owner && !S.settings.friends.includes(w.owner)) S.settings.friends.push(w.owner);
 }
 // Contrôles de la fiche vin : valeurs hors bornes signalées sous le champ, fiche non enregistrée
 function checkWineForm(f, d, kind, creating) {
@@ -1723,7 +1743,7 @@ function checkWineForm(f, d, kind, creating) {
   } else if (m.filled) { d.millesime = String(m.v); f.elements.millesime.value = d.millesime; }
   if (d.prix) { const p = num(d.prix); if (p == null) add('prix', 'Prix non reconnu (ex. 24,50)'); else if (p < 0 || p > 100000) add('prix', 'Un prix entre 0 et 100 000 €'); }
   if (d.degre) { const g = num(d.degre), mx = sp ? 80 : 25; if (g == null || g <= 0 || g > mx) add('degre', `Un degré entre 0 et ${mx} %`); }
-  if (creating && 'qty' in d) { const q = String(d.qty).replace(/\s/g, ''); if (!/^\d+$/.test(q) || +q < 1 || +q > 500) add('qty', 'Un nombre entier de 1 à 500'); }
+  if (creating && 'qty' in d) { const q = String(d.qty).replace(/\s/g, ''); if (!/^\d+$/.test(q) || +q < 1 || +q > 500) add('qty', 'Un nombre entier de 1 à 500'); else errs.push(...ownerErrors(d, +q)); }
   if (sp) {
     if (d.age) { const a = num(d.age); if (a == null || !Number.isInteger(a) || a < 0 || a > 100) add('age', 'De 0 à 100 ans'); }
     if (d.bottled) { const b = readYear(d.bottled, yr); if (b.err || b.bad) add('bottled', `Une année entre 1900 et ${yr}`); else if (b.filled) { d.bottled = String(b.v); f.elements.bottled.value = d.bottled; } }
@@ -1755,12 +1775,13 @@ FORMS.wine = async (f, d) => {
     return startTaste(target.id, null, 'quick', { sessionId: dr.forTaste.sessionId });
   }
   const qty = clamp(int(d.qty) || 1, 1, 500);
-  const same = S.wines.find(x => x.kind === w.kind && norm(x.domaine) === norm(w.domaine) && norm(x.cuvee) === norm(w.cuvee) && norm(x.appellation) === norm(w.appellation) && (x.millesime || null) === w.millesime && (x.owner || null) === w.owner && x.format === w.format);
+  const same = S.wines.find(x => x.kind === w.kind && norm(x.domaine) === norm(w.domaine) && norm(x.cuvee) === norm(w.cuvee) && norm(x.appellation) === norm(w.appellation) && (x.millesime || null) === w.millesime && x.format === w.format);
   let target = w;
   if (same && confirm(`« ${wineTitle(same)} » est déjà dans ta cave. Ajouter ces ${qty} bouteille(s) à cette fiche ?`)) target = same;
   else S.wines.push(w);
   if (dr.photo) { await photoSave(target.id, dr.photo); target.photo = true; }
   const ids = createBottles(target, qty, d.state === 'primeur' ? { state: 'primeur', delivery: { date: d.delivery || null, spaceId: d.spaceId } } : { spaceId: d.spaceId });
+  applyOwners(ids, d);
   await save(); draft = null;
   afterAdd(target, ids, d.state === 'primeur');
 };
@@ -1799,18 +1820,31 @@ function afterAdd(w, ids, primeur) {
 }
 // Achat sur un site de consommation d'un vin à garder : on propose de l'emporter vers le stockage
 function stockAskFor(w, spId) {
-  if (!isMulti() || w.kind !== 'vin' || isFriend(w) || status(w) !== 'tot') return null;
+  if (!isMulti() || w.kind !== 'vin' || !heldBottles(w.id).some(b => !b.owner) || status(w) !== 'tot') return null;
   const here = site(space(spId)?.siteId); if (!here || here.role === 'stock') return null;
   return S.sites.find(s => s.id !== here.id && s.role === 'stock')?.id || null;
 }
 
 /* ---------- Rangement ---------- */
 function startPlace(wineId, ids, spaceId, fresh) {
+  // Bouteilles d'un même vin à la suite : une caisse se remplit d'un seul vin
+  const order = [...new Set(ids.map(id => byId(S.bottles, id)?.wineId))];
+  ids = [...ids].sort((a, b) => order.indexOf(byId(S.bottles, a)?.wineId) - order.indexOf(byId(S.bottles, b)?.wineId));
   draft = { place: { wineId, ids, spaceId: spaceId || suggestSpace(wine(wineId)).id, sel: [], fresh } };
   draft.place.sel = suggestFor(draft.place);
   showSheet(placeSheet, { full: true });
 }
-const suggestFor = p => suggestSlots(p.spaceId, p.ids.length, new Set()).filter(s => !occupancyExcept(new Set(p.ids)).has(`${s.unitId}:${s.r}:${s.c}`));
+// Suggestions par vin, dans l'ordre des bouteilles (une caisse ne reçoit qu'un seul vin)
+function suggestFor(p) {
+  const occ = occupancyExcept(new Set(p.ids)), used = new Set(), out = [], groups = [];
+  for (const id of p.ids) { const w = byId(S.bottles, id)?.wineId, g = groups.at(-1); if (g && g.w === w) g.n++; else groups.push({ w, n: 1 }); }
+  for (const g of groups) {
+    const sl = suggestSlots(p.spaceId, g.n, used, g.w, occ);
+    for (const s of sl) { used.add(`${s.unitId}:${s.r}:${s.c}`); out.push(s); }
+    if (sl.length < g.n) break;   // les cases restent alignées sur les bouteilles
+  }
+  return out;
+}
 function placeSheet() {
   const p = draft?.place; if (!p) return null;
   const w = wine(p.wineId), occ = occupancyExcept(new Set(p.ids)), sp = space(p.spaceId), nw = new Set(p.ids.map(id => byId(S.bottles, id)?.wineId)).size;
@@ -1854,8 +1888,13 @@ Object.assign(ACT, {
   pickBox: t => {
     const p = draft.place, u = unit(t.dataset.u), occ = occupancyExcept(new Set(p.ids));
     const mine = p.sel.filter(s => s.unitId === u.id), free = freeSlots(u, occ).filter(([r, c]) => !mine.some(s => s.c === c));
+    // Un seul vin par caisse : celui de la prochaine bouteille à ranger
+    const wid = byId(S.bottles, p.ids[Math.min(p.sel.length, p.ids.length - 1)])?.wineId, inBox = positions(u).map(([r, c]) => occ.get(`${u.id}:${r}:${c}`)).filter(Boolean);
+    const selW = p.sel.map((s, i) => s.unitId === u.id ? byId(S.bottles, p.ids[i])?.wineId : null).filter(Boolean);
+    if (!mine.length && (inBox.some(b => b.wineId !== wid) || selW.some(w => w !== wid))) return toast('Cette caisse contient déjà un autre vin : une caisse ou un carton ne reçoit qu’un seul vin.');
     if (!free.length || p.sel.length >= p.ids.length) { p.sel = p.sel.filter(s => s.unitId !== u.id); return refreshSheet(); }
-    const room = p.ids.length - p.sel.length;
+    let same = 0; for (let i = p.sel.length; i < p.ids.length && byId(S.bottles, p.ids[i])?.wineId === wid; i++) same++;
+    const room = Math.min(p.ids.length - p.sel.length, same);
     for (const [r, c] of free.slice(0, room)) p.sel.push({ unitId: u.id, r, c });
     refreshSheet();
   },
@@ -1894,6 +1933,131 @@ Object.assign(ACT, {
   moveBottle: t => { const b = byId(S.bottles, t.dataset.b); startPlace(b.wineId, [b.id], b.spaceId || suggestSpace(wine(b.wineId)).id, false); },
 });
 
+/* ---------- Nouveau millésime d'un vin déjà présent (v1.7.4) ---------- */
+const VINTAGE_KEEP = ['kind', 'couleur', 'domaine', 'cuvee', 'appellation', 'region', 'pays', 'cepages', 'degre', 'format', 'service', 'bio', 'nature', 'short', 'abbr'];
+function vintageBase(w) { const o = {}; for (const k of VINTAGE_KEEP) if (w[k] !== undefined && w[k] !== null) o[k] = structuredClone(w[k]); return o; }
+const sameVintage = (base, mill) => S.wines.find(x => x.kind === base.kind && norm(x.domaine) === norm(base.domaine) && norm(x.cuvee) === norm(base.cuvee) && norm(x.appellation) === norm(base.appellation) && (x.millesime || null) === (mill || null) && x.format === base.format);
+const siblings = w => S.wines.filter(x => x.id !== w.id && x.kind === w.kind && norm(x.domaine) === norm(w.domaine) && norm(x.cuvee || x.appellation) === norm(w.cuvee || w.appellation) && heldBottles(x.id).length)
+  .sort((a, b) => (a.millesime || 0) - (b.millesime || 0));
+function vintageSheet(wid) {
+  const w = wine(wid); if (!w) return null;
+  const last = w.achat || {}, base = { ...w, apogee: null };
+  return `${head('Nouveau millésime')}
+    <p class="small" style="margin-top:-6px"><span class="dot" style="background:${wineColor(w)}"></span> ${esc(wineName(w))} · ${esc(w.domaine || '')}</p>
+    <form class="form" data-form="vintage" data-w="${wid}">
+      <div class="grid2"><label>Millésime<input name="millesime" inputmode="numeric" placeholder="${w.millesime ? 'ex. ' + (w.millesime + 1) : 'ex. 2021'}" required autocomplete="off"></label>
+        <label>Quantité<input name="qty" inputmode="numeric" value="1" required></label></div>
+      <label>Ranger dans<select name="spaceId">${spaceOptions(suggestSpace(base)?.id)}</select></label>
+      <div class="fieldset"><div class="ft">Source</div>
+        <label>Lieu d’achat<input name="lieu" placeholder="${esc(last.lieu || 'Caviste, domaine, salon…')}" list="dl-lieu" autocomplete="off"></label>
+        <label>Offert par<input name="offertPar" placeholder="Si c’est un cadeau" autocomplete="off"></label>
+        <div class="grid2"><label>Prix unitaire (€)<input name="prix" inputmode="decimal" placeholder="${last.prix != null ? esc(numFr(last.prix, 2)) : ''}"></label><label>Date d’achat<input type="date" name="adate" value="${today()}"></label></div>
+      </div>
+      <div class="fieldset"><div class="ft">Propriétaire</div>${ownerFields()}</div>
+      <p class="tiny" style="margin:0">Repris : couleur, domaine, cuvée, appellation, région, cépages, degré, format, service. La fenêtre de dégustation sera estimée pour ce millésime.</p>
+      <button class="btn primary wide" type="submit">Ajouter ce millésime</button>
+      <button class="btn ghost wide" type="button" data-act="vintageFull" data-w="${wid}">Modifier les autres informations</button>
+    </form>${dl('dl-lieu', uniq(x => x.achat?.lieu))}`;
+}
+FORMS.vintage = async (f, d) => {
+  const base = wine(f.dataset.w), m = readYear(d.millesime, thisYear() + 1), errs = [], q = String(d.qty).replace(/\s/g, ''), p = d.prix ? num(d.prix) : null;
+  if (m.err) errs.push(['millesime', m.err]); else if (m.bad) errs.push(['millesime', 'Une année, par exemple 2021']); else if (!m.v) errs.push(['millesime', 'Le millésime de ce nouveau vin']);
+  if (!/^\d+$/.test(q) || +q < 1 || +q > 500) errs.push(['qty', 'Un nombre entier de 1 à 500']);
+  if (d.prix && (p == null || p < 0 || p > 100000)) errs.push(['prix', 'Un prix entre 0 et 100 000 €']);
+  if (!errs.length) errs.push(...ownerErrors(d, +q));
+  if (formErrors(f, errs)) return;
+  if (m.filled) f.elements.millesime.value = m.v;
+  const qty = +q, same = sameVintage(base, m.v), lieu = String(d.lieu || '').trim(), gift = String(d.offertPar || '').trim();
+  if (same && !confirm(`« ${wineTitle(same)} » est déjà dans ta cave. Ajouter ces ${qty} bouteille(s) à ce vin plutôt que de créer un doublon ?`)) return;
+  let w = same;
+  if (!w) { w = { id: uid(), ...vintageBase(base), millesime: m.v, createdAt: Date.now(), notes: '' }; S.wines.push(w); }
+  if (!same || p != null || lieu) w.achat = { ...(same ? w.achat || {} : {}), ...(p != null ? { prix: p } : {}), date: d.adate || null, ...(lieu ? { lieu } : {}) };
+  if (gift) w.cadeau = { de: gift };
+  const ids = createBottles(w, qty, { spaceId: d.spaceId });
+  applyOwners(ids, d);
+  S.wishes = S.wishes.filter(x => x.wineId !== w.id);
+  await save(); afterAdd(w, ids, false);
+};
+Object.assign(ACT, {
+  newVintage: t => showSheet(() => vintageSheet(t.dataset.id)),
+  vintageFull: t => {
+    const base = wine(t.dataset.w), f = t.closest('form'), v = n => f?.elements[n]?.value || '';
+    newDraft(base.kind, { ...vintageBase(base), millesime: readYear(v('millesime'), thisYear() + 1).v || null, achat: { prix: num(v('prix')), date: v('adate') || today(), lieu: v('lieu') }, cadeau: v('offertPar') ? { de: v('offertPar') } : null });
+    draft.qty = clamp(int(v('qty')) || 1, 1, 500); draft.spaceId = v('spaceId') || null;
+    showSheet(wineFormSheet, { replace: true, full: true });
+  },
+});
+
+/* ---------- Propriétaires (v1.7.4) ---------- */
+// Champs « Dont pour un ami » : vide = tout à moi ; un prénom sans nombre = toutes les bouteilles pour cet ami
+const ownerFields = (withList = true) => `<div class="grid2"><label>Dont pour un ami<input name="friendQty" inputmode="numeric" placeholder="0" autocomplete="off"></label>
+  <label>Prénom de l’ami<input name="owner" list="dl-friends" placeholder="Paul" autocomplete="off"></label></div>
+  <p class="tiny" style="margin:0">Exemple : 12 bouteilles, dont 6 pour Paul. Les bouteilles d’un ami ne sont jamais proposées par le sommelier.</p>
+  ${withList ? dl('dl-friends', friendNames()) : ''}`;
+function ownerErrors(d, qty) {
+  const o = String(d.owner || '').trim(), raw = String(d.friendQty || '').replace(/\s/g, '');
+  if (raw && (!/^\d+$/.test(raw) || +raw > qty)) return [['friendQty', `Un nombre de 0 à ${qty}`]];
+  if (raw && +raw > 0 && !o) return [['owner', 'Le prénom de l’ami']];
+  return [];
+}
+function applyOwners(ids, d) {
+  const o = String(d.owner || '').trim().slice(0, 40); if (!o) return;
+  const raw = String(d.friendQty || '').replace(/\s/g, ''), n = raw === '' ? ids.length : Math.min(ids.length, +raw || 0);
+  ids.slice(0, n).forEach(id => { byId(S.bottles, id).owner = o; });
+  if (n && !S.settings.friends.includes(o)) S.settings.friends.push(o);
+}
+// Répartir les bouteilles d'un vin entre moi et des amis
+function ownersSheet(wid) {
+  const w = wine(wid), bs = heldBottles(wid); if (!w) return null;
+  const by = new Map([['', 0]]); for (const b of bs) by.set(b.owner || '', (by.get(b.owner || '') || 0) + 1);
+  const row = (o, n, i) => `<div class="grid2" style="align-items:end"><label>${o ? esc(o) : 'À moi'}<input type="hidden" name="o${i}" value="${esc(o)}"></label><label>Bouteilles<input name="n${i}" inputmode="numeric" value="${n}"></label></div>`;
+  const rows = [...by];
+  return `${head('Répartir entre propriétaires')}
+    <p class="small" style="margin-top:-6px"><span class="dot" style="background:${wineColor(w)}"></span> ${esc(wineTitle(w))} · ${plural(bs.length, 'bouteille', 'bouteilles')}</p>
+    <form class="form" data-form="owners" data-w="${wid}">
+      ${rows.map(([o, n], i) => row(o, n, i)).join('')}
+      <div class="grid2"><label>Autre ami<input name="oNew" list="dl-friends" placeholder="Prénom" autocomplete="off"></label><label>Bouteilles<input name="nNew" inputmode="numeric" placeholder="0"></label></div>
+      ${dl('dl-friends', friendNames())}
+      <p class="tiny" style="margin:0">Le total doit rester ${bs.length}. Les bouteilles gardent leur emplacement.</p>
+      <button class="btn primary wide" type="submit">Enregistrer</button>
+    </form>`;
+}
+FORMS.owners = async (f, d) => {
+  const w = wine(f.dataset.w), bs = heldBottles(w.id), want = new Map();
+  for (let i = 0; d['o' + i] !== undefined; i++) { const n = String(d['n' + i] || '0').trim(); if (!/^\d+$/.test(n)) return formErrors(f, [['n' + i, 'Un nombre entier']]); want.set(d['o' + i], (want.get(d['o' + i]) || 0) + +n); }
+  const on = String(d.oNew || '').trim().slice(0, 40), nn = String(d.nNew || '').trim();
+  if (nn && !/^\d+$/.test(nn)) return formErrors(f, [['nNew', 'Un nombre entier']]);
+  if (on && +nn) want.set(on, (want.get(on) || 0) + +nn);
+  const total = [...want.values()].reduce((t, n) => t + n, 0);
+  if (total !== bs.length) return formErrors(f, [['n0', `Total ${total} au lieu de ${bs.length}`]]);
+  // Chaque bouteille garde son propriétaire tant que possible, les autres passent aux propriétaires à compléter
+  const left = new Map(want), loose = [];
+  for (const b of bs) { const o = b.owner || ''; if ((left.get(o) || 0) > 0) left.set(o, left.get(o) - 1); else loose.push(b); }
+  for (const b of loose) { const o = [...left].find(([, n]) => n > 0)[0]; left.set(o, left.get(o) - 1); b.owner = o || null; if (o && !S.settings.friends.includes(o)) S.settings.friends.push(o); }
+  await save(); sheetBack(); refreshSheet(); render(); toast('Répartition enregistrée');
+};
+// « Appartient à » d'une bouteille (ou de N bouteilles d'une caisse)
+function ownerPickSheet(ids) {
+  const list = ids.map(id => byId(S.bottles, id)).filter(Boolean); if (!list.length) return null;
+  const w = wine(list[0].wineId), cur = list.length === 1 ? list[0].owner || '' : null;
+  return `${head(list.length > 1 ? `Attribuer ${list.length} bouteilles` : 'Appartient à')}
+    <p class="small" style="margin-top:-6px"><span class="dot" style="background:${wineColor(w)}"></span> ${esc(wineTitle(w))}</p>
+    <div class="list">${['', ...friendNames()].map(o => `<button class="li" data-act="setOwner" data-ids="${list.map(b => b.id).join(',')}" data-o="${esc(o)}"><div class="it"><b>${o ? esc(o) : 'À moi'}</b></div>${cur === o ? `<span class="chev" style="color:var(--bx)">${ICON.check}</span>` : ''}</button>`).join('')}</div>
+    <form class="form" data-form="setOwner" data-ids="${list.map(b => b.id).join(',')}" style="margin-top:10px"><div class="grid2" style="align-items:end"><label>Autre ami<input name="o" placeholder="Prénom" autocomplete="off"></label><button class="btn" type="submit">Attribuer</button></div></form>`;
+}
+async function setOwner(ids, o) {
+  o = String(o || '').trim().slice(0, 40);
+  for (const id of ids) { const b = byId(S.bottles, id); if (b) b.owner = o || null; }
+  if (o && !S.settings.friends.includes(o)) S.settings.friends.push(o);
+  await save(); sheetBack(); refreshSheet(); render(); toast(o ? `${plural(ids.length, 'bouteille attribuée', 'bouteilles attribuées')} à ${o}` : `${plural(ids.length, 'bouteille', 'bouteilles')} à moi`);
+}
+FORMS.setOwner = (f, d) => { if (!String(d.o || '').trim()) return formErrors(f, [['o', 'Un prénom']]); return setOwner(f.dataset.ids.split(','), d.o); };
+Object.assign(ACT, {
+  ownersSheet: t => showSheet(() => ownersSheet(t.dataset.w)),
+  ownerPick: t => showSheet(() => ownerPickSheet(t.dataset.ids.split(','))),
+  setOwner: t => setOwner(t.dataset.ids.split(','), t.dataset.o),
+});
+
 /* ---------- Ajouter des bouteilles à une fiche ---------- */
 function addBottlesSheet(wid) {
   const w = wine(wid);
@@ -1903,7 +2067,8 @@ function addBottlesSheet(wid) {
       <div class="grid2"><label>Quantité<input name="qty" inputmode="numeric" value="1" required></label>
         <label>État<select name="state" data-ch="draftState"><option value="cave">En cave</option><option value="primeur">Primeur, pas encore livré</option></select></label></div>
       <div id="primeur-f" hidden><label>Livraison prévue<input type="date" name="delivery"></label></div>
-      <label>Ranger dans<select name="spaceId">${spaceOptions(suggestSpace(w)?.id)}</select></label>
+      <label>Ranger dans<select name="spaceId">${spaceOptions(addTarget ? unit(addTarget.unitId)?.spaceId : suggestSpace(w)?.id)}</select></label>
+      ${ownerFields()}
       <div class="grid2"><label>Prix unitaire (€)<input name="prix" inputmode="decimal" value="${esc(numFr(w.achat?.prix, 2))}"></label><label>Date d’achat<input type="date" name="adate" value="${today()}"></label></div>
       <button class="btn primary wide" type="submit">Ajouter</button>
     </form>`;
@@ -1912,10 +2077,12 @@ FORMS.addBottles = async (f, d) => {
   const errs = [], q = String(d.qty).replace(/\s/g, ''), p = d.prix ? num(d.prix) : null;
   if (!/^\d+$/.test(q) || +q < 1 || +q > 500) errs.push(['qty', 'Un nombre entier de 1 à 500']);
   if (d.prix && (p == null || p < 0 || p > 100000)) errs.push(['prix', 'Un prix entre 0 et 100 000 €']);
+  if (!errs.length) errs.push(...ownerErrors(d, +q));
   if (formErrors(f, errs)) return;
   const w = wine(f.dataset.w), qty = +q;
   if (num(d.prix) != null) w.achat = { ...(w.achat || {}), prix: num(d.prix), date: d.adate || w.achat?.date };
   const ids = createBottles(w, qty, d.state === 'primeur' ? { state: 'primeur', delivery: { date: d.delivery || null, spaceId: d.spaceId } } : { spaceId: d.spaceId });
+  applyOwners(ids, d);
   S.wishes = S.wishes.filter(x => x.wineId !== w.id);   // acheté : il sort de la liste d'envies
   await save(); afterAdd(w, ids, d.state === 'primeur');
 };
@@ -1933,7 +2100,7 @@ function wineSheet(id) {
   return `${head(esc(wineTitle(w)), `<button class="icon-btn" data-act="editWine" data-id="${id}" aria-label="Modifier">${ICON.edit}</button>`)}
     ${w.photo ? `<img class="photo" data-photo="${id}" alt="Étiquette" hidden>` : ''}
     <p class="small" style="margin:-4px 0 6px">${esc(wineSub(w))}</p>
-    <div class="tags">${st && st !== 'inconnu' ? `<span class="tag ${STATUS[st].tag}">${STATUS[st].label}</span>` : ''}${isFriend(w) ? `<span class="tag o">Appartient à ${esc(w.owner)}</span>` : ''}${w.bio ? '<span class="tag g">Bio</span>' : ''}${w.nature ? '<span class="tag g">Nature</span>' : ''}${w.cadeau?.de ? `<span class="tag">Offert par ${esc(w.cadeau.de)}</span>` : ''}</div>
+    <div class="tags">${st && st !== 'inconnu' ? `<span class="tag ${STATUS[st].tag}">${STATUS[st].label}</span>` : ''}${hasFriend(w) ? `<span class="tag o">${esc(cap(ownerSummary(w)))}</span>` : ''}${w.bio ? '<span class="tag g">Bio</span>' : ''}${w.nature ? '<span class="tag g">Nature</span>' : ''}${w.cadeau?.de ? `<span class="tag">Offert par ${esc(w.cadeau.de)}</span>` : ''}</div>
     ${sp ? '' : `<div class="card">
       <div class="ct">Fenêtre de dégustation ${a?.src === 'ia' ? '<span class="tag">estimée par le sommelier</span>' : a?.src === 'manuel' ? '<span class="tag">saisie manuelle</span>' : a?.src === 'ploc' ? '<span class="tag">reprise de Ploc</span>' : ''}</div>
       ${a?.fin ? `<div class="score" style="font-size:22px;text-align:left">${a.debut || '?'} – ${a.fin}${a.pic ? `<small> · apogée ${a.pic}</small>` : ''}</div>${winBar(a, from, to, true)}<div class="winlab"><span>${from}</span><span>${to}</span></div>
@@ -1942,10 +2109,12 @@ function wineSheet(id) {
       : `<p class="small" style="margin:0">Pas encore de fenêtre.</p>`}
       <div class="btns2" style="margin-top:10px"><button class="btn small" data-act="estimate" data-id="${id}">${ICON.spark} ${a?.fin ? 'Réestimer' : 'Estimer'}</button><button class="btn small" data-act="editWine" data-id="${id}">Saisir</button></div>
     </div>`}
-    <h3>En cave · ${bs.length}${pr.length ? ` <span class="small">+ ${pr.length} en primeur</span>` : ''}</h3>
+    <h3>En cave · ${bs.length}${pr.length ? ` <span class="small">+ ${pr.length} en primeur</span>` : ''}${hasFriend(w) ? ` <span class="small">${esc(ownerSummary(w))}</span>` : ''}</h3>
     ${bs.length || pr.length ? `<div class="list">${[...bs, ...pr].map(b => `<div class="li"><button class="lb" data-act="bottle" data-b="${b.id}"><div class="it"><b style="font-weight:500;font-size:14px">${esc(locLabel(b))}</b>${b.state === 'open' ? `<small>Ouverte · niveau ${b.level ?? 100} %</small>` : ''}</div><span class="chev">${ICON.chev}</span></button>${inCave(b) ? `<button class="icon-btn" style="width:34px;height:34px;color:var(--bx)" data-act="planGo" data-b="${b.id}" aria-label="Voir sur le plan">${ICON.pin}</button>` : ''}</div>`).join('')}</div>` : `<p class="muted small">${S.tastings.some(t => t.wineId === id) && !S.bottles.some(b => b.wineId === id) ? 'Vin dégusté, jamais en cave.' : 'Plus aucune bouteille en cave.'}</p>`}
     <div class="btns2" style="margin-top:10px"><button class="btn" data-act="rebuy" data-id="${id}">${ICON.add} ${bs.length ? 'Ajouter' : 'Ajouter à la cave'}</button><button class="btn" data-act="taste" data-w="${id}">${ICON.cork} Déguster</button></div>
     <button class="btn wide ${isWished(id) ? 'outline' : 'ghost'}" style="margin-top:8px" data-act="wishToggle" data-w="${id}">${isWished(id) ? '♥ Dans ma liste d’envies' : '♥ Ajouter à ma liste d’envies'}</button>
+    ${!sp || bs.length > 1 ? `<div class="btns2" style="margin-top:8px">${sp ? '<span></span>' : `<button class="btn" data-act="newVintage" data-id="${id}">${ICON.add} Nouveau millésime</button>`}${bs.length + pr.length ? `<button class="btn" data-act="ownersSheet" data-w="${id}">Répartir entre propriétaires</button>` : ''}</div>` : ''}
+    ${(() => { const sib = siblings(w); return sib.length ? `<h3>Autres millésimes</h3><div class="list">${sib.map(x => `<button class="li" data-act="wine" data-id="${x.id}"><span class="dot" style="background:${wineColor(x)}"></span><div class="it"><b class="ell">${esc(vintage(x))}</b><small class="ell">${esc(windowLabel(x.apogee))}${status(x) && status(x) !== 'inconnu' ? ' · ' + esc(STATUS[status(x)].short) : ''}</small></div><span class="qty">×${heldBottles(x.id).length}</span></button>`).join('')}</div>` : ''; })()}
     <h3>Fiche</h3>
     <dl class="kv">${dlrow(sp ? 'Distillerie' : 'Domaine', w.domaine)}${dlrow(sp ? 'Expression' : 'Cuvée', w.cuvee)}${dlrow('Appellation', w.appellation)}${dlrow('Région', [w.region, w.pays].filter(Boolean).join(', '))}
       ${dlrow('Cépages', w.cepages)}${dlrow(sp ? 'Distillé en' : 'Millésime', w.millesime)}${dlrow('Âge', w.age ? w.age + ' ans' : '')}${dlrow('Embouteillé en', w.bottled)}${dlrow('Fût', w.fut)}
@@ -1963,13 +2132,14 @@ function bottleSheet(bid) {
   const w = wine(b.wineId), st = status(w), sp = w.kind === 'spirit', inT = S.transfer.ids.includes(bid);
   return `${head(esc(wineTitle(w)))}
     <p class="small" style="margin:-6px 0 6px">${esc(wineSub(w))}</p>
-    <div class="tags">${st && st !== 'inconnu' ? `<span class="tag ${STATUS[st].tag}">${STATUS[st].label} · ${esc(windowLabel(w.apogee))}</span>` : ''}${isFriend(w) ? `<span class="tag o">Appartient à ${esc(w.owner)}</span>` : ''}${b.state === 'open' ? `<span class="tag">Ouverte le ${esc(fmtDate(b.openedAt))}</span>` : ''}</div>
+    <div class="tags">${st && st !== 'inconnu' ? `<span class="tag ${STATUS[st].tag}">${STATUS[st].label} · ${esc(windowLabel(w.apogee))}</span>` : ''}${b.owner ? `<span class="tag o">Appartient à ${esc(b.owner)}</span>` : ''}${b.state === 'open' ? `<span class="tag">Ouverte le ${esc(fmtDate(b.openedAt))}</span>` : ''}</div>
     <div class="loc" style="font-size:14px;margin:12px 0">${ICON.pin}${esc(locLabel(b))}</div>
     ${b.state === 'open' ? `<div class="card"><div class="ct">Niveau restant</div><div class="level"><span class="bottle-level"><i style="height:${b.level ?? 100}%"></i></span><input type="range" min="0" max="100" step="5" value="${b.level ?? 100}" data-in="level" data-b="${bid}" style="flex:1"><output id="lvl-out">${b.level ?? 100} %</output></div></div>` : ''}
     <div class="btns">
       ${b.state === 'primeur' ? `<button class="btn primary wide" data-act="receive" data-b="${bid}">${ICON.down} Réceptionner</button>`
-      : `<button class="btn primary wide" data-act="outBottle" data-b="${bid}">${ICON.out} ${sp && b.state === 'open' ? 'Bouteille terminée' : isFriend(w) ? 'Sortir (rendre, boire…)' : 'Sortir de la cave'}</button>
+      : `<button class="btn primary wide" data-act="outBottle" data-b="${bid}">${ICON.out} ${sp && b.state === 'open' ? 'Bouteille terminée' : b.owner ? 'Sortir (rendre, boire…)' : 'Sortir de la cave'}</button>
         ${sp && b.state !== 'open' ? `<button class="btn wide" data-act="openBottle" data-b="${bid}">Ouvrir la bouteille</button>` : ''}
+        <button class="btn wide" data-act="ownerPick" data-ids="${bid}">Appartient à : ${b.owner ? esc(b.owner) : 'moi'}</button>
         <div class="btns2"><button class="btn" data-act="moveBottle" data-b="${bid}">${ICON.move} Déplacer</button><button class="btn" data-act="taste" data-w="${w.id}" data-b="${bid}">${ICON.cork} Déguster</button></div>
         ${isMulti() ? `<button class="btn wide ${inT ? 'outline' : ''}" data-act="toTransfer" data-b="${bid}">${ICON.truck} ${inT ? 'Retirer du transfert vers ' + esc(site(tDest(bid))?.name || '') : S.sites.length === 2 ? 'Ajouter au transfert vers ' + esc(site(defaultDest(b))?.name || '') : 'Ajouter au prochain transfert'}</button>` : ''}`}
       ${inCave(b) ? `<button class="btn wide" data-act="planGo" data-b="${bid}">${ICON.pin} Voir sur le plan</button>` : ''}
@@ -1982,8 +2152,8 @@ CHANGES.level = async el => { const b = byId(S.bottles, el.dataset.b); b.level =
 /* ---------- Sortie ---------- */
 function outSheet(bid) {
   const b = byId(S.bottles, bid), w = wine(b.wineId), sp = w.kind === 'spirit';
-  const def = isFriend(w) ? 'rendue' : sp && b.state === 'open' ? 'terminee' : 'bue';
-  const motifs = Object.keys(MOTIFS).filter(k => (k !== 'rendue' || isFriend(w)) && (k !== 'terminee' || sp));
+  const def = b.owner ? 'rendue' : sp && b.state === 'open' ? 'terminee' : 'bue';
+  const motifs = Object.keys(MOTIFS).filter(k => (k !== 'rendue' || b.owner) && (k !== 'terminee' || sp));
   return `${head('Sortir de la cave')}
     <p class="small" style="margin-top:-6px"><span class="dot" style="background:${wineColor(w)}"></span> ${esc(wineTitle(w))} · ${esc(locLabel(b, false))}</p>
     <form class="form" data-form="out" data-b="${bid}">
@@ -1999,14 +2169,17 @@ FORMS.out = async (f, d) => {
   b.state = 'out'; b.outAt = d.at || today();
   logMove(b, 'out', { motif: d.motif, at: d.at || today(), from, who: d.who, plat: d.plat });
   S.transfer.ids = S.transfer.ids.filter(id => id !== b.id);
-  const taste = ['bue', 'bouchonnee', 'terminee'].includes(d.motif) && !isFriend(w);
+  const taste = ['bue', 'bouchonnee', 'terminee'].includes(d.motif) && !b.owner;
   b.ficheTodo = taste;   // dans « À noter » jusqu'à la fiche, ou « Sans fiche »
   await save(); render();
   if (!taste) { closeSheet(); return toast('Bouteille sortie'); }
+  tastedSheet(w, b);
+};
+function tastedSheet(w, b) {
   showSheet(() => `${head('Bonne dégustation !')}<p>${esc(wineTitle(w))} est sorti${w.kind === 'spirit' ? '' : ''} de la cave. Tu veux noter ce vin ?</p>
     <div class="btns"><button class="btn primary wide" data-act="taste" data-w="${w.id}" data-b="${b.id}" data-m="quick">Note rapide</button><button class="btn wide" data-act="taste" data-w="${w.id}" data-b="${b.id}" data-m="full">Fiche complète</button><button class="btn wide" data-act="close">Plus tard</button><button class="btn ghost wide" data-act="todoSkip" data-b="${b.id}">Sortir sans fiche</button></div>
     <p class="tiny">« Plus tard » : la bouteille t’attend dans Dégustations › À noter, et je te la rappellerai demain.</p>`, { replace: true });
-};
+}
 
 /* ---------- Transfert entre sites ---------- */
 Object.assign(ACT, {
@@ -2040,7 +2213,8 @@ Object.assign(ACT, {
 function rebuyRows(q) {
   const m = matcher(q);
   const ws = [...S.wines].filter(w => kindOn(w) && (!m || m(w))).sort((a, b) => wineName(a).localeCompare(wineName(b), 'fr') || (a.millesime || 0) - (b.millesime || 0));
-  return ws.length ? `<div class="list">${ws.map(w => `<button class="li" data-act="rebuy" data-id="${w.id}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(wineSub(w))} · ${wineBottles(w.id).length ? wineBottles(w.id).length + ' en cave' : 'pas en cave'}</small></div></button>`).join('')}</div>`
+  return ws.length ? `<div class="list">${ws.map(w => `<div class="li"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(wineSub(w))} · ${wineBottles(w.id).length ? wineBottles(w.id).length + ' en cave' : 'pas en cave'}</small>
+      <div class="row" style="gap:6px;margin-top:6px"><button class="btn small" data-act="rebuy" data-id="${w.id}">Mêmes bouteilles</button>${w.kind === 'vin' ? `<button class="btn small" data-act="newVintage" data-id="${w.id}">Autre millésime</button>` : ''}</div></div></div>`).join('')}</div>`
     : '<p class="small" style="margin:10px 4px">Aucun vin ne correspond.</p>';
 }
 INPUTS.rebuyFind = el => { const box = $('#rebuy-list'); if (box) box.innerHTML = rebuyRows(el.value); };
@@ -2084,7 +2258,7 @@ function transferSheet() {
 function transferSection(s, list) {
   const stock = s.role === 'stock', sugg = transferSuggestions(s.id);
   const row = b => { const w = wine(b.wineId), st = status(w);
-    return `<div class="li"><button class="lb" data-act="tBrief" data-b="${b.id}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${st && st !== 'inconnu' ? esc(STATUS[st].short) + ' · ' : ''}${esc(locLabel(b, true))}</small></div></button>
+    return `<div class="li"><button class="lb" data-act="tBrief" data-b="${b.id}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${st && st !== 'inconnu' ? esc(STATUS[st].short) + ' · ' : ''}${esc(locLabel(b, true))}${S.transfer.units?.[b.unitId] ? ' · voyage dans sa caisse' : ''}</small></div></button>
       <button class="icon-btn" data-act="toTransfer" data-b="${b.id}" aria-label="Retirer du transfert">${ICON.close}</button></div>`; };
   return `<div class="sect" data-tsect="${s.id}">Vers ${esc(s.name)} · ${roleLabel(s)}${list.length ? ' · ' + plural(list.length, 'bouteille', 'bouteilles') : ''}</div>
     ${list.length ? `<div class="list">${list.map(row).join('')}</div>
@@ -2104,14 +2278,14 @@ function transferSuggestions(to) {
     const seen = new Set();
     return S.bottles.filter(b => {
       if (!ok(b)) return false;
-      const w = wine(b.wineId); if (!w || isFriend(w) || !['prio', 'apogee'].includes(status(w)) || seen.has(w.id)) return false;
+      const w = wine(b.wineId); if (!w || b.owner || !['prio', 'apogee'].includes(status(w)) || seen.has(w.id)) return false;
       seen.add(w.id); return true;
     }).sort((a, b) => (status(wine(a.wineId)) === 'prio' ? 0 : 1) - (status(wine(b.wineId)) === 'prio' ? 0 : 1)).map(b => ({ b, ids: [b.id] }));
   }
   const groups = new Map();
   for (const b of S.bottles) {
     if (!ok(b) || site(siteOfBottle(b))?.role === 'stock') continue;
-    const w = wine(b.wineId); if (!w || w.kind !== 'vin' || isFriend(w) || !['tot', 'inconnu'].includes(status(w))) continue;
+    const w = wine(b.wineId); if (!w || w.kind !== 'vin' || b.owner || !['tot', 'inconnu'].includes(status(w))) continue;
     const k = w.id + '|' + siteOfBottle(b); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(b);
   }
   const last = bs => bs.reduce((m, b) => (b.addedAt || '') > m ? b.addedAt || '' : m, '');
@@ -2154,7 +2328,7 @@ Object.assign(ACT, {
   toTransfer: async t => {
     const id = t.dataset.b, inT = S.transfer.ids.includes(id);
     if (!inT && S.sites.length > 2) return transferPick(id);
-    if (inT) transferRemove(id); else transferAdd([id]);
+    if (inT) { transferRemove(id); const u = byId(S.bottles, id)?.unitId; if (u && S.transfer.units?.[u]) delete S.transfer.units[u]; } else transferAdd([id]);
     await save(); refreshSheet(); render();
     toast(inT ? 'Retirée du transfert' : `Ajoutée au transfert vers ${site(tDest(id))?.name || ''}`);
   },
@@ -2169,6 +2343,14 @@ Object.assign(ACT, {
     const to = t.dataset.to, dest = arrivalSpace(to), s = site(to);
     if (!dest) return toast('Ce site n’a pas encore d’espace');
     const moved = [];
+    // Caisses entières : le meuble est posé dans l'espace d'arrivée avec ses bouteilles
+    let boxes = 0;
+    for (const [uid_, d] of Object.entries(S.transfer.units || {})) {
+      const u = unit(uid_); if (d !== to || !u) continue;
+      if (space(u.spaceId)?.siteId !== to) { moveBox(u, dest.id, 'transfert'); boxes++; }
+      for (const b of boxBottles(uid_)) transferRemove(b.id);
+      delete S.transfer.units[uid_];
+    }
     for (const b of transferBottles()) {
       if (tDest(b.id) !== to) continue;
       if (siteOfBottle(b) !== to) { const from = locOf(b); Object.assign(b, { spaceId: dest.id, unitId: null, r: null, c: null }); logMove(b, 'transfert', { from, to: locOf(b) }); moved.push(b.id); }
@@ -2182,7 +2364,7 @@ Object.assign(ACT, {
       return showSheet(() => `${head(`Arrivées à ${esc(s.name)}`)}<p>${plural(moved.length, 'bouteille est', 'bouteilles sont')} dans « ${esc(dest.name)} », sans emplacement.</p>
         <div class="btns"><button class="btn primary wide" data-act="tPlaceNow" data-space="${dest.id}">Ranger maintenant</button><button class="btn ghost wide" data-act="close">Plus tard</button></div>`);
     }
-    toast(`${plural(moved.length, 'bouteille arrivée', 'bouteilles arrivées')} · à ranger dans « ${dest.name} »`);
+    toast(boxes && !moved.length ? `${plural(boxes, 'caisse arrivée', 'caisses arrivées')} dans « ${dest.name} »` : `${plural(moved.length, 'bouteille arrivée', 'bouteilles arrivées')}${boxes ? ` et ${plural(boxes, 'caisse', 'caisses')}` : ''} · à ranger dans « ${dest.name} »`);
   },
   tPlaceNow: t => {
     const ids = (lastArrival || []).filter(id => { const b = byId(S.bottles, id); return b && inCave(b) && !b.unitId; });
@@ -2191,6 +2373,146 @@ Object.assign(ACT, {
   },
 });
 let lastArrival = null;
+
+
+/* ===== 47-box.js ===== */
+/* ---------- Caisses et cartons : actions sur toute la caisse (v1.7.4) ----------
+   Une caisse ou un carton ne contient qu'un seul vin. Depuis sa fiche : sortir N bouteilles, déplacer la caisse
+   (elle part avec ses bouteilles), l'ajouter au transfert, attribuer N bouteilles, modifier le vin ou l'achat. */
+const boxBottles = uid_ => { const u = unit(uid_); return u ? boxContents(u, occupancy()) : []; };
+const boxInTransfer = uid_ => !!S.transfer.units?.[uid_];
+function boxActions(u, bs) {
+  const w = wine(bs[0].wineId), inT = boxInTransfer(u.id);
+  return `<div class="btns" style="margin-top:12px">
+    <button class="btn primary wide" data-act="boxOut" data-u="${u.id}">${ICON.out} Sortir des bouteilles</button>
+    <div class="btns2"><button class="btn" data-act="boxMove" data-u="${u.id}">${ICON.move} Déplacer la caisse</button>
+      ${isMulti() ? `<button class="btn${inT ? ' outline' : ''}" data-act="boxTransfer" data-u="${u.id}">${ICON.truck} ${inT ? 'Retirer du transfert' : 'Au transfert'}</button>` : `<button class="btn" data-act="boxOwner" data-u="${u.id}">Attribuer…</button>`}</div>
+    ${inT ? `<p class="tiny" style="margin:0">Au transfert vers ${esc(site(S.transfer.units[u.id])?.name || '')} : la caisse voyagera avec ses bouteilles.</p>` : ''}
+    <div class="btns2">${isMulti() ? `<button class="btn" data-act="boxOwner" data-u="${u.id}">Attribuer…</button>` : ''}<button class="btn" data-act="boxBuy" data-u="${u.id}">Modifier l’achat</button>${isMulti() ? '' : `<button class="btn" data-act="editWine" data-id="${w.id}">Modifier le vin</button>`}</div>
+    ${isMulti() ? `<button class="btn wide" data-act="editWine" data-id="${w.id}">Modifier le vin</button>` : ''}
+    <button class="btn ghost wide" data-act="wine" data-id="${w.id}">Voir la fiche du vin</button></div>`;
+}
+// Sortir N bouteilles d'un coup
+function boxOutSheet(uid_) {
+  const bs = boxBottles(uid_); if (!bs.length) return null;
+  const w = wine(bs[0].wineId), friends = bs.some(b => b.owner), sp = w.kind === 'spirit';
+  const motifs = Object.keys(MOTIFS).filter(k => (k !== 'rendue' || friends) && (k !== 'terminee' || sp));
+  return `${head('Sortir des bouteilles')}
+    <p class="small" style="margin-top:-6px"><span class="dot" style="background:${wineColor(w)}"></span> ${esc(wineTitle(w))} · ${plural(bs.length, 'bouteille', 'bouteilles')} dans la caisse</p>
+    <form class="form" data-form="boxOut" data-u="${uid_}">
+      <label>Nombre<input name="n" inputmode="numeric" value="1" required></label>
+      <div class="chips wrap">${motifs.map(k => `<label class="chip soft${k === 'bue' ? ' on' : ''}" style="cursor:pointer"><input type="radio" name="motif" value="${k}" ${k === 'bue' ? 'checked' : ''} class="sr-only" data-ch="radioChip">${MOTIFS[k]}</label>`).join('')}</div>
+      <div class="grid2"><label>Date<input type="date" name="at" value="${today()}"></label><label>Offertes à / avec<input name="who" autocomplete="off"></label></div>
+      <label>Occasion ou plat<input name="plat" autocomplete="off"></label>
+      <button class="btn primary wide" type="submit">Confirmer la sortie</button>
+    </form>`;
+}
+FORMS.boxOut = async (f, d) => {
+  const bs = boxBottles(f.dataset.u), raw = String(d.n || '').replace(/\s/g, '');
+  if (!/^\d+$/.test(raw) || +raw < 1 || +raw > bs.length) return formErrors(f, [['n', `Un nombre de 1 à ${bs.length}`]]);
+  // « Rendue » : d'abord les bouteilles des amis ; sinon d'abord les miennes
+  const pick = [...bs].sort((a, b) => d.motif === 'rendue' ? !!b.owner - !!a.owner : !!a.owner - !!b.owner).slice(0, +raw);
+  const tasteM = ['bue', 'bouchonnee', 'terminee'].includes(d.motif);
+  for (const b of pick) {
+    const from = locOf(b); b.state = 'out'; b.outAt = d.at || today();
+    logMove(b, 'out', { motif: d.motif, at: d.at || today(), from, who: d.who, plat: d.plat });
+    transferRemove(b.id); b.ficheTodo = tasteM && !b.owner;
+  }
+  await save(); render();
+  const todo = pick.filter(b => b.ficheTodo);
+  if (pick.length === 1 && todo.length) return tastedSheet(wine(pick[0].wineId), pick[0]);
+  closeSheet(); toast(`${plural(pick.length, 'bouteille sortie', 'bouteilles sorties')}${todo.length ? ' · à noter dans Dégustations' : ''}`);
+};
+// Déplacer la caisse : le meuble change d'espace (ou de site), ses bouteilles restent dedans
+function boxMoveSheet(uid_) {
+  const u = unit(uid_); if (!u) return null;
+  return `${head('Déplacer la caisse')}<p class="small" style="margin-top:-6px">${esc(u.name || UNIT_TYPES[u.type].label)} · ${plural(boxBottles(uid_).length, 'bouteille', 'bouteilles')}</p>
+    <div class="list">${S.spaces.filter(s => s.id !== u.spaceId).map(s => `<button class="li" data-act="boxMoveTo" data-u="${uid_}" data-s="${s.id}"><div class="it"><b>${esc(S.sites.length > 1 ? site(s.siteId)?.name + ' › ' : '')}${esc(s.name)}</b><small>${esc(s.use === 'conso' ? 'Consommation' : 'Garde')}</small></div><span class="chev">${ICON.chev}</span></button>`).join('') || '<p class="muted small" style="padding:12px">Aucun autre espace.</p>'}</div>`;
+}
+function moveBox(u, spaceId, type) {
+  for (const b of boxBottles(u.id)) { const from = locOf(b); b.spaceId = spaceId; logMove(b, type || (from.siteId !== space(spaceId)?.siteId ? 'transfert' : 'move'), { from, to: locOf(b) }); }
+  u.spaceId = spaceId; u.order = S.units.length;
+}
+// Attribuer N bouteilles à un ami (ou à moi)
+function boxOwnerSheet(uid_) {
+  const bs = boxBottles(uid_); if (!bs.length) return null;
+  const w = wine(bs[0].wineId);
+  return `${head('Attribuer des bouteilles')}
+    <p class="small" style="margin-top:-6px"><span class="dot" style="background:${wineColor(w)}"></span> ${esc(wineTitle(w))}${bs.some(b => b.owner) ? ' · ' + esc(ownerSummary(w, bs)) : ''}</p>
+    <form class="form" data-form="boxOwner" data-u="${uid_}">
+      <div class="grid2"><label>Nombre<input name="n" inputmode="numeric" value="${bs.length}" required></label><label>À qui<input name="o" list="dl-friends" placeholder="Vide = à moi" autocomplete="off"></label></div>
+      ${dl('dl-friends', friendNames())}
+      <button class="btn primary wide" type="submit">Attribuer</button>
+    </form>`;
+}
+FORMS.boxOwner = async (f, d) => {
+  const bs = boxBottles(f.dataset.u), raw = String(d.n || '').replace(/\s/g, ''), o = String(d.o || '').trim().slice(0, 40);
+  if (!/^\d+$/.test(raw) || +raw < 1 || +raw > bs.length) return formErrors(f, [['n', `Un nombre de 1 à ${bs.length}`]]);
+  // D'abord les bouteilles qui n'appartiennent pas encore à cette personne
+  const pick = [...bs].sort((a, b) => ((a.owner || '') === o) - ((b.owner || '') === o)).slice(0, +raw);
+  for (const b of pick) b.owner = o || null;
+  if (o && !S.settings.friends.includes(o)) S.settings.friends.push(o);
+  await save(); sheetBack(); refreshSheet(); render(); toast(o ? `${plural(pick.length, 'bouteille attribuée', 'bouteilles attribuées')} à ${o}` : `${plural(pick.length, 'bouteille', 'bouteilles')} à moi`);
+};
+// Modifier l'achat : le prix, la date et la source sont ceux du vin (toutes ses bouteilles)
+function boxBuySheet(uid_) {
+  const bs = boxBottles(uid_); if (!bs.length) return null;
+  const w = wine(bs[0].wineId), a = w.achat || {};
+  return `${head('Modifier l’achat')}
+    <p class="small" style="margin-top:-6px"><span class="dot" style="background:${wineColor(w)}"></span> ${esc(wineTitle(w))}</p>
+    <form class="form" data-form="boxBuy" data-w="${w.id}">
+      <div class="grid2"><label>Prix unitaire (€)<input name="prix" inputmode="decimal" value="${esc(numFr(a.prix, 2))}"></label><label>Date d’achat<input type="date" name="adate" value="${esc(a.date || '')}"></label></div>
+      <label>Lieu d’achat<input name="lieu" value="${esc(a.lieu || '')}" autocomplete="off"></label>
+      <label>Offert par<input name="offertPar" value="${esc(w.cadeau?.de || '')}" placeholder="Si c’est un cadeau" autocomplete="off"></label>
+      <p class="tiny" style="margin:0">L’achat est celui du vin : il vaut pour ses ${plural(heldBottles(w.id).length, 'bouteille', 'bouteilles')}, dans cette caisse et ailleurs.</p>
+      <button class="btn primary wide" type="submit">Enregistrer</button>
+    </form>`;
+}
+FORMS.boxBuy = async (f, d) => {
+  const w = wine(f.dataset.w), p = d.prix ? num(d.prix) : null;
+  if (d.prix && (p == null || p < 0 || p > 100000)) return formErrors(f, [['prix', 'Un prix entre 0 et 100 000 €']]);
+  w.achat = { ...(w.achat || {}), prix: p, date: d.adate || null, lieu: String(d.lieu || '').trim() };
+  w.cadeau = String(d.offertPar || '').trim() ? { de: String(d.offertPar).trim() } : null;
+  await save(); sheetBack(); refreshSheet(); render(); toast('Achat modifié');
+};
+function boxTransferPick(uid_) {
+  const u = unit(uid_), from = space(u.spaceId)?.siteId;
+  showSheet(() => `${head('Transférer la caisse vers…')}<div class="list">${S.sites.filter(s => s.id !== from).map(s => `<button class="li" data-act="boxTransferTo" data-u="${uid_}" data-to="${s.id}"><div class="it"><b>${esc(s.name)}</b><small>Site de ${roleLabel(s)}</small></div><span class="chev">${ICON.chev}</span></button>`).join('')}</div>`);
+}
+async function boxToTransfer(uid_, to) {
+  const bs = boxBottles(uid_); if (!bs.length) return;
+  transferAdd(bs.map(b => b.id), to); (S.transfer.units ||= {})[uid_] = to;
+  await save(); refreshSheet(); render(); toast(`Caisse au transfert vers ${site(to)?.name || ''}`);
+}
+Object.assign(ACT, {
+  boxOut: t => showSheet(() => boxOutSheet(t.dataset.u)),
+  boxMove: t => showSheet(() => boxMoveSheet(t.dataset.u)),
+  boxMoveTo: async t => {
+    const u = unit(t.dataset.u), sp = space(t.dataset.s); if (!u || !sp) return;
+    moveBox(u, sp.id); if (S.transfer.units) delete S.transfer.units[u.id];
+    for (const b of boxBottles(u.id)) transferRemove(b.id);
+    if (isMulti()) S.settings.site = sp.siteId;
+    caveSpace = sp.id; await save(); closeSheet(); view = 'cave'; caveMode = 'plan'; render(); toast(`Caisse déplacée dans « ${sp.name} »`);
+  },
+  boxTransfer: async t => {
+    const id = t.dataset.u;
+    if (boxInTransfer(id)) {
+      delete S.transfer.units[id]; for (const b of boxBottles(id)) transferRemove(b.id);
+      await save(); refreshSheet(); render(); return toast('Caisse retirée du transfert');
+    }
+    const from = space(unit(id).spaceId)?.siteId, others = S.sites.filter(s => s.id !== from);
+    if (others.length > 1) return boxTransferPick(id);
+    if (others[0]) return boxToTransfer(id, others[0].id);
+  },
+  boxTransferTo: async t => { await boxToTransfer(t.dataset.u, t.dataset.to); sheetBack(); refreshSheet(); },
+  boxOwner: t => showSheet(() => boxOwnerSheet(t.dataset.u)),
+  boxBuy: t => showSheet(() => boxBuySheet(t.dataset.u)),
+  boxAdd: t => {
+    const u = unit(t.dataset.u), occ = occupancy(), free = freeSlots(u, occ)[0];
+    if (free) addTarget = { unitId: u.id, r: free[0], c: free[1] };
+    showSheet(() => addBottlesSheet(t.dataset.w));
+  },
+});
 
 
 /* ===== 50-tasting.js ===== */
@@ -2920,10 +3242,10 @@ function lastJson(t) {
 /* ---------- Contexte de cave envoyé au sommelier ---------- */
 function caveContext(allSites) {
   const y = thisYear(), cur = S.settings.site, multi = isMulti();
-  const rows = [], ws = S.wines.filter(w => !isFriend(w) && kindOn(w) && wineBottles(w.id).length);
+  const rows = [], ws = S.wines.filter(w => kindOn(w) && myBottles(w.id).length);
   for (const w of ws) {
-    const bs = wineBottles(w.id).filter(b => allSites || !multi || siteOfBottle(b) === cur);
-    const elsewhere = multi && !allSites ? wineBottles(w.id).length - bs.length : 0;
+    const bs = myBottles(w.id).filter(b => allSites || !multi || siteOfBottle(b) === cur);
+    const elsewhere = multi && !allSites ? myBottles(w.id).length - bs.length : 0;
     if (!bs.length && !elsewhere) continue;
     const locs = [...new Set(bs.map(b => locLabel(b, multi)))].map(l => `${l} ×${bs.filter(b => locLabel(b, multi) === l).length}`).join(' ; ');
     const ts = S.tastings.filter(t => t.wineId === w.id), tn = ts.filter(t => t.note != null), avg = tn.length ? tn.reduce((n, t) => n + t.note, 0) / tn.length : null;
@@ -3021,7 +3343,7 @@ function chatMsg(m, i) {
 }
 // Bouteille à sortir pour un vin : sur le site actuel, dans l'espace de consommation, rangée, déjà ouverte d'abord
 function pickBottle(w) {
-  const bs = wineBottles(w.id);
+  const bs = myBottles(w.id).length ? myBottles(w.id) : wineBottles(w.id);
   const score = b => (b.state === 'open' ? 8 : 0) + (siteOfBottle(b) === S.settings.site ? 4 : 0) + (space(b.spaceId)?.use === 'conso' ? 2 : 0) + (b.unitId ? 1 : 0);
   return bs.sort((a, b) => score(b) - score(a))[0] || null;
 }
@@ -3517,19 +3839,19 @@ function plocReview() {
 /* ===== 70-boire.js ===== */
 /* ---------- À boire ---------- */
 let boireCat = 'prio', boireBar = null;
-const drinkable = () => S.wines.filter(w => w.kind === 'vin' && !isFriend(w) && wineBottles(w.id).length);
+const drinkable = () => S.wines.filter(w => w.kind === 'vin' && myBottles(w.id).length);
 function vBoire() {
   const ws = drinkable(), y = thisYear();
   if (!ws.length && !(spiritsOn() && openSpirits().length)) return `<div class="empty">${ICON.boire}<p>Ajoute des vins à ta cave : je te dirai lesquels boire en priorité.</p></div>`;
-  const cnt = k => ws.filter(w => status(w) === k).reduce((n, w) => n + wineBottles(w.id).length, 0);
+  const cnt = k => ws.filter(w => status(w) === k).reduce((n, w) => n + myBottles(w.id).length, 0);
   const urgent = ws.filter(w => w.apogee?.fin && w.apogee.fin <= y);
-  const nUrgent = urgent.reduce((n, w) => n + wineBottles(w.id).length, 0);
+  const nUrgent = urgent.reduce((n, w) => n + myBottles(w.id).length, 0);
   const stockSites = new Set(S.sites.filter(s => s.role === 'stock').map(s => s.id));
-  const away = isMulti() ? S.bottles.filter(b => b.state === 'cave' && stockSites.has(siteOfBottle(b)) && ['prio', 'declin'].includes(status(wine(b.wineId) || {})) && !isFriend(wine(b.wineId))) : [];
+  const away = isMulti() ? S.bottles.filter(b => b.state === 'cave' && stockSites.has(siteOfBottle(b)) && ['prio', 'declin'].includes(status(wine(b.wineId) || {})) && !b.owner) : [];
   const list = ws.filter(w => status(w) === boireCat).sort((a, b) => (a.apogee?.fin || 9999) - (b.apogee?.fin || 9999) || norm(wineName(a)).localeCompare(norm(wineName(b))));
   const from = y - 3, to = y + 12;
   const years = Array.from({ length: 6 }, (_, i) => y + i);
-  const per = years.map((yy, i) => ws.filter(w => w.apogee?.fin && (i === 0 ? w.apogee.fin <= yy : i === 5 ? w.apogee.fin >= yy : w.apogee.fin === yy)).reduce((n, w) => n + wineBottles(w.id).length, 0));
+  const per = years.map((yy, i) => ws.filter(w => w.apogee?.fin && (i === 0 ? w.apogee.fin <= yy : i === 5 ? w.apogee.fin >= yy : w.apogee.fin === yy)).reduce((n, w) => n + myBottles(w.id).length, 0));
   const max = Math.max(1, ...per);
   const unknown = ws.filter(w => status(w) === 'inconnu');
   return `${nUrgent ? `<div class="banner bx"><b>${plural(nUrgent, 'bouteille', 'bouteilles')} à boire d’ici la fin de ${y}</b>
@@ -3540,8 +3862,8 @@ function vBoire() {
     ${unknown.length ? `<div class="card row"><div class="grow"><b style="font-size:14px">${plural(unknown.length, 'vin sans fenêtre', 'vins sans fenêtre')}</b><div class="small">Le sommelier peut les estimer en une fois.</div></div><button class="btn small" data-act="estimateMissing">${ICON.spark} Estimer</button></div>` : ''}
     <div class="sect">${STATUS[boireCat].label}</div>
     ${list.length ? `<div class="list">${list.map(w => `<button class="li" data-act="wine" data-id="${w.id}"><span class="dot" style="background:${wineColor(w)}"></span>
-      <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(w.domaine || '')} · ${esc(windowLabel(w.apogee))}${isMulti() ? ' · ' + esc([...new Set(wineBottles(w.id).map(b => site(siteOfBottle(b))?.name))].join(', ')) : ''}</small>${winBar(w.apogee, from, to)}</div>
-      <span class="qty">×${wineBottles(w.id).length}</span></button>`).join('')}</div>` : `<p class="muted small" style="margin:4px">Aucun vin dans cette catégorie.</p>`}
+      <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(w.domaine || '')} · ${esc(windowLabel(w.apogee))}${isMulti() ? ' · ' + esc([...new Set(myBottles(w.id).map(b => site(siteOfBottle(b))?.name))].join(', ')) : ''}</small>${winBar(w.apogee, from, to)}</div>
+      <span class="qty">×${myBottles(w.id).length}</span></button>`).join('')}</div>` : `<p class="muted small" style="margin:4px">Aucun vin dans cette catégorie.</p>`}
     <div class="sect">À boire avant la fin de…</div>
     <div class="card"><div class="bars${boireBar != null && per[boireBar] ? ' sel' : ''}" style="margin-top:14px">${per.map((n, i) => `<button class="${boireBar === i && n ? 'on' : ''}" style="height:${Math.max(3, n / max * 100)}%;background:${i === 0 ? 'var(--bx)' : i < 3 ? 'var(--green)' : 'var(--gold)'}" ${n ? `data-act="boireBar" data-i="${i}"` : 'disabled'} aria-label="${i === 5 ? 'À partir de ' + years[i] : 'Fin ' + years[i]} : ${plural(n, 'bouteille', 'bouteilles')}"><span>${n || ''}</span></button>`).join('')}</div>
       <div class="barl">${years.map((yy, i) => `<span>${i === 5 ? yy + '+' : yy}</span>`).join('')}</div>
@@ -3553,15 +3875,15 @@ function barDetail(ws, years, i, away) {
   const y = years[0], yy = years[i];
   const list = ws.filter(w => w.apogee?.fin && (i === 0 ? w.apogee.fin <= yy : i === 5 ? w.apogee.fin >= yy : w.apogee.fin === yy))
     .sort((a, b) => a.apogee.fin - b.apogee.fin || norm(wineName(a)).localeCompare(norm(wineName(b))));
-  const n = list.reduce((t, w) => t + wineBottles(w.id).length, 0), multi = isMulti();
+  const n = list.reduce((t, w) => t + myBottles(w.id).length, 0), multi = isMulti();
   return `<div class="bar-detail"><div class="ct" style="margin:14px 0 0">${i === 5 ? `À boire à partir de ${yy}` : `À boire avant la fin de ${yy}`} · ${plural(n, 'bouteille', 'bouteilles')}</div>
     ${i === 0 && away.length ? `<button class="btn small" style="margin-top:8px" data-act="awayTransfer">${ICON.truck} Préparer le transfert</button>` : ''}
     ${list.map(w => { const st = status(w), late = w.apogee.fin < y;
       return `<div class="list res"><button class="li" data-act="wine" data-id="${w.id}"><span class="dot" style="background:${wineColor(w)}"></span>
-        <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(windowLabel(w.apogee))} · <span style="color:${STATUS[late ? 'declin' : st].hex};font-weight:600">${late ? 'en déclin' : esc(STATUS[st].short)}</span></small></div><span class="qty">×${wineBottles(w.id).length}</span></button>
-        ${locGroups(wineBottles(w.id)).map(g => `<button class="li loc" data-act="caveJump" data-b="${g.b.id}">${ICON.pin}<div class="it"><b>${esc(locLabel(g.b, multi))}</b></div>${g.n > 1 ? `<span class="qty">×${g.n}</span>` : ''}<span class="chev">${ICON.chev}</span></button>`).join('')}</div>`; }).join('')}</div>`;
+        <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(windowLabel(w.apogee))} · <span style="color:${STATUS[late ? 'declin' : st].hex};font-weight:600">${late ? 'en déclin' : esc(STATUS[st].short)}</span></small></div><span class="qty">×${myBottles(w.id).length}</span></button>
+        ${locGroups(myBottles(w.id)).map(g => `<button class="li loc" data-act="caveJump" data-b="${g.b.id}">${ICON.pin}<div class="it"><b>${esc(locLabel(g.b, multi))}</b></div>${g.n > 1 ? `<span class="qty">×${g.n}</span>` : ''}<span class="chev">${ICON.chev}</span></button>`).join('')}</div>`; }).join('')}</div>`;
 }
-const openSpirits = () => S.bottles.filter(b => b.state === 'open' && wine(b.wineId)?.kind === 'spirit' && !isFriend(wine(b.wineId)));
+const openSpirits = () => S.bottles.filter(b => b.state === 'open' && wine(b.wineId)?.kind === 'spirit' && !b.owner);
 function spiritsBlock() {
   const os = openSpirits();
   if (!os.length) return '';
@@ -3577,7 +3899,7 @@ Object.assign(ACT, {
   boireBar: t => { const i = +t.dataset.i; boireBar = boireBar === i ? null : i; render(); },
   awayTransfer: async () => {
     const stock = new Set(S.sites.filter(s => s.role === 'stock').map(s => s.id));
-    const ids = S.bottles.filter(b => b.state === 'cave' && stock.has(siteOfBottle(b)) && ['prio', 'declin'].includes(status(wine(b.wineId) || {})) && !isFriend(wine(b.wineId))).map(b => b.id);
+    const ids = S.bottles.filter(b => b.state === 'cave' && stock.has(siteOfBottle(b)) && ['prio', 'declin'].includes(status(wine(b.wineId) || {})) && !b.owner).map(b => b.id);
     const to = S.sites.find(s => s.role === 'conso')?.id;
     for (const b of ids.map(id => byId(S.bottles, id))) if (!S.transfer.ids.includes(b.id)) transferAdd([b.id], to && to !== siteOfBottle(b) ? to : null);
     await save(); showSheet(transferSheet);
@@ -3599,12 +3921,12 @@ function moveAdvice() {
   const bestGarde = () => garde.filter(o => o.known).sort((a, b) => b.q - a.q)[0] || garde[0];
   const push = (kind, w, bs, to, why) => { if (!bs.length || !to) return; bs.forEach(b => taken.add(b.id)); out.push({ kind, w, ids: bs.map(b => b.id), from: bs[0].spaceId, to: to.s.id, why }); };
   const groups = new Map();
-  for (const b of S.bottles) if (b.state === 'cave' && b.spaceId && !S.transfer.ids.includes(b.id)) { const k = b.wineId + '|' + b.spaceId; groups.set(k, [...(groups.get(k) || []), b]); }
+  for (const b of S.bottles) if (b.state === 'cave' && b.spaceId && !b.owner && !S.transfer.ids.includes(b.id)) { const k = b.wineId + '|' + b.spaceId; groups.set(k, [...(groups.get(k) || []), b]); }
   for (const [, bs] of groups) {
     const w = wine(bs[0].wineId); if (!w || w.kind === 'spirit') continue;
     const sp = sps.find(o => o.s.id === bs[0].spaceId); if (!sp) continue;
     const st = status(w), a = w.apogee;
-    if (!isFriend(w) && st === 'prio' && sp.s.use !== 'conso') { const to = bestConso(); push('rapatrier', w, bs, to, `À boire avant fin ${a.fin}`); continue; }
+    if (st === 'prio' && sp.s.use !== 'conso') { const to = bestConso(); push('rapatrier', w, bs, to, `À boire avant fin ${a.fin}`); continue; }
     const longue = st === 'tot' || (a?.fin && a.fin - y >= 6);
     if (longue) {
       const to = bestGarde();
@@ -3618,7 +3940,7 @@ function moveAdvice() {
     const have = S.bottles.filter(b => inCave(b) && b.spaceId === c.s.id).length + out.filter(o => o.to === c.s.id).reduce((n, o) => n + o.ids.length, 0);
     let missing = target - have; if (missing <= 0) continue;
     const cands = S.bottles.filter(b => b.state === 'cave' && !taken.has(b.id) && !S.transfer.ids.includes(b.id) && garde.some(g => g.s.id === b.spaceId))
-      .map(b => ({ b, w: wine(b.wineId) })).filter(o => o.w && !isFriend(o.w) && o.w.kind === 'vin' && ['prio', 'apogee'].includes(status(o.w)))
+      .filter(b => !b.owner).map(b => ({ b, w: wine(b.wineId) })).filter(o => o.w && o.w.kind === 'vin' && ['prio', 'apogee'].includes(status(o.w)))
       .sort((p, q) => (p.w.apogee?.fin || 9999) - (q.w.apogee?.fin || 9999));
     const by = new Map();
     for (const { b, w } of cands) { if (missing <= 0) break; const k = w.id + '|' + b.spaceId; by.set(k, [...(by.get(k) || []), b]); missing--; }
@@ -3659,10 +3981,10 @@ const sw = (act, on, dis = false, demoOff = false) => `<span class="switch" ${de
 const whyOff = on => on ? `<span class="why-off">${DEMO_OFF}</span>` : '';
 const setRow = (act, title, sub, val = '', extra = '') => `<button class="set" data-act="${act}" ${extra}><div class="it"><b>${title}</b>${sub ? `<small>${sub}</small>` : ''}</div>${val ? `<span class="val">${val}</span>` : ''}<span class="chev">${ICON.chev}</span></button>`;
 function vPlus() {
-  const bs = S.bottles.filter(inCave), mine = bs.filter(b => !isFriend(wine(b.wineId)));
+  const bs = S.bottles.filter(inCave), mine = bs.filter(b => !b.owner);
   const value = mine.reduce((t, b) => t + (wine(b.wineId).achat?.prix || 0), 0);
   const drunk = S.moves.filter(m => m.type === 'out' && ['bue', 'bouchonnee', 'terminee'].includes(m.motif) && (m.at || '').startsWith(String(thisYear()))).length;
-  const prim = S.bottles.filter(b => b.state === 'primeur').length, friends = S.wines.filter(w => isFriend(w) && wineBottles(w.id).length);
+  const prim = S.bottles.filter(b => b.state === 'primeur').length, friendBs = bs.filter(b => b.owner);
   const ai = aiCfg(), spent = monthSpend(), pct = ai.budget ? Math.min(100, spent / ai.budget * 100) : 0;
   const lastExp = S.settings.lastExport, old = !lastExp || Date.now() - lastExp > 7 * 864e5;
   return `<div class="card"><div class="grid2" style="text-align:center">
@@ -3675,7 +3997,7 @@ function vPlus() {
       ${setRow('sitesSheet', 'Sites, espaces et meubles', isMulti() ? `${S.sites.length} sites · ${S.spaces.length} espaces · ${S.units.length} meubles` : `Site unique · ${S.spaces.length} espace${S.spaces.length > 1 ? 's' : ''} · ${S.units.length} meubles`)}
       ${isMulti() ? setRow('transferSheet', 'Transfert entre sites', S.transfer.ids.length ? plural(S.transfer.ids.length, 'bouteille en préparation', 'bouteilles en préparation') : 'Préparer les bouteilles à emporter') : ''}
       ${setRow('primeursSheet', 'Primeurs', prim ? plural(prim, 'bouteille attendue', 'bouteilles attendues') : 'Aucun primeur en attente')}
-      ${setRow('friendsSheet', 'Vins gardés pour des amis', friends.length ? plural(friends.reduce((t, w) => t + wineBottles(w.id).length, 0), 'bouteille', 'bouteilles') : 'Aucun')}
+      ${setRow('friendsSheet', 'Vins gardés pour des amis', friendBs.length ? plural(friendBs.length, 'bouteille', 'bouteilles') : 'Aucun')}
       ${setRow('wishSheet', 'Liste d’envies', S.wishes.length ? plural(S.wishes.length, 'vin à acheter', 'vins à acheter') : 'Vins repérés en dégustation')}
       ${setRow('journalSheet', 'Journal des mouvements', 'Entrées, sorties, déplacements')}
       ${setRow('importPloc', 'Importer depuis Ploc', 'À partir du PDF de ta cave')}
@@ -3784,7 +4106,7 @@ Object.assign(ACT, {
       if (S.sites.length > 1 && !confirm(`Passer en site unique ? Tous les espaces seront regroupés dans « ${S.sites[0].name} » et les autres sites supprimés. Les bouteilles ne bougent pas de leurs meubles.`)) return;
       const keep = S.sites[0];
       for (const sp of S.spaces) sp.siteId = keep.id;
-      S.sites = [keep]; S.settings.multi = false; S.settings.site = keep.id; S.transfer = { ids: [], to: null, dest: {} };
+      S.sites = [keep]; S.settings.multi = false; S.settings.site = keep.id; S.transfer = { ids: [], to: null, dest: {}, units: {} };
     }
     await save(); refreshSheet(); render();
   },
@@ -3819,10 +4141,10 @@ Object.assign(ACT, {
       <span class="qty">×${l.length}</span><button class="btn small primary" data-act="receive" data-b="${l[0].id}">Reçu</button></div>`; }).join('')}</div>` : '<p class="muted">Aucun primeur en attente. À l’ajout d’un vin, choisis l’état « Primeur ».</p>'}`;
   }),
   friendsSheet: () => showSheet(() => {
-    const ws = S.wines.filter(w => isFriend(w) && wineBottles(w.id).length), by = new Map();
-    for (const w of ws) by.set(w.owner, [...(by.get(w.owner) || []), w]);
+    const by = new Map();
+    for (const b of S.bottles.filter(x => inCave(x) && x.owner)) { const m = by.get(b.owner) || new Map(); m.set(b.wineId, (m.get(b.wineId) || 0) + 1); by.set(b.owner, m); }
     return `${head('Vins des amis')}<p class="small" style="margin-top:-4px">Rangés et suivis comme les autres, mais jamais proposés par le sommelier ni comptés dans ta valeur de cave.</p>
-      ${by.size ? [...by].map(([o, l]) => `<h3>${esc(o)} · ${plural(l.reduce((t, w) => t + wineBottles(w.id).length, 0), 'bouteille', 'bouteilles')}</h3><div class="list">${l.map(w => wineRow(w)).join('')}</div>`).join('') : '<p class="muted">Aucun. À l’ajout d’un vin, indique le prénom de l’ami dans « Propriétaire ».</p>'}`;
+      ${by.size ? [...by].map(([o, m]) => `<h3>${esc(o)} · ${plural([...m.values()].reduce((t, n) => t + n, 0), 'bouteille', 'bouteilles')}</h3><div class="list">${[...m].map(([wid, n]) => { const w = wine(wid); return `<button class="li" data-act="wine" data-id="${wid}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(wineSub(w))}${myBottles(wid).length ? ' · ' + plural(myBottles(wid).length, 'autre à moi', 'autres à moi') : ''}</small></div><span class="qty">×${n}</span></button>`; }).join('')}</div>`).join('') : '<p class="muted">Aucun. À l’ajout d’un vin, indique combien de bouteilles sont pour un ami dans « Propriétaire ».</p>'}`;
   }),
   journalSheet: () => showSheet(() => {
     const L = { in: 'Entrée', out: 'Sortie', move: 'Déplacement', transfert: 'Transfert', primeur: 'Primeur commandé', open: 'Ouverture' };
@@ -4338,7 +4660,7 @@ Object.assign(ACT, { historySheet: () => showSheet(historySheet) });
 const busyForms = new Set(), busyActs = new Set();
 const GUARDED = new Set(['tasteSave', 'placeOk', 'plocGo', 'transferDone', 'receive', 'applyReeval', 'applyAdvice', 'adviceGo', 'delWine', 'delUnit', 'delTaste',
   'delSession', 'delSite', 'delSpace', 'estimateMissing', 'putHere', 'openBottle', 'wishToggle', 'wishBought', 'toTransfer', 'revealWine', 'blindAI', 'export',
-  'usageClear', 'chatNew', 'tasteAbandon', 'awayTransfer', 'pkOffer', 'pkunlock', 'demo', 'estimate', 'takeIt', 'rateNow', 'rateLater', 'backupLater', 'tAdd', 'tPick', 'placeToTransfer', 'tPlaceNow', 'todoSkip', 'todoSkipAll']);
+  'usageClear', 'chatNew', 'tasteAbandon', 'awayTransfer', 'pkOffer', 'pkunlock', 'demo', 'estimate', 'takeIt', 'rateNow', 'rateLater', 'backupLater', 'tAdd', 'tPick', 'placeToTransfer', 'tPlaceNow', 'todoSkip', 'todoSkipAll', 'setOwner', 'boxMoveTo', 'boxTransfer', 'boxTransferTo']);
 const release = (set, k) => setTimeout(() => set.delete(k), 350);
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-act]'); if (!t || !ACT[t.dataset.act]) return;

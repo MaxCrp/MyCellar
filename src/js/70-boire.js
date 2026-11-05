@@ -1,18 +1,18 @@
 /* ---------- À boire ---------- */
 let boireCat = 'prio', boireBar = null;
-const drinkable = () => S.wines.filter(w => w.kind === 'vin' && !isFriend(w) && wineBottles(w.id).length);
+const drinkable = () => S.wines.filter(w => w.kind === 'vin' && myBottles(w.id).length);
 function vBoire() {
   const ws = drinkable(), y = thisYear();
   if (!ws.length && !(spiritsOn() && openSpirits().length)) return `<div class="empty">${ICON.boire}<p>Ajoute des vins à ta cave : je te dirai lesquels boire en priorité.</p></div>`;
-  const cnt = k => ws.filter(w => status(w) === k).reduce((n, w) => n + wineBottles(w.id).length, 0);
+  const cnt = k => ws.filter(w => status(w) === k).reduce((n, w) => n + myBottles(w.id).length, 0);
   const urgent = ws.filter(w => w.apogee?.fin && w.apogee.fin <= y);
-  const nUrgent = urgent.reduce((n, w) => n + wineBottles(w.id).length, 0);
+  const nUrgent = urgent.reduce((n, w) => n + myBottles(w.id).length, 0);
   const stockSites = new Set(S.sites.filter(s => s.role === 'stock').map(s => s.id));
-  const away = isMulti() ? S.bottles.filter(b => b.state === 'cave' && stockSites.has(siteOfBottle(b)) && ['prio', 'declin'].includes(status(wine(b.wineId) || {})) && !isFriend(wine(b.wineId))) : [];
+  const away = isMulti() ? S.bottles.filter(b => b.state === 'cave' && stockSites.has(siteOfBottle(b)) && ['prio', 'declin'].includes(status(wine(b.wineId) || {})) && !b.owner) : [];
   const list = ws.filter(w => status(w) === boireCat).sort((a, b) => (a.apogee?.fin || 9999) - (b.apogee?.fin || 9999) || norm(wineName(a)).localeCompare(norm(wineName(b))));
   const from = y - 3, to = y + 12;
   const years = Array.from({ length: 6 }, (_, i) => y + i);
-  const per = years.map((yy, i) => ws.filter(w => w.apogee?.fin && (i === 0 ? w.apogee.fin <= yy : i === 5 ? w.apogee.fin >= yy : w.apogee.fin === yy)).reduce((n, w) => n + wineBottles(w.id).length, 0));
+  const per = years.map((yy, i) => ws.filter(w => w.apogee?.fin && (i === 0 ? w.apogee.fin <= yy : i === 5 ? w.apogee.fin >= yy : w.apogee.fin === yy)).reduce((n, w) => n + myBottles(w.id).length, 0));
   const max = Math.max(1, ...per);
   const unknown = ws.filter(w => status(w) === 'inconnu');
   return `${nUrgent ? `<div class="banner bx"><b>${plural(nUrgent, 'bouteille', 'bouteilles')} à boire d’ici la fin de ${y}</b>
@@ -23,8 +23,8 @@ function vBoire() {
     ${unknown.length ? `<div class="card row"><div class="grow"><b style="font-size:14px">${plural(unknown.length, 'vin sans fenêtre', 'vins sans fenêtre')}</b><div class="small">Le sommelier peut les estimer en une fois.</div></div><button class="btn small" data-act="estimateMissing">${ICON.spark} Estimer</button></div>` : ''}
     <div class="sect">${STATUS[boireCat].label}</div>
     ${list.length ? `<div class="list">${list.map(w => `<button class="li" data-act="wine" data-id="${w.id}"><span class="dot" style="background:${wineColor(w)}"></span>
-      <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(w.domaine || '')} · ${esc(windowLabel(w.apogee))}${isMulti() ? ' · ' + esc([...new Set(wineBottles(w.id).map(b => site(siteOfBottle(b))?.name))].join(', ')) : ''}</small>${winBar(w.apogee, from, to)}</div>
-      <span class="qty">×${wineBottles(w.id).length}</span></button>`).join('')}</div>` : `<p class="muted small" style="margin:4px">Aucun vin dans cette catégorie.</p>`}
+      <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(w.domaine || '')} · ${esc(windowLabel(w.apogee))}${isMulti() ? ' · ' + esc([...new Set(myBottles(w.id).map(b => site(siteOfBottle(b))?.name))].join(', ')) : ''}</small>${winBar(w.apogee, from, to)}</div>
+      <span class="qty">×${myBottles(w.id).length}</span></button>`).join('')}</div>` : `<p class="muted small" style="margin:4px">Aucun vin dans cette catégorie.</p>`}
     <div class="sect">À boire avant la fin de…</div>
     <div class="card"><div class="bars${boireBar != null && per[boireBar] ? ' sel' : ''}" style="margin-top:14px">${per.map((n, i) => `<button class="${boireBar === i && n ? 'on' : ''}" style="height:${Math.max(3, n / max * 100)}%;background:${i === 0 ? 'var(--bx)' : i < 3 ? 'var(--green)' : 'var(--gold)'}" ${n ? `data-act="boireBar" data-i="${i}"` : 'disabled'} aria-label="${i === 5 ? 'À partir de ' + years[i] : 'Fin ' + years[i]} : ${plural(n, 'bouteille', 'bouteilles')}"><span>${n || ''}</span></button>`).join('')}</div>
       <div class="barl">${years.map((yy, i) => `<span>${i === 5 ? yy + '+' : yy}</span>`).join('')}</div>
@@ -36,15 +36,15 @@ function barDetail(ws, years, i, away) {
   const y = years[0], yy = years[i];
   const list = ws.filter(w => w.apogee?.fin && (i === 0 ? w.apogee.fin <= yy : i === 5 ? w.apogee.fin >= yy : w.apogee.fin === yy))
     .sort((a, b) => a.apogee.fin - b.apogee.fin || norm(wineName(a)).localeCompare(norm(wineName(b))));
-  const n = list.reduce((t, w) => t + wineBottles(w.id).length, 0), multi = isMulti();
+  const n = list.reduce((t, w) => t + myBottles(w.id).length, 0), multi = isMulti();
   return `<div class="bar-detail"><div class="ct" style="margin:14px 0 0">${i === 5 ? `À boire à partir de ${yy}` : `À boire avant la fin de ${yy}`} · ${plural(n, 'bouteille', 'bouteilles')}</div>
     ${i === 0 && away.length ? `<button class="btn small" style="margin-top:8px" data-act="awayTransfer">${ICON.truck} Préparer le transfert</button>` : ''}
     ${list.map(w => { const st = status(w), late = w.apogee.fin < y;
       return `<div class="list res"><button class="li" data-act="wine" data-id="${w.id}"><span class="dot" style="background:${wineColor(w)}"></span>
-        <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(windowLabel(w.apogee))} · <span style="color:${STATUS[late ? 'declin' : st].hex};font-weight:600">${late ? 'en déclin' : esc(STATUS[st].short)}</span></small></div><span class="qty">×${wineBottles(w.id).length}</span></button>
-        ${locGroups(wineBottles(w.id)).map(g => `<button class="li loc" data-act="caveJump" data-b="${g.b.id}">${ICON.pin}<div class="it"><b>${esc(locLabel(g.b, multi))}</b></div>${g.n > 1 ? `<span class="qty">×${g.n}</span>` : ''}<span class="chev">${ICON.chev}</span></button>`).join('')}</div>`; }).join('')}</div>`;
+        <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(windowLabel(w.apogee))} · <span style="color:${STATUS[late ? 'declin' : st].hex};font-weight:600">${late ? 'en déclin' : esc(STATUS[st].short)}</span></small></div><span class="qty">×${myBottles(w.id).length}</span></button>
+        ${locGroups(myBottles(w.id)).map(g => `<button class="li loc" data-act="caveJump" data-b="${g.b.id}">${ICON.pin}<div class="it"><b>${esc(locLabel(g.b, multi))}</b></div>${g.n > 1 ? `<span class="qty">×${g.n}</span>` : ''}<span class="chev">${ICON.chev}</span></button>`).join('')}</div>`; }).join('')}</div>`;
 }
-const openSpirits = () => S.bottles.filter(b => b.state === 'open' && wine(b.wineId)?.kind === 'spirit' && !isFriend(wine(b.wineId)));
+const openSpirits = () => S.bottles.filter(b => b.state === 'open' && wine(b.wineId)?.kind === 'spirit' && !b.owner);
 function spiritsBlock() {
   const os = openSpirits();
   if (!os.length) return '';
@@ -60,7 +60,7 @@ Object.assign(ACT, {
   boireBar: t => { const i = +t.dataset.i; boireBar = boireBar === i ? null : i; render(); },
   awayTransfer: async () => {
     const stock = new Set(S.sites.filter(s => s.role === 'stock').map(s => s.id));
-    const ids = S.bottles.filter(b => b.state === 'cave' && stock.has(siteOfBottle(b)) && ['prio', 'declin'].includes(status(wine(b.wineId) || {})) && !isFriend(wine(b.wineId))).map(b => b.id);
+    const ids = S.bottles.filter(b => b.state === 'cave' && stock.has(siteOfBottle(b)) && ['prio', 'declin'].includes(status(wine(b.wineId) || {})) && !b.owner).map(b => b.id);
     const to = S.sites.find(s => s.role === 'conso')?.id;
     for (const b of ids.map(id => byId(S.bottles, id))) if (!S.transfer.ids.includes(b.id)) transferAdd([b.id], to && to !== siteOfBottle(b) ? to : null);
     await save(); showSheet(transferSheet);
@@ -82,12 +82,12 @@ function moveAdvice() {
   const bestGarde = () => garde.filter(o => o.known).sort((a, b) => b.q - a.q)[0] || garde[0];
   const push = (kind, w, bs, to, why) => { if (!bs.length || !to) return; bs.forEach(b => taken.add(b.id)); out.push({ kind, w, ids: bs.map(b => b.id), from: bs[0].spaceId, to: to.s.id, why }); };
   const groups = new Map();
-  for (const b of S.bottles) if (b.state === 'cave' && b.spaceId && !S.transfer.ids.includes(b.id)) { const k = b.wineId + '|' + b.spaceId; groups.set(k, [...(groups.get(k) || []), b]); }
+  for (const b of S.bottles) if (b.state === 'cave' && b.spaceId && !b.owner && !S.transfer.ids.includes(b.id)) { const k = b.wineId + '|' + b.spaceId; groups.set(k, [...(groups.get(k) || []), b]); }
   for (const [, bs] of groups) {
     const w = wine(bs[0].wineId); if (!w || w.kind === 'spirit') continue;
     const sp = sps.find(o => o.s.id === bs[0].spaceId); if (!sp) continue;
     const st = status(w), a = w.apogee;
-    if (!isFriend(w) && st === 'prio' && sp.s.use !== 'conso') { const to = bestConso(); push('rapatrier', w, bs, to, `À boire avant fin ${a.fin}`); continue; }
+    if (st === 'prio' && sp.s.use !== 'conso') { const to = bestConso(); push('rapatrier', w, bs, to, `À boire avant fin ${a.fin}`); continue; }
     const longue = st === 'tot' || (a?.fin && a.fin - y >= 6);
     if (longue) {
       const to = bestGarde();
@@ -101,7 +101,7 @@ function moveAdvice() {
     const have = S.bottles.filter(b => inCave(b) && b.spaceId === c.s.id).length + out.filter(o => o.to === c.s.id).reduce((n, o) => n + o.ids.length, 0);
     let missing = target - have; if (missing <= 0) continue;
     const cands = S.bottles.filter(b => b.state === 'cave' && !taken.has(b.id) && !S.transfer.ids.includes(b.id) && garde.some(g => g.s.id === b.spaceId))
-      .map(b => ({ b, w: wine(b.wineId) })).filter(o => o.w && !isFriend(o.w) && o.w.kind === 'vin' && ['prio', 'apogee'].includes(status(o.w)))
+      .filter(b => !b.owner).map(b => ({ b, w: wine(b.wineId) })).filter(o => o.w && o.w.kind === 'vin' && ['prio', 'apogee'].includes(status(o.w)))
       .sort((p, q) => (p.w.apogee?.fin || 9999) - (q.w.apogee?.fin || 9999));
     const by = new Map();
     for (const { b, w } of cands) { if (missing <= 0) break; const k = w.id + '|' + b.spaceId; by.set(k, [...(by.get(k) || []), b]); missing--; }

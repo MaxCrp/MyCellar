@@ -96,7 +96,7 @@ const emptyData = () => ({
     lockMin: 5, stay: false, lastExport: null, aromas: {}, rate: 0.92, usage: { on: false },
   },
   sites: [], spaces: [], units: [], wines: [], bottles: [], moves: [], tastings: [],
-  transfer: { ids: [], to: null, dest: {} }, chat: [], usage: {}, dismissed: {}, sessions: [], wishes: [], diag: { errors: [] },
+  transfer: { ids: [], to: null, dest: {}, units: {} }, chat: [], usage: {}, dismissed: {}, sessions: [], wishes: [], diag: { errors: [] },
 });
 function normalize(d) {
   const e = emptyData();
@@ -111,13 +111,19 @@ function normalize(d) {
   if (!d.spaces.length) d.spaces.push({ id: uid(), siteId: d.sites[0].id, name: 'Cave', use: 'conso', q: {} });
   if (!d.sites.some(s => s.id === d.settings.site)) d.settings.site = d.sites[0].id;
   cleanData(d);
+  // v1.7.4 : le propriétaire passe du vin à chaque bouteille (un vin « à Paul » donne des bouteilles « à Paul »)
+  for (const w of d.wines) if (w.owner) {
+    for (const b of d.bottles) if (b.wineId === w.id && b.owner === undefined) b.owner = w.owner;
+    if (!d.settings.friends.includes(w.owner)) d.settings.friends.push(w.owner);
+    delete w.owner;
+  }
   // v1.7.3 : les bouteilles bues dans les 30 derniers jours, jamais notées, entrent dans « À noter » (une seule fois)
   if (!d.settings.todoInit) {
     const since = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10), noted = new Set(d.tastings.map(t => t.bottleId).filter(Boolean));
     for (const b of d.bottles) {
       if (b.state !== 'out' || noted.has(b.id) || (b.outAt || '') < since || b.ficheTodo != null) continue;
       const m = [...d.moves].reverse().find(x => x.bottleId === b.id && x.type === 'out'), w = d.wines.find(x => x.id === b.wineId);
-      if (m && ['bue', 'bouchonnee', 'terminee'].includes(m.motif) && w && !w.owner) b.ficheTodo = true;
+      if (m && ['bue', 'bouchonnee', 'terminee'].includes(m.motif) && w && !b.owner) b.ficheTodo = true;
     }
     d.settings.todoInit = true; delete d.dismissed.rate;
   }
@@ -133,6 +139,8 @@ function cleanData(d) {
   d.transfer.ids = (Array.isArray(d.transfer.ids) ? d.transfer.ids : []).filter(id => bid.has(id));
   const dest = d.transfer.dest && typeof d.transfer.dest === 'object' ? d.transfer.dest : {};
   d.transfer.dest = Object.fromEntries(Object.entries(dest).filter(([k, v]) => d.transfer.ids.includes(k) && d.sites.some(s => s.id === v)));
+  const tu = d.transfer.units && typeof d.transfer.units === 'object' ? d.transfer.units : {};
+  d.transfer.units = Object.fromEntries(Object.entries(tu).filter(([k, v]) => d.units.some(u => u.id === k) && d.sites.some(s => s.id === v)));
   d.tastings = d.tastings.filter(t => !t.wineId || wid.has(t.wineId));
   for (const t of d.tastings) if (t.sessionId && !ses.has(t.sessionId)) t.sessionId = null;
   d.bottles = d.bottles.filter(b => wid.has(b.wineId));
@@ -193,7 +201,19 @@ const siteSpaces = siteId => S.spaces.filter(s => s.siteId === siteId);
 const spaceUnits = spaceId => S.units.filter(u => u.spaceId === spaceId).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 const inCave = b => b.state === 'cave' || b.state === 'open';
 const wineBottles = (wid, f = inCave) => S.bottles.filter(b => b.wineId === wid && f(b));
-const isFriend = w => !!w.owner;
+// Propriétaire par bouteille (v1.7.4) : b.owner = prénom de l'ami, vide = à moi
+const heldBottles = wid => S.bottles.filter(b => b.wineId === wid && (inCave(b) || b.state === 'primeur'));
+const myBottles = (wid, f = inCave) => wineBottles(wid, f).filter(b => !b.owner);
+const hasFriend = w => heldBottles(w.id).some(b => b.owner);
+const isFriend = w => { const bs = heldBottles(w.id); return bs.length > 0 && bs.every(b => b.owner); };
+const friendNames = () => [...new Set([...(S.settings.friends || []), ...S.bottles.map(b => b.owner).filter(Boolean)])].sort((a, b) => a.localeCompare(b, 'fr'));
+// « à Paul » (toutes ses bouteilles), « dont 6 à Paul, 2 à Léa » (partagé), ou vide
+function ownerSummary(w, bs = heldBottles(w.id)) {
+  const by = new Map(); for (const b of bs) if (b.owner) by.set(b.owner, (by.get(b.owner) || 0) + 1);
+  if (!by.size) return '';
+  if ([...by.values()].reduce((t, n) => t + n, 0) === bs.length && by.size === 1) return 'à ' + [...by.keys()][0];
+  return 'dont ' + [...by].map(([o, n]) => `${n} à ${o}`).join(', ');
+}
 const spiritsOn = () => !!S.settings.spirits;
 // Vins visibles selon les options : les spiritueux disparaissent si l'option est coupée
 const kindOn = w => w.kind !== 'spirit' || spiritsOn();
@@ -244,7 +264,7 @@ function abbr(w) {
   const s = ws.length >= 2 ? ws.slice(0, 3).map(x => x[0]).join('') : ws[0].slice(0, 3);
   return s.toUpperCase();
 }
-const ownerInitial = w => w.owner ? w.owner.trim().charAt(0).toUpperCase() : '';
+const ownerInitial = b => b?.owner ? b.owner.trim().charAt(0).toUpperCase() : '';
 
 /* ---------- Fenêtre de dégustation ---------- */
 function status(w) {
@@ -312,9 +332,11 @@ function suggestSpace(w) {
 }
 // Cases libres conseillées dans un espace : on remplit les meubles dans l'ordre, une caisse vide d'abord
 // si l'on range au moins six bouteilles d'un même vin
-function suggestSlots(spaceId, n, exclude = new Set()) {
-  const occ = occupancy(), out = [];
-  const units = spaceUnits(spaceId);
+// Une caisse ou un carton ne contient qu'un seul vin (v1.7.4) : une caisse déjà entamée par un autre vin n'est pas proposée
+const boxFor = (u, wineId, occ) => !UNIT_TYPES[u.type].box || !wineId || positions(u).every(([r, c]) => { const b = occ.get(`${u.id}:${r}:${c}`); return !b || b.wineId === wineId; });
+function suggestSlots(spaceId, n, exclude = new Set(), wineId = null, occ = occupancy()) {
+  const out = [];
+  const units = spaceUnits(spaceId).filter(u => boxFor(u, wineId, occ));
   const boxes = units.filter(u => UNIT_TYPES[u.type].box && freeSlots(u, occ).length === capacity(u) && capacity(u) <= n);
   const order = n >= 6 ? [...boxes, ...units.filter(u => !boxes.includes(u))] : [...units.filter(u => !UNIT_TYPES[u.type].box), ...units.filter(u => UNIT_TYPES[u.type].box)];
   for (const u of order) for (const [r, c] of freeSlots(u, occ)) {

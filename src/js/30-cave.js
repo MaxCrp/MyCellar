@@ -3,7 +3,7 @@ let caveMode = 'plan', caveSpace = null, caveQuery = '', caveJumped = false, cav
 
 const visibleSpaces = () => isMulti() ? siteSpaces(S.settings.site) : S.spaces;
 function wineText(w) {
-  return norm([w.domaine, w.cuvee, w.appellation, w.region, w.pays, w.millesime, w.cepages, COLORS[w.couleur]?.label, SPIRIT_CATS[w.cat], w.owner, w.notes, w.short].filter(Boolean).join(' '));
+  return norm([w.domaine, w.cuvee, w.appellation, w.region, w.pays, w.millesime, w.cepages, COLORS[w.couleur]?.label, SPIRIT_CATS[w.cat], ...new Set(heldBottles(w.id).map(b => b.owner).filter(Boolean)), w.notes, w.short].filter(Boolean).join(' '));
 }
 function matcher(q) {
   const toks = norm(q).split(/\s+/).filter(Boolean);
@@ -26,7 +26,7 @@ function listFilters() {
   return `<div class="chips">${ch('lf', 'ready', f.ready, 'Prêts à boire')}
     ${usedColors.map(c => ch('lfc', c, f.color === c, `<span class="dot" style="background:${COLORS[c].c}"></span>${COLORS[c].label}`)).join('')}
     ${spiritsOn() ? ch('lfk', 'spirit', f.kind === 'spirit', 'Spiritueux') + ch('lfk', 'vin', f.kind === 'vin', 'Vins') : ''}
-    ${S.wines.some(isFriend) ? ch('lfo', 'moi', f.owner === 'moi', 'Mes vins') + ch('lfo', 'amis', f.owner === 'amis', 'Vins des amis') : ''}</div>`;
+    ${S.wines.some(hasFriend) ? ch('lfo', 'moi', f.owner === 'moi', 'Mes vins') + ch('lfo', 'amis', f.owner === 'amis', 'Vins des amis') : ''}</div>`;
 }
 
 function vCave() {
@@ -72,7 +72,7 @@ function caveResults(m) {
   if (!res.length) return `<p class="small" style="margin:12px 4px">Aucune bouteille ne correspond${multi ? ', sur aucun site' : ''}.</p>`;
   return `<p class="small" style="margin:10px 4px 0">${plural(n, 'bouteille trouvée', 'bouteilles trouvées')}${multi ? ' sur tous les sites' : ''}. Touche un emplacement pour y aller.</p>
     ${res.map(r => `<div class="list res"><button class="li" data-act="wine" data-id="${r.w.id}"><span class="dot" style="background:${wineColor(r.w)}"></span>
-      <div class="it"><b class="ell">${esc(wineTitle(r.w))}</b><small class="ell">${esc(wineSub(r.w))}${isFriend(r.w) ? ' · à ' + esc(r.w.owner) : ''}</small></div><span class="qty">×${r.n}</span></button>
+      <div class="it"><b class="ell">${esc(wineTitle(r.w))}</b><small class="ell">${esc(wineSub(r.w))}${hasFriend(r.w) ? ' · ' + esc(ownerSummary(r.w)) : ''}</small></div><span class="qty">×${r.n}</span></button>
       ${r.locs.slice(0, 8).map(g => g.primeur ? `<div class="li loc">${ICON.pin}<div class="it"><b>Primeur, pas encore livrée</b></div><span class="qty">×${g.n}</span></div>`
         : `<button class="li loc" data-act="caveJump" data-b="${g.b.id}">${ICON.pin}<div class="it"><b>${esc(locLabel(g.b, multi))}</b></div>${g.n > 1 ? `<span class="qty">×${g.n}</span>` : ''}<span class="chev">${ICON.chev}</span></button>`).join('')}
       ${r.locs.length > 8 ? `<div class="li loc"><div class="it"><small>et ${plural(r.locs.length - 8, 'autre emplacement', 'autres emplacements')} : ouvre la fiche du vin</small></div></div>` : ''}</div>`).join('')}`;
@@ -121,7 +121,7 @@ function unitHead(u, ctx) {
 function slotState(b, ctx) {
   const w = wine(b.wineId), cls = [];
   if (ctx.m) cls.push(ctx.m(w) ? 'hl' : 'dim');
-  if (isFriend(w)) cls.push('ami');
+  if (b.owner) cls.push('ami');
   return { w, cls };
 }
 function renderGrid(u, ctx) {
@@ -136,13 +136,13 @@ function renderGrid(u, ctx) {
         const { w, cls } = slotState(b, ctx);
         if (!kindOn(w)) { cells.push(`<button class="rc off" ${ctx.pick ? 'disabled' : 'data-act="spiritOff"'} aria-label="Spiritueux masqué"></button>`); continue; }
         const bg = wineColor(w), light = wineLight(w);
-        cells.push(`<button class="rc ${cls.join(' ')}${light ? ' light' : ''}${ctx.pick ? ' dim' : ''}" style="background:${bg};border-color:${bg}" ${isFriend(w) ? `data-ini="${esc(ownerInitial(w))}"` : ''} ${ctx.pick ? 'disabled' : `data-act="slot" data-b="${b.id}"`} aria-label="${esc(wineTitle(w))}">${esc(abbr(w))}</button>`);
+        cells.push(`<button class="rc ${cls.join(' ')}${light ? ' light' : ''}${ctx.pick ? ' dim' : ''}" style="background:${bg};border-color:${bg}" ${b.owner ? `data-ini="${esc(ownerInitial(b))}"` : ''} ${ctx.pick ? 'disabled' : `data-act="slot" data-b="${b.id}"`} aria-label="${esc(wineTitle(w))}">${esc(abbr(w))}</button>`);
         continue;
       }
       if (!b) { cells.push(`<button class="slot empty${sel ? ' sel' : ''}" ${ctx.pick ? `data-act="pickSlot" data-u="${u.id}" data-r="${r}" data-c="${c}"` : `data-act="emptySlot" data-u="${u.id}" data-r="${r}" data-c="${c}"`} aria-label="Place libre"></button>`); continue; }
       const { w, cls } = slotState(b, ctx);
       if (!kindOn(w)) { cells.push(`<button class="slot off" ${ctx.pick ? 'disabled' : 'data-act="spiritOff"'} aria-label="Spiritueux masqué"><i></i><b>&nbsp;</b><small>&nbsp;</small></button>`); continue; }
-      cells.push(`<button class="slot ${cls.join(' ')}${ctx.pick ? ' dim' : ''}" ${ctx.pick ? 'disabled' : `data-act="slot" data-b="${b.id}"`}><i style="background:${wineColor(w)}"></i><b>${esc(shortName(w))}</b><small>${esc(shortSub(w))}${b.state === 'open' ? ' · ouverte' : ''}</small>${isFriend(w) ? `<span class="ini">${esc(ownerInitial(w))}</span>` : ''}</button>`);
+      cells.push(`<button class="slot ${cls.join(' ')}${ctx.pick ? ' dim' : ''}" ${ctx.pick ? 'disabled' : `data-act="slot" data-b="${b.id}"`}><i style="background:${wineColor(w)}"></i><b>${esc(shortName(w))}</b><small>${esc(shortSub(w))}${b.state === 'open' ? ' · ouverte' : ''}</small>${b.owner ? `<span class="ini">${esc(ownerInitial(b))}</span>` : ''}</button>`);
     }
     const cols = u.type === 'rack' ? `repeat(${u.cols},minmax(26px,1fr))` : `repeat(${u.cols},minmax(${u.cols > 6 ? 54 : 0}px,1fr))`;
     const cls = u.type === 'rack' ? 'rack' : 'shelf';
@@ -157,13 +157,13 @@ function renderBoxes(boxes, ctx) {
   return `<div class="pile">${sorted.map(u => {
     const bs = boxContents(u, ctx.occ), ws = [...new Set(bs.map(b => b.wineId))].map(wine);
     const off = ws.length && ws.every(w => !kindOn(w));
-    const title = off ? 'Spiritueux masqués' : ws.length === 1 ? wineTitle(ws[0]) : ws.length ? 'Assortiment' : 'Vide';
+    const title = off ? 'Spiritueux masqués' : ws.length === 1 ? wineTitle(ws[0]) : ws.length ? 'Assortiment · à répartir' : 'Vide';
     const hit = ctx.m && ws.some(ctx.m), dim = ctx.m && !hit;
     const act = ctx.pick ? `data-act="pickBox" data-u="${u.id}"` : `data-act="box" data-u="${u.id}"`;
     const picked = ctx.pick?.sel.filter(s => s.unitId === u.id).length || 0;
     return `<button class="crate${u.type === 'carton' ? ' carton' : ''}${hit ? ' hl' : ''}${dim ? ' dim' : ''}" ${act}>
       <span class="ell" style="display:block">${esc(title)}</span>
-      <small class="ell">${esc(u.name || UNIT_TYPES[u.type].label)}${u.pile ? ' · ' + esc(u.pile) + (u.level ? ' niv. ' + u.level : '') : ''}${ws.length === 1 && isFriend(ws[0]) ? ' · ' + esc(ws[0].owner) : ''}</small>
+      <small class="ell">${esc(u.name || UNIT_TYPES[u.type].label)}${u.pile ? ' · ' + esc(u.pile) + (u.level ? ' niv. ' + u.level : '') : ''}${ws.length === 1 && bs.some(b => b.owner) ? ' · ' + esc(ownerSummary(ws[0], bs)) : ''}</small>
       <span class="cnt">${bs.length} / ${capacity(u)}${picked ? ' · +' + picked : ''}</span></button>`;
   }).join('')}</div>`;
 }
@@ -187,7 +187,7 @@ function listWines() {
     && (!f.color || w.couleur === f.color)
     && (!f.ready || ['prio', 'apogee'].includes(status(w)))
     && (f.kind === 'all' || w.kind === f.kind)
-    && (f.owner === 'all' || (f.owner === 'amis' ? isFriend(w) : !isFriend(w))))
+    && (f.owner === 'all' || (f.owner === 'amis' ? hasFriend(w) : heldBottles(w.id).some(b => !b.owner))))
     .sort((a, b) => norm(wineName(a)).localeCompare(norm(wineName(b))) || (a.millesime || 0) - (b.millesime || 0));
 }
 function wineRow(w, extra = '') {
@@ -195,7 +195,7 @@ function wineRow(w, extra = '') {
   const where = isMulti() ? [...new Set(bs.map(siteOfBottle))].map(id => `${site(id)?.name || '?'} ×${bs.filter(b => siteOfBottle(b) === id).length}`).join(' · ') : '';
   return `<button class="li" data-act="wine" data-id="${w.id}">${w.photo ? `<img class="thumb" data-photo="${w.id}" alt="" hidden>` : `<span class="dot" style="background:${wineColor(w)}"></span>`}
     <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(wineSub(w))}</small>
-      <small class="ell">${st && st !== 'inconnu' ? `<span style="color:${STATUS[st].hex};font-weight:600">${STATUS[st].short}</span> · ${esc(windowLabel(w.apogee))}` : ''}${where ? (st && st !== 'inconnu' ? ' · ' : '') + esc(where) : ''}${isFriend(w) ? ' · à ' + esc(w.owner) : ''}${pr ? ' · ' + pr + ' en primeur' : ''}</small>${extra}</div>
+      <small class="ell">${st && st !== 'inconnu' ? `<span style="color:${STATUS[st].hex};font-weight:600">${STATUS[st].short}</span> · ${esc(windowLabel(w.apogee))}` : ''}${where ? (st && st !== 'inconnu' ? ' · ' : '') + esc(where) : ''}${hasFriend(w) ? ' · ' + esc(ownerSummary(w)) : ''}${pr ? ' · ' + pr + ' en primeur' : ''}</small>${extra}</div>
     <span class="qty">×${bs.length}</span></button>`;
 }
 function vCaveList() {
@@ -300,12 +300,14 @@ function boxSheet(uid_) {
   const by = new Map(); for (const b of bs) by.set(b.wineId, [...(by.get(b.wineId) || []), b]);
   return `${head(esc(u.name || UNIT_TYPES[u.type].label), `<button class="icon-btn" data-act="editUnit" data-id="${u.id}" aria-label="Modifier">${ICON.edit}</button>`)}
     <p class="small" style="margin-top:-4px">${bs.length} / ${capacity(u)} bouteilles${u.pile ? ' · pile ' + esc(u.pile) + (u.level ? ', niveau ' + u.level : '') : ''}</p>
+    ${by.size > 1 ? `<p class="banner" style="margin:8px 0">Cette caisse contient plusieurs vins : à répartir. Une caisse ou un carton ne contient qu’un seul vin ; pour un assortiment, utilise une étagère ou un rack.</p>` : ''}
     ${by.size ? `<div class="list">${[...by].map(([wid, list]) => { const w = wine(wid); return `<div class="li"><span class="dot" style="background:${wineColor(w)}"></span>
-      <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(wineSub(w))}</small></div><span class="qty">×${list.length}</span>
-      <button class="btn small primary" data-act="outBottle" data-b="${list[0].id}">Sortir</button></div>`; }).join('')}</div>` : '<p class="muted">Cette caisse est vide.</p>'}
-    <div class="btns" style="margin-top:12px">
-      ${by.size === 1 ? `<button class="btn wide" data-act="wine" data-id="${[...by.keys()][0]}">Voir la fiche du vin</button>` : ''}
-      ${free ? `<button class="btn wide" data-act="add" data-u="${u.id}" data-r="0" data-c="${freeSlots(u, occ)[0][1]}">${ICON.add} Ajouter des bouteilles dans cette caisse</button>` : ''}
+      <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(wineSub(w))}${list.some(b => b.owner) ? ' · ' + esc(ownerSummary(w, list)) : ''}</small></div><span class="qty">×${list.length}</span>
+      ${by.size > 1 ? `<button class="btn small primary" data-act="outBottle" data-b="${list[0].id}">Sortir</button>` : ''}</div>`; }).join('')}</div>` : '<p class="muted">Cette caisse est vide.</p>'}
+    ${by.size === 1 ? boxActions(u, [...by.values()][0]) : ''}
+    <div class="btns" style="margin-top:10px">
+      ${free ? by.size === 1 ? `<button class="btn wide" data-act="boxAdd" data-u="${u.id}" data-w="${[...by.keys()][0]}">${ICON.add} Ajouter des bouteilles de ce vin</button>`
+        : !by.size ? `<button class="btn wide" data-act="add" data-u="${u.id}" data-r="0" data-c="${freeSlots(u, occ)[0][1]}">${ICON.add} Ajouter des bouteilles dans cette caisse</button>` : '' : ''}
     </div>`;
 }
 

@@ -25,7 +25,7 @@ function transferSheet() {
 function transferSection(s, list) {
   const stock = s.role === 'stock', sugg = transferSuggestions(s.id);
   const row = b => { const w = wine(b.wineId), st = status(w);
-    return `<div class="li"><button class="lb" data-act="tBrief" data-b="${b.id}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${st && st !== 'inconnu' ? esc(STATUS[st].short) + ' · ' : ''}${esc(locLabel(b, true))}</small></div></button>
+    return `<div class="li"><button class="lb" data-act="tBrief" data-b="${b.id}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${st && st !== 'inconnu' ? esc(STATUS[st].short) + ' · ' : ''}${esc(locLabel(b, true))}${S.transfer.units?.[b.unitId] ? ' · voyage dans sa caisse' : ''}</small></div></button>
       <button class="icon-btn" data-act="toTransfer" data-b="${b.id}" aria-label="Retirer du transfert">${ICON.close}</button></div>`; };
   return `<div class="sect" data-tsect="${s.id}">Vers ${esc(s.name)} · ${roleLabel(s)}${list.length ? ' · ' + plural(list.length, 'bouteille', 'bouteilles') : ''}</div>
     ${list.length ? `<div class="list">${list.map(row).join('')}</div>
@@ -45,14 +45,14 @@ function transferSuggestions(to) {
     const seen = new Set();
     return S.bottles.filter(b => {
       if (!ok(b)) return false;
-      const w = wine(b.wineId); if (!w || isFriend(w) || !['prio', 'apogee'].includes(status(w)) || seen.has(w.id)) return false;
+      const w = wine(b.wineId); if (!w || b.owner || !['prio', 'apogee'].includes(status(w)) || seen.has(w.id)) return false;
       seen.add(w.id); return true;
     }).sort((a, b) => (status(wine(a.wineId)) === 'prio' ? 0 : 1) - (status(wine(b.wineId)) === 'prio' ? 0 : 1)).map(b => ({ b, ids: [b.id] }));
   }
   const groups = new Map();
   for (const b of S.bottles) {
     if (!ok(b) || site(siteOfBottle(b))?.role === 'stock') continue;
-    const w = wine(b.wineId); if (!w || w.kind !== 'vin' || isFriend(w) || !['tot', 'inconnu'].includes(status(w))) continue;
+    const w = wine(b.wineId); if (!w || w.kind !== 'vin' || b.owner || !['tot', 'inconnu'].includes(status(w))) continue;
     const k = w.id + '|' + siteOfBottle(b); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(b);
   }
   const last = bs => bs.reduce((m, b) => (b.addedAt || '') > m ? b.addedAt || '' : m, '');
@@ -95,7 +95,7 @@ Object.assign(ACT, {
   toTransfer: async t => {
     const id = t.dataset.b, inT = S.transfer.ids.includes(id);
     if (!inT && S.sites.length > 2) return transferPick(id);
-    if (inT) transferRemove(id); else transferAdd([id]);
+    if (inT) { transferRemove(id); const u = byId(S.bottles, id)?.unitId; if (u && S.transfer.units?.[u]) delete S.transfer.units[u]; } else transferAdd([id]);
     await save(); refreshSheet(); render();
     toast(inT ? 'Retirée du transfert' : `Ajoutée au transfert vers ${site(tDest(id))?.name || ''}`);
   },
@@ -110,6 +110,14 @@ Object.assign(ACT, {
     const to = t.dataset.to, dest = arrivalSpace(to), s = site(to);
     if (!dest) return toast('Ce site n’a pas encore d’espace');
     const moved = [];
+    // Caisses entières : le meuble est posé dans l'espace d'arrivée avec ses bouteilles
+    let boxes = 0;
+    for (const [uid_, d] of Object.entries(S.transfer.units || {})) {
+      const u = unit(uid_); if (d !== to || !u) continue;
+      if (space(u.spaceId)?.siteId !== to) { moveBox(u, dest.id, 'transfert'); boxes++; }
+      for (const b of boxBottles(uid_)) transferRemove(b.id);
+      delete S.transfer.units[uid_];
+    }
     for (const b of transferBottles()) {
       if (tDest(b.id) !== to) continue;
       if (siteOfBottle(b) !== to) { const from = locOf(b); Object.assign(b, { spaceId: dest.id, unitId: null, r: null, c: null }); logMove(b, 'transfert', { from, to: locOf(b) }); moved.push(b.id); }
@@ -123,7 +131,7 @@ Object.assign(ACT, {
       return showSheet(() => `${head(`Arrivées à ${esc(s.name)}`)}<p>${plural(moved.length, 'bouteille est', 'bouteilles sont')} dans « ${esc(dest.name)} », sans emplacement.</p>
         <div class="btns"><button class="btn primary wide" data-act="tPlaceNow" data-space="${dest.id}">Ranger maintenant</button><button class="btn ghost wide" data-act="close">Plus tard</button></div>`);
     }
-    toast(`${plural(moved.length, 'bouteille arrivée', 'bouteilles arrivées')} · à ranger dans « ${dest.name} »`);
+    toast(boxes && !moved.length ? `${plural(boxes, 'caisse arrivée', 'caisses arrivées')} dans « ${dest.name} »` : `${plural(moved.length, 'bouteille arrivée', 'bouteilles arrivées')}${boxes ? ` et ${plural(boxes, 'caisse', 'caisses')}` : ''} · à ranger dans « ${dest.name} »`);
   },
   tPlaceNow: t => {
     const ids = (lastArrival || []).filter(id => { const b = byId(S.bottles, id); return b && inCave(b) && !b.unitId; });

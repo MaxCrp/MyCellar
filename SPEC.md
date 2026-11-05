@@ -502,34 +502,34 @@ Le détail est dans `docs/tests/2026-11-04-campagne-v1.6.1/` : `rapport-bugs.md`
 - [x] **Sans conflit** : un geste commencé dans un meuble large qui défile horizontalement, ou dans la rangée des espaces, fait défiler ce meuble ou ces espaces, pas le site. Un geste surtout vertical fait défiler la page. Rien ne se passe pendant qu'une fenêtre est ouverte, en mode Liste ou avec un seul site.
 - [x] Tests : glissements dans les deux sens (site suivant, précédent, retour au premier après le dernier), geste vertical et geste dans un meuble large sans effet.
 
-**v1.7.4** (nouveau millésime, bouteilles partagées avec un ami, actions sur une caisse entière ; spécifiée, rien n'est développé)
+**v1.7.4** (nouveau millésime, bouteilles partagées avec un ami, actions sur une caisse entière ; livrée)
 
 *Constat.* « Racheter un vin » ajoute des bouteilles au même vin, donc au même millésime. Pour un autre millésime, il faut ressaisir toute la fiche.
 
-- [ ] **Accès** : bouton « Nouveau millésime » sur la fiche d'un vin ; dans « Racheter un vin », chaque vin propose « Mêmes bouteilles » ou « Autre millésime ».
-- [ ] **Saisie courte** : un écran présente d'abord ce qui change : millésime, quantité, source d'achat (validé : lieu d'achat, ou « Offert par » pour un cadeau), prix unitaire, date d'achat (aujourd'hui par défaut), espace de rangement. La source et le prix du dernier achat sont proposés en grisé, comme exemple.
-- [ ] **Repris du vin d'origine** : couleur, domaine, cuvée, appellation, région, pays, cépages, degré, format, température de service, bio et nature, nom court et abréviation. Un lien « Modifier les autres informations » ouvre la fiche complète, déjà remplie.
-- [ ] **Non repris** : fenêtre de dégustation (elle dépend du millésime : le sommelier l'estime, comme pour tout nouveau vin), photo d'étiquette, notes, dégustations, propriétaire (vin d'un ami), cadeau.
-- [ ] **Millésime déjà en cave** : l'app le signale et propose d'ajouter les bouteilles à ce vin-là plutôt que de créer un doublon.
-- [ ] **Autres millésimes** : la fiche d'un vin liste ses autres millésimes en cave (même domaine, même cuvée ou appellation), avec le nombre de bouteilles et la fenêtre de chacun.
-- [ ] Rangement ensuite comme pour tout ajout, avec la proposition de transfert vers le stockage de la v1.7.2 si le vin est à garder.
-- [ ] Tests (millésime) : champs repris et non repris, fenêtre estimée à part, millésime déjà présent, liste des autres millésimes.
+- [x] **Accès** : bouton « Nouveau millésime » sur la fiche d'un vin ; dans « Racheter un vin », chaque vin propose « Mêmes bouteilles » ou « Autre millésime ».
+- [x] **Saisie courte** : un écran présente d'abord ce qui change : millésime, quantité, source d'achat (validé : lieu d'achat, ou « Offert par » pour un cadeau), prix unitaire, date d'achat (aujourd'hui par défaut), espace de rangement. La source et le prix du dernier achat sont proposés en grisé, comme exemple.
+- [x] **Repris du vin d'origine** : couleur, domaine, cuvée, appellation, région, pays, cépages, degré, format, température de service, bio et nature, nom court et abréviation. Un lien « Modifier les autres informations » ouvre la fiche complète, déjà remplie.
+- [x] **Non repris** : fenêtre de dégustation (elle dépend du millésime : le sommelier l'estime, comme pour tout nouveau vin), photo d'étiquette, notes, dégustations, propriétaire (vin d'un ami), cadeau.
+- [x] **Millésime déjà en cave** : l'app le signale et propose d'ajouter les bouteilles à ce vin-là plutôt que de créer un doublon.
+- [x] **Autres millésimes** : la fiche d'un vin liste ses autres millésimes en cave (même domaine, même cuvée ou appellation), avec le nombre de bouteilles et la fenêtre de chacun.
+- [x] Rangement ensuite comme pour tout ajout, avec la proposition de transfert vers le stockage de la v1.7.2 si le vin est à garder.
+- [x] Tests (millésime) : champs repris et non repris, fenêtre estimée à part, millésime déjà présent, liste des autres millésimes.
 
 *Bouteilles d'un ami dans un même vin* (demande du 5 novembre 2026). Aujourd'hui, le propriétaire est fixé au niveau du vin : toutes ses bouteilles sont à moi, ou toutes à un ami. Or, dans une commande groupée, un même vin est souvent partagé.
-- [ ] **Propriétaire par bouteille** : chaque bouteille est « à moi » ou à un ami. Les anciennes données sont converties sans perte : un vin « à Paul » donne des bouteilles « à Paul ».
-- [ ] **À l'ajout** : sous la quantité, « Dont pour un ami : [nombre] [prénom] » (ex. 12 bouteilles, dont 6 pour Paul). Par défaut, tout est à moi.
-- [ ] **Après coup** : sur la fiche du vin, « Répartir entre propriétaires » permet de choisir combien de bouteilles vont à qui. Sur la fiche d'une bouteille, « Appartient à » se modifie seul.
-- [ ] **Partout ailleurs** : le sommelier, À boire, les conseils de rangement et les suggestions de transfert ne comptent que mes bouteilles. Sur le plan, les cases d'un ami gardent leur hachure et l'initiale. La fiche du vin affiche « 12 bouteilles, dont 6 à Paul ». Le filtre « Vins des amis » de la liste montre les vins qui ont au moins une bouteille d'un ami. « Rendue à son propriétaire » reste un motif de sortie, par bouteille.
+- [x] **Propriétaire par bouteille** : chaque bouteille est « à moi » ou à un ami. Les anciennes données sont converties sans perte : un vin « à Paul » donne des bouteilles « à Paul ».
+- [x] **À l'ajout** : sous la quantité, « Dont pour un ami : [nombre] [prénom] » (ex. 12 bouteilles, dont 6 pour Paul). Par défaut, tout est à moi.
+- [x] **Après coup** : sur la fiche du vin, « Répartir entre propriétaires » permet de choisir combien de bouteilles vont à qui. Sur la fiche d'une bouteille, « Appartient à » se modifie seul.
+- [x] **Partout ailleurs** : le sommelier, À boire, les conseils de rangement et les suggestions de transfert ne comptent que mes bouteilles. Sur le plan, les cases d'un ami gardent leur hachure et l'initiale. La fiche du vin affiche « 12 bouteilles, dont 6 à Paul ». Le filtre « Vins des amis » de la liste montre les vins qui ont au moins une bouteille d'un ami. « Rendue à son propriétaire » reste un motif de sortie, par bouteille.
 
 *Actions sur une caisse ou un carton entier* (demande du 5 novembre 2026). Une caisse en bois ou un carton contient toujours un seul vin (validé ; pour un assortiment, utiliser une étagère ou un rack).
-- [ ] **Un vin par caisse** : au rangement, une caisse qui contient déjà un autre vin n'est pas proposée. Si on la touche, un message explique pourquoi. Une caisse qui contient déjà plusieurs vins (données existantes) est signalée « à répartir » sans rien perdre.
-- [ ] **Fiche de la caisse, actions groupées** sur toutes ses bouteilles, ou sur un nombre choisi :
+- [x] **Un vin par caisse** : au rangement, une caisse qui contient déjà un autre vin n'est pas proposée. Si on la touche, un message explique pourquoi. Une caisse qui contient déjà plusieurs vins (données existantes) est signalée « à répartir » sans rien perdre.
+- [x] **Fiche de la caisse, actions groupées** sur toutes ses bouteilles, ou sur un nombre choisi :
   - **Sortir** N bouteilles d'un coup (bues, offertes, vendues, rendues…) ;
   - **Déplacer la caisse** vers un autre espace ou un autre site : le meuble part avec ses bouteilles, qui restent dedans ;
   - **Ajouter la caisse au transfert** : à l'arrivée, la caisse est posée dans l'espace d'arrivée avec ses bouteilles, sans avoir à les ranger une par une (validé le 5 novembre 2026) ;
   - **Attribuer** N bouteilles à un ami, ou à moi ;
   - **Modifier le vin** (fiche commune) et **Modifier l'achat** (prix, date, source) pour toutes les bouteilles de la caisse.
-- [ ] Tests : nouveau millésime depuis la fiche et depuis « Racheter un vin », « Offert par » ; ajout de 12 bouteilles dont 6 pour un ami, puis répartition après coup ; sommelier et À boire limités à mes bouteilles ; caisse à un seul vin au rangement ; sortie, déplacement, transfert et attribution d'une caisse entière.
+- [x] Tests : nouveau millésime depuis la fiche et depuis « Racheter un vin », « Offert par » ; ajout de 12 bouteilles dont 6 pour un ami, puis répartition après coup ; sommelier et À boire limités à mes bouteilles ; caisse à un seul vin au rangement ; sortie, déplacement, transfert et attribution d'une caisse entière.
 
 **v2**
 - Sauvegarde automatique Google Drive.

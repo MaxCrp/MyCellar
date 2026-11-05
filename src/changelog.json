@@ -1,5 +1,17 @@
 [
   {
+    "version": "1.7.4",
+    "date": "2026-11-05",
+    "titre": "Millésimes, amis et caisses",
+    "items": [
+      "Nouveau millésime : depuis la fiche d’un vin ou « Racheter un vin », une saisie courte (millésime, quantité, source, prix) reprend tout le reste. La fenêtre est estimée pour le nouveau millésime. Un millésime déjà en cave reçoit les bouteilles, sans doublon.",
+      "La fiche d’un vin liste ses autres millésimes en cave.",
+      "Bouteilles d’un ami : le propriétaire est désormais fixé bouteille par bouteille. À l’ajout, « dont 6 pour Paul » ; après coup, « Répartir entre propriétaires » sur la fiche du vin, ou « Appartient à » sur une bouteille. Tes données ont été converties sans perte.",
+      "Le sommelier, À boire, les conseils et les transferts ne comptent que tes bouteilles.",
+      "Caisses et cartons : un seul vin par caisse. Depuis la caisse : sortir plusieurs bouteilles d’un coup, déplacer la caisse avec son contenu, l’ajouter au transfert (elle arrive avec ses bouteilles dedans), attribuer des bouteilles à un ami, modifier le vin ou l’achat."
+    ]
+  },
+  {
     "version": "1.7.3",
     "date": "2026-11-05",
     "titre": "Bouteilles à noter, sites en glissant",

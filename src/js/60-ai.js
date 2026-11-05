@@ -127,10 +127,10 @@ function lastJson(t) {
 /* ---------- Contexte de cave envoyé au sommelier ---------- */
 function caveContext(allSites) {
   const y = thisYear(), cur = S.settings.site, multi = isMulti();
-  const rows = [], ws = S.wines.filter(w => !isFriend(w) && kindOn(w) && wineBottles(w.id).length);
+  const rows = [], ws = S.wines.filter(w => kindOn(w) && myBottles(w.id).length);
   for (const w of ws) {
-    const bs = wineBottles(w.id).filter(b => allSites || !multi || siteOfBottle(b) === cur);
-    const elsewhere = multi && !allSites ? wineBottles(w.id).length - bs.length : 0;
+    const bs = myBottles(w.id).filter(b => allSites || !multi || siteOfBottle(b) === cur);
+    const elsewhere = multi && !allSites ? myBottles(w.id).length - bs.length : 0;
     if (!bs.length && !elsewhere) continue;
     const locs = [...new Set(bs.map(b => locLabel(b, multi)))].map(l => `${l} ×${bs.filter(b => locLabel(b, multi) === l).length}`).join(' ; ');
     const ts = S.tastings.filter(t => t.wineId === w.id), tn = ts.filter(t => t.note != null), avg = tn.length ? tn.reduce((n, t) => n + t.note, 0) / tn.length : null;
@@ -228,7 +228,7 @@ function chatMsg(m, i) {
 }
 // Bouteille à sortir pour un vin : sur le site actuel, dans l'espace de consommation, rangée, déjà ouverte d'abord
 function pickBottle(w) {
-  const bs = wineBottles(w.id);
+  const bs = myBottles(w.id).length ? myBottles(w.id) : wineBottles(w.id);
   const score = b => (b.state === 'open' ? 8 : 0) + (siteOfBottle(b) === S.settings.site ? 4 : 0) + (space(b.spaceId)?.use === 'conso' ? 2 : 0) + (b.unitId ? 1 : 0);
   return bs.sort((a, b) => score(b) - score(a))[0] || null;
 }

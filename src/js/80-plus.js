@@ -5,10 +5,10 @@ const sw = (act, on, dis = false, demoOff = false) => `<span class="switch" ${de
 const whyOff = on => on ? `<span class="why-off">${DEMO_OFF}</span>` : '';
 const setRow = (act, title, sub, val = '', extra = '') => `<button class="set" data-act="${act}" ${extra}><div class="it"><b>${title}</b>${sub ? `<small>${sub}</small>` : ''}</div>${val ? `<span class="val">${val}</span>` : ''}<span class="chev">${ICON.chev}</span></button>`;
 function vPlus() {
-  const bs = S.bottles.filter(inCave), mine = bs.filter(b => !isFriend(wine(b.wineId)));
+  const bs = S.bottles.filter(inCave), mine = bs.filter(b => !b.owner);
   const value = mine.reduce((t, b) => t + (wine(b.wineId).achat?.prix || 0), 0);
   const drunk = S.moves.filter(m => m.type === 'out' && ['bue', 'bouchonnee', 'terminee'].includes(m.motif) && (m.at || '').startsWith(String(thisYear()))).length;
-  const prim = S.bottles.filter(b => b.state === 'primeur').length, friends = S.wines.filter(w => isFriend(w) && wineBottles(w.id).length);
+  const prim = S.bottles.filter(b => b.state === 'primeur').length, friendBs = bs.filter(b => b.owner);
   const ai = aiCfg(), spent = monthSpend(), pct = ai.budget ? Math.min(100, spent / ai.budget * 100) : 0;
   const lastExp = S.settings.lastExport, old = !lastExp || Date.now() - lastExp > 7 * 864e5;
   return `<div class="card"><div class="grid2" style="text-align:center">
@@ -21,7 +21,7 @@ function vPlus() {
       ${setRow('sitesSheet', 'Sites, espaces et meubles', isMulti() ? `${S.sites.length} sites · ${S.spaces.length} espaces · ${S.units.length} meubles` : `Site unique · ${S.spaces.length} espace${S.spaces.length > 1 ? 's' : ''} · ${S.units.length} meubles`)}
       ${isMulti() ? setRow('transferSheet', 'Transfert entre sites', S.transfer.ids.length ? plural(S.transfer.ids.length, 'bouteille en préparation', 'bouteilles en préparation') : 'Préparer les bouteilles à emporter') : ''}
       ${setRow('primeursSheet', 'Primeurs', prim ? plural(prim, 'bouteille attendue', 'bouteilles attendues') : 'Aucun primeur en attente')}
-      ${setRow('friendsSheet', 'Vins gardés pour des amis', friends.length ? plural(friends.reduce((t, w) => t + wineBottles(w.id).length, 0), 'bouteille', 'bouteilles') : 'Aucun')}
+      ${setRow('friendsSheet', 'Vins gardés pour des amis', friendBs.length ? plural(friendBs.length, 'bouteille', 'bouteilles') : 'Aucun')}
       ${setRow('wishSheet', 'Liste d’envies', S.wishes.length ? plural(S.wishes.length, 'vin à acheter', 'vins à acheter') : 'Vins repérés en dégustation')}
       ${setRow('journalSheet', 'Journal des mouvements', 'Entrées, sorties, déplacements')}
       ${setRow('importPloc', 'Importer depuis Ploc', 'À partir du PDF de ta cave')}
@@ -130,7 +130,7 @@ Object.assign(ACT, {
       if (S.sites.length > 1 && !confirm(`Passer en site unique ? Tous les espaces seront regroupés dans « ${S.sites[0].name} » et les autres sites supprimés. Les bouteilles ne bougent pas de leurs meubles.`)) return;
       const keep = S.sites[0];
       for (const sp of S.spaces) sp.siteId = keep.id;
-      S.sites = [keep]; S.settings.multi = false; S.settings.site = keep.id; S.transfer = { ids: [], to: null, dest: {} };
+      S.sites = [keep]; S.settings.multi = false; S.settings.site = keep.id; S.transfer = { ids: [], to: null, dest: {}, units: {} };
     }
     await save(); refreshSheet(); render();
   },
@@ -165,10 +165,10 @@ Object.assign(ACT, {
       <span class="qty">×${l.length}</span><button class="btn small primary" data-act="receive" data-b="${l[0].id}">Reçu</button></div>`; }).join('')}</div>` : '<p class="muted">Aucun primeur en attente. À l’ajout d’un vin, choisis l’état « Primeur ».</p>'}`;
   }),
   friendsSheet: () => showSheet(() => {
-    const ws = S.wines.filter(w => isFriend(w) && wineBottles(w.id).length), by = new Map();
-    for (const w of ws) by.set(w.owner, [...(by.get(w.owner) || []), w]);
+    const by = new Map();
+    for (const b of S.bottles.filter(x => inCave(x) && x.owner)) { const m = by.get(b.owner) || new Map(); m.set(b.wineId, (m.get(b.wineId) || 0) + 1); by.set(b.owner, m); }
     return `${head('Vins des amis')}<p class="small" style="margin-top:-4px">Rangés et suivis comme les autres, mais jamais proposés par le sommelier ni comptés dans ta valeur de cave.</p>
-      ${by.size ? [...by].map(([o, l]) => `<h3>${esc(o)} · ${plural(l.reduce((t, w) => t + wineBottles(w.id).length, 0), 'bouteille', 'bouteilles')}</h3><div class="list">${l.map(w => wineRow(w)).join('')}</div>`).join('') : '<p class="muted">Aucun. À l’ajout d’un vin, indique le prénom de l’ami dans « Propriétaire ».</p>'}`;
+      ${by.size ? [...by].map(([o, m]) => `<h3>${esc(o)} · ${plural([...m.values()].reduce((t, n) => t + n, 0), 'bouteille', 'bouteilles')}</h3><div class="list">${[...m].map(([wid, n]) => { const w = wine(wid); return `<button class="li" data-act="wine" data-id="${wid}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(wineSub(w))}${myBottles(wid).length ? ' · ' + plural(myBottles(wid).length, 'autre à moi', 'autres à moi') : ''}</small></div><span class="qty">×${n}</span></button>`; }).join('')}</div>`).join('') : '<p class="muted">Aucun. À l’ajout d’un vin, indique combien de bouteilles sont pour un ami dans « Propriétaire ».</p>'}`;
   }),
   journalSheet: () => showSheet(() => {
     const L = { in: 'Entrée', out: 'Sortie', move: 'Déplacement', transfert: 'Transfert', primeur: 'Primeur commandé', open: 'Ouverture' };
