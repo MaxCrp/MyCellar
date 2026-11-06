@@ -77,11 +77,9 @@ function closeSheet() { sheetStack = []; $('#layer').innerHTML = ''; uScreenChec
 function sheetBack() { sheetStack.pop(); paintSheet(); }
 // Feuille ponctuelle (message, confirmation)
 const openSheet = html => showSheet(() => html);
-// Photo d'étiquette : prendre la photo, ou la choisir dans la photothèque (v2.1.1)
-const photoAction = (act, attrs, sub) => `<div class="big-action photo2">${ICON.camera}<div><b>Photo de l’étiquette</b><small>${sub}</small>
-  <div class="row" style="gap:6px;margin-top:8px;flex-wrap:wrap"><button class="btn small primary" data-act="${act}" ${attrs}>Prendre une photo</button><button class="btn small" data-act="${act}" data-lib="1" ${attrs}>Choisir dans mes photos</button></div></div></div>`;
-// L'appareil photo (prise de vue imposée) ou la photothèque
-const photoInput = t => { const i = $(t?.dataset?.lib ? '#f-photo3' : '#f-photo'); i.value = ''; i.click(); };
+// Photo d'étiquette (v2.1.2) : une seule case ; iOS propose lui-même de prendre la photo, la photothèque ou un fichier
+const photoAction = (act, attrs, sub) => `<button class="big-action" data-act="${act}" ${attrs}>${ICON.camera}<div><b>Photo de l’étiquette</b><small>${sub} Prends-la ou choisis-la dans tes photos.</small></div></button>`;
+const photoInput = () => { const i = $('#f-photo3'); i.value = ''; i.click(); };
 // Croix des barres de recherche : visible dès qu'un texte est saisi, efface tout d'un coup
 const sx = v => `<button type="button" class="sx" data-act="searchClear" aria-label="Effacer la recherche"${v ? '' : ' hidden'}>${ICON.close}</button>`;
 const head = (title, extra = '') => `<div class="shead"><!--back--><h2>${title}</h2>${extra}<button class="icon-btn" data-act="close" aria-label="Fermer">${ICON.close}</button></div>`;

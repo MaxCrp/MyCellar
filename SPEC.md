@@ -605,14 +605,14 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 - [x] Formats acceptés : ceux de la photothèque de l'iPhone (JPEG, HEIC, PNG). Si un format n'est pas lisible, un message propose de prendre la photo à la place.
 - [x] Tests : les deux boutons, fichier choisi (sans prise de vue imposée) lu comme une photo prise, format illisible signalé.
 
-**v2.1.2** (photo d'étiquette : un seul bouton ; spécifiée, rien n'est développé)
+**v2.1.2** (photo d'étiquette : un seul bouton ; livrée)
 
 *Constat* (retour du 6 novembre 2026, sur iPhone). Le bouton « Choisir dans mes photos » ouvre déjà le menu d'iOS, qui propose « Photothèque », « Prendre une photo » et « Choisir le fichier ». Le bouton « Prendre une photo » de la v2.1.1 fait donc doublon.
 
-- [ ] **Un seul bouton** : toute la case « Photo de l’étiquette » ouvre le menu d'iOS (prendre une photo, photothèque ou fichiers), comme le faisait « Choisir dans mes photos ». Le bouton « Prendre une photo » séparé est retiré.
-- [ ] Partout où il y avait les deux boutons : nouveau vin, nouvelle dégustation, révélation à l'aveugle. Sur une fiche en modification, un seul bouton « Changer la photo ».
-- [ ] Le champ qui imposait l'appareil photo (`capture`) n'est plus utilisé. Le reste ne change pas : lecture par le sommelier et message pour un format illisible.
-- [ ] Tests : une seule entrée par écran, qui ouvre le sélecteur sans prise de vue imposée ; lecture de la photo inchangée.
+- [x] **Un seul bouton** : toute la case « Photo de l’étiquette » ouvre le menu d'iOS (prendre une photo, photothèque ou fichiers), comme le faisait « Choisir dans mes photos ». Le bouton « Prendre une photo » séparé est retiré.
+- [x] Partout où il y avait les deux boutons : nouveau vin, nouvelle dégustation, révélation à l'aveugle. Sur une fiche en modification, un seul bouton « Changer la photo ».
+- [x] Le champ qui imposait l'appareil photo (`capture`) n'est plus utilisé. Le reste ne change pas : lecture par le sommelier et message pour un format illisible.
+- [x] Tests : une seule entrée par écran, qui ouvre le sélecteur sans prise de vue imposée ; lecture de la photo inchangée.
 
 **v2.2** (QR codes sur les meubles ; spécifiée et validée le 5 novembre 2026 : deux bibliothèques libres intégrées)
 - [ ] **Étiquettes** : pour chaque meuble ou caisse, une étiquette QR avec son nom, à imprimer (planche d'étiquettes en PDF, une ou plusieurs par page).

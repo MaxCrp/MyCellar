@@ -1,4 +1,4 @@
-// v2.1.1 : photo d'étiquette prise ou choisie dans la photothèque
+// v2.1.1 / v2.1.2 : photo d'étiquette, une seule case qui ouvre le menu d'iOS (prendre une photo, photothèque, fichiers)
 const { chromium } = require('playwright');
 const fs = require('fs');
 const D = __dirname + '/shots/'; fs.mkdirSync(D, { recursive: true });
@@ -24,37 +24,35 @@ const PNG = fs.readFileSync(__dirname + '/../src/static/icon-192.png');
   const sheet = () => p.evaluate(() => document.querySelector('.sheet')?.textContent || '');
   const choose = async (sel, file) => { const [fc] = await Promise.all([p.waitForEvent('filechooser'), p.click(sel)]); const id = await fc.element().evaluate(e => e.id); await fc.setFiles(file); await p.waitForTimeout(600); return id; };
 
-  const att = await p.evaluate(() => ({ cam: document.querySelector('#f-photo').getAttribute('capture'), lib: document.querySelector('#f-photo3').hasAttribute('capture') }));
-  ok('appareil photo imposé seulement pour « Prendre une photo »', att.cam === 'environment' && att.lib === false, JSON.stringify(att));
-  // Nouveau vin
+  ok('aucun champ n’impose l’appareil photo', await p.evaluate(() => !document.querySelector('input[type=file][capture]') && !!document.querySelector('#f-photo3')));
+  // Nouveau vin : une seule case
   await p.evaluate(() => ACT.addWine()); await p.waitForTimeout(150);
-  ok('« Photo de l’étiquette » : deux choix', /Prendre une photo/.test(await sheet()) && /Choisir dans mes photos/.test(await sheet()));
+  const n = await p.evaluate(() => ({ acts: document.querySelectorAll('.sheet [data-act=scanLabel]').length, cam: /Prendre une photo/.test(document.querySelector('.sheet').textContent), big: document.querySelector('.sheet [data-act=scanLabel]').classList.contains('big-action') }));
+  ok('« Photo de l’étiquette » : une seule case, plus de bouton « Prendre une photo »', n.acts === 1 && !n.cam && n.big, JSON.stringify(n));
   await p.screenshot({ path: D + '200-photo-choix.png' });
-  const used = await choose('.sheet [data-act=scanLabel][data-lib]', { name: 'IMG_0420.png', mimeType: 'image/png', buffer: PNG });
-  ok('« Choisir dans mes photos » ouvre la photothèque', used === 'f-photo3', used);
+  const used = await choose('.sheet [data-act=scanLabel]', { name: 'IMG_0420.png', mimeType: 'image/png', buffer: PNG });
+  ok('la case ouvre le sélecteur d’iOS (sans prise de vue imposée)', used === 'f-photo3', used);
+  await p.waitForFunction(() => document.querySelector('.sheet input[name=domaine]')?.value, null, { timeout: 8000 }).catch(() => {});
   const f = await p.evaluate(() => ({ dom: document.querySelector('.sheet input[name=domaine]')?.value, photo: !!draft?.photo, img: !!document.querySelector('.sheet img.photo') }));
-  ok('photo choisie lue par le sommelier, fiche pré-remplie', f.dom === 'Domaine Photothèque' && f.photo && f.img, JSON.stringify(f));
-  await p.evaluate(() => { draft = null; closeSheet(); });
-  // Prendre une photo : toujours l'appareil photo
-  await p.evaluate(() => ACT.addWine()); await p.waitForTimeout(150);
-  ok('« Prendre une photo » : appareil photo', await choose('.sheet [data-act=scanLabel]:not([data-lib])', { name: 'cam.png', mimeType: 'image/png', buffer: PNG }) === 'f-photo');
+  ok('photo lue par le sommelier, fiche pré-remplie', f.dom === 'Domaine Photothèque' && f.photo && f.img, JSON.stringify(f));
   await p.evaluate(() => { draft = null; closeSheet(); });
   // Format illisible
   await p.evaluate(() => ACT.addWine()); await p.waitForTimeout(150);
-  await choose('.sheet [data-act=scanLabel][data-lib]', { name: 'abime.heic', mimeType: 'image/heic', buffer: Buffer.from('pas une image') });
-  ok('photo illisible : message clair', /Photo illisible/.test(await sheet()) && /Prendre une photo/.test(await sheet()));
+  await choose('.sheet [data-act=scanLabel]', { name: 'abime.heic', mimeType: 'image/heic', buffer: Buffer.from('pas une image') });
+  await p.waitForFunction(() => /Photo illisible/.test(document.querySelector('.sheet')?.textContent || ''), null, { timeout: 8000 }).catch(() => {});
+  ok('photo illisible : message clair', /Photo illisible/.test(await sheet()));
   await p.evaluate(() => closeSheet());
-  // Dégustation et révélation : mêmes deux choix
+  // Dégustation et révélation : une seule case aussi
   await p.evaluate(() => ACT.newTaste({ dataset: {} })); await p.waitForTimeout(150);
-  ok('nouvelle dégustation : deux choix', !!(await p.$('.sheet [data-act=scanTaste][data-lib]')) && !!(await p.$('.sheet [data-act=scanTaste]:not([data-lib])')));
+  ok('nouvelle dégustation : une seule case photo', await p.evaluate(() => document.querySelectorAll('.sheet [data-act=scanTaste]').length === 1));
   await p.evaluate(() => closeSheet());
-  // Modifier une fiche : changer la photo depuis la photothèque
+  // Modifier une fiche : « Changer la photo » ou « Ajouter une photo »
   const wid = await p.evaluate(() => S.wines.find(w => w.kind === 'vin' && !w.photo).id);
   await p.evaluate(id => ACT.editWine({ dataset: { id } }), wid); await p.waitForTimeout(150);
-  ok('modifier une fiche : « Choisir dans mes photos »', !!(await p.$('.sheet [data-act=editPhoto][data-lib]')));
-  await choose('.sheet [data-act=editPhoto][data-lib]', { name: 'IMG_0421.png', mimeType: 'image/png', buffer: PNG });
+  ok('modifier une fiche : un seul bouton photo', await p.evaluate(() => document.querySelectorAll('.sheet [data-act=editPhoto]').length === 1));
+  await choose('.sheet [data-act=editPhoto]', { name: 'IMG_0421.png', mimeType: 'image/png', buffer: PNG });
   await p.waitForFunction(() => !!draft?.photo, null, { timeout: 8000 }).catch(() => {});
-  ok('photo remplacée sans nouvelle lecture', await p.evaluate(() => !!draft?.photo && !!document.querySelector('.sheet img.photo[src]')));
+  ok('photo remplacée sans nouvelle lecture, bouton « Changer la photo »', await p.evaluate(() => !!draft?.photo && !!document.querySelector('.sheet img.photo[src]') && /Changer la photo/.test(document.querySelector('.sheet').textContent)));
   await p.click('.sheet form [type=submit]'); await p.waitForTimeout(400);
   ok('photo enregistrée avec la fiche', await p.evaluate(id => !!wine(id).photo, wid));
   ok('aucune erreur', !errs.length, errs.join(' | '));

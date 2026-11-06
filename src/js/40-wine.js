@@ -78,7 +78,7 @@ function wineFormSheet() {
   return `${head(editing ? 'Modifier' : ft ? 'Quel vin ?' : sp ? 'Nouveau spiritueux' : 'Nouveau vin')}
     <form class="form" data-form="wine">
       ${d.photo || (editing && w.photo) ? `<img class="photo" ${d.photo ? `src="${d.photoUrl}"` : `data-photo="${w.id}" hidden`} alt="Étiquette">` : ''}
-      ${editing ? `<div class="row" style="gap:6px;flex-wrap:wrap"><button type="button" class="btn small" data-act="editPhoto">${ICON.camera} ${w.photo || d.photo ? 'Reprendre la photo' : 'Prendre une photo'}</button><button type="button" class="btn small" data-act="editPhoto" data-lib="1">Choisir dans mes photos</button></div>` : ''}
+      ${editing ? `<button type="button" class="btn small" data-act="editPhoto">${ICON.camera} ${w.photo || d.photo ? 'Changer la photo' : 'Ajouter une photo de l’étiquette'}</button>` : ''}
       ${sp ? spiritFields : vinFields}
       ${stock}
       ${ft ? '' : `<div class="fieldset"><div class="ft">Achat</div>

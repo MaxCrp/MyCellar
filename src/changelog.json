@@ -1,5 +1,14 @@
 [
   {
+    "version": "2.1.2",
+    "date": "2026-11-06",
+    "titre": "Photo d’étiquette simplifiée",
+    "items": [
+      "Une seule case « Photo de l’étiquette » : l’iPhone propose lui-même de prendre la photo, de la choisir dans la photothèque ou dans Fichiers. Le bouton « Prendre une photo » en double est retiré.",
+      "Sur une fiche en modification, un seul bouton « Changer la photo »."
+    ]
+  },
+  {
     "version": "2.1.1",
     "date": "2026-11-06",
     "titre": "Photo depuis la photothèque",
