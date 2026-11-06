@@ -595,15 +595,15 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 - [x] Tests (import CSV) : un fichier fictif au format exact du fichier reçu (Windows-1252, mêmes colonnes ; le fichier réel n'est pas mis dans le dépôt, il contient des données personnelles), plus des variantes UTF-8 et séparateur « , », guillemets et retours à la ligne dans un commentaire, colonnes repérées par l'en-tête ou par l'ordre, codes couleur connus et ambigus, notes sur 100 et sur 20, dates aux trois formats, nom démêlé par le sommelier (réponse simulée) et champs « à vérifier », séance par date, vin rapproché et vin nouveau, second import sans doublon, ligne invalide signalée.
 - [x] Tests : contenu de la carte selon les filtres, image produite, fichier .xlsx lisible (structure vérifiée), page d'impression.
 
-**v2.1.1** (photo d'étiquette depuis la photothèque ; spécifiée, rien n'est développé)
+**v2.1.1** (photo d'étiquette depuis la photothèque ; livrée)
 
 *Constat* (demande du 6 novembre 2026). Dans « Nouveau vin › Photo de l'étiquette », l'iPhone ouvre directement l'appareil photo : le champ de fichier impose la prise de vue (`capture="environment"`). Une photo prise plus tôt ne peut pas être utilisée.
 
-- [ ] **Deux choix** sous « Photo de l'étiquette » : « Prendre une photo » (appareil photo, comme aujourd'hui) et « Choisir dans mes photos » (photothèque ou Fichiers, sans prise de vue imposée).
-- [ ] **Même lecture** ensuite : le sommelier lit l'étiquette et pré-remplit la fiche, la photo est réduite et rangée chiffrée avec le vin.
-- [ ] Même choix pour la photo d'une fiche de vin existante (« Modifier ») et pour la dégustation à l'aveugle (révélation par photo), là où une photo d'étiquette est demandée.
-- [ ] Formats acceptés : ceux de la photothèque de l'iPhone (JPEG, HEIC, PNG). Si un format n'est pas lisible, un message propose de prendre la photo à la place.
-- [ ] Tests : les deux boutons, fichier choisi (sans prise de vue imposée) lu comme une photo prise, format illisible signalé.
+- [x] **Deux choix** sous « Photo de l'étiquette » : « Prendre une photo » (appareil photo, comme aujourd'hui) et « Choisir dans mes photos » (photothèque ou Fichiers, sans prise de vue imposée).
+- [x] **Même lecture** ensuite : le sommelier lit l'étiquette et pré-remplit la fiche, la photo est réduite et rangée chiffrée avec le vin.
+- [x] Même choix pour la photo d'une fiche de vin existante (« Modifier ») et pour la dégustation à l'aveugle (révélation par photo), là où une photo d'étiquette est demandée.
+- [x] Formats acceptés : ceux de la photothèque de l'iPhone (JPEG, HEIC, PNG). Si un format n'est pas lisible, un message propose de prendre la photo à la place.
+- [x] Tests : les deux boutons, fichier choisi (sans prise de vue imposée) lu comme une photo prise, format illisible signalé.
 
 **v2.2** (QR codes sur les meubles ; spécifiée et validée le 5 novembre 2026 : deux bibliothèques libres intégrées)
 - [ ] **Étiquettes** : pour chaque meuble ou caisse, une étiquette QR avec son nom, à imprimer (planche d'étiquettes en PDF, une ou plusieurs par page).

@@ -1,5 +1,16 @@
 [
   {
+    "version": "2.1.1",
+    "date": "2026-11-06",
+    "titre": "Photo depuis la photothèque",
+    "items": [
+      "Photo de l’étiquette : « Prendre une photo » ou « Choisir dans mes photos », pour une photo prise plus tôt. Le sommelier lit l’étiquette de la même façon.",
+      "Même choix pour une nouvelle dégustation et la révélation d’un vin à l’aveugle.",
+      "Sur une fiche en modification, tu peux reprendre ou remplacer la photo de l’étiquette.",
+      "Une photo dont le format n’est pas lisible est signalée clairement."
+    ]
+  },
+  {
     "version": "2.1",
     "date": "2026-11-06",
     "titre": "Partager, exporter, importer",

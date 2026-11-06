@@ -295,7 +295,7 @@ function revealSheet(tid) {
   return `${head('Révéler le vin')}
     <p class="small" style="margin-top:-6px">Vin mystère du ${esc(fmtDate(t.at))}${t.note != null ? ' · ' + numFr(t.note) + '/20' : ''}</p>
     <div class="big-actions">
-      <button class="big-action" data-act="revealScan" data-t="${tid}">${ICON.camera}<div><b>Photo de l’étiquette</b><small>Le sommelier reconnaît le vin.</small></div></button>
+      ${photoAction('revealScan', `data-t="${tid}"`, 'Le sommelier reconnaît le vin.')}
       <div class="card" style="margin:0"><div class="search" style="margin:0">${ICON.search}<input type="search" placeholder="Un vin déjà connu…" data-in="revealFind" data-t="${tid}" autocomplete="off">${sx()}</div><div id="reveal-find"></div></div>
       <button class="big-action" data-act="revealManual" data-t="${tid}">${ICON.edit}<div><b>Saisie manuelle</b><small>Appellation, millésime, domaine…</small></div></button>
     </div>`;
@@ -344,7 +344,7 @@ Object.assign(ACT, {
   tcolor: t => { const v = t.dataset.v; if (v === 'spirit') { draft.taste.kind = 'spirit'; draft.taste.couleur = null; } else { draft.taste.kind = 'vin'; draft.taste.couleur = v; } wheelState = { active: null }; refreshSheet(); },
   reveal: t => showSheet(() => revealSheet(t.dataset.t)),
   revealWine: t => doReveal(t.dataset.t, t.dataset.w),
-  revealScan: t => { labelFor = { reveal: t.dataset.t }; const i = $('#f-photo'); i.value = ''; i.click(); },
+  revealScan: t => { labelFor = { reveal: t.dataset.t }; photoInput(t); },
   revealManual: t => { const r = byId(S.tastings, t.dataset.t); newDraft(r.blind?.kind === 'spirit' ? 'spirit' : 'vin', r.blind?.couleur ? { couleur: r.blind.couleur } : {}); draft.forReveal = t.dataset.t; showSheet(wineFormSheet, { full: true }); },
   blindAI: t => blindAnalysis(t.dataset.t),
 });

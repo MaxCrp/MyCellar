@@ -350,14 +350,17 @@ const LABEL_SCHEMA = {
 const LABEL_SYS = `Tu lis la photo d’une étiquette de vin ou de spiritueux et tu remplis sa fiche. Recopie fidèlement ce qui est écrit ; complète la région, le pays, la couleur et les cépages habituels de l’appellation si l’étiquette ne les donne pas. Laisse vide (chaîne vide) ce que tu ne peux pas déterminer.
 « domaine » : producteur, château ou distillerie. « cuvee » : nom de cuvée ou de l’expression, vide si aucun. « millesime » : année seule. « degre » : nombre seul. « format » : contenance en cl (75, 150, 70, 5…). « age » : âge en années pour un spiritueux. Pour un vin, « cat », « age » et « fut » restent vides.`;
 Object.assign(ACT, {
-  scanLabel: () => { const i = $('#f-photo'); i.value = ''; i.click(); },
+  scanLabel: t => { labelFor = null; photoInput(t); },
+  editPhoto: t => { labelFor = { editPhoto: true }; photoInput(t); },
 });
 async function onPhoto(file) {
   if (!file) return;
   let big, small;
-  try { big = await shrinkImage(file, 1280, 0.8); small = await shrinkImage(file, 640, 0.72); }
-  catch { return toast('Image illisible'); }
+  try { big = await shrinkImage(file, 1280, 0.8); small = await shrinkImage(file, 640, 0.72); if (!big || !small) throw 0; }
+  catch { labelFor = null; return sheetMsg('Photo illisible', 'Ce format de photo n’a pas pu être lu sur cet appareil. Prends la photo directement avec « Prendre une photo », ou choisis-en une autre.'); }
   const forTaste = labelFor; labelFor = null;
+  // Fiche en cours de modification : la photo remplace celle de l'étiquette, sans nouvelle lecture
+  if (forTaste?.editPhoto) { if (!draft?.w) return; draft.photo = small; draft.photoUrl = URL.createObjectURL(small); refreshSheet(); return toast('Photo remplacée · enregistre la fiche'); }
   const go = fields => {
     newDraft(fields.kind === 'spirit' && spiritsOn() ? 'spirit' : 'vin', fields);
     draft.photo = small; draft.photoUrl = URL.createObjectURL(small);

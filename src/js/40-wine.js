@@ -19,7 +19,7 @@ function addSheet() {
   const ai = aiReady();
   return `${head('Nouveau vin')}
     <div class="big-actions">
-      <button class="big-action" data-act="scanLabel">${ICON.camera}<div><b>Photo de l’étiquette</b><small>${ai ? 'Le sommelier remplit la fiche, tu valides.' : 'Nécessite une clé IA (Plus › Intelligence artificielle).'}</small></div></button>
+      ${photoAction('scanLabel', '', ai ? 'Le sommelier remplit la fiche, tu valides.' : 'Nécessite une clé IA (Plus › Intelligence artificielle).')}
       <button class="big-action" data-act="newWine" data-kind="vin">${ICON.edit}<div><b>Saisie manuelle</b><small>Domaine, cuvée, millésime, quantité.</small></div></button>
       ${spiritsOn() ? `<button class="big-action" data-act="newWine" data-kind="spirit">${ICON.bottle}<div><b>Spiritueux</b><small>Whisky, rhum, cognac, mignonnettes…</small></div></button>` : ''}
       ${S.wines.length ? `<button class="big-action" data-act="rebuyList">${ICON.copy}<div><b>Racheter un vin de la cave</b><small>Ajouter des bouteilles à une référence existante.</small></div></button>` : ''}
@@ -78,6 +78,7 @@ function wineFormSheet() {
   return `${head(editing ? 'Modifier' : ft ? 'Quel vin ?' : sp ? 'Nouveau spiritueux' : 'Nouveau vin')}
     <form class="form" data-form="wine">
       ${d.photo || (editing && w.photo) ? `<img class="photo" ${d.photo ? `src="${d.photoUrl}"` : `data-photo="${w.id}" hidden`} alt="Étiquette">` : ''}
+      ${editing ? `<div class="row" style="gap:6px;flex-wrap:wrap"><button type="button" class="btn small" data-act="editPhoto">${ICON.camera} ${w.photo || d.photo ? 'Reprendre la photo' : 'Prendre une photo'}</button><button type="button" class="btn small" data-act="editPhoto" data-lib="1">Choisir dans mes photos</button></div>` : ''}
       ${sp ? spiritFields : vinFields}
       ${stock}
       ${ft ? '' : `<div class="fieldset"><div class="ft">Achat</div>
