@@ -86,12 +86,14 @@ function plocDefaultUnit(c) {
 
 Object.assign(ACT, {
   importPloc: () => {
-    if (!aiReady() || !aiClaude()) return sheetMsg('Import depuis Ploc', 'L’import lit le PDF avec Claude : ajoute une clé Anthropic dans Plus › Intelligence artificielle, puis recommence.');
+    const pdfOk = aiReady() && aiClaude();
     showSheet(() => `${head('Importer depuis Ploc')}
-      <p>Dans Ploc, exporte une cave en PDF (plan, légende et fiches des vins), puis choisis le fichier ici.</p>
-      <p class="small">Le sommelier lit le PDF et reprend les fiches de Ploc telles quelles : couleur, degré, fenêtre de garde, estimation, contenance, température de service, accords, note. Il ne complète que les champs vides et te signale les fenêtres qui lui semblent décalées. Tu vérifies tout avant l’import, plan compris.</p>
-      <p class="small">Plusieurs caves ? Importe-les une à une : un vin déjà importé n’est pas recréé. Coût indicatif : 10 à 40 centimes par export.</p>
-      <button class="btn primary wide" data-act="plocPick">${ICON.doc} Choisir le PDF</button>`);
+      <div class="card"><div class="ct">Ma cave (PDF)</div>
+        <p class="small" style="margin:0 0 8px">Dans Ploc, exporte une cave en PDF (plan, légende et fiches des vins). Le sommelier reprend les fiches telles quelles et place les bouteilles d’après le plan. Plusieurs caves ? Importe-les une à une, sans doublon. Coût indicatif : 10 à 40 centimes par export.</p>
+        ${pdfOk ? `<button class="btn primary wide" data-act="plocPick">${ICON.doc} Choisir le PDF</button>` : '<p class="small" style="margin:0;color:var(--bx)">L’import du PDF lit le fichier avec Claude : ajoute une clé Anthropic dans Réglages › Intelligence artificielle.</p>'}</div>
+      <div class="card"><div class="ct">Mes dégustations (CSV)</div>
+        <p class="small" style="margin:0 0 8px">Dans Ploc, exporte tes dégustations en CSV. Les dégustations d’une même date forment une séance. Le sommelier démêle le nom de chaque vin (domaine, appellation, cuvée) ; tu vérifies tout avant l’import.</p>
+        <button class="btn primary wide" data-act="plocCsvPick">${ICON.doc} Choisir le fichier CSV</button></div>`);
   },
   plocPick: () => { const i = $('#f-pdf'); i.value = ''; i.click(); },
   plocToggle: t => { const it = plocData?.wines[+t.dataset.i]; if (it) { it.skip = !it.skip; refreshSheet(); } },

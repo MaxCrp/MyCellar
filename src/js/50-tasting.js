@@ -245,6 +245,7 @@ function tasteView(id) {
     ${mystery ? `<div class="btns" style="margin-top:14px"><button class="btn primary wide" data-act="reveal" data-t="${id}">Révéler le vin</button>${sess ? `<button class="btn ghost wide" data-act="session" data-id="${sess.id}">Voir la séance</button>` : ''}</div>` : `
     <div class="btns" style="margin-top:14px">
       <div class="btns2"><button class="btn ${wished ? 'outline' : 'green'}" data-act="wishToggle" data-w="${w.id}" data-t="${id}">${wished ? '♥ Dans mes envies' : '♥ Je veux en acheter'}</button><button class="btn" data-act="rebuy" data-id="${w.id}">${ICON.add} Ajouter à la cave</button></div>
+      <div class="btns2"><button class="btn" data-act="tasteShareImg" data-id="${id}">Partager en image</button><button class="btn" data-act="tasteShareTxt" data-id="${id}">En texte</button></div>
       ${sess ? `<button class="btn ghost wide" data-act="session" data-id="${sess.id}">Voir la séance</button>` : ''}
       <button class="btn ghost wide" data-act="wine" data-id="${w.id}">Voir la fiche du vin</button>
     </div>`}`;

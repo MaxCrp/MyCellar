@@ -4,7 +4,7 @@
 const busyForms = new Set(), busyActs = new Set();
 const GUARDED = new Set(['tasteSave', 'placeOk', 'plocGo', 'transferDone', 'receive', 'applyReeval', 'applyAdvice', 'adviceGo', 'delWine', 'delUnit', 'delTaste',
   'delSession', 'delSite', 'delSpace', 'estimateMissing', 'putHere', 'openBottle', 'wishToggle', 'wishBought', 'toTransfer', 'revealWine', 'blindAI', 'export',
-  'usageClear', 'chatNew', 'tasteAbandon', 'awayTransfer', 'pkOffer', 'pkunlock', 'demo', 'estimate', 'takeIt', 'rateNow', 'rateLater', 'backupLater', 'tAdd', 'tPick', 'placeToTransfer', 'tPlaceNow', 'todoSkip', 'todoSkipAll', 'setOwner', 'boxMoveTo', 'boxTransfer', 'boxTransferTo', 'valueBatchGo', 'valueEstimate', 'auditRun']);
+  'usageClear', 'chatNew', 'tasteAbandon', 'awayTransfer', 'pkOffer', 'pkunlock', 'demo', 'estimate', 'takeIt', 'rateNow', 'rateLater', 'backupLater', 'tAdd', 'tPick', 'placeToTransfer', 'tPlaceNow', 'todoSkip', 'todoSkipAll', 'setOwner', 'boxMoveTo', 'boxTransfer', 'boxTransferTo', 'valueBatchGo', 'valueEstimate', 'auditRun', 'degGo', 'degAi', 'cardImage', 'tasteShareImg', 'exportXlsx']);
 const release = (set, k) => setTimeout(() => set.delete(k), 350);
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-act]'); if (!t || !ACT[t.dataset.act]) return;
@@ -38,6 +38,7 @@ document.addEventListener('change', e => {
   if (t.id === 'f-photo2') return onTastePhoto(t.files[0]);
   if (t.id === 'f-pdf') return onPdf(t.files[0]);
   if (t.id === 'f-backup') return onBackupFile(t.files[0]);
+  if (t.id === 'f-csv') return onTastingCsv(t.files[0]);
   if (t.type !== 'password' && t.type !== 'file') { const nm = t.dataset?.ch || t.dataset?.in || t.name; if (nm && !/^(p|p1|p2|c0|c1|c2|key)$/.test(nm)) uLog('change', nm); }
   const k = t.dataset?.ch; if (k && CHANGES[k]) Promise.resolve(CHANGES[k](t, e)).catch(err => { errLog('champ:' + k, err); toast('Erreur : ' + (err.message || err)); });
 });

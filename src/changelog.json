@@ -1,5 +1,17 @@
 [
   {
+    "version": "2.1",
+    "date": "2026-11-06",
+    "titre": "Partager, exporter, importer",
+    "items": [
+      "Import de tes dégustations Ploc (Réglages › Importer depuis Ploc › Dégustations) : le fichier CSV est lu sur ton iPhone, le sommelier démêle le nom de chaque vin (domaine, appellation, cuvée), tu vérifies et corriges avant l’import. Les dégustations d’une même date forment une séance ; sans doublon si tu relances l’import.",
+      "Carte des vins (Réglages › Partager et exporter) : prêts à boire, par site, par couleur ou choisis à la main, avec ou sans prix ; à partager en image ou en PDF.",
+      "Partager une dégustation en image ou en texte, depuis sa fiche.",
+      "Export Excel : un vrai fichier .xlsx créé sur l’iPhone, avec l’inventaire, les dégustations et les mouvements.",
+      "Inventaire imprimable par site, espace et meuble, avec le plan de chaque meuble (« Enregistrer en PDF » depuis l’impression)."
+    ]
+  },
+  {
     "version": "2.0",
     "date": "2026-11-05",
     "titre": "Comprendre sa cave",

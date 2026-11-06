@@ -568,13 +568,13 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 - [x] Accès : bouton « Audit de ma cave » dans À boire et dans les suggestions du sommelier. Le dernier audit est conservé et daté.
 - [x] Tests : statistiques sur la cave fictive (totaux justes, vins des amis exclus), valeur avec et sans estimation, cadeaux reçus et offerts, alerte de doublon, audit avec réponse simulée.
 
-**v2.1** (partager et exporter, import des dégustations Ploc ; spécifiée, en attente du lancement)
-- [ ] **Carte des vins à partager** : tu choisis les vins (prêts à boire, un site, des couleurs, ou une sélection à la main) et la mise en forme (avec ou sans prix ni nombre de bouteilles). La carte est rangée par couleur puis par région, sur une jolie page. Elle se partage en image (Messages, WhatsApp…) ou en PDF.
-- [ ] **Partager une dégustation** (§6 bis, « Plus tard ») : une carte image avec le vin, la note, la teinte, les arômes principaux, l'accord et le commentaire, ou la même chose en texte.
-- [ ] **Export Excel** : un vrai fichier .xlsx créé sur l'iPhone, sans service extérieur, avec trois onglets : Inventaire (une ligne par vin, avec quantités par site et emplacements), Dégustations, Mouvements.
-- [ ] **Export PDF** : inventaire imprimable (par site, espace et meuble, avec le plan de chaque meuble), par l'impression iOS (« Enregistrer en PDF »).
-- [ ] Rien ne quitte l'iPhone sans action de ta part : le partage passe par la feuille de partage iOS.
-- [ ] **Import des dégustations depuis Ploc** (demande du 5 novembre 2026, précisée le 6) : à partir du fichier CSV exporté par Ploc, une ligne par dégustation. Accès par Réglages › Importer depuis Ploc › « Dégustations (CSV) ».
+**v2.1** (partager et exporter, import des dégustations Ploc ; livrée)
+- [x] **Carte des vins à partager** : tu choisis les vins (prêts à boire, un site, des couleurs, ou une sélection à la main) et la mise en forme (avec ou sans prix ni nombre de bouteilles). La carte est rangée par couleur puis par région, sur une jolie page. Elle se partage en image (Messages, WhatsApp…) ou en PDF.
+- [x] **Partager une dégustation** (§6 bis, « Plus tard ») : une carte image avec le vin, la note, la teinte, les arômes principaux, l'accord et le commentaire, ou la même chose en texte.
+- [x] **Export Excel** : un vrai fichier .xlsx créé sur l'iPhone, sans service extérieur, avec trois onglets : Inventaire (une ligne par vin, avec quantités par site et emplacements), Dégustations, Mouvements.
+- [x] **Export PDF** : inventaire imprimable (par site, espace et meuble, avec le plan de chaque meuble), par l'impression iOS (« Enregistrer en PDF »).
+- [x] Rien ne quitte l'iPhone sans action de ta part : le partage passe par la feuille de partage iOS.
+- [x] **Import des dégustations depuis Ploc** (demande du 5 novembre 2026, précisée le 6) : à partir du fichier CSV exporté par Ploc, une ligne par dégustation. Accès par Réglages › Importer depuis Ploc › « Dégustations (CSV) ».
   - **Format réel** (fichier reçu le 6 novembre 2026, 130 dégustations de 2020 à 2026) :
     - encodage Windows-1252 et non UTF-8 (l'app détecte l'un ou l'autre) ; séparateur « ; » ; textes entre guillemets ; fins de ligne Windows ;
     - en-tête : `Date ; Nom du vin ; Millésime ; Lieu ; Note ; EmotiPLOC ; Couleur ; Personnes présentes ; Plats ; Commentaires ; IdVin` ;
@@ -592,8 +592,8 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
   - **Écran de vérification** : regroupé par séance, avec pour chaque dégustation la date, le vin, la note, le lieu et le rapprochement (« vin de ta cave », « nouveau vin » ou « déjà importée »). On peut corriger le vin, changer le rapprochement ou décocher une ligne.
   - **Sans doublon** : une dégustation de même date, même vin et même note n'est pas réimportée. On peut donc relancer l'import avec un fichier plus récent.
   - **Effet** : les dégustations rejoignent le journal, marquées « importée de Ploc ». Elles comptent dans les moyennes et le sommelier les voit. Aucune bouteille ne sort du stock.
-- [ ] Tests (import CSV) : un fichier fictif au format exact du fichier reçu (Windows-1252, mêmes colonnes ; le fichier réel n'est pas mis dans le dépôt, il contient des données personnelles), plus des variantes UTF-8 et séparateur « , », guillemets et retours à la ligne dans un commentaire, colonnes repérées par l'en-tête ou par l'ordre, codes couleur connus et ambigus, notes sur 100 et sur 20, dates aux trois formats, nom démêlé par le sommelier (réponse simulée) et champs « à vérifier », séance par date, vin rapproché et vin nouveau, second import sans doublon, ligne invalide signalée.
-- [ ] Tests : contenu de la carte selon les filtres, image produite, fichier .xlsx lisible (structure vérifiée), page d'impression.
+- [x] Tests (import CSV) : un fichier fictif au format exact du fichier reçu (Windows-1252, mêmes colonnes ; le fichier réel n'est pas mis dans le dépôt, il contient des données personnelles), plus des variantes UTF-8 et séparateur « , », guillemets et retours à la ligne dans un commentaire, colonnes repérées par l'en-tête ou par l'ordre, codes couleur connus et ambigus, notes sur 100 et sur 20, dates aux trois formats, nom démêlé par le sommelier (réponse simulée) et champs « à vérifier », séance par date, vin rapproché et vin nouveau, second import sans doublon, ligne invalide signalée.
+- [x] Tests : contenu de la carte selon les filtres, image produite, fichier .xlsx lisible (structure vérifiée), page d'impression.
 
 **v2.2** (QR codes sur les meubles ; spécifiée et validée le 5 novembre 2026 : deux bibliothèques libres intégrées)
 - [ ] **Étiquettes** : pour chaque meuble ou caisse, une étiquette QR avec son nom, à imprimer (planche d'étiquettes en PDF, une ou plusieurs par page).

@@ -29,7 +29,7 @@ function degTools() {
 const noteBadge = n => `<span class="qty" style="color:var(--bx);background:var(--bx-soft)">${n != null ? numFr(n) : '–'}</span>`;
 function tasteRow(t, rank) {
   const w = tastingWine(t), mystery = t.blind && !t.wineId;
-  const sub = [mystery ? 'à l’aveugle · à révéler' : w.domaine && !nameIsDomaine(w) ? w.domaine : w.appellation, t.blind && !mystery ? 'à l’aveugle' : '', t.type ? TASTE_TYPES[t.type] : '', t.lieu, mystery ? '' : t.bottleId ? 'de ma cave' : 'hors cave', !mystery && isWished(w.id) ? '♥ envie' : ''].filter(Boolean).join(' · ');
+  const sub = [mystery ? 'à l’aveugle · à révéler' : w.domaine && !nameIsDomaine(w) ? w.domaine : w.appellation, t.blind && !mystery ? 'à l’aveugle' : '', t.type ? TASTE_TYPES[t.type] : '', t.lieu, mystery ? '' : t.bottleId ? 'de ma cave' : 'hors cave', t.ploc ? 'importée de Ploc' : '', !mystery && isWished(w.id) ? '♥ envie' : ''].filter(Boolean).join(' · ');
   return `<button class="li" data-act="tasteView" data-id="${t.id}">${rank ? `<span class="rank">${rank}</span>` : `<span class="dot" style="background:${wineColor(w)}"></span>`}
     <div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(sub)}</small>${t.plat || t.accord ? `<small class="ell">${t.accord ? 'Accord ' + ACCORDS[t.accord].toLowerCase() : ''}${t.accord && t.plat ? ' · ' : ''}${esc(t.plat || '')}</small>` : ''}</div>${noteBadge(t.note)}</button>`;
 }

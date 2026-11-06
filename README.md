@@ -25,6 +25,9 @@ src/js/*.js         code, assemblé dans l'ordre des noms de fichiers
   55-deg            onglet Dégustations : journal, vue par vin, séances, liste d'envies
   60-ai             IA : sommelier, apogées, lecture d'étiquette, coûts
   62-ploc           import du PDF Ploc : lecture des fiches et du plan, sites, placement, avis du sommelier
+  63-plocdeg        import des dégustations Ploc (CSV) : lecture, sommelier, séances
+  66-export         export Excel (.xlsx généré sur l’appareil), inventaire imprimable
+  67-share          carte des vins, partage d’une dégustation (images, PDF, texte)
   70-boire          vue À boire, conseils de rangement et réassort
   80-plus           réglages, sites et espaces, IA, sauvegarde, sécurité
   82-stats          statistiques, valeur actuelle des vins

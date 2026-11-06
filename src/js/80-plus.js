@@ -39,6 +39,12 @@ function vPlus() {
       <div class="row between" style="margin-top:10px"><b style="font-size:14px">Dépense ce mois</b><span style="font-size:13px;font-weight:600">${fmtE2.format(spent)} / ${fmtE2.format(ai.budget || 0)}</span></div>
       <div class="meter"><i class="${pct >= 100 ? 'over' : pct >= 75 ? 'warn' : ''}" style="width:${pct}%"></i></div>
     </div>
+    <div class="sect">Partager et exporter</div>
+    <div class="card" style="padding:0 12px">
+      ${setRow('wineCardSheet', 'Carte des vins', 'À partager en image ou en PDF')}
+      ${setRow('exportXlsx', 'Exporter en Excel', 'Inventaire, dégustations, mouvements')}
+      ${setRow('printInventory', 'Inventaire imprimable', 'Par site et meuble, avec les plans (PDF)')}
+    </div>
     <div class="sect">Sauvegarde</div>
     <div class="card" style="padding:0 12px">
       <button class="set" data-act="export"><div class="it"><b>Sauvegarder</b><small>${lastExp ? 'Dernière : ' + esc(fmtDate(new Date(lastExp).toISOString())) : 'Jamais sauvegardée'}${old && S.wines.length ? ' · <span style="color:var(--bx);font-weight:600">à faire</span>' : ''}</small></div><span class="chev">${ICON.up}</span></button>
