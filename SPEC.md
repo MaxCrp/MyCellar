@@ -644,3 +644,11 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
    - Avec Google Drive (a ou b), chacun se connecte avec son propre compte Google. Sa sauvegarde va dans un dossier caché de son Drive, propre à l'app (`appDataFolder`), que personne d'autre ne voit. Sur un nouvel iPhone, il suffit de se reconnecter à Google, puis de saisir le mot de passe de la cave.
    - Avec (c), les sauvegardes de tous sont stockées sur ton compte Cloudflare. Chacune est rangée sous une clé personnelle tirée au hasard sur l'iPhone. Personne ne peut lire la sauvegarde d'un autre, ni toi, puisqu'elle est chiffrée. En revanche, chacun doit garder sa clé de récupération pour restaurer sur un autre appareil.
    - Pour (b) : un seul projet Google Cloud sert à tous. Le droit demandé (`drive.appdata`) est classé « non sensible » par Google, donc une vérification de base suffit. L'app doit passer en statut « En production », sinon l'autorisation expire tous les 7 jours. Le projet est limité à 100 utilisateurs tant qu'il n'est pas vérifié. Le Worker ne fait que renouveler l'autorisation : il ne voit jamais les données, qui vont directement de l'iPhone au Drive de chacun.
+
+**v3** (publication sur l'App Store, grand public ; plan rédigé le 8 novembre 2026, rien n'est spécifié en détail ni développé)
+Le plan complet est dans `docs/plan-app-store.md` : modèle économique (gratuit + Premium), coûts et scénarios, changements produit, chemin technique (app native Capacitor, service IA sur un Worker Cloudflare, iCloud), obligations et feuille de route. Chaque phase deviendra une release spécifiée, puis lancée sur demande :
+- v3.0 : produit grand public (ouverture simple et migration, premier lancement guidé, options avancées repliées, anglais, accessibilité) ;
+- v3.1 : service IA sans clé personnelle, quotas, consentement IA, abonnement Premium ;
+- v3.2 : app native, iCloud, notifications, Face ID, bêta TestFlight ;
+- v3.3 : fiche App Store et publication.
+Préalables : les 6 décisions listées à la fin du plan.
