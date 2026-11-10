@@ -248,3 +248,7 @@ Décision : l'app doit coûter le moins possible au départ, hors adhésion Appl
 | API Claude | À l'usage, plafond mensuel fixé chez Anthropic (par exemple 10 à 20 $) | quelques euros par mois au départ |
 
 **Important** : l'abonnement Claude Pro (claude.ai) ne fonctionne pas pour une app. Le service d'Apogée utilise l'API d'Anthropic, facturée à part sur la console d'Anthropic, par crédits prépayés. Avec les quotas décidés (crédits de découverte une seule fois par compte Apple, environ 8 centimes au maximum), le plafond protège de toute mauvaise surprise.
+
+## 16. Business plan (10 novembre 2026)
+
+Le business plan complet (taille du public, concurrence, coûts et gains, rentabilité, probabilités de réussite, décision par étapes) est dans `docs/business-plan-apogee.md`. Il corrige les marges de la section 2 : après cotisations sociales et impôt, un abonné annuel rapporte environ 7,60 € nets par an, et non 16 €.
