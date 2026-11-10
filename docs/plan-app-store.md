@@ -223,3 +223,7 @@ Une recherche rapide n'a trouvé aucune app nommée « Apogée », « Décante �
 
 - **Nom retenu : Apogée.** Avant de l'annoncer : vérifier les marques déposées (INPI, EUIPO) dans les classes des logiciels et services en ligne, la disponibilité du nom sur l'App Store et celle d'un nom de domaine.
 - **Exigences ajoutées**, détaillées dans `SPEC.md` (§10, v3) : crédits IA fixés côté serveur, sans réglage possible ni contournement depuis l'app ; clé API jamais présente dans l'app ni sur l'hébergement des pages, protégée par un service qui n'accepte que des demandes typées venant d'une copie authentique de l'app ; import depuis les grandes apps de cave (Ploc, CellarTracker, Vivino, InVintory, tout CSV ou Excel), lu sur l'iPhone sans IA autant que possible ; langue réglable (français, anglais).
+
+## 13. Sécurité d'abord (10 novembre 2026)
+
+La feuille de route est réorganisée : la **v3.0 est le socle de sécurité** (app native minimale, service en ligne, identité Apple, App Attest, abonnements et crédits vérifiés côté serveur, protection de la clé, tests d'attaque), spécifiée en détail dans `SPEC.md`. Suivent v3.1 (produit grand public, langue, import multi-apps), v3.2 (sommelier et Premium), v3.3 (iCloud, notifications, bêta) et v3.4 (publication). Crédits de découverte : une seule fois par compte Apple, connexion uniquement par « Se connecter avec Apple ». Un audit de sécurité externe est prévu avant la publication : à ajouter au budget (de quelques centaines à quelques milliers d'euros).

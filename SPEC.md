@@ -647,24 +647,119 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 
 **v3** (publication sur l'App Store, grand public ; plan rédigé le 8 novembre 2026, rien n'est spécifié en détail ni développé)
 Le plan complet est dans `docs/plan-app-store.md` : modèle économique (gratuit + Premium), coûts et scénarios, changements produit, chemin technique (app native Capacitor, service IA sur un Worker Cloudflare, iCloud), obligations et feuille de route. Chaque phase deviendra une release spécifiée, puis lancée sur demande :
-- v3.0 : produit grand public (ouverture simple et migration, premier lancement guidé, options avancées repliées, anglais, accessibilité) ;
-- v3.1 : service IA sans clé personnelle, quotas, consentement IA, abonnement Premium ;
-- v3.2 : app native, iCloud, notifications, Face ID, bêta TestFlight ;
-- v3.3 : fiche App Store et publication.
+- **v3.0 : socle de sécurité** (réorganisé le 10 novembre 2026 : la sécurité passe en premier). App native minimale, service en ligne sécurisé, identité Apple, authenticité de l'app, crédits et abonnements vérifiés côté serveur, protection de la clé, tests d'attaque. Spécifiée ci-dessous ;
+- v3.1 : produit grand public (ouverture simple et migration, premier lancement guidé, options avancées repliées, langue réglable, import multi-apps, accessibilité) ;
+- v3.2 : sommelier et Premium branchés sur le socle (écran Premium, consentement IA, quotas visibles) ;
+- v3.3 : iCloud, notifications, Face ID, bêta TestFlight ;
+- v3.4 : fiche App Store et publication.
 Décisions du 10 novembre 2026 (détail dans le plan, §11) : modèle et prix validés ; deux versions, `master` reste MyCellar (version personnelle, évoluée) et la version App Store vit sur une branche `store` sous le nom **Apogée** (choisi le 10 novembre 2026, marque et domaine à vérifier) ; compte Apple individuel et micro-entreprise ; compilation dans le cloud (pas de Mac) ; français et anglais, tutoiement ou vouvoiement réglable.
+
+**v3.0 : socle de sécurité d'Apogée** (branche `store` ; spécifiée le 10 novembre 2026, rien n'est développé)
+
+*Objectifs fixés* :
+1. aucune donnée d'utilisateur ne peut être extraite, ni de l'app, ni du serveur, ni en chemin ;
+2. aucune attaque ne permet de profiter financièrement de l'app : pas de Premium gratuit, pas de crédits IA en plus, pas d'usage de la clé API ;
+3. rien ne doit porter atteinte au propriétaire de l'app : ni à ses finances, ni à ses comptes, ni à sa responsabilité, ni à sa réputation.
+
+*Référentiels étudiés* (recherche du 10 novembre 2026), qui servent de grille de contrôle :
+- **OWASP MASVS v2.1**, le standard de vérification des apps mobiles : 8 groupes (stockage, cryptographie, authentification, réseau, interaction avec la plateforme, code, résilience, vie privée) ;
+- **OWASP Mobile Top 10 (2024)** : identifiants mal utilisés (M1), chaîne d'approvisionnement (M2), authentification et autorisation (M3), validation des entrées et sorties (M4), communications (M5), vie privée (M6), protection du binaire (M7), mauvaise configuration (M8), stockage (M9), cryptographie (M10) ;
+- **OWASP API Security Top 10 (2023)**, pour le service en ligne : contrôle d'accès par objet, authentification, consommation de ressources illimitée, flux métier sensibles (achats, crédits), mauvaise configuration… ;
+- **OWASP Top 10 pour les applications à base de LLM (2025)** : injection de consignes (LLM01), divulgation d'informations (LLM02), sorties mal traitées (LLM05), fuite des instructions système (LLM07), consommation illimitée, dite « déni de portefeuille » (LLM10) ;
+- **CNIL, recommandations sur les applications mobiles** (septembre 2024, mises à jour en avril 2025) et **RGPD** (protection dès la conception, article 25 ; sécurité, article 32 ; notification d'une fuite sous 72 heures, article 33) ;
+- **Règles d'Apple** : vérification des achats signés, App Attest, « Se connecter avec Apple », suppression du compte dans l'app (5.1.1), consentement avant envoi de données à une IA tierce (5.1.2), code embarqué dans l'app (2.5.2).
+
+*Principe directeur* : ce que le serveur ne stocke pas ne peut pas fuir, et ce que l'app ne contient pas ne peut pas être volé. Les données de cave restent sur l'iPhone (et, plus tard, dans l'iCloud privé de l'utilisateur) ; le serveur ne garde que le strict nécessaire aux crédits et à l'abonnement ; la clé API n'existe que sur le serveur.
+
+**A. Architecture et données**
+- [ ] **Deux éléments seulement** : l'app (Capacitor, tout son code embarqué, rien de téléchargé) et le service Apogée (Worker Cloudflare), séparé de l'hébergement du site de présentation.
+- [ ] **Le serveur ne stocke aucune donnée de cave** : pas de vins, notes, dégustations, photos, lieux ni prénoms. Il ne garde que : un identifiant Apple pseudonymisé (empreinte), l'état de l'abonnement, les compteurs de crédits, l'empreinte de la clé App Attest de chaque appareil, et des journaux techniques sans contenu (date, type de demande, résultat, coût).
+- [ ] **Minimisation des envois à l'IA** : le contexte de cave envoyé au sommelier ne contient ni prénoms (amis, convives), ni lieux, ni prix d'achat, ni photos de dégustation ; seulement ce qui sert à la réponse (vins, millésimes, fenêtres, emplacements génériques, notes et commentaires de dégustation). Chaque type de demande a sa liste de champs autorisés, vérifiée par le serveur.
+- [ ] **Durées de conservation** : journaux techniques 30 jours ; compteurs et état d'abonnement tant que le compte existe ; tout est effacé à la suppression du compte.
+
+**B. Identité : un compte Apple, pas de mot de passe**
+- [ ] **Seulement « Se connecter avec Apple »** : pas d'inscription par e-mail, pas de mot de passe stocké, donc rien à voler par hameçonnage ou fuite de base. Le serveur vérifie le jeton d'identité d'Apple (signature avec les clés publiques d'Apple, émetteur, destinataire, expiration, valeur aléatoire à usage unique).
+- [ ] **Crédits de découverte une seule fois par compte Apple** et, en plus, une seule fois par iPhone (marqueurs DeviceCheck d'Apple), pour qu'une réinstallation ou un changement de compte sur le même appareil ne les redonne pas.
+- [ ] **Sessions courtes** : après connexion, le serveur délivre un jeton de session signé, valable quelques heures, lié à l'appareil (clé App Attest) : volé, il ne sert à rien sur un autre appareil.
+- [ ] **Suppression du compte dans l'app** (exigée par Apple) : révocation de l'autorisation Apple et effacement de tout ce que le serveur détient.
+- [ ] **Contrôle d'accès strict** : chaque requête n'agit que sur le compte de son jeton ; aucun identifiant de compte n'est accepté venant de l'app (pas d'accès aux crédits ou à l'abonnement d'un autre en changeant un numéro).
+
+**C. Authenticité de l'app (App Attest)**
+- [ ] **Enregistrement de l'appareil** : au premier lancement, l'app crée une clé dans la puce sécurisée de l'iPhone (Secure Enclave) et la fait attester par Apple ; le serveur vérifie l'attestation (certificat d'Apple, identifiant de l'app, environnement de production).
+- [ ] **Chaque requête est signée** par cette clé (assertion), avec un compteur croissant : une requête copiée et rejouée, ou forgée hors de l'app, est refusée.
+- [ ] **Indicateur de fraude d'Apple** : le nombre de clés attestées par appareil sur 30 jours est consulté ; un appareil anormal voit ses crédits gratuits refusés et ses demandes limitées.
+- [ ] Simulateur, app modifiée, script ou autre app : aucun accès au service.
+
+**D. Abonnements et crédits : décidés par le serveur, jamais par l'app**
+- [ ] **Premium accordé uniquement sur preuve d'Apple** : le serveur vérifie la transaction signée d'Apple (StoreKit 2) avec la bibliothèque officielle d'Apple (chaîne de certificats, identifiant de l'app, environnement), puis l'état de l'abonnement auprès de l'API d'Apple. Un indicateur « Premium » envoyé par l'app n'a aucune valeur.
+- [ ] **Achat lié au compte** : chaque achat porte un jeton de compte (appAccountToken) ; une même transaction ne peut pas débloquer un autre compte (Partage familial géré selon les règles d'Apple).
+- [ ] **Remboursement, révocation, expiration** : les notifications signées d'Apple (version 2) retirent immédiatement les droits ; un abonnement remboursé ne garde pas ses crédits.
+- [ ] **Compteurs atomiques** : chaque demande réserve son crédit avant l'appel à l'IA et le confirme ou le rend après ; cinquante demandes envoyées en même temps ne dépassent pas le quota (compteur unique par compte, Durable Object Cloudflare).
+- [ ] **Limites de débit** par appareil, par compte et globales ; le dépassement renvoie un message clair, sans appeler l'IA.
+
+**E. Service IA : la clé introuvable et inutilisable hors des demandes prévues**
+- [ ] Toutes les exigences « Clé API impossible à obtenir » ci-dessous (clé seulement dans les secrets chiffrés du Worker, jamais dans l'app, le dépôt, les journaux ni l'hébergement du site).
+- [ ] **Espace de travail Anthropic dédié à Apogée**, avec un plafond de dépense mensuel fixé chez Anthropic ; une clé de développement distincte, à plafond très bas ; remplacement de la clé en quelques minutes (procédure écrite et testée).
+- [ ] **Demandes typées uniquement** : lecture d'étiquette, accord, fenêtre, valeur, audit, découpage de noms d'import. Pour chacune, le serveur écrit les instructions, choisit le modèle, fixe la taille maximale de la réponse et le format de sortie, et vérifie la taille des entrées (image redimensionnée, nombre de vins, longueur des textes). Aucun texte libre n'est transmis comme consigne.
+- [ ] **Injection de consignes** (une étiquette, un fichier importé ou une question qui tente de détourner l'IA) : les contenus de l'utilisateur sont transmis comme données délimitées, jamais comme consignes ; l'IA n'a ni outil, ni accès, ni action possible ; ses réponses sont validées par un schéma, et l'app échappe tout ce qu'elle affiche. Au pire, une injection produit une réponse fausse pour son propre auteur.
+- [ ] **Sujet limité** : le sommelier ne traite que le vin, les spiritueux et les accords ; une demande hors sujet est refusée sans être facturée en crédits.
+- [ ] **Coupe-circuit** : un réglage serveur suspend l'IA (tous les comptes, ou un compte) en un geste ; alerte automatique si la dépense du jour ou d'un compte sort de l'ordinaire.
+
+**F. Communications**
+- [ ] HTTPS uniquement, TLS 1.2 au minimum, aucune exception à la sécurité de transport d'iOS (ATS) ; l'app ne parle qu'au service Apogée et à Apple.
+- [ ] Le service refuse les navigateurs (pas d'autorisation d'origine croisée), ne pose aucun cookie, et renvoie des erreurs sans détail interne.
+- [ ] Pas d'épinglage de certificat (Cloudflare renouvelle ses certificats, un épinglage casserait l'app) : la protection contre l'interception repose sur TLS, App Attest et les requêtes signées.
+
+**G. Stockage sur l'iPhone**
+- [ ] Données de l'app sous la protection de fichiers « complète » d'iOS (illisibles quand l'iPhone est verrouillé) ; jeton de session et identifiants dans le trousseau, liés à cet appareil, non sauvegardés.
+- [ ] Rien de sensible dans les journaux de l'app ; voile sur l'aperçu dans le sélecteur d'apps (déjà en place) ; Face ID facultatif ; chiffrement par mot de passe facultatif conservé pour qui le veut.
+- [ ] Exports et sauvegardes : chiffrés par défaut, ou export lisible après avertissement.
+
+**H. Code et entrées**
+- [ ] Tout le code est dans l'app (aucun script téléchargé), sous une politique de sécurité de contenu stricte ; aucune évaluation de code dynamique.
+- [ ] Tout ce qui est affiché est échappé (déjà en place dans MyCellar et couvert par la campagne de tests).
+- [ ] Imports (CSV, Excel, PDF, ZIP) : tailles et nombres d'entrées bornés, archives piégées refusées (taux de compression anormal, chemins de fichiers suspects), lecture sans exécution de formules.
+- [ ] Exports tableur : une cellule qui commence par « = », « + », « - » ou « @ » est neutralisée (protection contre l'injection de formules).
+
+**I. Chaîne d'approvisionnement**
+- [ ] Le moins de dépendances possible, versions figées, empreintes vérifiées ; aucun SDK de publicité ni de mesure d'audience ; chaque bibliothèque intégrée (PDF, QR, Capacitor et ses modules) relue avant intégration et mise à jour.
+- [ ] Alertes de vulnérabilités sur le dépôt, recherche automatique de secrets à chaque envoi, branche `store` protégée.
+- [ ] Compilation dans le cloud (Codemagic) avec des accès limités : la clé d'App Store Connect n'y sert qu'à publier sur TestFlight ; aucun secret du service IA n'y transite.
+
+**J. Vie privée (CNIL, RGPD, Apple)**
+- [ ] Aucune publicité, aucun traceur, aucune mesure d'audience tierce. Le suivi d'utilisation de MyCellar reste local, désactivé par défaut, jamais envoyé sans action de l'utilisateur.
+- [ ] Consentement explicite avant le premier envoi à l'IA, case non cochée par défaut, retirable dans les réglages (sans consentement, l'app fonctionne sans IA).
+- [ ] Politique de confidentialité claire, étiquettes de confidentialité de l'App Store exactes, registre des traitements, liste des sous-traitants (Apple, Cloudflare, Anthropic) et de leurs garanties.
+- [ ] Droits des personnes depuis l'app : voir ce que le serveur détient, le supprimer (suppression du compte).
+
+**K. Protection du propriétaire**
+- [ ] **Comptes** Apple, Cloudflare, Anthropic, GitHub, Codemagic et du nom de domaine : double authentification forte (clé de sécurité ou passkey), adresse e-mail dédiée, codes de secours conservés hors ligne, jetons d'accès Cloudflare limités au strict nécessaire.
+- [ ] **Finances** : plafond de dépense chez Anthropic, alertes de facturation Cloudflare, quotas, coupe-circuit : une attaque ne peut pas coûter plus que le plafond fixé.
+- [ ] **Juridique** : mentions légales, conditions d'utilisation et de vente, avertissement alcool (réservé aux adultes, modération, conformité à la loi Évin dans la présentation), limitation de responsabilité sur les conseils du sommelier ; domiciliation pour l'adresse publique exigée dans l'UE.
+- [ ] **Incident** : procédure écrite (couper le service, remplacer la clé, analyser les journaux, informer les utilisateurs, notifier la CNIL sous 72 heures si des données personnelles sont touchées).
+
+**L. Vérification avant toute publication**
+- [ ] Grille MASVS v2.1 remplie point par point (niveau de base L1, plus les contrôles de résilience utiles à App Attest).
+- [ ] **Tests d'attaque automatiques du service**, rejoués à chaque modification : sans jeton, jeton faux, expiré ou d'un autre appareil ; requête rejouée ; attestation falsifiée ; transaction forgée, réutilisée sur un autre compte ou remboursée ; quota dépassé par requêtes simultanées ; demande hors type ou hors sujet ; entrée géante ; tentatives d'injection de consignes ; recherche de la clé dans l'app compilée et dans les réponses du serveur.
+- [ ] Revue de sécurité du code à chaque release, et un audit externe (test d'intrusion) avant la publication sur l'App Store (budget à prévoir, de quelques centaines à quelques milliers d'euros selon le prestataire).
+- [ ] Limite assumée : aucun système n'est inviolable. Le but est qu'aucune voie connue ne mène aux données ni à la clé, que l'impact d'une faille soit borné (plafonds, quotas, données minimales) et qu'elle soit détectée et coupée vite.
+
+*Préalables à la v3.0* : compte développeur Apple (nécessaire pour App Attest, « Se connecter avec Apple », les achats intégrés de test et TestFlight), compte Cloudflare (déjà disponible), espace de travail Anthropic dédié à Apogée, compte Codemagic. Tant que le compte Apple n'existe pas, le service et ses tests d'attaque peuvent être développés et testés avec des réponses d'Apple simulées.
+
+*Références* : [OWASP MASVS v2.1](https://opensecurityarchitecture.org/frameworks/owasp-masvs-v2), [OWASP Mobile Top 10 2024](https://www.cobalt.io/blog/owasp-mobile-top-10-2024-update), [OWASP Top 10 LLM 2025](https://genai.owasp.org/2024/11/17/owasp-reveals-2025-top-10-risks-for-llms-new-sponsorship-program/), [CNIL, recommandations applications mobiles](https://www.cnil.fr/fr/recommandations-applications-mobiles), [Apple, vérification des transactions](https://developer.apple.com/documentation/storekit/verificationresult), [Apple, risque de fraude App Attest](https://developer.apple.com/documentation/devicecheck/assessing-fraud-risk).
 
 *Exigences de la version store, Apogée* (demandées le 10 novembre 2026). Elles s'ajoutent aux releases ci-dessus et sont développées sur la branche `store`, release par release, sur demande.
 
-**Crédits IA fixés côté serveur** (v3.1)
-- [ ] **Quotas fixés par Apogée**, sans réglage possible par l'utilisateur. Le réglage « plafond mensuel » de MyCellar n'existe pas dans Apogée. Proposition (10 novembre 2026, à valider), calculée pour que le pire cas reste couvert par l'abonnement :
-  - **Gratuit** : crédits de découverte donnés **une seule fois** (pas chaque mois) : 5 lectures d'étiquette et 3 questions au sommelier. Coût maximal ≈ 0,08 € par utilisateur.
+**Crédits IA fixés côté serveur** (v3.0 pour le moteur, v3.2 pour l'affichage)
+- [ ] **Quotas fixés par Apogée**, sans réglage possible par l'utilisateur. Le réglage « plafond mensuel » de MyCellar n'existe pas dans Apogée. Quotas validés le 10 novembre 2026, calculée pour que le pire cas reste couvert par l'abonnement :
+  - **Gratuit** : crédits de découverte donnés **une seule fois**, à la première connexion, **par compte Apple** (validé le 10 novembre 2026) : quelques lectures d'étiquette (5) et 3 questions au sommelier. Pas de création de compte dans l'app (identification uniquement par « Se connecter avec Apple ») : pas de multi-comptes en un clic. Coût maximal ≈ 0,08 € par compte.
   - **Premium** : par mois, 60 questions au sommelier (accords, audit, analyses), lectures d'étiquette et estimations sans recherche web en usage raisonnable (jusqu'à 200), 10 estimations avec recherche web (fenêtre, valeur). Coût maximal ≈ 2 € par mois, coût moyen attendu ≈ 0,20 à 0,50 €.
   - **Choix des modèles** : Claude Haiku 5.5 pour les tâches de lecture (étiquettes, découpage des noms, imports), environ vingt fois moins cher ; Claude Sonnet 5.5 pour le sommelier. Recherche web seulement quand elle apporte vraiment (fenêtre ou valeur d'un vin précis), à 1 centime de dollar la recherche.
 - [ ] **Le compteur vit sur le serveur, pas dans l'app** : il est tenu par le service IA (Worker Cloudflare), rattaché à l'abonnement vérifié auprès d'Apple. L'app ne fait qu'afficher les crédits restants. Modifier l'app, ses données ou ses requêtes ne donne aucun crédit en plus : le serveur refuse au-delà du quota.
 - [ ] **Abonnement vérifié auprès d'Apple** : le serveur contrôle la preuve d'achat signée par Apple (et non une simple déclaration de l'app) ; essai et crédits gratuits rattachés à l'appareil par les outils d'Apple (App Attest, DeviceCheck), pour qu'une réinstallation ne les remette pas à zéro.
 - [ ] **Garde-fous globaux** : limite de débit par appareil et par abonné, plafond de dépense mensuel fixé chez Anthropic pour la clé d'Apogée (dernier rempart), alerte en cas de consommation anormale.
 
-**Clé API impossible à obtenir** (v3.1, priorité absolue)
+**Clé API impossible à obtenir** (v3.0, priorité absolue)
 - [ ] **La clé n'est jamais dans l'app** : ni dans le code, ni dans les données, ni dans les échanges avec l'iPhone. Seul le Worker la connaît, rangée comme secret chiffré chez Cloudflare (illisible une fois enregistrée, y compris depuis le tableau de bord), jamais dans le dépôt GitHub ni dans les journaux.
 - [ ] **Le site hébergé ne la contient pas** : l'hébergement des pages (Cloudflare Pages) et le service IA sont séparés ; une intrusion sur l'hébergement des pages ne donne accès à aucun secret.
 - [ ] **Le serveur ne sert pas de « Claude gratuit »** : l'app n'envoie pas de texte libre à faire suivre. Elle envoie une demande typée (lire une étiquette, accorder un plat, estimer une fenêtre…), et le serveur construit lui-même les instructions, choisit le modèle et limite la taille des réponses. Une requête détournée ne peut donc pas utiliser la clé pour autre chose.
@@ -674,7 +769,7 @@ Décisions du 10 novembre 2026 (détail dans le plan, §11) : modèle et prix va
 - [ ] Données sur l'iPhone : protection des fichiers d'iOS, Face ID facultatif, aucune donnée de cave stockée sur le serveur.
 - [ ] Limite assumée : aucun système n'est inviolable. L'objectif est qu'aucune voie connue ne donne la clé, et que même une fuite reste limitée et coupée vite (plafond de dépense, alerte, remplacement de la clé).
 
-**Import depuis les grandes apps de cave, surtout sans IA** (v3.0)
+**Import depuis les grandes apps de cave, surtout sans IA** (v3.1)
 - [ ] **Sources** : Ploc (PDF de cave et CSV de dégustations, déjà pris en charge), CellarTracker (export CSV), Vivino (export de données CSV), InVintory (export CSV), et tout fichier CSV ou Excel (.xlsx) d'une autre app. Liste à compléter selon les exports réels disponibles.
 - [ ] **Lecture locale d'abord** : chaque format connu est reconnu par ses colonnes et lu sur l'iPhone, sans IA. Pour un fichier inconnu, un écran de correspondance des colonnes (« cette colonne, c'est le domaine ») est mémorisé pour les imports suivants.
 - [ ] **PDF Ploc lu localement** : le texte du PDF (fiches, légende, plan) est extrait sur l'iPhone par une bibliothèque intégrée, puis découpé sans IA ; l'IA ne sert qu'en secours si la mise en page n'est pas reconnue.
@@ -683,7 +778,7 @@ Décisions du 10 novembre 2026 (détail dans le plan, §11) : modèle et prix va
 - [ ] **Formats connus (recherche du 10 novembre 2026, sans fichier réel)** : CellarTracker exporte en CSV ou texte depuis son site (pas depuis l'app), avec des colonnes choisies par l'utilisateur, en encodage Latin-1, et les emplacements dans un export à part. Vivino envoie, sur demande, une archive .zip qui contient `cellar.csv`, sans prix, format ni emplacement. InVintory exporte en CSV depuis sa page Collection (offre gratuite comprise). Les noms exacts des colonnes ne sont publiés nulle part : la lecture repose donc sur un **dictionnaire de colonnes** en français et en anglais (Producer / Winery / Domaine / Producteur, Wine / Wine name / Nom, Vintage / Millésime, Quantity / Qty / Stock, Location / Bin / Cave, BeginConsume / Drink from / Apogée, Price / Value / Estimation, Size / Format / Contenance, Color / Type / Couleur…), complété par l'écran de correspondance pour ce qui reste inconnu. L'archive .zip de Vivino est ouverte sur l'iPhone.
 - [ ] Des exports réels (testeurs de la bêta) serviront à affiner le dictionnaire avant la publication ; les tests utilisent des fichiers fictifs construits d'après ces informations.
 
-**Langue réglable** (v3.0)
+**Langue réglable** (v3.1)
 - [ ] Réglages › Langue : français ou anglais (d'autres langues plus tard). Par défaut, la langue de l'iPhone.
 - [ ] Toute l'app suit ce réglage : textes, dates, nombres et prix, messages d'erreur, présentation, et les réponses du sommelier.
 - [ ] En français, tutoiement ou vouvoiement au choix (décidé le 10 novembre 2026).
