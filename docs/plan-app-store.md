@@ -218,3 +218,8 @@ Une recherche rapide n'a trouvé aucune app nommée « Apogée », « Décante �
 - Seule limite : pas de simulateur iPhone sous la main, donc chaque essai passe par une compilation. Les tests automatiques actuels (Chromium) continuent de couvrir l'essentiel avant chaque compilation.
 
 *Sources complémentaires (10 novembre 2026) : cumul salariat et micro-entreprise ([Service-Public](https://entreprendre.service-public.gouv.fr/vosdroits/F23264), [Bpifrance Création](https://bpifrance-creation.fr/encyclopedie/statut-du-dirigeant-son-conjoint/situation-pluriactifs/cumul-dune-activite), [clause d'exclusivité et article L1222-5](https://consultation.avocat.fr/barreau-vienne/blog/jean-luc-braunschweig-klein/article-2983836-clause-d-exclusivite-et-creation-d-entreprise-est-ce-possible.html)) ; compte Apple individuel et D-U-N-S ([Apple](https://developer.apple.com/support/d-u-n-s/)) ; Codemagic ([tarifs](https://docs.codemagic.io/billing/pricing/)).*
+
+## 12. Nom et exigences de la version store (10 novembre 2026)
+
+- **Nom retenu : Apogée.** Avant de l'annoncer : vérifier les marques déposées (INPI, EUIPO) dans les classes des logiciels et services en ligne, la disponibilité du nom sur l'App Store et celle d'un nom de domaine.
+- **Exigences ajoutées**, détaillées dans `SPEC.md` (§10, v3) : crédits IA fixés côté serveur, sans réglage possible ni contournement depuis l'app ; clé API jamais présente dans l'app ni sur l'hébergement des pages, protégée par un service qui n'accepte que des demandes typées venant d'une copie authentique de l'app ; import depuis les grandes apps de cave (Ploc, CellarTracker, Vivino, InVintory, tout CSV ou Excel), lu sur l'iPhone sans IA autant que possible ; langue réglable (français, anglais).

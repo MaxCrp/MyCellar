@@ -651,4 +651,35 @@ Le plan complet est dans `docs/plan-app-store.md` : modèle économique (gratuit
 - v3.1 : service IA sans clé personnelle, quotas, consentement IA, abonnement Premium ;
 - v3.2 : app native, iCloud, notifications, Face ID, bêta TestFlight ;
 - v3.3 : fiche App Store et publication.
-Décisions du 10 novembre 2026 (détail dans le plan, §11) : modèle et prix validés ; deux versions, `master` reste MyCellar (version personnelle, évoluée) et la version App Store vit sur une branche `store` sous un nouveau nom (à choisir) ; compte Apple individuel et micro-entreprise ; compilation dans le cloud (pas de Mac) ; français et anglais, tutoiement ou vouvoiement réglable.
+Décisions du 10 novembre 2026 (détail dans le plan, §11) : modèle et prix validés ; deux versions, `master` reste MyCellar (version personnelle, évoluée) et la version App Store vit sur une branche `store` sous le nom **Apogée** (choisi le 10 novembre 2026, marque et domaine à vérifier) ; compte Apple individuel et micro-entreprise ; compilation dans le cloud (pas de Mac) ; français et anglais, tutoiement ou vouvoiement réglable.
+
+*Exigences de la version store, Apogée* (demandées le 10 novembre 2026). Elles s'ajoutent aux releases ci-dessus et sont développées sur la branche `store`, release par release, sur demande.
+
+**Crédits IA fixés côté serveur** (v3.1)
+- [ ] **Quotas mensuels fixés par Apogée**, sans réglage possible par l'utilisateur. Le réglage « plafond mensuel » de MyCellar n'existe pas dans Apogée. Proposition, à valider : en gratuit, 5 lectures d'étiquette et 3 questions au sommelier pour découvrir ; en Premium, environ 100 demandes par mois (lectures, questions, estimations confondues).
+- [ ] **Le compteur vit sur le serveur, pas dans l'app** : il est tenu par le service IA (Worker Cloudflare), rattaché à l'abonnement vérifié auprès d'Apple. L'app ne fait qu'afficher les crédits restants. Modifier l'app, ses données ou ses requêtes ne donne aucun crédit en plus : le serveur refuse au-delà du quota.
+- [ ] **Abonnement vérifié auprès d'Apple** : le serveur contrôle la preuve d'achat signée par Apple (et non une simple déclaration de l'app) ; essai et crédits gratuits rattachés à l'appareil par les outils d'Apple (App Attest, DeviceCheck), pour qu'une réinstallation ne les remette pas à zéro.
+- [ ] **Garde-fous globaux** : limite de débit par appareil et par abonné, plafond de dépense mensuel fixé chez Anthropic pour la clé d'Apogée (dernier rempart), alerte en cas de consommation anormale.
+
+**Clé API impossible à obtenir** (v3.1, priorité absolue)
+- [ ] **La clé n'est jamais dans l'app** : ni dans le code, ni dans les données, ni dans les échanges avec l'iPhone. Seul le Worker la connaît, rangée comme secret chiffré chez Cloudflare (illisible une fois enregistrée, y compris depuis le tableau de bord), jamais dans le dépôt GitHub ni dans les journaux.
+- [ ] **Le site hébergé ne la contient pas** : l'hébergement des pages (Cloudflare Pages) et le service IA sont séparés ; une intrusion sur l'hébergement des pages ne donne accès à aucun secret.
+- [ ] **Le serveur ne sert pas de « Claude gratuit »** : l'app n'envoie pas de texte libre à faire suivre. Elle envoie une demande typée (lire une étiquette, accorder un plat, estimer une fenêtre…), et le serveur construit lui-même les instructions, choisit le modèle et limite la taille des réponses. Une requête détournée ne peut donc pas utiliser la clé pour autre chose.
+- [ ] **Seules les vraies apps sont acceptées** : chaque requête prouve qu'elle vient d'une copie authentique d'Apogée sur un vrai iPhone (App Attest d'Apple).
+- [ ] **Comptes protégés** : double authentification par clé physique ou application sur les comptes Apple, Cloudflare, Anthropic et GitHub ; une clé de développement distincte de celle de production ; procédure de remplacement de la clé en quelques minutes.
+- [ ] **Contrôles avant chaque publication** : revue de sécurité du code et des dépendances, recherche automatique de secrets dans le dépôt, tests d'intrusion du service IA (requêtes forgées, rejeu, dépassement de quota, appareil non authentique).
+- [ ] Données sur l'iPhone : protection des fichiers d'iOS, Face ID facultatif, aucune donnée de cave stockée sur le serveur.
+- [ ] Limite assumée : aucun système n'est inviolable. L'objectif est qu'aucune voie connue ne donne la clé, et que même une fuite reste limitée et coupée vite (plafond de dépense, alerte, remplacement de la clé).
+
+**Import depuis les grandes apps de cave, surtout sans IA** (v3.0)
+- [ ] **Sources** : Ploc (PDF de cave et CSV de dégustations, déjà pris en charge), CellarTracker (export CSV), Vivino (export de données CSV), InVintory (export CSV), et tout fichier CSV ou Excel (.xlsx) d'une autre app. Liste à compléter selon les exports réels disponibles.
+- [ ] **Lecture locale d'abord** : chaque format connu est reconnu par ses colonnes et lu sur l'iPhone, sans IA. Pour un fichier inconnu, un écran de correspondance des colonnes (« cette colonne, c'est le domaine ») est mémorisé pour les imports suivants.
+- [ ] **PDF Ploc lu localement** : le texte du PDF (fiches, légende, plan) est extrait sur l'iPhone par une bibliothèque intégrée, puis découpé sans IA ; l'IA ne sert qu'en secours si la mise en page n'est pas reconnue.
+- [ ] **IA seulement en complément, et en option** : pour démêler un nom de vin mélangé (domaine, appellation, cuvée) ou compléter des champs vides, après accord et avec le nombre de crédits annoncé ; regroupement des vins identiques pour ne demander qu'une fois par vin.
+- [ ] Écran de vérification, sans doublon à la réimportation, comme pour l'import Ploc actuel.
+- [ ] Besoin : un exemple de fichier exporté par chaque app visée (avec tes données ou celles d'un ami), pour régler la lecture sur le format réel.
+
+**Langue réglable** (v3.0)
+- [ ] Réglages › Langue : français ou anglais (d'autres langues plus tard). Par défaut, la langue de l'iPhone.
+- [ ] Toute l'app suit ce réglage : textes, dates, nombres et prix, messages d'erreur, présentation, et les réponses du sommelier.
+- [ ] En français, tutoiement ou vouvoiement au choix (décidé le 10 novembre 2026).
