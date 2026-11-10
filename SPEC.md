@@ -645,16 +645,26 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
    - Avec (c), les sauvegardes de tous sont stockées sur ton compte Cloudflare. Chacune est rangée sous une clé personnelle tirée au hasard sur l'iPhone. Personne ne peut lire la sauvegarde d'un autre, ni toi, puisqu'elle est chiffrée. En revanche, chacun doit garder sa clé de récupération pour restaurer sur un autre appareil.
    - Pour (b) : un seul projet Google Cloud sert à tous. Le droit demandé (`drive.appdata`) est classé « non sensible » par Google, donc une vérification de base suffit. L'app doit passer en statut « En production », sinon l'autorisation expire tous les 7 jours. Le projet est limité à 100 utilisateurs tant qu'il n'est pas vérifié. Le Worker ne fait que renouveler l'autorisation : il ne voit jamais les données, qui vont directement de l'iPhone au Drive de chacun.
 
-**v3** (publication sur l'App Store, grand public ; plan rédigé le 8 novembre 2026, rien n'est spécifié en détail ni développé)
-Le plan complet est dans `docs/plan-app-store.md` : modèle économique (gratuit + Premium), coûts et scénarios, changements produit, chemin technique (app native Capacitor, service IA sur un Worker Cloudflare, iCloud), obligations et feuille de route. Chaque phase deviendra une release spécifiée, puis lancée sur demande :
-- **v3.0 : socle de sécurité** (réorganisé le 10 novembre 2026 : la sécurité passe en premier). App native minimale, service en ligne sécurisé, identité Apple, authenticité de l'app, crédits et abonnements vérifiés côté serveur, protection de la clé, tests d'attaque. Spécifiée ci-dessous ;
-- v3.1 : produit grand public (ouverture simple et migration, premier lancement guidé, options avancées repliées, langue réglable, import multi-apps, accessibilité) ;
-- v3.2 : sommelier et Premium branchés sur le socle (écran Premium, consentement IA, quotas visibles) ;
-- v3.3 : iCloud, notifications, Face ID, bêta TestFlight ;
-- v3.4 : fiche App Store et publication.
+---
+
+## 11. Apogée, la version App Store
+
+*Réorganisé le 10 novembre 2026* : Apogée a sa propre feuille de route, numérotée à partir de 1.0. MyCellar (§10, branche `master`) et Apogée (branche `store`) évoluent en parallèle ; c'est l'utilisateur qui dit laquelle faire évoluer. Pour lancer une release d'Apogée : « lance Apogée 1.0 » ; pour MyCellar : « lance la v2.2 », comme avant. Une fonction développée pour l'une n'est reportée dans l'autre que sur demande.
+
+Le plan d'ensemble (publication sur l'App Store, grand public ; rédigé le 8 novembre 2026) est dans `docs/plan-app-store.md`.
+
+**Point de départ** : Apogée 1.0 part de l'état de MyCellar au moment de son lancement (v2.1.2 aujourd'hui). Son propre journal des versions démarre à 1.0, sur la branche `store`.
+
+**Feuille de route d'Apogée**
+Chaque étape est une release spécifiée, puis lancée sur demande :
+- **Apogée 1.0 : socle de sécurité** (réorganisé le 10 novembre 2026 : la sécurité passe en premier). App native minimale, service en ligne sécurisé, identité Apple, authenticité de l'app, crédits et abonnements vérifiés côté serveur, protection de la clé, tests d'attaque. Spécifiée ci-dessous ;
+- Apogée 1.1 : produit grand public (ouverture simple et migration, premier lancement guidé, options avancées repliées, langue réglable, import multi-apps, accessibilité) ;
+- Apogée 1.2 : sommelier et Premium branchés sur le socle (écran Premium, consentement IA, quotas visibles) ;
+- Apogée 1.3 : iCloud, notifications, Face ID, bêta TestFlight ;
+- Apogée 1.4 : fiche App Store et publication.
 Décisions du 10 novembre 2026 (détail dans le plan, §11) : modèle et prix validés ; deux versions, `master` reste MyCellar (version personnelle, évoluée) et la version App Store vit sur une branche `store` sous le nom **Apogée** (choisi le 10 novembre 2026, marque et domaine à vérifier) ; compte Apple individuel et micro-entreprise ; compilation dans le cloud (pas de Mac) ; français et anglais, tutoiement ou vouvoiement réglable.
 
-**v3.0 : socle de sécurité d'Apogée** (branche `store` ; spécifiée le 10 novembre 2026, rien n'est développé)
+**Apogée 1.0 : socle de sécurité** (branche `store` ; spécifiée le 10 novembre 2026, rien n'est développé)
 
 *Objectifs fixés* :
 1. aucune donnée d'utilisateur ne peut être extraite, ni de l'app, ni du serveur, ni en chemin ;
@@ -744,13 +754,13 @@ Décisions du 10 novembre 2026 (détail dans le plan, §11) : modèle et prix va
 - [ ] Revue de sécurité du code à chaque release, et un audit externe (test d'intrusion) avant la publication sur l'App Store (budget à prévoir, de quelques centaines à quelques milliers d'euros selon le prestataire).
 - [ ] Limite assumée : aucun système n'est inviolable. Le but est qu'aucune voie connue ne mène aux données ni à la clé, que l'impact d'une faille soit borné (plafonds, quotas, données minimales) et qu'elle soit détectée et coupée vite.
 
-*Préalables à la v3.0* : compte développeur Apple (nécessaire pour App Attest, « Se connecter avec Apple », les achats intégrés de test et TestFlight), compte Cloudflare (déjà disponible), espace de travail Anthropic dédié à Apogée, compte Codemagic. Tant que le compte Apple n'existe pas, le service et ses tests d'attaque peuvent être développés et testés avec des réponses d'Apple simulées.
+*Préalables à Apogée 1.0* : compte développeur Apple (nécessaire pour App Attest, « Se connecter avec Apple », les achats intégrés de test et TestFlight), compte Cloudflare (déjà disponible), espace de travail Anthropic dédié à Apogée, compte Codemagic. Tant que le compte Apple n'existe pas, le service et ses tests d'attaque peuvent être développés et testés avec des réponses d'Apple simulées.
 
 *Références* : [OWASP MASVS v2.1](https://opensecurityarchitecture.org/frameworks/owasp-masvs-v2), [OWASP Mobile Top 10 2024](https://www.cobalt.io/blog/owasp-mobile-top-10-2024-update), [OWASP Top 10 LLM 2025](https://genai.owasp.org/2024/11/17/owasp-reveals-2025-top-10-risks-for-llms-new-sponsorship-program/), [CNIL, recommandations applications mobiles](https://www.cnil.fr/fr/recommandations-applications-mobiles), [Apple, vérification des transactions](https://developer.apple.com/documentation/storekit/verificationresult), [Apple, risque de fraude App Attest](https://developer.apple.com/documentation/devicecheck/assessing-fraud-risk).
 
 *Exigences de la version store, Apogée* (demandées le 10 novembre 2026). Elles s'ajoutent aux releases ci-dessus et sont développées sur la branche `store`, release par release, sur demande.
 
-**Crédits IA fixés côté serveur** (v3.0 pour le moteur, v3.2 pour l'affichage)
+**Crédits IA fixés côté serveur** (Apogée 1.0 pour le moteur, Apogée 1.2 pour l'affichage)
 - [ ] **Quotas fixés par Apogée**, sans réglage possible par l'utilisateur. Le réglage « plafond mensuel » de MyCellar n'existe pas dans Apogée. Quotas validés le 10 novembre 2026, calculée pour que le pire cas reste couvert par l'abonnement :
   - **Gratuit** : crédits de découverte donnés **une seule fois**, à la première connexion, **par compte Apple** (validé le 10 novembre 2026) : quelques lectures d'étiquette (5) et 3 questions au sommelier. Pas de création de compte dans l'app (identification uniquement par « Se connecter avec Apple ») : pas de multi-comptes en un clic. Coût maximal ≈ 0,08 € par compte.
   - **Premium** : par mois, 60 questions au sommelier (accords, audit, analyses), lectures d'étiquette et estimations sans recherche web en usage raisonnable (jusqu'à 200), 10 estimations avec recherche web (fenêtre, valeur). Coût maximal ≈ 2 € par mois, coût moyen attendu ≈ 0,20 à 0,50 €.
@@ -759,7 +769,7 @@ Décisions du 10 novembre 2026 (détail dans le plan, §11) : modèle et prix va
 - [ ] **Abonnement vérifié auprès d'Apple** : le serveur contrôle la preuve d'achat signée par Apple (et non une simple déclaration de l'app) ; essai et crédits gratuits rattachés à l'appareil par les outils d'Apple (App Attest, DeviceCheck), pour qu'une réinstallation ne les remette pas à zéro.
 - [ ] **Garde-fous globaux** : limite de débit par appareil et par abonné, plafond de dépense mensuel fixé chez Anthropic pour la clé d'Apogée (dernier rempart), alerte en cas de consommation anormale.
 
-**Clé API impossible à obtenir** (v3.0, priorité absolue)
+**Clé API impossible à obtenir** (Apogée 1.0, priorité absolue)
 - [ ] **La clé n'est jamais dans l'app** : ni dans le code, ni dans les données, ni dans les échanges avec l'iPhone. Seul le Worker la connaît, rangée comme secret chiffré chez Cloudflare (illisible une fois enregistrée, y compris depuis le tableau de bord), jamais dans le dépôt GitHub ni dans les journaux.
 - [ ] **Le site hébergé ne la contient pas** : l'hébergement des pages (Cloudflare Pages) et le service IA sont séparés ; une intrusion sur l'hébergement des pages ne donne accès à aucun secret.
 - [ ] **Le serveur ne sert pas de « Claude gratuit »** : l'app n'envoie pas de texte libre à faire suivre. Elle envoie une demande typée (lire une étiquette, accorder un plat, estimer une fenêtre…), et le serveur construit lui-même les instructions, choisit le modèle et limite la taille des réponses. Une requête détournée ne peut donc pas utiliser la clé pour autre chose.
@@ -769,7 +779,7 @@ Décisions du 10 novembre 2026 (détail dans le plan, §11) : modèle et prix va
 - [ ] Données sur l'iPhone : protection des fichiers d'iOS, Face ID facultatif, aucune donnée de cave stockée sur le serveur.
 - [ ] Limite assumée : aucun système n'est inviolable. L'objectif est qu'aucune voie connue ne donne la clé, et que même une fuite reste limitée et coupée vite (plafond de dépense, alerte, remplacement de la clé).
 
-**Import depuis les grandes apps de cave, surtout sans IA** (v3.1)
+**Import depuis les grandes apps de cave, surtout sans IA** (Apogée 1.1)
 - [ ] **Sources** : Ploc (PDF de cave et CSV de dégustations, déjà pris en charge), CellarTracker (export CSV), Vivino (export de données CSV), InVintory (export CSV), et tout fichier CSV ou Excel (.xlsx) d'une autre app. Liste à compléter selon les exports réels disponibles.
 - [ ] **Lecture locale d'abord** : chaque format connu est reconnu par ses colonnes et lu sur l'iPhone, sans IA. Pour un fichier inconnu, un écran de correspondance des colonnes (« cette colonne, c'est le domaine ») est mémorisé pour les imports suivants.
 - [ ] **PDF Ploc lu localement** : le texte du PDF (fiches, légende, plan) est extrait sur l'iPhone par une bibliothèque intégrée, puis découpé sans IA ; l'IA ne sert qu'en secours si la mise en page n'est pas reconnue.
@@ -778,7 +788,7 @@ Décisions du 10 novembre 2026 (détail dans le plan, §11) : modèle et prix va
 - [ ] **Formats connus (recherche du 10 novembre 2026, sans fichier réel)** : CellarTracker exporte en CSV ou texte depuis son site (pas depuis l'app), avec des colonnes choisies par l'utilisateur, en encodage Latin-1, et les emplacements dans un export à part. Vivino envoie, sur demande, une archive .zip qui contient `cellar.csv`, sans prix, format ni emplacement. InVintory exporte en CSV depuis sa page Collection (offre gratuite comprise). Les noms exacts des colonnes ne sont publiés nulle part : la lecture repose donc sur un **dictionnaire de colonnes** en français et en anglais (Producer / Winery / Domaine / Producteur, Wine / Wine name / Nom, Vintage / Millésime, Quantity / Qty / Stock, Location / Bin / Cave, BeginConsume / Drink from / Apogée, Price / Value / Estimation, Size / Format / Contenance, Color / Type / Couleur…), complété par l'écran de correspondance pour ce qui reste inconnu. L'archive .zip de Vivino est ouverte sur l'iPhone.
 - [ ] Des exports réels (testeurs de la bêta) serviront à affiner le dictionnaire avant la publication ; les tests utilisent des fichiers fictifs construits d'après ces informations.
 
-**Langue réglable** (v3.1)
+**Langue réglable** (Apogée 1.1)
 - [ ] Réglages › Langue : français ou anglais (d'autres langues plus tard). Par défaut, la langue de l'iPhone.
 - [ ] Toute l'app suit ce réglage : textes, dates, nombres et prix, messages d'erreur, présentation, et les réponses du sommelier.
 - [ ] En français, tutoiement ou vouvoiement au choix (décidé le 10 novembre 2026).

@@ -129,14 +129,14 @@ Les fonctions actuelles restent ; certaines passent en Premium (voir §2).
 
 ## 8. Feuille de route
 
-Chaque phase devient une ou plusieurs releases dans `SPEC.md` (v3.x), spécifiées puis lancées sur ton accord.
+Chaque phase devient une ou plusieurs releases d'Apogée dans `SPEC.md` (§11, numérotées à partir de 1.0), spécifiées puis lancées sur ton accord.
 
 | Phase | Contenu | Durée indicative |
 |---|---|---|
 | **0. Décisions et démarches** | Tes 6 décisions ci-dessous ; nom et marque ; micro-entreprise ; compte développeur Apple ; domaine | 2 à 3 semaines (en parallèle) |
-| **1. Produit grand public (v3.0)** | Ouverture simple et migration, premier lancement guidé, options avancées repliées, anglais, accessibilité | 5 à 6 semaines |
-| **2. Service IA et abonnement (v3.1)** | Worker Cloudflare, quotas, consentement IA, écran Premium, abonnements Apple, essai gratuit | 3 à 4 semaines |
-| **3. App native et bêta (v3.2)** | Capacitor, iCloud, notifications, Face ID, appareil photo, partage ; TestFlight avec 20 à 50 testeurs (tes amis, un club d'œnologie), rapport d'usage existant | 3 semaines + 4 semaines de bêta |
+| **1. Produit grand public (Apogée 1.1)** | Ouverture simple et migration, premier lancement guidé, options avancées repliées, anglais, accessibilité | 5 à 6 semaines |
+| **2. Service IA et abonnement (Apogée 1.2)** | Worker Cloudflare, quotas, consentement IA, écran Premium, abonnements Apple, essai gratuit | 3 à 4 semaines |
+| **3. App native et bêta (Apogée 1.3)** | Capacitor, iCloud, notifications, Face ID, appareil photo, partage ; TestFlight avec 20 à 50 testeurs (tes amis, un club d'œnologie), rapport d'usage existant | 3 semaines + 4 semaines de bêta |
 | **4. Publication** | Fiche App Store (captures, textes FR/EN, mots-clés), confidentialité, classement d'âge, site, soumission, corrections demandées par Apple | 1 à 2 semaines |
 | **5. Lancement et croissance** | Annonce sur les forums et groupes d'amateurs (La Passion du Vin, clubs, réseaux), argument « quitte Ploc sans rien perdre », cavistes partenaires ; suivi des abonnements et coûts IA ; Android plus tard si la demande existe | En continu |
 
@@ -186,7 +186,7 @@ Chaque phase devient une ou plusieurs releases dans `SPEC.md` (v3.x), spécifié
 - `master` = MyCellar, ta version : elle garde ta clé IA personnelle, la sauvegarde que tu choisis, et reçoit les nouvelles fonctions en premier.
 - `store` = la version App Store, créée depuis `master`. Elle n'ajoute que ce qui est propre au grand public : nom et icône, service IA à la place de ta clé, abonnement, iCloud, emballage natif.
 - Pour éviter que les deux versions s'éloignent : `master` est fusionnée régulièrement dans `store`, et tout ce qui diffère est regroupé dans quelques fichiers bien délimités (nom, IA, abonnement, natif) plutôt que dispersé dans le code. Une fonction utile aux deux se développe sur `master`.
-- Les releases v3.x se livrent sur `store`. `master` continue avec ses propres releases (v2.x et suivantes), qui restent publiées sur ton adresse Cloudflare actuelle.
+- Les releases d'Apogée (1.0, 1.1…) se livrent sur `store`. `master` continue avec ses propres releases (v2.x et suivantes), qui restent publiées sur ton adresse Cloudflare actuelle.
 
 ### Propositions de nom pour la version App Store
 
@@ -222,8 +222,12 @@ Une recherche rapide n'a trouvé aucune app nommée « Apogée », « Décante �
 ## 12. Nom et exigences de la version store (10 novembre 2026)
 
 - **Nom retenu : Apogée.** Avant de l'annoncer : vérifier les marques déposées (INPI, EUIPO) dans les classes des logiciels et services en ligne, la disponibilité du nom sur l'App Store et celle d'un nom de domaine.
-- **Exigences ajoutées**, détaillées dans `SPEC.md` (§10, v3) : crédits IA fixés côté serveur, sans réglage possible ni contournement depuis l'app ; clé API jamais présente dans l'app ni sur l'hébergement des pages, protégée par un service qui n'accepte que des demandes typées venant d'une copie authentique de l'app ; import depuis les grandes apps de cave (Ploc, CellarTracker, Vivino, InVintory, tout CSV ou Excel), lu sur l'iPhone sans IA autant que possible ; langue réglable (français, anglais).
+- **Exigences ajoutées**, détaillées dans `SPEC.md` (§11, Apogée) : crédits IA fixés côté serveur, sans réglage possible ni contournement depuis l'app ; clé API jamais présente dans l'app ni sur l'hébergement des pages, protégée par un service qui n'accepte que des demandes typées venant d'une copie authentique de l'app ; import depuis les grandes apps de cave (Ploc, CellarTracker, Vivino, InVintory, tout CSV ou Excel), lu sur l'iPhone sans IA autant que possible ; langue réglable (français, anglais).
 
 ## 13. Sécurité d'abord (10 novembre 2026)
 
-La feuille de route est réorganisée : la **v3.0 est le socle de sécurité** (app native minimale, service en ligne, identité Apple, App Attest, abonnements et crédits vérifiés côté serveur, protection de la clé, tests d'attaque), spécifiée en détail dans `SPEC.md`. Suivent v3.1 (produit grand public, langue, import multi-apps), v3.2 (sommelier et Premium), v3.3 (iCloud, notifications, bêta) et v3.4 (publication). Crédits de découverte : une seule fois par compte Apple, connexion uniquement par « Se connecter avec Apple ». Un audit de sécurité externe est prévu avant la publication : à ajouter au budget (de quelques centaines à quelques milliers d'euros).
+La feuille de route est réorganisée : **Apogée 1.0 est le socle de sécurité** (app native minimale, service en ligne, identité Apple, App Attest, abonnements et crédits vérifiés côté serveur, protection de la clé, tests d'attaque), spécifiée en détail dans `SPEC.md`. Suivent Apogée 1.1 (produit grand public, langue, import multi-apps), 1.2 (sommelier et Premium), 1.3 (iCloud, notifications, bêta) et 1.4 (publication). Crédits de découverte : une seule fois par compte Apple, connexion uniquement par « Se connecter avec Apple ». Un audit de sécurité externe est prévu avant la publication : à ajouter au budget (de quelques centaines à quelques milliers d'euros).
+
+## 14. Deux produits en parallèle (10 novembre 2026)
+
+Apogée a désormais sa propre feuille de route, numérotée à partir de 1.0 (`SPEC.md`, §11) : 1.0 socle de sécurité, 1.1 produit grand public, 1.2 sommelier et Premium, 1.3 iCloud, notifications et bêta, 1.4 publication. MyCellar garde la sienne (§10 : v2.2 QR codes, v2.3 sauvegarde Google Drive…). Les deux évoluent en parallèle, sur demande, l'une ou l'autre.
