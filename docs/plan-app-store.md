@@ -231,3 +231,20 @@ La feuille de route est réorganisée : **Apogée 1.0 est le socle de sécurité
 ## 14. Deux produits en parallèle (10 novembre 2026)
 
 Apogée a désormais sa propre feuille de route, numérotée à partir de 1.0 (`SPEC.md`, §11) : 1.0 socle de sécurité, 1.1 produit grand public, 1.2 sommelier et Premium, 1.3 iCloud, notifications et bêta, 1.4 publication. MyCellar garde la sienne (§10 : v2.2 QR codes, v2.3 sauvegarde Google Drive…). Les deux évoluent en parallèle, sur demande, l'une ou l'autre.
+
+## 15. Budget minimal (10 novembre 2026)
+
+Décision : l'app doit coûter le moins possible au départ, hors adhésion Apple (≈ 99 € par an).
+
+| Poste | Choix pour le lancement | Coût |
+|---|---|---|
+| Hébergement du service IA et des compteurs | Cloudflare, offre gratuite | 0 € |
+| Site (présentation, confidentialité, support) | Cloudflare Pages, adresse `….pages.dev`, pas de nom de domaine | 0 € |
+| Compilation iOS | Codemagic, 500 minutes gratuites par mois | 0 € |
+| Abonnements | Vérification directe avec les outils d'Apple, sans RevenueCat | 0 € |
+| Audit de sécurité | Pas d'audit externe : contrôles gratuits (MobSF, gitleaks, Dependabot, grille MASVS, tests d'attaque automatiques) | 0 € |
+| Domiciliation | Seulement au moment d'activer les abonnements payants, si tu ne veux pas afficher ton adresse | 0 € au départ |
+| Micro-entreprise | Seulement au moment d'activer les abonnements payants (après vérification de ton contrat de travail) | 0 € |
+| API Claude | À l'usage, plafond mensuel fixé chez Anthropic (par exemple 10 à 20 $) | quelques euros par mois au départ |
+
+**Important** : l'abonnement Claude Pro (claude.ai) ne fonctionne pas pour une app. Le service d'Apogée utilise l'API d'Anthropic, facturée à part sur la console d'Anthropic, par crédits prépayés. Avec les quotas décidés (crédits de découverte une seule fois par compte Apple, environ 8 centimes au maximum), le plafond protège de toute mauvaise surprise.
