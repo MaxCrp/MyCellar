@@ -795,3 +795,6 @@ Décisions du 10 novembre 2026 (détail dans le plan, §11) : modèle et prix va
 - [ ] Réglages › Langue : français ou anglais (d'autres langues plus tard). Par défaut, la langue de l'iPhone.
 - [ ] Toute l'app suit ce réglage : textes, dates, nombres et prix, messages d'erreur, présentation, et les réponses du sommelier.
 - [ ] En français, tutoiement ou vouvoiement au choix (décidé le 10 novembre 2026).
+
+**Idées pour plus tard (Apogée, non rattachées à une release)**
+- **Soutien client et boucle d'amélioration** (mémo du 10 novembre 2026) : depuis l'app, envoyer une demande d'évolution ou un rapport de bug (en s'appuyant sur « Signaler un problème » et le rapport d'utilisation de MyCellar), reçus dans un endroit centralisé, sans donnée de cave sauf accord explicite ; tri et analyse par IA (regroupement des demandes semblables, gravité, reproduction probable, piste de correctif) ; programmation des correctifs dans les releases, avec réponse à l'utilisateur quand c'est corrigé. À spécifier le moment venu (outil de réception, coût, confidentialité, place du propriétaire dans la validation).
