@@ -651,4 +651,4 @@ Le plan complet est dans `docs/plan-app-store.md` : modèle économique (gratuit
 - v3.1 : service IA sans clé personnelle, quotas, consentement IA, abonnement Premium ;
 - v3.2 : app native, iCloud, notifications, Face ID, bêta TestFlight ;
 - v3.3 : fiche App Store et publication.
-Préalables : les 6 décisions listées à la fin du plan.
+Décisions du 10 novembre 2026 (détail dans le plan, §11) : modèle et prix validés ; deux versions, `master` reste MyCellar (version personnelle, évoluée) et la version App Store vit sur une branche `store` sous un nouveau nom (à choisir) ; compte Apple individuel et micro-entreprise ; compilation dans le cloud (pas de Mac) ; français et anglais, tutoiement ou vouvoiement réglable.

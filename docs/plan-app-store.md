@@ -166,4 +166,54 @@ Chaque phase devient une ou plusieurs releases dans `SPEC.md` (v3.x), spécifié
 
 ---
 
-*Sources consultées le 8 novembre 2026 (à revérifier sur les pages d'Apple avant toute démarche) : programme pour petits développeurs et frais ([Adapty](https://adapty.io/blog/markdown/app-store-small-business-program.md), [Magora](https://magora-systems.com/app-store-small-business-program/)) ; règle 4.2 et apps web emballées ([MobiLoud](https://www.mobiloud.com/blog/app-store-review-guidelines-webview-wrapper), [Capgo](https://capgo.app/blog/how-to-pass-app-store-review-2026/)) ; consentement IA, règle 5.1.2(i) ([TechCrunch](https://techcrunch.com/2025/11/13/apples-new-app-review-guidelines-clamp-down-on-apps-sharing-personal-data-with-third-party-ai)) ; statut de commerçant dans l'UE ([MacRumors](https://www.macrumors.com/2024/10/17/developers-eu-app-store-trader-requirements/)) ; nouvelles conditions de l'UE ([Apple Newsroom](https://www.apple.com/ca/newsroom/2026/08/apple-announces-changes-for-apps-in-the-european-union/)) ; prix des concurrents ([Ma cave à vins](https://apps.apple.com/fr/app/ma-cave-a-vins/id1547090471), [Oeni](https://apps.apple.com/FR/app/id6445827140), [Caveo](https://apps.apple.com/fr/app/caveo/id6449490048), [Ploc](https://apps.apple.com/fr/app/ploc-lapp-des-%C3%A9picuvins/id1156928592)) ; nom existant ([My Cellar: AI Wine Scanner](https://apps.apple.com/app/id6764875381)).*
+*Sources consultées les 8 et 10 novembre 2026 (à revérifier sur les pages d'Apple avant toute démarche) : programme pour petits développeurs et frais ([Adapty](https://adapty.io/blog/markdown/app-store-small-business-program.md), [Magora](https://magora-systems.com/app-store-small-business-program/)) ; règle 4.2 et apps web emballées ([MobiLoud](https://www.mobiloud.com/blog/app-store-review-guidelines-webview-wrapper), [Capgo](https://capgo.app/blog/how-to-pass-app-store-review-2026/)) ; consentement IA, règle 5.1.2(i) ([TechCrunch](https://techcrunch.com/2025/11/13/apples-new-app-review-guidelines-clamp-down-on-apps-sharing-personal-data-with-third-party-ai)) ; statut de commerçant dans l'UE ([MacRumors](https://www.macrumors.com/2024/10/17/developers-eu-app-store-trader-requirements/)) ; nouvelles conditions de l'UE ([Apple Newsroom](https://www.apple.com/ca/newsroom/2026/08/apple-announces-changes-for-apps-in-the-european-union/)) ; prix des concurrents ([Ma cave à vins](https://apps.apple.com/fr/app/ma-cave-a-vins/id1547090471), [Oeni](https://apps.apple.com/FR/app/id6445827140), [Caveo](https://apps.apple.com/fr/app/caveo/id6449490048), [Ploc](https://apps.apple.com/fr/app/ploc-lapp-des-%C3%A9picuvins/id1156928592)) ; nom existant ([My Cellar: AI Wine Scanner](https://apps.apple.com/app/id6764875381)).*
+
+---
+
+## 11. Décisions prises (10 novembre 2026)
+
+| # | Décision |
+|---|---|
+| 1 | Modèle gratuit + Premium par abonnement : **validé** |
+| 2 | 3,99 € par mois ou 29,99 € par an, 7 jours d'essai : **validé** |
+| 3 | **Deux versions** : `master` reste « MyCellar », ta version personnelle, qui continue d'évoluer avec plus de fonctions ; la version App Store prend un **nouveau nom** et vit sur une branche dédiée (`store`). Nom à choisir (propositions ci-dessous). |
+| 4 | Statut : **compte Apple « individuel » à ton nom + micro-entreprise** (recommandé, voir ci-dessous), à confirmer après vérification de ton contrat de travail |
+| 5 | **Pas de Mac** : compilation dans le cloud (Codemagic, 500 minutes macOS gratuites par mois), tests sur ton iPhone par TestFlight |
+| 6 | Français et anglais au lancement ; **tutoiement ou vouvoiement réglable** dans les réglages |
+
+### Deux versions, une seule base de code
+
+- `master` = MyCellar, ta version : elle garde ta clé IA personnelle, la sauvegarde que tu choisis, et reçoit les nouvelles fonctions en premier.
+- `store` = la version App Store, créée depuis `master`. Elle n'ajoute que ce qui est propre au grand public : nom et icône, service IA à la place de ta clé, abonnement, iCloud, emballage natif.
+- Pour éviter que les deux versions s'éloignent : `master` est fusionnée régulièrement dans `store`, et tout ce qui diffère est regroupé dans quelques fichiers bien délimités (nom, IA, abonnement, natif) plutôt que dispersé dans le code. Une fonction utile aux deux se développe sur `master`.
+- Les releases v3.x se livrent sur `store`. `master` continue avec ses propres releases (v2.x et suivantes), qui restent publiées sur ton adresse Cloudflare actuelle.
+
+### Propositions de nom pour la version App Store
+
+| Nom | Idée | Remarque |
+|---|---|---|
+| **Apogée** (« Apogée – cave à vin ») | Le cœur de l'app : boire chaque bouteille à son apogée | Fort et clair en français, compréhensible en anglais (« Apogee ») ; mot courant, donc marque à vérifier de près |
+| **Décante** (« Décante – cave & sommelier ») | Le geste du sommelier | Court, élégant ; en anglais « Decant » |
+| **Cellier** | Le lieu où l'on garde le vin | Sonne français à l'étranger ; très descriptif, donc moins protégeable |
+| **Cuvéa** | Mot inventé, de « cuvée » | Facile à protéger comme marque ; à vérifier |
+| **Millésia** | Mot inventé, de « millésime » | Idem |
+| **Garde & Apogée** | Les deux moments de la vie d'un vin | Plus long ; bien comme sous-titre |
+
+Une recherche rapide n'a trouvé aucune app nommée « Apogée », « Décante » ou « Cellier » sur l'App Store, ce qui ne suffit pas : il faut vérifier les marques déposées (INPI, EUIPO) et la disponibilité du nom de domaine avant de choisir. Sur l'App Store, le nom est suivi d'un sous-titre (30 caractères) : par exemple « Apogée » + « Cave à vin et sommelier IA ».
+
+### Statut : le plus simple quand on est salarié
+
+- **Cumuler salariat et micro-entreprise est possible.** Même si ton contrat contient une clause d'exclusivité, ton employeur ne peut pas te l'opposer pendant **un an** après la création (article L1222-5 du Code du travail) ; au-delà, elle s'applique si elle est valable. Dans tous les cas, l'**obligation de loyauté** demeure : pas de concurrence avec ton employeur, pas d'usage de son temps, de son matériel ni de ses informations.
+- **À vérifier dans ton contrat et les règles internes** : clause d'exclusivité, clause de propriété intellectuelle (un code écrit sur ton temps libre et ton matériel t'appartient en principe, sauf clause contraire ou si ton employeur édite des logiciels), et procédure de déclaration d'activité annexe ou de conflit d'intérêts, fréquente dans les grandes entreprises. Le plus sûr est de déclarer l'activité selon cette procédure.
+- **Le plus simple** : un compte développeur Apple **individuel** (pas de numéro D-U-N-S ; le vendeur affiché est ton nom légal) et une **micro-entreprise** en activité libérale (déclaration en ligne gratuite sur le guichet unique, déclarations de recettes à l'Urssaf, cotisations seulement sur ce que tu encaisses).
+- **Calendrier** : rien n'est nécessaire pour développer ni pour la bêta TestFlight. La micro-entreprise se crée juste avant d'activer les abonnements payants.
+- **Point à éclaircir le moment venu** : les recettes viennent d'Apple, société irlandaise ; même en franchise de TVA, une formalité de TVA intracommunautaire peut être demandée (numéro de TVA, déclaration européenne de services). Le guichet unique, l'Urssaf ou une consultation ponctuelle chez un expert-comptable règlent ce point.
+
+### Sans Mac
+
+- Le projet iOS est généré et compilé dans le cloud : **Codemagic** offre 500 minutes par mois sur des Mac M2, gratuitement pour un compte personnel ; une compilation prend environ 10 à 15 minutes, donc une trentaine de compilations par mois sans frais.
+- Codemagic signe l'app avec ton compte développeur Apple et l'envoie directement sur **TestFlight** : tu l'installes sur ton iPhone pour la tester.
+- Les captures d'écran de la fiche App Store se font sur ton iPhone.
+- Seule limite : pas de simulateur iPhone sous la main, donc chaque essai passe par une compilation. Les tests automatiques actuels (Chromium) continuent de couvrir l'essentiel avant chaque compilation.
+
+*Sources complémentaires (10 novembre 2026) : cumul salariat et micro-entreprise ([Service-Public](https://entreprendre.service-public.gouv.fr/vosdroits/F23264), [Bpifrance Création](https://bpifrance-creation.fr/encyclopedie/statut-du-dirigeant-son-conjoint/situation-pluriactifs/cumul-dune-activite), [clause d'exclusivité et article L1222-5](https://consultation.avocat.fr/barreau-vienne/blog/jean-luc-braunschweig-klein/article-2983836-clause-d-exclusivite-et-creation-d-entreprise-est-ce-possible.html)) ; compte Apple individuel et D-U-N-S ([Apple](https://developer.apple.com/support/d-u-n-s/)) ; Codemagic ([tarifs](https://docs.codemagic.io/billing/pricing/)).*
