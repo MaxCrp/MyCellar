@@ -649,6 +649,8 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 
 ## 11. Apogée, la version App Store
 
+*En pause depuis le 11 novembre 2026* : le développement revient sur MyCellar. Apogée (plan, business plan, spécifications) est gardé tel quel pour plus tard.
+
 *Réorganisé le 10 novembre 2026* : Apogée a sa propre feuille de route, numérotée à partir de 1.0. MyCellar (§10, branche `master`) et Apogée (branche `store`) évoluent en parallèle ; c'est l'utilisateur qui dit laquelle faire évoluer. Pour lancer une release d'Apogée : « lance Apogée 1.0 » ; pour MyCellar : « lance la v2.2 », comme avant. Une fonction développée pour l'une n'est reportée dans l'autre que sur demande.
 
 Le plan d'ensemble (publication sur l'App Store, grand public ; rédigé le 8 novembre 2026) est dans `docs/plan-app-store.md`.
