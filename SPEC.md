@@ -543,7 +543,7 @@ Le détail est dans `docs/tests/2026-11-04-campagne-v1.6.1/` : `rapport-bugs.md`
 
 **v2** (demandée le 5 novembre 2026 : « Lance la V2 ». Jusqu'ici, c'était une simple liste. Elle est maintenant découpée en quatre releases et spécifiée ; le développement attend la validation des questions ci-dessous.)
 
-Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (QR codes), v2.3 (sauvegarde automatique). Chaque release est livrée et testée à part. *Revu le 13 novembre 2026* : v2.2 sauvegarde automatique, v2.3 barres d'apogée dans les listes ; les QR codes sont mis en réserve.
+Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (QR codes), v2.3 (sauvegarde automatique). Chaque release est livrée et testée à part. *Revu le 13 novembre 2026* : v2.2 sauvegarde automatique (avant les QR codes, mis en réserve) ; les barres d'apogée et l'aperçu des meubles sont une amélioration de la version actuelle (v2.1.3).
 
 **v2.0** (statistiques, valeur, cadeaux, audit ; livrée)
 *Statistiques* : un écran Réglages › Ma cave › Statistiques. Seules mes bouteilles sont comptées.
@@ -614,18 +614,9 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 - [x] Le champ qui imposait l'appareil photo (`capture`) n'est plus utilisé. Le reste ne change pas : lecture par le sommelier et message pour un format illisible.
 - [x] Tests : une seule entrée par écran, qui ouvre le sélecteur sans prise de vue imposée ; lecture de la photo inchangée.
 
-**v2.2** (sauvegarde automatique ; spécifiée et validée le 5 novembre 2026 : option b, Google Drive avec un Worker Cloudflare. *Passée en premier le 13 novembre 2026*, à la place des QR codes)
-- [ ] **Sauvegarde automatique** chiffrée (le même fichier que la sauvegarde manuelle, illisible sans ton mot de passe), après chaque modification importante et au plus une fois par heure, plus une fois par jour au minimum. Les 30 dernières versions sont gardées.
-- [ ] **Restauration** depuis la liste des versions, avec leur date.
-- [ ] **État visible** dans Réglages › Sauvegarde : dernière sauvegarde réussie, échec éventuel et sa raison. Le rappel des 7 jours ne s'affiche plus quand la sauvegarde automatique fonctionne.
-- [ ] **Destination (validée : option b)** : le Google Drive de chaque utilisateur, dans le dossier caché de l'app (`appDataFolder`, droit `drive.appdata`). Chacun se connecte avec son propre compte Google : les sauvegardes sont distinctes par construction.
-- [ ] **Connexion** : Réglages › Sauvegarde › « Connecter Google Drive », une seule fois par appareil. L'autorisation de longue durée est rangée dans le coffre chiffré de l'app.
-- [ ] **Worker Cloudflare** : il échange et renouvelle l'autorisation avec le secret du projet Google, et ne garde rien. Les fichiers vont directement de l'iPhone au Drive. Le code du Worker est livré dans le dépôt (`worker/`), avec sa marche à suivre.
-- [ ] **Mise en place (à faire par toi, une fois)** : un projet Google Cloud, l'écran de consentement en statut « En production », un identifiant OAuth « Application Web » avec l'adresse de l'app, et le Worker avec le secret. Une marche à suivre pas à pas est fournie dans `docs/` au lancement de la v2.2.
-- [ ] **Nouvel appareil** : « Restaurer depuis Google Drive » au premier lancement, puis le mot de passe de la cave.
-- [ ] Tests : envoi, rotation des versions, restauration, absence de réseau, jeton expiré (service simulé).
+**v2.1.3** (améliorations de la version actuelle : barres d'apogée dans les listes, aperçu des meubles dans l'onglet Cave ; demandées le 13 novembre 2026)
 
-**v2.3** (barres d'apogée dans les listes ; demandée le 13 novembre 2026)
+*Barres d'apogée*
 
 *Constat* : dans « Transferts entre sites » et dans « Conseils de rangement », il faut toucher chaque vin pour voir où il en est de sa fenêtre de dégustation.
 
@@ -636,6 +627,30 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 - [ ] Vin sans fenêtre : barre grise vide (rien n'est estimé automatiquement à l'ouverture de l'écran). Spiritueux : pas de barre.
 - [ ] Le reste ne change pas : toucher le vin ouvre toujours son résumé, avec la grande barre et les années.
 - [ ] Tests : barre présente et trait d'aujourd'hui bien placé dans les deux écrans, vin sans fenêtre, spiritueux, écran de 100 vins sans ralentissement.
+
+*Aperçu des meubles dans l'onglet Cave* (maquette à valider sur iPhone **avant** tout développement : https://claude.ai/artifact/3MikYoN8vzhhRXZirWq824)
+
+*Constat* : sur un site avec plusieurs espaces et meubles, il faut faire défiler tout le plan pour atteindre un meuble.
+
+- [ ] **Validation de la maquette** par l'utilisateur (contenu de la barre : site actuel seul ou tous les sites ; aspect des miniatures). Le développement de cette partie ne démarre qu'après.
+- [ ] **Barre d'aperçu** d'environ 1,5 cm de haut, sous « Plan / Liste », qui reste visible pendant le défilement du plan. Elle montre en miniature, en 2D, chaque meuble du site, regroupés par espace : la grille réelle (une pastille par place, à la couleur du vin, vide si la place est libre) ; pour une caisse ou un carton, la caisse avec ses bouteilles. Sous chaque miniature : le nom du meuble et « occupées / places ».
+- [ ] **Toucher une miniature** amène directement au meuble sur le plan (défilement doux, le meuble s'encadre un instant). Si la barre montre aussi les autres sites et que le meuble est sur un autre site, le site change, comme avec le sélecteur.
+- [ ] **Suivi** : pendant le défilement du plan, la miniature du meuble visible s'encadre, et la barre glisse pour la garder visible.
+- [ ] Défilement horizontal de la barre quand les meubles ne tiennent pas en largeur ; les grandes grilles sont réduites pour tenir dans la hauteur.
+- [ ] La barre remplace les puces de choix d'espace (« Tout · N », un espace…), devenues inutiles. Elle n'apparaît pas en mode Liste, ni pendant une recherche (résultats sur tous les sites), ni s'il n'y a qu'un seul meuble.
+- [ ] Les miniatures se mettent à jour après chaque rangement, sortie ou transfert, sans ralentir le plan (cave de 500 bouteilles).
+- [ ] Tests : miniatures fidèles au contenu, saut vers le bon meuble (et le bon site), suivi au défilement, caisses et cartons, barre absente en Liste et en recherche, performance.
+
+**v2.2** (sauvegarde automatique ; spécifiée et validée le 5 novembre 2026 : option b, Google Drive avec un Worker Cloudflare. *Passée en premier le 13 novembre 2026*, à la place des QR codes)
+- [ ] **Sauvegarde automatique** chiffrée (le même fichier que la sauvegarde manuelle, illisible sans ton mot de passe), après chaque modification importante et au plus une fois par heure, plus une fois par jour au minimum. Les 30 dernières versions sont gardées.
+- [ ] **Restauration** depuis la liste des versions, avec leur date.
+- [ ] **État visible** dans Réglages › Sauvegarde : dernière sauvegarde réussie, échec éventuel et sa raison. Le rappel des 7 jours ne s'affiche plus quand la sauvegarde automatique fonctionne.
+- [ ] **Destination (validée : option b)** : le Google Drive de chaque utilisateur, dans le dossier caché de l'app (`appDataFolder`, droit `drive.appdata`). Chacun se connecte avec son propre compte Google : les sauvegardes sont distinctes par construction.
+- [ ] **Connexion** : Réglages › Sauvegarde › « Connecter Google Drive », une seule fois par appareil. L'autorisation de longue durée est rangée dans le coffre chiffré de l'app.
+- [ ] **Worker Cloudflare** : il échange et renouvelle l'autorisation avec le secret du projet Google, et ne garde rien. Les fichiers vont directement de l'iPhone au Drive. Le code du Worker est livré dans le dépôt (`worker/`), avec sa marche à suivre.
+- [ ] **Mise en place (à faire par toi, une fois)** : un projet Google Cloud, l'écran de consentement en statut « En production », un identifiant OAuth « Application Web » avec l'adresse de l'app, et le Worker avec le secret. Une marche à suivre pas à pas est fournie dans `docs/` au lancement de la v2.2.
+- [ ] **Nouvel appareil** : « Restaurer depuis Google Drive » au premier lancement, puis le mot de passe de la cave.
+- [ ] Tests : envoi, rotation des versions, restauration, absence de réseau, jeton expiré (service simulé).
 
 **En réserve : QR codes sur les meubles** (spécifiée le 5 novembre 2026 ; *mise de côté le 13 novembre 2026* : peu de valeur ajoutée telle que définie, il suffit d'ouvrir l'app et de choisir la cave. Sans numéro de release ; à reprendre seulement sur demande, éventuellement repensée)
 - [ ] **Étiquettes** : pour chaque meuble ou caisse, une étiquette QR avec son nom, à imprimer (planche d'étiquettes en PDF, une ou plusieurs par page).
