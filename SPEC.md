@@ -632,31 +632,29 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 
 *Constat* : sur un site avec plusieurs espaces et meubles, il faut faire défiler tout le plan pour atteindre un meuble.
 
-- [x] **Maquette validée** le 13 novembre 2026 (première version : aperçu des meubles). Reste à choisir : site actuel seul ou tous les sites dans la barre.
+- [x] **Maquette validée** le 13 novembre 2026. Choix : la barre montre **les meubles du site actuel** (on change de site avec le sélecteur, comme aujourd'hui).
 - [ ] **Barre d'aperçu** d'environ 1,5 cm de haut, sous « Plan / Liste », qui reste visible pendant le défilement du plan. Elle montre en miniature, en 2D, chaque meuble du site, regroupés par espace : la grille réelle (une pastille par place, à la couleur du vin, vide si la place est libre) ; pour une caisse ou un carton, la caisse avec ses bouteilles. Sous chaque miniature : le nom du meuble et « occupées / places ».
-- [ ] **Toucher une miniature** amène directement au meuble sur le plan (défilement doux, le meuble s'encadre un instant). Si la barre montre aussi les autres sites et que le meuble est sur un autre site, le site change, comme avec le sélecteur.
+- [ ] **Toucher une miniature** amène directement au meuble sur le plan (défilement doux, le meuble s'encadre un instant).
 - [ ] **Suivi** : pendant le défilement du plan, la miniature du meuble visible s'encadre, et la barre glisse pour la garder visible.
 - [ ] Défilement horizontal de la barre quand les meubles ne tiennent pas en largeur ; les grandes grilles sont réduites pour tenir dans la hauteur.
 - [ ] La barre remplace les puces de choix d'espace (« Tout · N », un espace…), devenues inutiles. Elle n'apparaît pas en mode Liste, ni pendant une recherche (résultats sur tous les sites), ni s'il n'y a qu'un seul meuble.
 - [ ] Les miniatures se mettent à jour après chaque rangement, sortie ou transfert, sans ralentir le plan (cave de 500 bouteilles).
 - [ ] Tests : miniatures fidèles au contenu, saut vers le bon meuble (et le bon site), suivi au défilement, caisses et cartons, barre absente en Liste et en recherche, performance.
 
-*Filtres de la liste* (même maquette, 2e version)
+*Filtres de la liste* (même maquette, 3e version, validée le 13 novembre 2026)
 
-- [ ] En mode **Liste**, la même barre (même hauteur) porte des **filtres** au lieu des miniatures : deux rangées de puces qui défilent chacune à l'horizontale.
-  - 1re rangée : **Maturité** (Priorité, Apogée, Trop tôt, Déclin) et **Couleur** (rouge, blanc, rosé, bulles, liquoreux, et spiritueux si activés).
-  - 2e rangée : **Site** (si plusieurs), **Région** (celles présentes dans la cave), **Millésime** (≤ 2015, 2016–2019, 2020 et +, tranches calculées sur la cave), **À qui** (mes vins, vins des amis, s'il y en a).
-- [ ] Dans un même groupe, les choix s'additionnent (rouge ou blanc) ; entre groupes, ils se combinent (rouge et Loire). Chaque puce affiche le nombre de vins qu'elle donnerait ; une puce qui ne donnerait rien est estompée.
-- [ ] Une puce « Effacer · N » apparaît en tête dès qu'un filtre est actif. Les filtres se combinent avec la recherche et sont gardés en passant de Plan à Liste.
+- [ ] En mode **Liste**, la même barre (même hauteur) porte un bouton **« Filtres »** (avec le nombre de filtres actifs) et, dessous, les **filtres actifs** en puces. Toucher une puce la retire ; « Tout effacer » retire tout. Sans filtre, un court rappel (« Aucun filtre : tous les vins sont affichés »).
+- [ ] Le bouton ouvre une **feuille** qui montre tous les filtres d'un coup, sans défilement sur le côté, par groupes : **Maturité** (Priorité, Apogée, Trop tôt, Déclin), **Couleur** (rouge, blanc, rosé, bulles, liquoreux, et spiritueux si activés), **Site** (si plusieurs), **Région** (celles présentes dans la cave), **Millésime** (≤ 2015, 2016–2019, 2020 et +, tranches calculées sur la cave), **À qui** (mes vins, vins des amis, s'il y en a). En bas, « Voir N vins » ferme la feuille ; la liste derrière se met à jour à chaque choix.
+- [ ] Dans un même groupe, les choix s'additionnent (rouge ou blanc) ; entre groupes, ils se combinent (rouge et Loire). Chaque puce de la feuille affiche le nombre de vins qu'elle donnerait ; une puce qui ne donnerait rien est estompée.
+- [ ] Les filtres se combinent avec la recherche et sont gardés en passant de Plan à Liste.
 - [ ] Remplace les puces de filtre actuelles de la liste (Prêts à boire, couleurs, Mes vins / Vins des amis).
 
-*Recherche déplacée* (gagner de la hauteur ; les deux options sont dans la maquette, à choisir)
+*Recherche déplacée* (gagner de la hauteur ; choix du 13 novembre 2026 : **flottante**)
 
-- [ ] Le champ de recherche permanent disparaît de l'en-tête.
-- [ ] **Option A, en haut** : une loupe dans l'en-tête, à côté du choix du site. La toucher remplace la ligne du titre par le champ (clavier ouvert) et un bouton « Annuler ».
-- [ ] **Option B, flottante** : une loupe ronde en bas à droite, au-dessus de la barre d'onglets. La toucher ouvre le champ en bas de l'écran, juste au-dessus du clavier, avec « Annuler ».
-- [ ] Dans les deux cas : une pastille sur la loupe signale une recherche en cours ; « Annuler » efface la recherche ; le reste ne change pas (en Plan, résultats sur tous les sites avec saut vers l'emplacement ; en Liste, filtrage en direct).
-- [ ] Tests : ouverture et fermeture de la recherche, résultats, filtres seuls et combinés, compteurs des puces, « Effacer », hauteur de l'en-tête réduite.
+- [ ] Le champ de recherche permanent disparaît de l'en-tête, dans les deux modes (Plan et Liste).
+- [ ] **Loupe flottante** : un bouton rond en bas à droite, au-dessus de la barre d'onglets. Le toucher ouvre le champ en bas de l'écran, juste au-dessus du clavier, avec « Annuler ».
+- [ ] Une pastille sur la loupe signale une recherche en cours ; « Annuler » efface la recherche ; le reste ne change pas (en Plan, résultats sur tous les sites avec saut vers l'emplacement ; en Liste, filtrage en direct).
+- [ ] Tests : ouverture et fermeture de la recherche flottante, résultats, feuille des filtres, filtres seuls et combinés, compteurs, retrait d'une puce, « Tout effacer », hauteur de l'en-tête réduite.
 
 **v2.2** (sauvegarde automatique ; spécifiée et validée le 5 novembre 2026 : option b, Google Drive avec un Worker Cloudflare. *Passée en premier le 13 novembre 2026*, à la place des QR codes)
 - [ ] **Sauvegarde automatique** chiffrée (le même fichier que la sauvegarde manuelle, illisible sans ton mot de passe), après chaque modification importante et au plus une fois par heure, plus une fois par jour au minimum. Les 30 dernières versions sont gardées.
