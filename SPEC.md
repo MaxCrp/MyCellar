@@ -634,12 +634,12 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 
 - [x] **Maquette validée** le 13 novembre 2026. Choix : la barre montre **les meubles du site actuel** (on change de site avec le sélecteur, comme aujourd'hui).
 - [ ] **Barre d'aperçu** d'environ 1,5 cm de haut, sous « Plan / Liste », qui reste visible pendant le défilement du plan. Elle montre en miniature, en 2D, chaque meuble du site, regroupés par espace : la grille réelle (une pastille par place, à la couleur du vin, vide si la place est libre) ; pour une caisse ou un carton, la caisse avec ses bouteilles. Sous chaque miniature : le nom du meuble et « occupées / places ».
-- [ ] **Toucher une miniature** amène directement au meuble sur le plan (défilement doux, le meuble s'encadre un instant).
+- [ ] **Toucher une miniature** amène directement au meuble sur le plan (défilement doux, le meuble s'encadre un instant). Pour un meuble en bas de page, le défilement s'arrête à la fin du plan : jamais au-delà, sinon iPhone fait glisser tout l'écran et la barre d'onglets remonte (bug constaté sur la maquette le 13 novembre 2026, corrigé).
 - [ ] **Suivi** : pendant le défilement du plan, la miniature du meuble visible s'encadre, et la barre glisse pour la garder visible.
 - [ ] Défilement horizontal de la barre quand les meubles ne tiennent pas en largeur ; les grandes grilles sont réduites pour tenir dans la hauteur.
 - [ ] La barre remplace les puces de choix d'espace (« Tout · N », un espace…), devenues inutiles. Elle n'apparaît pas en mode Liste, ni pendant une recherche (résultats sur tous les sites), ni s'il n'y a qu'un seul meuble.
 - [ ] Les miniatures se mettent à jour après chaque rangement, sortie ou transfert, sans ralentir le plan (cave de 500 bouteilles).
-- [ ] Tests : miniatures fidèles au contenu, saut vers le bon meuble (et le bon site), suivi au défilement, caisses et cartons, barre absente en Liste et en recherche, performance.
+- [ ] Tests : miniatures fidèles au contenu, saut vers le bon meuble (et le bon site), saut vers le dernier meuble sans dépasser la fin de la page, suivi au défilement, caisses et cartons, barre absente en Liste et en recherche, performance.
 
 *Filtres de la liste* (même maquette, 3e version, validée le 13 novembre 2026)
 
