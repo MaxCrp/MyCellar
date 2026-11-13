@@ -71,7 +71,7 @@ const ok = (label, cond, det = '') => { console.log(`${cond ? 'OK ' : 'KO '} ${l
   // Croix sur les autres barres de recherche
   await p.click('[data-act=go][data-v=deg]'); await p.waitForTimeout(200);
   await p.fill('header input[data-in=degSearch]', 'zzz'); await p.waitForTimeout(100);
-  await p.click('.csearch .sx'); await p.waitForTimeout(150);
+  await p.click('header .sx'); await p.waitForTimeout(150);
   ok('Dégustations : croix', await p.evaluate(() => degQuery === '' && document.querySelector('header input[data-in=degSearch]').value === ''));
   await p.evaluate(() => ACT.rebuyList()); await p.waitForTimeout(200);
   const before = await p.evaluate(() => document.querySelector('#rebuy-list').innerHTML);
