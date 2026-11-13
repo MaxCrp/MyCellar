@@ -1,5 +1,16 @@
 [
  {
+  "version": "2.1.3",
+  "date": "2026-11-13",
+  "titre": "Onglet Cave plus compact",
+  "items": [
+   "Sous « Plan / Liste », une barre montre chaque meuble du site en miniature : une pastille par place, à la couleur du vin. Touche une miniature pour aller directement au meuble, sans faire défiler tout le plan. Pendant le défilement, la miniature du meuble visible s’encadre.",
+   "Mode Liste : un bouton « Filtres » ouvre tous les filtres d’un coup (maturité, couleur, site, région, millésime, à qui). Chaque filtre indique combien de vins il donne ; les filtres actifs s’affichent sous le bouton, touche-en un pour le retirer.",
+   "La recherche passe dans une loupe ronde en bas à droite : le champ s’ouvre au-dessus du clavier, « Annuler » efface la recherche. L’en-tête gagne de la place.",
+   "« Transferts entre sites » et « Conseils de rangement » : une petite barre d’apogée sous chaque vin, sur la même échelle pour tout l’écran, avec un trait pour aujourd’hui."
+  ]
+ },
+ {
   "version": "2.1.2",
   "date": "2026-11-06",
   "titre": "Photo d’étiquette simplifiée",
