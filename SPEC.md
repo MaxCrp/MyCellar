@@ -614,7 +614,7 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 - [x] Le champ qui imposait l'appareil photo (`capture`) n'est plus utilisé. Le reste ne change pas : lecture par le sommelier et message pour un format illisible.
 - [x] Tests : une seule entrée par écran, qui ouvre le sélecteur sans prise de vue imposée ; lecture de la photo inchangée.
 
-**v2.1.3** (améliorations de la version actuelle : barres d'apogée dans les listes, aperçu des meubles dans l'onglet Cave ; demandées le 13 novembre 2026)
+**v2.1.3** (améliorations de la version actuelle : barres d'apogée dans les listes, onglet Cave plus compact avec aperçu des meubles, filtres de la liste et recherche déplacée ; demandées le 13 novembre 2026)
 
 *Barres d'apogée*
 
@@ -632,7 +632,7 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 
 *Constat* : sur un site avec plusieurs espaces et meubles, il faut faire défiler tout le plan pour atteindre un meuble.
 
-- [ ] **Validation de la maquette** par l'utilisateur (contenu de la barre : site actuel seul ou tous les sites ; aspect des miniatures). Le développement de cette partie ne démarre qu'après.
+- [x] **Maquette validée** le 13 novembre 2026 (première version : aperçu des meubles). Reste à choisir : site actuel seul ou tous les sites dans la barre.
 - [ ] **Barre d'aperçu** d'environ 1,5 cm de haut, sous « Plan / Liste », qui reste visible pendant le défilement du plan. Elle montre en miniature, en 2D, chaque meuble du site, regroupés par espace : la grille réelle (une pastille par place, à la couleur du vin, vide si la place est libre) ; pour une caisse ou un carton, la caisse avec ses bouteilles. Sous chaque miniature : le nom du meuble et « occupées / places ».
 - [ ] **Toucher une miniature** amène directement au meuble sur le plan (défilement doux, le meuble s'encadre un instant). Si la barre montre aussi les autres sites et que le meuble est sur un autre site, le site change, comme avec le sélecteur.
 - [ ] **Suivi** : pendant le défilement du plan, la miniature du meuble visible s'encadre, et la barre glisse pour la garder visible.
@@ -640,6 +640,23 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 - [ ] La barre remplace les puces de choix d'espace (« Tout · N », un espace…), devenues inutiles. Elle n'apparaît pas en mode Liste, ni pendant une recherche (résultats sur tous les sites), ni s'il n'y a qu'un seul meuble.
 - [ ] Les miniatures se mettent à jour après chaque rangement, sortie ou transfert, sans ralentir le plan (cave de 500 bouteilles).
 - [ ] Tests : miniatures fidèles au contenu, saut vers le bon meuble (et le bon site), suivi au défilement, caisses et cartons, barre absente en Liste et en recherche, performance.
+
+*Filtres de la liste* (même maquette, 2e version)
+
+- [ ] En mode **Liste**, la même barre (même hauteur) porte des **filtres** au lieu des miniatures : deux rangées de puces qui défilent chacune à l'horizontale.
+  - 1re rangée : **Maturité** (Priorité, Apogée, Trop tôt, Déclin) et **Couleur** (rouge, blanc, rosé, bulles, liquoreux, et spiritueux si activés).
+  - 2e rangée : **Site** (si plusieurs), **Région** (celles présentes dans la cave), **Millésime** (≤ 2015, 2016–2019, 2020 et +, tranches calculées sur la cave), **À qui** (mes vins, vins des amis, s'il y en a).
+- [ ] Dans un même groupe, les choix s'additionnent (rouge ou blanc) ; entre groupes, ils se combinent (rouge et Loire). Chaque puce affiche le nombre de vins qu'elle donnerait ; une puce qui ne donnerait rien est estompée.
+- [ ] Une puce « Effacer · N » apparaît en tête dès qu'un filtre est actif. Les filtres se combinent avec la recherche et sont gardés en passant de Plan à Liste.
+- [ ] Remplace les puces de filtre actuelles de la liste (Prêts à boire, couleurs, Mes vins / Vins des amis).
+
+*Recherche déplacée* (gagner de la hauteur ; les deux options sont dans la maquette, à choisir)
+
+- [ ] Le champ de recherche permanent disparaît de l'en-tête.
+- [ ] **Option A, en haut** : une loupe dans l'en-tête, à côté du choix du site. La toucher remplace la ligne du titre par le champ (clavier ouvert) et un bouton « Annuler ».
+- [ ] **Option B, flottante** : une loupe ronde en bas à droite, au-dessus de la barre d'onglets. La toucher ouvre le champ en bas de l'écran, juste au-dessus du clavier, avec « Annuler ».
+- [ ] Dans les deux cas : une pastille sur la loupe signale une recherche en cours ; « Annuler » efface la recherche ; le reste ne change pas (en Plan, résultats sur tous les sites avec saut vers l'emplacement ; en Liste, filtrage en direct).
+- [ ] Tests : ouverture et fermeture de la recherche, résultats, filtres seuls et combinés, compteurs des puces, « Effacer », hauteur de l'en-tête réduite.
 
 **v2.2** (sauvegarde automatique ; spécifiée et validée le 5 novembre 2026 : option b, Google Drive avec un Worker Cloudflare. *Passée en premier le 13 novembre 2026*, à la place des QR codes)
 - [ ] **Sauvegarde automatique** chiffrée (le même fichier que la sauvegarde manuelle, illisible sans ton mot de passe), après chaque modification importante et au plus une fois par heure, plus une fois par jour au minimum. Les 30 dernières versions sont gardées.
