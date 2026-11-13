@@ -57,7 +57,7 @@ const { chromium } = require('playwright');
   await p.click('[data-act=go][data-v=cave]'); await p.evaluate(() => window.scrollTo(0, 300));
   await probe('Cave › Liste/Plan', '[data-act=caveMode][data-m=plan]', 'page');
   await p.click('[data-act=caveMode][data-m=liste]'); await p.evaluate(() => window.scrollTo(0, 400));
-  await probe('Cave › filtre « Prêts à boire »', '[data-act=lf]', 'page');
+  await probe('Cave › bouton Filtres', '[data-act=cfOpen]', 'page'); await p.evaluate(() => closeSheet()); await p.waitForTimeout(300);
   await p.click('[data-act=go][data-v=boire]'); await p.evaluate(() => window.scrollTo(0, 250));
   await probe('À boire › catégorie', '[data-act=boireCat][data-k=apogee]', 'page');
   await p.click('[data-act=go][data-v=deg]'); await p.evaluate(() => window.scrollTo(0, 300));

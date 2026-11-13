@@ -16,7 +16,7 @@ const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true })
   await p.click('[data-act=demo]');
   await p.waitForTimeout(400);
   await p.screenshot({ path: D + '02-cave.png', fullPage: true });
-  await p.fill('input[data-in=caveSearch]', 'morgon');
+  await p.click('.sfab'); await p.fill('input[data-in=caveSearch]', 'morgon');
   await p.waitForTimeout(200);
   await p.screenshot({ path: D + '03-search.png' });
   await p.fill('input[data-in=caveSearch]', '');

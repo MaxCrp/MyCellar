@@ -1,5 +1,7 @@
 /* ---------- Vue Cave ---------- */
-let caveMode = 'plan', caveSpace = null, caveQuery = '', caveJumped = false, caveFilter = { color: null, ready: false, owner: 'all', kind: 'all' };
+let caveMode = 'plan', caveSpace = null, caveQuery = '', caveJumped = false, caveSearchOpen = false;
+// Filtres de la liste (v2.1.3) : dans un groupe les choix s'additionnent, entre groupes ils se combinent
+const caveF = { st: new Set(), col: new Set(), site: new Set(), reg: new Set(), y: new Set(), own: new Set() };
 
 const visibleSpaces = () => isMulti() ? siteSpaces(S.settings.site) : S.spaces;
 function wineText(w) {
@@ -13,28 +15,165 @@ function matcher(q) {
 }
 
 function caveTools() {
-  const sps = visibleSpaces();
-  const n = id => S.bottles.filter(b => inCave(b) && b.spaceId === id).length;
-  return `<div class="search">${ICON.search}<input type="search" placeholder="Rechercher un vin, un domaine, un millésime…" value="${esc(caveQuery)}" data-in="caveSearch" autocomplete="off" enterkeyhint="search">${sx(caveQuery)}</div>
-    <div class="seg">${[['plan', 'Plan'], ['liste', 'Liste']].map(([k, l]) => `<button class="${caveMode === k ? 'on' : ''}" data-act="caveMode" data-m="${k}">${l}</button>`).join('')}</div>
-    ${caveMode !== 'liste' && sps.length > 1 ? `<div class="chips"><button class="chip${!caveSpace ? ' on' : ''}" data-act="caveSpace" data-id="">Tout · ${sps.reduce((t, s) => t + n(s.id), 0)}</button>${sps.map(s => `<button class="chip${caveSpace === s.id ? ' on' : ''}" data-act="caveSpace" data-id="${s.id}">${esc(s.name)} · ${n(s.id)}</button>`).join('')}</div>` : ''}
-    ${caveMode === 'liste' ? listFilters() : ''}`;
-}
-function listFilters() {
-  const f = caveFilter, ch = (act, v, on, l) => `<button class="chip soft${on ? ' on' : ''}" data-act="${act}" data-v="${v}">${l}</button>`;
-  const usedColors = [...new Set(S.wines.filter(w => w.kind !== 'spirit').map(w => w.couleur).filter(Boolean))];
-  return `<div class="chips">${ch('lf', 'ready', f.ready, 'Prêts à boire')}
-    ${usedColors.map(c => ch('lfc', c, f.color === c, `<span class="dot" style="background:${COLORS[c].c}"></span>${COLORS[c].label}`)).join('')}
-    ${spiritsOn() ? ch('lfk', 'spirit', f.kind === 'spirit', 'Spiritueux') + ch('lfk', 'vin', f.kind === 'vin', 'Vins') : ''}
-    ${S.wines.some(hasFriend) ? ch('lfo', 'moi', f.owner === 'moi', 'Mes vins') + ch('lfo', 'amis', f.owner === 'amis', 'Vins des amis') : ''}</div>`;
+  return `<div class="seg">${[['plan', 'Plan'], ['liste', 'Liste']].map(([k, l]) => `<button class="${caveMode === k ? 'on' : ''}" data-act="caveMode" data-m="${k}">${l}</button>`).join('')}</div>
+    <div id="cstrip">${caveMode === 'liste' ? listBar() : unitStrip()}</div>`;
 }
 
+/* ---------- Recherche flottante (v2.1.3) ---------- */
+// Une loupe ronde au-dessus de la barre d'onglets ; le champ s'ouvre en bas, juste au-dessus du clavier
+function caveSearchUI() {
+  if (!caveSearchOpen) return `<button class="sfab${caveQuery ? ' dot' : ''}" data-act="searchOpen" aria-label="Rechercher">${ICON.search}</button>`;
+  return `<div class="csearch"><div class="in"><div class="search">${ICON.search}<input type="search" placeholder="Vin, domaine, millésime…" value="${esc(caveQuery)}" data-in="caveSearch" autocomplete="off" enterkeyhint="search" aria-label="Rechercher">${sx(caveQuery)}</div>
+    <button class="cancel" data-act="searchCancel">Annuler</button></div></div>`;
+}
+function placeSearch() {
+  const vv = window.visualViewport, bar = $('.csearch'); if (!vv || !bar) return;
+  const kb = innerHeight - vv.height - vv.offsetTop;
+  bar.style.bottom = kb > 80 ? kb + 'px' : '';
+}
+window.visualViewport?.addEventListener('resize', placeSearch);
+window.visualViewport?.addEventListener('scroll', placeSearch);
+
+/* ---------- Aperçu des meubles (v2.1.3) ---------- */
+// Barre sous « Plan / Liste » : chaque meuble du site en miniature, regroupés par espace ; toucher = aller au meuble
+let occMemo = null, uActive = null, spyLock = 0, spyRaf = 0;
+const stripUnits = id => { const us = spaceUnits(id); return [...us.filter(u => !UNIT_TYPES[u.type].box), ...us.filter(u => UNIT_TYPES[u.type].box).sort((a, b) => String(a.pile || '').localeCompare(String(b.pile || '')) || (b.level || 0) - (a.level || 0))]; };
+function unitStrip() {
+  if (caveMode !== 'plan' || (matcher(caveQuery) && !caveJumped)) return '';
+  const occ = occMemo || occupancy(), groups = visibleSpaces().map(sp => ({ sp, units: stripUnits(sp.id) })).filter(g => g.units.length);
+  if (groups.reduce((t, g) => t + g.units.length, 0) < 2) return '';
+  return `<div class="ustrip" aria-label="Aperçu des meubles">${groups.map((g, i) => `${i ? '<span class="usep"></span>' : ''}<div class="ugrp"><div class="ugl">${esc(g.sp.name)}</div>
+    <div class="ugu">${g.units.map(u => uMini(u, occ)).join('')}</div></div>`).join('')}</div>`;
+}
+const r2 = x => Math.round(x * 100) / 100;
+function gridArt(u, occ) {
+  // Taille des pastilles : la grille entière tient dans 104 × 40 points ; espacement réduit pour les grands meubles
+  const fit = g => Math.min(5, (104 - (u.cols - 1) * g) / u.cols, (40 - (u.rows - 1) * g) / u.rows);
+  const g = fit(1) < 2.2 ? .5 : 1, sz = Math.max(1.2, fit(g));
+  const W = r2(u.cols * sz + (u.cols - 1) * g), H = r2(u.rows * sz + (u.rows - 1) * g), rx = r2(sz / 3.5);
+  let out = '';
+  for (let r = 0; r < u.rows; r++) for (let c = 0; c < u.cols; c++) {
+    const b = occ.get(`${u.id}:${r}:${c}`), x = r2(c * (sz + g)), y = r2(r * (sz + g));
+    if (!b) { out += `<rect x="${r2(x + .3)}" y="${r2(y + .3)}" width="${r2(sz - .6)}" height="${r2(sz - .6)}" rx="${rx}" style="fill:none;stroke:var(--line);stroke-width:.6"/>`; continue; }
+    const w = wine(b.wineId);
+    out += `<rect x="${x}" y="${y}" width="${r2(sz)}" height="${r2(sz)}" rx="${rx}" style="fill:${w && kindOn(w) ? wineColor(w) : 'var(--line)'}"/>`;
+  }
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true">${out}</svg>`;
+}
+function boxArt(u, occ) {
+  const bs = boxContents(u, occ), n = capacity(u), cols = n <= 6 ? 3 : n <= 12 ? 4 : 6, rows = Math.ceil(n / cols), d = 6;
+  const w = bs.length ? wine(bs[0].wineId) : null, col = w && kindOn(w) ? wineColor(w) : 'var(--line)';
+  const W = cols * d + 4, H = rows * d + 4;
+  let out = `<rect x=".75" y=".75" width="${W - 1.5}" height="${H - 1.5}" rx="3" style="fill:#F6EEE2;stroke:#B99B72;stroke-width:1.5"/>`;
+  for (let i = 0; i < n; i++) { const cx = 2 + (i % cols) * d + d / 2, cy = 2 + Math.floor(i / cols) * d + d / 2;
+    out += i < bs.length ? `<circle cx="${cx}" cy="${cy}" r="2.3" style="fill:${col}"/>` : `<circle cx="${cx}" cy="${cy}" r="2" style="fill:none;stroke:#D9C8AE;stroke-width:.6"/>`; }
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true">${out}</svg>`;
+}
+function uMini(u, occ) {
+  const t = UNIT_TYPES[u.type], used = capacity(u) - freeSlots(u, occ).length, name = u.name || t.label;
+  return `<button class="umini${uActive === u.id ? ' on' : ''}" data-act="uGo" data-u="${u.id}" aria-label="${esc(name)} : ${used} sur ${capacity(u)}">
+    <span class="uart">${t.box ? boxArt(u, occ) : gridArt(u, occ)}</span><span class="unm">${esc(name)}</span><span class="uct">${used}/${capacity(u)}</span></button>`;
+}
+// Aller au meuble : défilement doux sous l'en-tête, jamais au-delà de la fin de la page (sinon iPhone fait glisser tout l'écran)
+function goUnit(id) {
+  const v = $('.view'), el = v && (v.querySelector(`[data-unit="${id}"]`) || v.querySelector(`.crate[data-u="${id}"]`)); if (!el) return;
+  const card = el.closest('.card') || el, top = ($('header.top')?.getBoundingClientRect().bottom || 0) + 8;
+  const want = window.scrollY + card.getBoundingClientRect().top - top, max = document.documentElement.scrollHeight - innerHeight;
+  window.scrollTo({ top: Math.max(0, Math.min(want, max)), behavior: 'smooth' });
+  uActive = id; spyLock = Date.now(); markMini();
+  el.classList.remove('uflash'); void el.offsetWidth; el.classList.add('uflash'); setTimeout(() => el.classList.remove('uflash'), 1200);
+}
+function markMini() {
+  const s = $('.ustrip'); if (!s) return;
+  let on = null; for (const m of $$('.umini', s)) { const y = m.dataset.u === uActive; m.classList.toggle('on', y); if (y) on = m; }
+  if (on) s.scrollTo({ left: Math.max(0, on.offsetLeft - s.clientWidth / 2 + on.offsetWidth / 2), behavior: 'smooth' });
+}
+// Suivi : la miniature du meuble visible sous l'en-tête s'encadre
+function unitSpy() {
+  if (view !== 'cave' || caveMode !== 'plan' || Date.now() - spyLock < 800 || !$('.ustrip')) return;
+  const lim = ($('header.top')?.getBoundingClientRect().bottom || 0) + 30;
+  const els = $$('.view [data-unit], .view .crate[data-u]'); let best = els[0] || null;
+  for (const c of els) { if (c.getBoundingClientRect().top <= lim) best = c; else break; }
+  const id = best?.dataset.unit || best?.dataset.u;
+  if (id && id !== uActive) { uActive = id; markMini(); }
+}
+addEventListener('scroll', () => { if (!spyRaf) spyRaf = requestAnimationFrame(() => { spyRaf = 0; unitSpy(); }); }, { passive: true });
+
+/* ---------- Filtres de la liste (v2.1.3) ---------- */
+const CF_ST = ['prio', 'apogee', 'tot', 'declin'];
+const listBase = () => S.wines.filter(w => kindOn(w) && S.bottles.some(b => b.wineId === w.id && (inCave(b) || b.state === 'primeur')));
+// Tranches de millésimes calculées sur la cave (par tiers), et « Sans millésime »
+function yBuckets(ws) {
+  const ys = ws.map(w => w.millesime).filter(Boolean).sort((a, b) => a - b), out = [];
+  if (ys.length) {
+    const a = ys[Math.floor((ys.length - 1) / 3)], b = ys[Math.floor(2 * (ys.length - 1) / 3)];
+    out.push(`le:${a}`); if (b > a) out.push(b > a + 1 ? `rg:${a + 1}-${b}` : `rg:${b}-${b}`); if (ys.at(-1) > b) out.push(`ge:${b + 1}`);
+  }
+  if (ws.some(w => !w.millesime)) out.push('nv');
+  return out;
+}
+function yTest(k, y) {
+  if (k === 'nv') return !y;
+  const [t, v] = k.split(':'); if (!y) return false;
+  if (t === 'le') return y <= +v;
+  if (t === 'ge') return y >= +v;
+  const [a, b] = v.split('-').map(Number); return y >= a && y <= b;
+}
+const yLabel = k => { if (k === 'nv') return 'Sans millésime'; const [t, v] = k.split(':'); if (t === 'le') return '≤ ' + v; if (t === 'ge') return v + ' et +'; const [a, b] = v.split('-'); return a === b ? a : `${a}–${b}`; };
+const CF_TEST = {
+  st: (w, v) => status(w) === v,
+  col: (w, v) => v === 'spirit' ? w.kind === 'spirit' : w.kind !== 'spirit' && w.couleur === v,
+  site: (w, v) => wineBottles(w.id).some(b => siteOfBottle(b) === v),
+  reg: (w, v) => (w.region || '').trim() === v,
+  y: (w, v) => yTest(v, w.millesime),
+  own: (w, v) => v === 'ami' ? hasFriend(w) : heldBottles(w.id).some(b => !b.owner),
+};
+const cfCount = () => Object.values(caveF).reduce((t, s) => t + s.size, 0);
+function cfPass(w, skip) {
+  for (const g in caveF) if (g !== skip && caveF[g].size && ![...caveF[g]].some(v => CF_TEST[g](w, v))) return false;
+  return true;
+}
+function cfLabel(g, v) {
+  if (g === 'st') return [STATUS[v].short, STATUS[v].hex];
+  if (g === 'col') return v === 'spirit' ? ['Spiritueux', SPIRIT_COLOR] : [COLORS[v]?.label || v, COLORS[v]?.c];
+  if (g === 'site') return [site(v)?.name || '?'];
+  if (g === 'y') return [yLabel(v)];
+  if (g === 'own') return [v === 'ami' ? 'Vins des amis' : 'Mes vins'];
+  return [v];
+}
+// Groupes proposés : seulement ce qui existe dans la cave
+function cfGroups(ws) {
+  const g = [['st', 'Maturité', CF_ST.filter(k => ws.some(w => w.kind !== 'spirit'))]];
+  const cols = Object.keys(COLORS).filter(c => ws.some(w => w.kind !== 'spirit' && w.couleur === c));
+  if (spiritsOn() && ws.some(w => w.kind === 'spirit')) cols.push('spirit');
+  g.push(['col', 'Couleur', cols]);
+  if (isMulti()) g.push(['site', 'Site', S.sites.map(s => s.id)]);
+  g.push(['reg', 'Région', [...new Set(ws.map(w => (w.region || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'fr'))]);
+  g.push(['y', 'Millésime', yBuckets(ws)]);
+  if (S.wines.some(hasFriend)) g.push(['own', 'À qui', ['moi', 'ami']]);
+  return g.filter(x => x[2].length);
+}
+const cfDot = c => c ? `<span class="dot" style="background:${c}"></span>` : '';
+function listBar() {
+  const on = Object.entries(caveF).flatMap(([g, set]) => [...set].map(v => [g, v]));
+  return `<div class="fbar"><div class="row" style="gap:10px"><button class="fbtn" data-act="cfOpen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Filtres${on.length ? ` <b>${on.length}</b>` : ''}</button>
+      ${on.length ? '<button class="link" style="padding:0;font-size:14px" data-act="cfClear">Tout effacer</button>' : '<span class="small ell">Maturité, couleur, région, millésime…</span>'}</div>
+    <div class="factive">${on.length ? on.map(([g, v]) => { const [l, c] = cfLabel(g, v); return `<button class="chip on" data-act="cfToggle" data-g="${g}" data-v="${esc(v)}" aria-label="Retirer le filtre ${esc(l)}">${cfDot(c)}${esc(l)}<span class="rm">✕</span></button>`; }).join('') : '<span class="tiny">Aucun filtre : tous les vins sont affichés.</span>'}</div></div>`;
+}
+function cfSheet() {
+  const m = matcher(caveQuery), ws = listBase().filter(w => !m || m(w)), n = ws.filter(w => cfPass(w)).length;
+  return `${head('Filtres', cfCount() ? '<button class="link" style="padding:0 6px;font-size:15px" data-act="cfClear">Tout effacer</button>' : '')}
+    ${cfGroups(listBase()).map(([g, title, vals]) => `<h3>${title}</h3><div class="chips wrap">${vals.map(v => {
+      const on = caveF[g].has(v), k = ws.filter(w => cfPass(w, g) && CF_TEST[g](w, v)).length, [l, c] = cfLabel(g, v);
+      return `<button class="chip${on ? ' on' : ''}${!k && !on ? ' zero' : ''}" data-act="cfToggle" data-g="${g}" data-v="${esc(v)}">${cfDot(c)}${esc(l)} <em>${k}</em></button>`; }).join('')}</div>`).join('')}
+    <button class="btn primary wide" style="margin-top:18px" data-act="close">Voir ${plural(n, 'vin', 'vins')}</button>`;
+}
 function vCave() {
   if (caveMode === 'liste') return vCaveList();
   const m = matcher(caveQuery), occ = occupancy();
   if (m && !caveJumped) return caveResults(m);
-  let sps = visibleSpaces();
-  if (caveSpace && sps.some(s => s.id === caveSpace)) sps = sps.filter(s => s.id === caveSpace);
+  const sps = visibleSpaces();   // v2.1.3 : tout le site ; la barre d'aperçu mène à chaque meuble
+  occMemo = occ;
   const ctx = { occ, m, pick: null };
   let found = 0;
   if (m) found = S.bottles.filter(b => inCave(b) && sps.some(s => s.id === b.spaceId) && m(wine(b.wineId))).length;
@@ -107,7 +246,7 @@ function spaceBlock(sp, ctx, titled) {
   const unplaced = S.bottles.filter(b => inCave(b) && b.spaceId === sp.id && !b.unitId);
   return `<div class="sect">${esc(sp.name)}${titled || !isMulti() ? '' : ' · ' + esc(site(sp.siteId)?.name || '')}</div>
     ${!units.length ? `<div class="card"><div class="small">Aucun meuble dans « ${esc(sp.name)} ».</div><button class="btn small" style="margin-top:8px" data-act="addUnit" data-space="${sp.id}">${ICON.add} Ajouter un meuble</button></div>` : ''}
-    ${grid.map(u => `<div class="card">${unitHead(u, ctx)}${renderGrid(u, ctx)}</div>`).join('')}
+    ${grid.map(u => `<div class="card" data-unit="${u.id}">${unitHead(u, ctx)}${renderGrid(u, ctx)}</div>`).join('')}
     ${boxes.length ? `<div class="card"><div class="ct">Caisses et cartons <span class="small">${boxes.length} · ${boxes.reduce((t, u) => t + capacity(u) - freeSlots(u, ctx.occ).length, 0)} bouteilles</span></div>${renderBoxes(boxes, ctx)}</div>` : ''}
     ${unplaced.length && !ctx.pick ? unplacedBlock(unplaced, ctx) : ''}
     ${units.length && !ctx.pick ? `<button class="link" data-act="addUnit" data-space="${sp.id}">+ Ajouter un meuble</button>` : ''}`;
@@ -180,14 +319,8 @@ function unplacedBlock(list, ctx) {
 
 /* ---------- Liste ---------- */
 function listWines() {
-  const m = matcher(caveQuery), f = caveFilter;
-  return S.wines.filter(w => kindOn(w)
-    && S.bottles.some(b => b.wineId === w.id && (inCave(b) || b.state === 'primeur'))
-    && (!m || m(w))
-    && (!f.color || w.couleur === f.color)
-    && (!f.ready || ['prio', 'apogee'].includes(status(w)))
-    && (f.kind === 'all' || w.kind === f.kind)
-    && (f.owner === 'all' || (f.owner === 'amis' ? hasFriend(w) : heldBottles(w.id).some(b => !b.owner))))
+  const m = matcher(caveQuery);
+  return listBase().filter(w => (!m || m(w)) && cfPass(w))
     .sort((a, b) => norm(wineName(a)).localeCompare(norm(wineName(b))) || (a.millesime || 0) - (b.millesime || 0));
 }
 function wineRow(w, extra = '') {
@@ -259,10 +392,12 @@ FORMS.unit = async (f, d) => {
 Object.assign(ACT, {
   caveMode: t => { caveMode = t.dataset.m; render(); },
   caveSpace: t => { caveSpace = t.dataset.id || null; render(); },
-  lf: () => { caveFilter.ready = !caveFilter.ready; render(); },
-  lfc: t => { caveFilter.color = caveFilter.color === t.dataset.v ? null : t.dataset.v; render(); },
-  lfk: t => { caveFilter.kind = caveFilter.kind === t.dataset.v ? 'all' : t.dataset.v; render(); },
-  lfo: t => { caveFilter.owner = caveFilter.owner === t.dataset.v ? 'all' : t.dataset.v; render(); },
+  cfOpen: () => showSheet(cfSheet),
+  cfToggle: t => { const set = caveF[t.dataset.g], v = t.dataset.v; set.has(v) ? set.delete(v) : set.add(v); render(); if (sheetStack.length) refreshSheet(); },
+  cfClear: () => { Object.values(caveF).forEach(x => x.clear()); render(); if (sheetStack.length) refreshSheet(); },
+  uGo: t => goUnit(t.dataset.u),
+  searchOpen: () => { caveSearchOpen = true; render(); const i = $('.csearch input'); if (i) { i.focus(); placeSearch(); } },
+  searchCancel: () => { caveSearchOpen = false; caveQuery = ''; caveJumped = false; render(); },
   addUnit: t => showSheet(() => unitSheet(null, t.dataset.space || visibleSpaces()[0]?.id)),
   editUnit: t => showSheet(() => unitSheet(t.dataset.id)),
   delUnit: async t => {
@@ -283,6 +418,8 @@ Object.assign(ACT, {
 INPUTS.caveSearch = el => {
   caveQuery = el.value; caveJumped = false;
   const v = $('.view'); if (v) { v.innerHTML = banners() + vCave(); paintPhotos(v); }
+  const st = $('#cstrip'); if (st && caveMode === 'plan') st.innerHTML = unitStrip();
+  const f = $('.sfab'); if (f) f.classList.toggle('dot', !!caveQuery);
 };
 
 function emptySlotSheet(uid_, r, c) {
@@ -326,7 +463,7 @@ async function switchSite(dir) {
 document.addEventListener('touchstart', e => {
   caveSwipe = null;
   if ((mode !== 'app' && mode !== 'demo') || view !== 'cave' || caveMode !== 'plan' || !isMulti() || sheetStack.length || introAt != null || e.touches.length !== 1) return;
-  if (e.target.closest?.('.rack-scroll, .chips, .pgrid, input, textarea, select, .sheet, .tabs, #layer')) return;
+  if (e.target.closest?.('.rack-scroll, .chips, .ustrip, .factive, .csearch, .pgrid, input, textarea, select, .sheet, .tabs, #layer')) return;
   const t = e.touches[0]; caveSwipe = { x: t.clientX, y: t.clientY, at: Date.now() };
 }, { passive: true });
 document.addEventListener('touchend', e => {

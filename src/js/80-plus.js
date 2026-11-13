@@ -193,7 +193,7 @@ Object.assign(ACT, {
 });
 
 /* ---------- Réglages : contenu ---------- */
-CHANGES.setSpirits = async el => { S.settings.spirits = el.checked; if (!el.checked) caveFilter.kind = 'all'; await save(); render(); toast(el.checked ? 'Spiritueux activés' : 'Spiritueux masqués (rien n’est supprimé)'); };
+CHANGES.setSpirits = async el => { S.settings.spirits = el.checked; if (!el.checked) caveF.col.delete('spirit'); await save(); render(); toast(el.checked ? 'Spiritueux activés' : 'Spiritueux masqués (rien n’est supprimé)'); };
 CHANGES.setCocktails = async el => { S.settings.cocktails = el.checked; await save(); };
 CHANGES.setLock = async el => { S.settings.lockMin = +el.value; await save(); };
 CHANGES.setStay = async el => {

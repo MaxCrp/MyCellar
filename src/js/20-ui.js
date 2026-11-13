@@ -179,8 +179,8 @@ function render() {
   app.innerHTML = `
     <header class="top"><div class="top-row">${view === 'plus' ? `<button class="icon-btn" data-act="go" data-v="cave" aria-label="Retour" style="margin-left:-8px">${ICON.back}</button>` : ''}<h1>${title}</h1>${view === 'cave' || view === 'somm' ? sitePill() : ''}
       ${view !== 'plus' ? `<button class="icon-btn gear" data-act="go" data-v="plus" aria-label="Réglages">${ICON.gear}</button>` : ''}</div>${view === 'cave' ? siteDots() + caveTools() : view === 'deg' ? degTools() : ''}</header>
-    <main class="view${view === 'somm' ? ' chat' : ''}">${banners()}${body}</main>
-    ${view === 'somm' ? composer() : ''}
+    <main class="view${view === 'somm' ? ' chat' : ''}${view === 'cave' && caveSearchOpen ? ' sopen' : ''}">${banners()}${body}</main>
+    ${view === 'somm' ? composer() : ''}${view === 'cave' ? caveSearchUI() : ''}
     <nav class="tabs" aria-label="Navigation">${tab('cave', 'Cave', ICON.cave)}${tab('deg', 'Dégustations', ICON.notes)}
       <button class="tab plus" data-act="add" aria-label="Ajouter"><span>${ICON.add}</span></button>
       ${tab('boire', 'À boire', ICON.boire)}${tab('somm', 'Sommelier', ICON.somm)}</nav>`;
@@ -190,6 +190,7 @@ function render() {
   if (keepY) window.scrollTo(0, keepY);
 }
 function afterRender() {
+  if (view === 'cave') { uActive = null; unitSpy(); placeSearch(); }
   if (view !== 'somm') return;
   // L'espace sous la conversation suit la hauteur de l'encart flottant : la dernière réponse n'est jamais cachée
   const c = $('.composer');

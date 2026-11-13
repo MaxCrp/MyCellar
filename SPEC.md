@@ -614,47 +614,47 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 - [x] Le champ qui imposait l'appareil photo (`capture`) n'est plus utilisé. Le reste ne change pas : lecture par le sommelier et message pour un format illisible.
 - [x] Tests : une seule entrée par écran, qui ouvre le sélecteur sans prise de vue imposée ; lecture de la photo inchangée.
 
-**v2.1.3** (améliorations de la version actuelle : barres d'apogée dans les listes, onglet Cave plus compact avec aperçu des meubles, filtres de la liste et recherche déplacée ; demandées le 13 novembre 2026)
+**v2.1.3** (améliorations de la version actuelle : barres d'apogée dans les listes, onglet Cave plus compact avec aperçu des meubles, filtres de la liste et recherche déplacée ; demandées le 13 novembre 2026 ; livrée)
 
 *Barres d'apogée*
 
 *Constat* : dans « Transferts entre sites » et dans « Conseils de rangement », il faut toucher chaque vin pour voir où il en est de sa fenêtre de dégustation.
 
-- [ ] **Petite barre d'apogée** sous chaque vin de ces deux écrans : la fenêtre (début → fin) en couleur, et un trait pour aujourd'hui, comme dans la liste « À boire ». On voit d'un coup d'œil si un vin est trop jeune, à son apogée ou en fin de fenêtre.
-- [ ] Dans « Transferts entre sites » : sur les bouteilles à emporter (chaque sens) et sur les suggestions.
-- [ ] Dans « Conseils de rangement » : sur chaque conseil (à rapprocher, à mettre en garde, réassort).
-- [ ] **Même échelle pour tout l'écran** (de 3 ans avant à 12 ans après l'année en cours, comme « À boire ») pour pouvoir comparer les vins entre eux ; les années de début et de fin de l'échelle sont rappelées en tout petit en tête de liste. Une fenêtre qui dépasse l'échelle est coupée au bord.
-- [ ] Vin sans fenêtre : barre grise vide (rien n'est estimé automatiquement à l'ouverture de l'écran). Spiritueux : pas de barre.
-- [ ] Le reste ne change pas : toucher le vin ouvre toujours son résumé, avec la grande barre et les années.
-- [ ] Tests : barre présente et trait d'aujourd'hui bien placé dans les deux écrans, vin sans fenêtre, spiritueux, écran de 100 vins sans ralentissement.
+- [x] **Petite barre d'apogée** sous chaque vin de ces deux écrans : la fenêtre (début → fin) en couleur, et un trait pour aujourd'hui, comme dans la liste « À boire ». On voit d'un coup d'œil si un vin est trop jeune, à son apogée ou en fin de fenêtre.
+- [x] Dans « Transferts entre sites » : sur les bouteilles à emporter (chaque sens) et sur les suggestions.
+- [x] Dans « Conseils de rangement » : sur chaque conseil (à rapprocher, à mettre en garde, réassort).
+- [x] **Même échelle pour tout l'écran** (de 3 ans avant à 12 ans après l'année en cours, comme « À boire ») pour pouvoir comparer les vins entre eux ; les années de début et de fin de l'échelle sont rappelées en tout petit en tête de liste. Une fenêtre qui dépasse l'échelle est coupée au bord.
+- [x] Vin sans fenêtre : barre grise vide (rien n'est estimé automatiquement à l'ouverture de l'écran). Spiritueux : pas de barre.
+- [x] Le reste ne change pas : toucher le vin ouvre toujours son résumé, avec la grande barre et les années.
+- [x] Tests : barre présente et trait d'aujourd'hui bien placé dans les deux écrans, vin sans fenêtre, spiritueux, écran de 100 vins sans ralentissement.
 
 *Aperçu des meubles dans l'onglet Cave* (maquette à valider sur iPhone **avant** tout développement : https://claude.ai/artifact/3MikYoN8vzhhRXZirWq824)
 
 *Constat* : sur un site avec plusieurs espaces et meubles, il faut faire défiler tout le plan pour atteindre un meuble.
 
 - [x] **Maquette validée** le 13 novembre 2026. Choix : la barre montre **les meubles du site actuel** (on change de site avec le sélecteur, comme aujourd'hui).
-- [ ] **Barre d'aperçu** d'environ 1,5 cm de haut, sous « Plan / Liste », qui reste visible pendant le défilement du plan. Elle montre en miniature, en 2D, chaque meuble du site, regroupés par espace : la grille réelle (une pastille par place, à la couleur du vin, vide si la place est libre) ; pour une caisse ou un carton, la caisse avec ses bouteilles. Sous chaque miniature : le nom du meuble et « occupées / places ».
-- [ ] **Toucher une miniature** amène directement au meuble sur le plan (défilement doux, le meuble s'encadre un instant). Pour un meuble en bas de page, le défilement s'arrête à la fin du plan : jamais au-delà, sinon iPhone fait glisser tout l'écran et la barre d'onglets remonte (bug constaté sur la maquette le 13 novembre 2026, corrigé).
-- [ ] **Suivi** : pendant le défilement du plan, la miniature du meuble visible s'encadre, et la barre glisse pour la garder visible.
-- [ ] Défilement horizontal de la barre quand les meubles ne tiennent pas en largeur ; les grandes grilles sont réduites pour tenir dans la hauteur.
-- [ ] La barre remplace les puces de choix d'espace (« Tout · N », un espace…), devenues inutiles. Elle n'apparaît pas en mode Liste, ni pendant une recherche (résultats sur tous les sites), ni s'il n'y a qu'un seul meuble.
-- [ ] Les miniatures se mettent à jour après chaque rangement, sortie ou transfert, sans ralentir le plan (cave de 500 bouteilles).
-- [ ] Tests : miniatures fidèles au contenu, saut vers le bon meuble (et le bon site), saut vers le dernier meuble sans dépasser la fin de la page, suivi au défilement, caisses et cartons, barre absente en Liste et en recherche, performance.
+- [x] **Barre d'aperçu** d'environ 1,5 cm de haut, sous « Plan / Liste », qui reste visible pendant le défilement du plan. Elle montre en miniature, en 2D, chaque meuble du site, regroupés par espace : la grille réelle (une pastille par place, à la couleur du vin, vide si la place est libre) ; pour une caisse ou un carton, la caisse avec ses bouteilles. Sous chaque miniature : le nom du meuble et « occupées / places ».
+- [x] **Toucher une miniature** amène directement au meuble sur le plan (défilement doux, le meuble s'encadre un instant). Pour un meuble en bas de page, le défilement s'arrête à la fin du plan : jamais au-delà, sinon iPhone fait glisser tout l'écran et la barre d'onglets remonte (bug constaté sur la maquette le 13 novembre 2026, corrigé).
+- [x] **Suivi** : pendant le défilement du plan, la miniature du meuble visible s'encadre, et la barre glisse pour la garder visible.
+- [x] Défilement horizontal de la barre quand les meubles ne tiennent pas en largeur ; les grandes grilles sont réduites pour tenir dans la hauteur.
+- [x] La barre remplace les puces de choix d'espace (« Tout · N », un espace…), devenues inutiles : le plan montre toujours tout le site. Elle n'apparaît pas en mode Liste, ni pendant une recherche (résultats sur tous les sites), ni s'il n'y a qu'un seul meuble.
+- [x] Les miniatures se mettent à jour après chaque rangement, sortie ou transfert, sans ralentir le plan (cave de 500 bouteilles).
+- [x] Tests : miniatures fidèles au contenu, saut vers le bon meuble (et le bon site), saut vers le dernier meuble sans dépasser la fin de la page, suivi au défilement, caisses et cartons, barre absente en Liste et en recherche, performance.
 
 *Filtres de la liste* (même maquette, 3e version, validée le 13 novembre 2026)
 
-- [ ] En mode **Liste**, la même barre (même hauteur) porte un bouton **« Filtres »** (avec le nombre de filtres actifs) et, dessous, les **filtres actifs** en puces. Toucher une puce la retire ; « Tout effacer » retire tout. Sans filtre, un court rappel (« Aucun filtre : tous les vins sont affichés »).
-- [ ] Le bouton ouvre une **feuille** qui montre tous les filtres d'un coup, sans défilement sur le côté, par groupes : **Maturité** (Priorité, Apogée, Trop tôt, Déclin), **Couleur** (rouge, blanc, rosé, bulles, liquoreux, et spiritueux si activés), **Site** (si plusieurs), **Région** (celles présentes dans la cave), **Millésime** (≤ 2015, 2016–2019, 2020 et +, tranches calculées sur la cave), **À qui** (mes vins, vins des amis, s'il y en a). En bas, « Voir N vins » ferme la feuille ; la liste derrière se met à jour à chaque choix.
-- [ ] Dans un même groupe, les choix s'additionnent (rouge ou blanc) ; entre groupes, ils se combinent (rouge et Loire). Chaque puce de la feuille affiche le nombre de vins qu'elle donnerait ; une puce qui ne donnerait rien est estompée.
-- [ ] Les filtres se combinent avec la recherche et sont gardés en passant de Plan à Liste.
-- [ ] Remplace les puces de filtre actuelles de la liste (Prêts à boire, couleurs, Mes vins / Vins des amis).
+- [x] En mode **Liste**, la même barre (même hauteur) porte un bouton **« Filtres »** (avec le nombre de filtres actifs) et, dessous, les **filtres actifs** en puces. Toucher une puce la retire ; « Tout effacer » retire tout. Sans filtre, un court rappel (« Aucun filtre : tous les vins sont affichés »).
+- [x] Le bouton ouvre une **feuille** qui montre tous les filtres d'un coup, sans défilement sur le côté, par groupes : **Maturité** (Priorité, Apogée, Trop tôt, Déclin), **Couleur** (rouge, blanc, rosé, bulles, liquoreux, et spiritueux si activés), **Site** (si plusieurs), **Région** (celles présentes dans la cave), **Millésime** (≤ 2015, 2016–2019, 2020 et +, tranches calculées sur la cave), **À qui** (mes vins, vins des amis, s'il y en a). En bas, « Voir N vins » ferme la feuille ; la liste derrière se met à jour à chaque choix.
+- [x] Dans un même groupe, les choix s'additionnent (rouge ou blanc) ; entre groupes, ils se combinent (rouge et Loire). Chaque puce de la feuille affiche le nombre de vins qu'elle donnerait ; une puce qui ne donnerait rien est estompée.
+- [x] Les filtres se combinent avec la recherche et sont gardés en passant de Plan à Liste.
+- [x] Remplace les puces de filtre actuelles de la liste (Prêts à boire, couleurs, Mes vins / Vins des amis).
 
 *Recherche déplacée* (gagner de la hauteur ; choix du 13 novembre 2026 : **flottante**)
 
-- [ ] Le champ de recherche permanent disparaît de l'en-tête, dans les deux modes (Plan et Liste).
-- [ ] **Loupe flottante** : un bouton rond en bas à droite, au-dessus de la barre d'onglets. Le toucher ouvre le champ en bas de l'écran, juste au-dessus du clavier, avec « Annuler ».
-- [ ] Une pastille sur la loupe signale une recherche en cours ; « Annuler » efface la recherche ; le reste ne change pas (en Plan, résultats sur tous les sites avec saut vers l'emplacement ; en Liste, filtrage en direct).
-- [ ] Tests : ouverture et fermeture de la recherche flottante, résultats, feuille des filtres, filtres seuls et combinés, compteurs, retrait d'une puce, « Tout effacer », hauteur de l'en-tête réduite.
+- [x] Le champ de recherche permanent disparaît de l'en-tête, dans les deux modes (Plan et Liste).
+- [x] **Loupe flottante** : un bouton rond en bas à droite, au-dessus de la barre d'onglets. Le toucher ouvre le champ en bas de l'écran, juste au-dessus du clavier, avec « Annuler ».
+- [x] Une pastille sur la loupe signale une recherche en cours ; « Annuler » efface la recherche ; le reste ne change pas (en Plan, résultats sur tous les sites avec saut vers l'emplacement ; en Liste, filtrage en direct).
+- [x] Tests : ouverture et fermeture de la recherche flottante, résultats, feuille des filtres, filtres seuls et combinés, compteurs, retrait d'une puce, « Tout effacer », hauteur de l'en-tête réduite.
 
 **v2.2** (sauvegarde automatique ; spécifiée et validée le 5 novembre 2026 : option b, Google Drive avec un Worker Cloudflare. *Passée en premier le 13 novembre 2026*, à la place des QR codes)
 - [ ] **Sauvegarde automatique** chiffrée (le même fichier que la sauvegarde manuelle, illisible sans ton mot de passe), après chaque modification importante et au plus une fois par heure, plus une fois par jour au minimum. Les 30 dernières versions sont gardées.

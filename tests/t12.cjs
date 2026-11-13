@@ -23,8 +23,8 @@ const ok = (label, cond, det = '') => { console.log(`${cond ? 'OK ' : 'KO '} ${l
     render();
     return { w: w.id, q: w.domaine, cur, other: other.id, otherName: other.name, curName: site(cur).name, bid: there.id };
   });
-  await p.fill('header input[data-in=caveSearch]', t.q); await p.waitForTimeout(200);
-  const r = await p.evaluate(() => ({ lists: document.querySelectorAll('.view .res').length, rows: [...document.querySelectorAll('.view .res [data-act=caveJump]')].map(x => x.textContent.trim()), plan: !!document.querySelector('.view .rack, .view .shelf'), x: !document.querySelector('header .sx').hidden }));
+  await p.click('.sfab'); await p.fill('.csearch input[data-in=caveSearch]', t.q); await p.waitForTimeout(200);
+  const r = await p.evaluate(() => ({ lists: document.querySelectorAll('.view .res').length, rows: [...document.querySelectorAll('.view .res [data-act=caveJump]')].map(x => x.textContent.trim()), plan: !!document.querySelector('.view .rack, .view .shelf'), x: !document.querySelector('.csearch .sx').hidden }));
   ok('résultats sous la barre, sans le plan', r.lists >= 1 && !r.plan, JSON.stringify(r).slice(0, 200));
   ok('emplacements des deux sites listés', r.rows.some(x => x.includes(t.otherName)) && r.rows.some(x => x.includes(t.curName)), r.rows.join(' | ').slice(0, 200));
   ok('croix visible après la saisie', r.x);
@@ -37,13 +37,13 @@ const ok = (label, cond, det = '') => { console.log(`${cond ? 'OK ' : 'KO '} ${l
   await p.screenshot({ path: D + '121-case-trouvee.png' });
 
   // Croix : efface d'un coup et rend le plan normal
-  await p.click('header .sx'); await p.waitForTimeout(200);
-  const c = await p.evaluate(() => ({ v: document.querySelector('header input[data-in=caveSearch]').value, q: caveQuery, hl: document.querySelectorAll('.view .hl, .view .dim').length, x: document.querySelector('header .sx').hidden, focus: document.activeElement?.dataset?.in || '' }));
+  await p.click('.csearch .sx'); await p.waitForTimeout(200);
+  const c = await p.evaluate(() => ({ v: document.querySelector('.csearch input[data-in=caveSearch]').value, q: caveQuery, hl: document.querySelectorAll('.view .hl, .view .dim').length, x: document.querySelector('.csearch .sx').hidden, focus: document.activeElement?.dataset?.in || '' }));
   ok('croix : champ vidé, plan normal, croix masquée, clavier replié', c.v === '' && c.q === '' && c.hl === 0 && c.x && c.focus !== 'caveSearch', JSON.stringify(c));
 
   // Caisse : la caisse s'ouvre
   const box = await p.evaluate(() => { const b = S.bottles.find(x => inCave(x) && x.unitId && UNIT_TYPES[unit(x.unitId).type].box); return { q: wine(b.wineId).domaine, u: b.unitId, id: b.id }; });
-  await p.fill('header input[data-in=caveSearch]', box.q); await p.waitForTimeout(200);
+  await p.fill('.csearch input[data-in=caveSearch]', box.q); await p.waitForTimeout(200);
   await p.click(`.view [data-act=caveJump][data-b="${box.id}"]`); await p.waitForTimeout(1500);
   ok('caisse : la caisse s’ouvre', await p.evaluate(u => !!document.querySelector('.sheet') && document.querySelector('.sheet').textContent.includes(unit(u).name), box.u));
   await p.evaluate(() => closeSheet());
@@ -54,12 +54,12 @@ const ok = (label, cond, det = '') => { console.log(`${cond ? 'OK ' : 'KO '} ${l
     S.wines.push(w); const other = S.sites.find(s => s.id !== S.settings.site);
     const [id] = createBottles(w, 1, { spaceId: siteSpaces(other.id)[0].id }); return { id, site: other.id };
   });
-  await p.click('header .sx'); await p.fill('header input[data-in=caveSearch]', 'Zéphyrin'); await p.press('header input[data-in=caveSearch]', 'Enter'); await p.waitForTimeout(900);
+  await p.click('.csearch .sx'); await p.fill('.csearch input[data-in=caveSearch]', 'Zéphyrin'); await p.press('.csearch input[data-in=caveSearch]', 'Enter'); await p.waitForTimeout(900);
   const e = await p.evaluate(() => ({ site: S.settings.site, flash: !!document.querySelector('.view .unplaced .flash') }));
   ok('touche Rechercher : un seul emplacement → saut direct, bloc « non placées »', e.site === np.site && e.flash, JSON.stringify(e));
 
   // « Voir sur le plan » depuis la fiche bouteille et depuis la fiche vin
-  await p.click('header .sx');
+  await p.click('.csearch .sx');
   await p.evaluate(b => showSheet(() => bottleSheet(b)), t.bid); await p.waitForTimeout(200);
   await p.evaluate(() => window.scrollTo(0, 0));
   await p.click('.sheet [data-act=planGo]'); await p.waitForTimeout(900);
@@ -71,7 +71,7 @@ const ok = (label, cond, det = '') => { console.log(`${cond ? 'OK ' : 'KO '} ${l
   // Croix sur les autres barres de recherche
   await p.click('[data-act=go][data-v=deg]'); await p.waitForTimeout(200);
   await p.fill('header input[data-in=degSearch]', 'zzz'); await p.waitForTimeout(100);
-  await p.click('header .sx'); await p.waitForTimeout(150);
+  await p.click('.csearch .sx'); await p.waitForTimeout(150);
   ok('Dégustations : croix', await p.evaluate(() => degQuery === '' && document.querySelector('header input[data-in=degSearch]').value === ''));
   await p.evaluate(() => ACT.rebuyList()); await p.waitForTimeout(200);
   const before = await p.evaluate(() => document.querySelector('#rebuy-list').innerHTML);

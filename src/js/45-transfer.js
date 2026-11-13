@@ -17,15 +17,15 @@ const transferBottles = () => S.transfer.ids.map(id => byId(S.bottles, id)).filt
 const roleLabel = s => s.role === 'stock' ? 'stockage' : 'consommation';
 
 function transferSheet() {
-  const bs = transferBottles(), order = [...S.sites].sort((a, b) => (a.role === 'stock') - (b.role === 'stock'));
+  const bs = transferBottles(), order = [...S.sites].sort((a, b) => (a.role === 'stock') - (b.role === 'stock')), [f, t] = listScale();
   return `${head('Transferts entre sites')}
-    <p class="small" style="margin-top:-6px">Prépare les bouteilles à emporter, dans chaque sens. Touche une bouteille pour voir son résumé.</p>
+    <p class="small" style="margin-top:-6px">Prépare les bouteilles à emporter, dans chaque sens. Touche une bouteille pour voir son résumé.</p>${winScale(f, t)}
     ${order.map(s => transferSection(s, bs.filter(b => tDest(b.id) === s.id))).join('')}`;
 }
 function transferSection(s, list) {
-  const stock = s.role === 'stock', sugg = transferSuggestions(s.id);
+  const stock = s.role === 'stock', sugg = transferSuggestions(s.id), [f, t] = listScale();
   const row = b => { const w = wine(b.wineId), st = status(w);
-    return `<div class="li"><button class="lb" data-act="tBrief" data-b="${b.id}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${st && st !== 'inconnu' ? esc(STATUS[st].short) + ' · ' : ''}${esc(locLabel(b, true))}${S.transfer.units?.[b.unitId] ? ' · voyage dans sa caisse' : ''}</small></div></button>
+    return `<div class="li"><button class="lb" data-act="tBrief" data-b="${b.id}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${st && st !== 'inconnu' ? esc(STATUS[st].short) + ' · ' : ''}${esc(locLabel(b, true))}${S.transfer.units?.[b.unitId] ? ' · voyage dans sa caisse' : ''}</small>${miniWin(w, f, t)}</div></button>
       <button class="icon-btn" data-act="toTransfer" data-b="${b.id}" aria-label="Retirer du transfert">${ICON.close}</button></div>`; };
   return `<div class="sect" data-tsect="${s.id}">Vers ${esc(s.name)} · ${roleLabel(s)}${list.length ? ' · ' + plural(list.length, 'bouteille', 'bouteilles') : ''}</div>
     ${list.length ? `<div class="list">${list.map(row).join('')}</div>
@@ -33,7 +33,7 @@ function transferSection(s, list) {
       : `<p class="muted small" style="margin:2px 4px">Rien à emporter vers ${esc(s.name)} pour l’instant.</p>`}
     ${sugg.length ? `<p class="small" style="margin:12px 4px 0">${stock ? 'Suggestions : vins à garder, ajoutés récemment sur un autre site.' : 'Suggestions : vins prêts à boire stockés ailleurs.'}</p>
       <div class="list" style="margin-top:6px">${sugg.slice(0, 6).map(g => { const w = wine(g.b.wineId), st = status(w);
-        return `<div class="li"><button class="lb" data-act="tBrief" data-b="${g.b.id}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(STATUS[st]?.short || '')} · ${esc(locLabel(g.b, true))}</small></div></button>
+        return `<div class="li"><button class="lb" data-act="tBrief" data-b="${g.b.id}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(STATUS[st]?.short || '')} · ${esc(locLabel(g.b, true))}</small>${miniWin(w, f, t)}</div></button>
           <button class="btn small" data-act="tAdd" data-ids="${g.ids.join(',')}" data-to="${s.id}">Ajouter${g.ids.length > 1 ? ' ×' + g.ids.length : ''}</button></div>`; }).join('')}</div>` : ''}`;
 }
 // Suggestions : vers la consommation, un vin prêt à boire stocké ailleurs (une bouteille) ;

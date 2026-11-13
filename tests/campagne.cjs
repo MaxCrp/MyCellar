@@ -141,7 +141,7 @@ const setKey = p => p.evaluate(() => { S.settings.ai.key = 'sk-ant-test'; S.sett
     // A4. Recherches avec caractères spéciaux
     let bad = [];
     for (const q of ['(', '[', '\\', '.*', '%', '?', '$1', 'é è', '🍷', 'a'.repeat(600), '"><b data-xss>x</b>']) {
-      await act(p, () => { view = 'cave'; caveMode = 'plan'; render(); });
+      await act(p, () => { view = 'cave'; caveMode = 'plan'; caveSearchOpen = true; render(); });
       await p.fill('input[data-in=caveSearch]', q); await p.waitForTimeout(40);
       await act(p, () => { view = 'deg'; render(); }); await p.fill('input[data-in=degSearch]', q); await p.waitForTimeout(40);
       const e = errs(p); if (e || await xssCount(p)) bad.push(q.slice(0, 10) + ' : ' + (e || 'injection'));

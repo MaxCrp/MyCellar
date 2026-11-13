@@ -27,7 +27,7 @@ const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true })
   await p.goto('http://localhost:8765/'); await p.waitForTimeout(500); if (await p.$('#intro')) await p.click('#intro [data-act=introDone]');
   await p.click('[data-act=demo]'); await p.waitForTimeout(300);
   // liste + filtres
-  await p.click('[data-act=caveMode][data-m=liste]'); await p.click('[data-act=lf]'); await p.waitForTimeout(200);
+  await p.click('[data-act=caveMode][data-m=liste]'); await p.click('[data-act=cfOpen]'); await p.click('.sheet [data-act=cfToggle][data-g=st][data-v=apogee]'); await p.click('.sheet .btn.primary[data-act=close]'); await p.waitForTimeout(300);
   await p.screenshot({ path: D + '40-list.png' });
   await p.click('.li[data-act=wine] >> nth=0'); await p.waitForTimeout(200);
   await p.screenshot({ path: D + '41-wine.png' });

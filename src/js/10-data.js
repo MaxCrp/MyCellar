@@ -288,6 +288,10 @@ function status(w) {
 }
 const windowLabel = a => a?.fin ? `${a.debut || '?'}–${a.fin}${a.pic ? ' · apogée ' + a.pic : ''}` : 'fenêtre inconnue';
 // Barre de fenêtre : position sur une échelle d'années commune
+// Listes (transferts, conseils) : même échelle pour tout l'écran, de 3 ans avant à 12 ans après cette année
+const listScale = () => { const y = thisYear(); return [y - 3, y + 12]; };
+const miniWin = (w, from, to) => !w || w.kind === 'spirit' ? '' : winBar(w.apogee, from, to);
+const winScale = (from, to) => `<div class="winscale" aria-hidden="true"><span>${from}</span><span>fenêtre de dégustation · trait = aujourd’hui</span><span>${to}</span></div>`;
 function winBar(a, from, to, big) {
   if (!a?.fin) return `<div class="win${big ? ' big' : ''}"></div>`;
   const span = Math.max(1, to - from), p = y => clamp((y - from) / span * 100, 0, 100);

@@ -113,12 +113,13 @@ function moveAdvice() {
 const ADVICE_KIND = { rapatrier: 'À rapprocher', garde: 'À mettre en garde', reassort: 'Réassort' };
 function adviceSheet() {
   const adv = moveAdvice();
-  const where = id => { const sp = space(id); return sp ? (isMulti() ? site(sp.siteId)?.name + ' › ' : '') + sp.name : '?'; };
+  const where = id => { const sp = space(id); return sp ? (isMulti() ? site(sp.siteId)?.name + ' › ' : '') + sp.name : '?'; }, [f, t] = listScale();
   return `${head('Conseils de rangement')}
     <p class="small" style="margin-top:-6px">Selon les fenêtres de dégustation, l’usage de chaque espace et ses conditions de stockage${S.spaces.some(s => s.target) ? ', et les places cibles des espaces de consommation' : ''}.</p>
+    ${adv.length ? winScale(f, t) : ''}
     ${adv.length ? Object.keys(ADVICE_KIND).map(k => { const l = adv.filter(a => a.kind === k); return l.length ? `<h3>${ADVICE_KIND[k]}</h3><div class="list">${l.map(a => {
       const cross = space(a.from)?.siteId !== space(a.to)?.siteId, i = adv.indexOf(a);
-      return `<div class="li"><button class="lb" data-act="tBrief" data-b="${a.ids[0]}"><span class="dot" style="background:${wineColor(a.w)}"></span><div class="it"><b class="ell">${esc(wineTitle(a.w))} ×${a.ids.length}</b><small>${esc(where(a.from))} → <b style="color:var(--green)">${esc(where(a.to))}</b></small><small>${esc(a.why)}</small></div></button>
+      return `<div class="li"><button class="lb" data-act="tBrief" data-b="${a.ids[0]}"><span class="dot" style="background:${wineColor(a.w)}"></span><div class="it"><b class="ell">${esc(wineTitle(a.w))} ×${a.ids.length}</b><small>${esc(where(a.from))} → <b style="color:var(--green)">${esc(where(a.to))}</b></small><small>${esc(a.why)}</small>${miniWin(a.w, f, t)}</div></button>
         <button class="btn small ${cross ? '' : 'primary'}" data-act="adviceGo" data-i="${i}">${cross ? 'Au transfert' : 'Ranger'}</button></div>`; }).join('')}</div>` : ''; }).join('')
     : '<p class="muted">Rien à déplacer pour l’instant : chaque vin est au bon endroit.</p>'}
     ${!S.spaces.some(s => Object.keys(s.q || {}).length) ? '<p class="tiny">Astuce : renseigne les conditions de stockage de tes espaces (Réglages › Sites, espaces et meubles) pour des conseils plus fins.</p>' : ''}`;
