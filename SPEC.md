@@ -543,7 +543,7 @@ Le détail est dans `docs/tests/2026-11-04-campagne-v1.6.1/` : `rapport-bugs.md`
 
 **v2** (demandée le 5 novembre 2026 : « Lance la V2 ». Jusqu'ici, c'était une simple liste. Elle est maintenant découpée en quatre releases et spécifiée ; le développement attend la validation des questions ci-dessous.)
 
-Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (QR codes), v2.3 (sauvegarde automatique). Chaque release est livrée et testée à part.
+Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (QR codes), v2.3 (sauvegarde automatique). Chaque release est livrée et testée à part. *Revu le 13 novembre 2026* : v2.2 sauvegarde automatique, v2.3 barres d'apogée dans les listes ; les QR codes sont mis en réserve.
 
 **v2.0** (statistiques, valeur, cadeaux, audit ; livrée)
 *Statistiques* : un écran Réglages › Ma cave › Statistiques. Seules mes bouteilles sont comptées.
@@ -614,23 +614,35 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 - [x] Le champ qui imposait l'appareil photo (`capture`) n'est plus utilisé. Le reste ne change pas : lecture par le sommelier et message pour un format illisible.
 - [x] Tests : une seule entrée par écran, qui ouvre le sélecteur sans prise de vue imposée ; lecture de la photo inchangée.
 
-**v2.2** (QR codes sur les meubles ; spécifiée et validée le 5 novembre 2026 : deux bibliothèques libres intégrées)
-- [ ] **Étiquettes** : pour chaque meuble ou caisse, une étiquette QR avec son nom, à imprimer (planche d'étiquettes en PDF, une ou plusieurs par page).
-- [ ] **Scan dans l'app** : un bouton « Scanner » (onglet Cave) ouvre l'appareil photo. Le meuble scanné s'affiche directement sur le plan, avec son contenu et les actions habituelles (ranger ici, sortir, caisse entière…).
-- [ ] Le scan se fait dans l'app, pas avec l'appareil photo d'iOS : sur iPhone, une app installée et Safari ne partagent pas leurs données, donc un lien ouvert par l'appareil photo ne verrait pas ta cave.
-- [ ] Le code ne contient qu'un identifiant aléatoire du meuble : rien sur le contenu, inutilisable sans ta cave.
-- [ ] Tests : génération et relecture des codes, scan simulé qui ouvre le bon meuble, code inconnu.
-
-**v2.3** (sauvegarde automatique ; spécifiée et validée le 5 novembre 2026 : option b, Google Drive avec un Worker Cloudflare)
+**v2.2** (sauvegarde automatique ; spécifiée et validée le 5 novembre 2026 : option b, Google Drive avec un Worker Cloudflare. *Passée en premier le 13 novembre 2026*, à la place des QR codes)
 - [ ] **Sauvegarde automatique** chiffrée (le même fichier que la sauvegarde manuelle, illisible sans ton mot de passe), après chaque modification importante et au plus une fois par heure, plus une fois par jour au minimum. Les 30 dernières versions sont gardées.
 - [ ] **Restauration** depuis la liste des versions, avec leur date.
 - [ ] **État visible** dans Réglages › Sauvegarde : dernière sauvegarde réussie, échec éventuel et sa raison. Le rappel des 7 jours ne s'affiche plus quand la sauvegarde automatique fonctionne.
 - [ ] **Destination (validée : option b)** : le Google Drive de chaque utilisateur, dans le dossier caché de l'app (`appDataFolder`, droit `drive.appdata`). Chacun se connecte avec son propre compte Google : les sauvegardes sont distinctes par construction.
 - [ ] **Connexion** : Réglages › Sauvegarde › « Connecter Google Drive », une seule fois par appareil. L'autorisation de longue durée est rangée dans le coffre chiffré de l'app.
 - [ ] **Worker Cloudflare** : il échange et renouvelle l'autorisation avec le secret du projet Google, et ne garde rien. Les fichiers vont directement de l'iPhone au Drive. Le code du Worker est livré dans le dépôt (`worker/`), avec sa marche à suivre.
-- [ ] **Mise en place (à faire par toi, une fois)** : un projet Google Cloud, l'écran de consentement en statut « En production », un identifiant OAuth « Application Web » avec l'adresse de l'app, et le Worker avec le secret. Une marche à suivre pas à pas est fournie dans `docs/` au lancement de la v2.3.
+- [ ] **Mise en place (à faire par toi, une fois)** : un projet Google Cloud, l'écran de consentement en statut « En production », un identifiant OAuth « Application Web » avec l'adresse de l'app, et le Worker avec le secret. Une marche à suivre pas à pas est fournie dans `docs/` au lancement de la v2.2.
 - [ ] **Nouvel appareil** : « Restaurer depuis Google Drive » au premier lancement, puis le mot de passe de la cave.
 - [ ] Tests : envoi, rotation des versions, restauration, absence de réseau, jeton expiré (service simulé).
+
+**v2.3** (barres d'apogée dans les listes ; demandée le 13 novembre 2026)
+
+*Constat* : dans « Transferts entre sites » et dans « Conseils de rangement », il faut toucher chaque vin pour voir où il en est de sa fenêtre de dégustation.
+
+- [ ] **Petite barre d'apogée** sous chaque vin de ces deux écrans : la fenêtre (début → fin) en couleur, et un trait pour aujourd'hui, comme dans la liste « À boire ». On voit d'un coup d'œil si un vin est trop jeune, à son apogée ou en fin de fenêtre.
+- [ ] Dans « Transferts entre sites » : sur les bouteilles à emporter (chaque sens) et sur les suggestions.
+- [ ] Dans « Conseils de rangement » : sur chaque conseil (à rapprocher, à mettre en garde, réassort).
+- [ ] **Même échelle pour tout l'écran** (de 3 ans avant à 12 ans après l'année en cours, comme « À boire ») pour pouvoir comparer les vins entre eux ; les années de début et de fin de l'échelle sont rappelées en tout petit en tête de liste. Une fenêtre qui dépasse l'échelle est coupée au bord.
+- [ ] Vin sans fenêtre : barre grise vide (rien n'est estimé automatiquement à l'ouverture de l'écran). Spiritueux : pas de barre.
+- [ ] Le reste ne change pas : toucher le vin ouvre toujours son résumé, avec la grande barre et les années.
+- [ ] Tests : barre présente et trait d'aujourd'hui bien placé dans les deux écrans, vin sans fenêtre, spiritueux, écran de 100 vins sans ralentissement.
+
+**En réserve : QR codes sur les meubles** (spécifiée le 5 novembre 2026 ; *mise de côté le 13 novembre 2026* : peu de valeur ajoutée telle que définie, il suffit d'ouvrir l'app et de choisir la cave. Sans numéro de release ; à reprendre seulement sur demande, éventuellement repensée)
+- [ ] **Étiquettes** : pour chaque meuble ou caisse, une étiquette QR avec son nom, à imprimer (planche d'étiquettes en PDF, une ou plusieurs par page).
+- [ ] **Scan dans l'app** : un bouton « Scanner » (onglet Cave) ouvre l'appareil photo. Le meuble scanné s'affiche directement sur le plan, avec son contenu et les actions habituelles (ranger ici, sortir, caisse entière…).
+- [ ] Le scan se fait dans l'app, pas avec l'appareil photo d'iOS : sur iPhone, une app installée et Safari ne partagent pas leurs données, donc un lien ouvert par l'appareil photo ne verrait pas ta cave.
+- [ ] Le code ne contient qu'un identifiant aléatoire du meuble : rien sur le contenu, inutilisable sans ta cave.
+- [ ] Tests : génération et relecture des codes, scan simulé qui ouvre le bon meuble, code inconnu.
 
 *Questions à valider avant de lancer*
 1. **Valeur estimée** : saisie à la main, ou estimation par le sommelier à la demande (vin par vin, ou en groupe avec le coût annoncé) ? Pas d'estimation automatique en tâche de fond, pour tenir le plafond de 2 € par mois.
