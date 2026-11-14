@@ -1,0 +1,12 @@
+# Déploiement en ligne de commande (facultatif) : npx wrangler deploy
+# Le plus simple reste de coller mycellar-auth.js dans le tableau de bord Cloudflare (voir docs/sauvegarde-google-drive.md).
+name = "mycellar-auth"
+main = "mycellar-auth.js"
+compatibility_date = "2026-11-01"
+
+[vars]
+# À remplir : adresse de l'app (sans « / » final) et adresse de retour déclarée chez Google
+ALLOWED_ORIGIN = ""
+REDIRECT_URI = ""
+CLIENT_ID = ""
+# CLIENT_SECRET : jamais ici. Commande : npx wrangler secret put CLIENT_SECRET
