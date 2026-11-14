@@ -723,6 +723,41 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 - [x] Conseils de rangement : la qualité ainsi calculée sert, comme aujourd'hui, à choisir la meilleure cave de garde.
 - [x] Tests : les trois choix, mini et maxi enregistrés et contrôlés, qualité calculée pour plusieurs cas (dont l'exemple ci-dessus), fiche envoyée au sommelier, ancien « Variable » relu sans changement.
 
+**v2.1.8** (réanalyser les apogées de tous les vins d'une cave ; demandée le 14 novembre 2026)
+
+*Constat* : quand on change les conditions d'un espace (température, mini et maxi, hygrométrie…), les fenêtres de dégustation des vins qui y sont rangés restent calculées avec les anciennes conditions. Aujourd'hui, il faut toucher « Réestimer » vin par vin, et chaque réestimation refait une étude complète du vin (avec recherche web), ce qui coûte cher pour une cave entière.
+
+*Principe* : changer de cave ne change pas le potentiel du vin, seulement sa vitesse d'évolution. On demande donc au sommelier d'**ajuster** les fenêtres existantes à de nouvelles conditions, en groupe et de façon compacte, plutôt que de tout réétudier.
+
+*Où*
+
+- [ ] Réglages › Sites, espaces et meubles › un espace : bouton **« Réanalyser les apogées des N vins de cet espace »**.
+- [ ] **Après avoir modifié les conditions** d'un espace qui contient des vins (température, mini ou maxi, hygrométrie, lumière, vibrations) : proposition immédiate « Conditions modifiées : réajuster les fenêtres des N vins concernés ? », avec le coût indicatif, et « Plus tard ».
+
+*Quels vins*
+
+- [ ] Les vins (pas les spiritueux) dont la **cave principale** est cet espace (celui qui contient le plus de leurs bouteilles), en cave ou en primeur livrable dans cet espace.
+- [ ] **Seulement ceux qui en ont besoin** : chaque fenêtre garde la trace des conditions avec lesquelles elle a été calculée. Un vin déjà estimé avec les conditions actuelles est sauté (aucun appel). Le nombre de vins à jour et à réanalyser est affiché avant de lancer.
+- [ ] Les fenêtres **saisies à la main** ne sont pas touchées, sauf si tu coches « inclure les fenêtres saisies à la main ». Les vins sans fenêtre reçoivent une estimation complète groupée (comme « Estimer » dans À boire).
+
+*Économie de jetons*
+
+- [ ] **Ajustement, pas réétude** : pour chaque vin, une seule ligne compacte (appellation, producteur, millésime, couleur, format, fenêtre actuelle, et la note de la dernière dégustation s'il y en a une). Les anciennes et les nouvelles conditions de la cave ne sont envoyées **qu'une fois** pour tout le groupe.
+- [ ] **Par lots** de 40 vins par appel, **sans recherche web**, avec une réponse structurée minimale (numéro et trois années par vin, une seule explication courte pour tout le lot).
+- [ ] Consigne fixe mise en cache (elle n'est payée en entier qu'au premier lot), et **modèle économique** (Haiku avec Claude, le petit modèle avec Mistral) : la tâche est un ajustement, pas une recherche.
+- [ ] **Coût indicatif annoncé** avant de lancer (par exemple « 120 vins : environ 0,02 € »), et compté dans le plafond mensuel comme les autres appels.
+
+*Résultat*
+
+- [ ] Un récapitulatif : nombre de fenêtres modifiées, la liste des vins dont la fenêtre bouge, de l'ancienne à la nouvelle (les plus grands écarts d'abord), et ceux inchangés.
+- [ ] **« Annuler ces changements »** remet les anciennes fenêtres (gardées jusqu'à la réanalyse suivante).
+- [ ] La fiche de chaque vin indique « Fenêtre ajustée le … aux conditions de [cave] ».
+- [ ] Sans clé IA : bouton remplacé par l'invitation à configurer le sommelier (aucun ajustement automatique approximatif).
+
+*Tests*
+
+- [ ] Choix des vins (cave principale, spiritueux exclus, saisies à la main exclues ou incluses, déjà à jour sautés), proposition après changement de conditions, lots de 40 et une seule description des conditions par lot (sommelier simulé), taille de la demande par vin bornée, récapitulatif, annulation, coût annoncé, plafond mensuel respecté, absence de clé.
+
 **v2.2** (sauvegarde automatique ; spécifiée et validée le 5 novembre 2026 : option b, Google Drive avec un Worker Cloudflare. *Passée en premier le 13 novembre 2026*, à la place des QR codes)
 - [ ] **Sauvegarde automatique** chiffrée (le même fichier que la sauvegarde manuelle, illisible sans ton mot de passe), après chaque modification importante et au plus une fois par heure, plus une fois par jour au minimum. Les 30 dernières versions sont gardées.
 - [ ] **Restauration** depuis la liste des versions, avec leur date.
