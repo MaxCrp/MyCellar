@@ -656,43 +656,43 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 - [x] Une pastille sur la loupe signale une recherche en cours ; « Annuler » efface la recherche ; le reste ne change pas (en Plan, résultats sur tous les sites avec saut vers l'emplacement ; en Liste, filtrage en direct).
 - [x] Tests : ouverture et fermeture de la recherche flottante, résultats, feuille des filtres, filtres seuls et combinés, compteurs, retrait d'une puce, « Tout effacer », hauteur de l'en-tête réduite.
 
-**v2.1.4** (adaptation à Android ; demandée le 14 novembre 2026)
+**v2.1.4** (adaptation à Android ; demandée le 14 novembre 2026 ; livrée)
 
 *Constat* : MyCellar s'installe déjà sur Android depuis Chrome (menu ⋮ › « Installer l'application ») : c'est la même web app, à la même adresse. Mais elle a été conçue et testée uniquement sur iPhone : textes « cet iPhone », déverrouillage nommé « Face ID » (qui n'existe pas sur Android), icône non adaptée, bouton retour d'Android non géré.
 
 *Détection de l'appareil*
 
-- [ ] L'app reconnaît au démarrage si elle tourne sur **iPhone ou iPad**, sur **Android** ou ailleurs (ordinateur), d'après l'identité que le navigateur annonce (l'iPad récent se présente comme un Mac : il est reconnu par son écran tactile). Elle sait aussi déjà si elle est installée ou ouverte dans le navigateur. Tout ce qui suit s'appuie sur cette détection ; en cas de doute, les textes neutres (« cet appareil », « Clé d'accès ») s'affichent.
+- [x] L'app reconnaît au démarrage si elle tourne sur **iPhone ou iPad**, sur **Android** ou ailleurs (ordinateur), d'après l'identité que le navigateur annonce (l'iPad récent se présente comme un Mac : il est reconnu par son écran tactile). Elle sait aussi déjà si elle est installée ou ouverte dans le navigateur. Tout ce qui suit s'appuie sur cette détection ; en cas de doute, les textes neutres (« cet appareil », « Clé d'accès ») s'affichent.
 
 *Déverrouillage biométrique (remplace « Face ID » hors iPhone)*
 
-- [ ] Le nom suit l'appareil : **« Face ID »** sur iPhone (inchangé) ; **« Empreinte ou visage »** sur Android (avec une icône d'empreinte) ; **« Clé d'accès »** ailleurs. Partout où « Face ID » apparaît : écran de verrouillage, bouton « Déverrouiller avec… », Réglages › Sécurité, proposition au premier lancement, messages de confirmation et d'erreur.
-- [ ] Sur Android, la clé d'accès est rangée dans le gestionnaire de mots de passe de Google (au lieu du trousseau iCloud) et s'utilise avec l'empreinte, le visage ou le code de l'écran de verrouillage. Le principe de sécurité ne change pas (extension PRF : la clé de la cave n'est jamais stockée en clair).
-- [ ] Si le téléphone ne permet pas ce déverrouillage (gestionnaire de clés sans l'extension PRF, Android ou Chrome trop ancien), un message clair l'explique et propose de garder le mot de passe ; l'option n'est plus proposée au lancement suivant. Les messages d'erreur ne citent plus le trousseau iCloud sur Android.
+- [x] Le nom suit l'appareil : **« Face ID »** sur iPhone (inchangé) ; **« Empreinte ou visage »** sur Android (avec une icône d'empreinte) ; **« Clé d'accès »** ailleurs. Partout où « Face ID » apparaît : écran de verrouillage, bouton « Déverrouiller avec… », Réglages › Sécurité, proposition au premier lancement, messages de confirmation et d'erreur.
+- [x] Sur Android, la clé d'accès est rangée dans le gestionnaire de mots de passe de Google (au lieu du trousseau iCloud) et s'utilise avec l'empreinte, le visage ou le code de l'écran de verrouillage. Le principe de sécurité ne change pas (extension PRF : la clé de la cave n'est jamais stockée en clair).
+- [x] Si le téléphone ne permet pas ce déverrouillage (gestionnaire de clés sans l'extension PRF, Android ou Chrome trop ancien), un message clair l'explique et propose de garder le mot de passe ; l'option n'est plus proposée au lancement suivant. Les messages d'erreur ne citent plus le trousseau iCloud sur Android.
 
 *Textes et aide*
 
-- [ ] Plus de « cet iPhone » hors iPhone : « cet appareil » (ou « ce téléphone ») dans l'écran d'accueil, la présentation, le verrouillage, « Rester déverrouillé », la sauvegarde, le suivi d'utilisation, le sommelier.
-- [ ] Sauvegarde : sur Android, « vers Téléchargements ou Google Drive » au lieu de « Fichiers ou iCloud Drive ». PDF : « Imprimer › Enregistrer au format PDF » sur Android.
-- [ ] **Aide à l'installation** : ouverte dans Chrome sans être installée, l'app propose un bouton « Installer l'application » (fenêtre d'installation d'Android) ; dans Safari sur iPhone, rappel « Partager › Sur l'écran d'accueil ». Une fois installée, plus rien ne s'affiche.
-- [ ] README : section « Installer sur Android » à côté de « Installer sur l'iPhone ».
+- [x] Plus de « cet iPhone » hors iPhone : « cet appareil » (ou « ce téléphone ») dans l'écran d'accueil, la présentation, le verrouillage, « Rester déverrouillé », la sauvegarde, le suivi d'utilisation, le sommelier.
+- [x] Sauvegarde : sur Android, « vers Téléchargements ou Google Drive » au lieu de « Fichiers ou iCloud Drive ». PDF : « Imprimer › Enregistrer au format PDF » sur Android.
+- [x] **Aide à l'installation** : ouverte dans Chrome sans être installée, l'app propose un bouton « Installer l'application » (fenêtre d'installation d'Android) ; dans Safari sur iPhone, rappel « Partager › Sur l'écran d'accueil ». Une fois installée, plus rien ne s'affiche.
+- [x] README : section « Installer sur Android » à côté de « Installer sur l'iPhone ».
 
 *Comportement propre à Android*
 
-- [ ] **Bouton (ou geste) retour** : il ferme d'abord la fenêtre ouverte (fiche, filtres, recherche), puis revient à l'onglet Cave ; il ne quitte l'app que depuis l'onglet Cave sans rien d'ouvert. Sans effet sur iPhone.
-- [ ] **Icône adaptée** aux formes d'Android (rond, carré arrondi…) : version « maskable » avec marge de sécurité, déclarée dans le manifeste ; plus d'icône réduite dans un rond blanc. Couleur de la barre d'état assortie à l'app.
-- [ ] **Recherche flottante** : le champ reste juste au-dessus du clavier d'Android, sans double décalage (Chrome redimensionne la page, Safari non).
-- [ ] **Partage et export** (carte des vins, dégustation, Excel, sauvegarde) : feuille de partage d'Android quand elle est disponible, sinon téléchargement du fichier.
-- [ ] **Photo d'étiquette** : le sélecteur d'Android (appareil photo, galerie, fichiers) ; lecture inchangée.
+- [x] **Bouton (ou geste) retour** : il ferme d'abord la fenêtre ouverte (fiche, filtres, recherche), puis revient à l'onglet Cave ; il ne quitte l'app que depuis l'onglet Cave sans rien d'ouvert. Sans effet sur iPhone.
+- [x] **Icône adaptée** aux formes d'Android (rond, carré arrondi…) : version « maskable » avec marge de sécurité, déclarée dans le manifeste ; plus d'icône réduite dans un rond blanc. Couleur de la barre d'état assortie à l'app.
+- [x] **Recherche flottante** : le champ reste juste au-dessus du clavier d'Android, sans double décalage (Chrome redimensionne la page, Safari non).
+- [x] **Partage et export** (carte des vins, dégustation, Excel, sauvegarde) : feuille de partage d'Android quand elle est disponible, sinon téléchargement du fichier.
+- [x] **Photo d'étiquette** : le sélecteur d'Android (appareil photo, galerie, fichiers) ; lecture inchangée.
 
 *Données sur l'appareil (Android et iPhone)*
 
-- [ ] Demande au navigateur de **ne jamais effacer les données** de l'app (stockage persistant). L'état est affiché dans Réglages › Sauvegarde ; s'il est refusé, le rappel de sauvegarde le signale.
+- [x] Demande au navigateur de **ne jamais effacer les données** de l'app (stockage persistant). L'état est affiché dans Réglages › Sauvegarde ; s'il est refusé, le rappel de sauvegarde le signale.
 
 *Tests*
 
-- [ ] Tests automatiques sur un téléphone Android simulé (Pixel) : conditions d'installation (manifeste, icônes dont la version adaptée, fichier d'installation), noms du déverrouillage selon l'appareil, aucun « iPhone » affiché sur Android, bouton retour, recherche au-dessus du clavier, partage et export, photo. Toute la suite existante rejouée aussi en mode Android.
-- [ ] **Vérification sur un vrai téléphone Android** (par toi ou un ami) : installation, déverrouillage par empreinte, photo d'une étiquette, sauvegarde puis restauration d'une cave venue de l'iPhone. Une liste de contrôle courte est fournie à la livraison.
+- [x] Tests automatiques sur un téléphone Android simulé (Pixel) : conditions d'installation (manifeste, icônes dont la version adaptée, fichier d'installation), noms du déverrouillage selon l'appareil, aucun « iPhone » affiché sur Android, bouton retour, recherche au-dessus du clavier, partage et export, photo. Toute la suite existante rejouée aussi en mode Android.
+- [ ] **Vérification sur un vrai téléphone Android** (par toi ou un ami) : installation, déverrouillage par empreinte, photo d'une étiquette, sauvegarde puis restauration d'une cave venue de l'iPhone. Une liste de contrôle courte est fournie à la livraison. *(à faire par l'utilisateur : liste de contrôle fournie à la livraison)*
 
 **v2.2** (sauvegarde automatique ; spécifiée et validée le 5 novembre 2026 : option b, Google Drive avec un Worker Cloudflare. *Passée en premier le 13 novembre 2026*, à la place des QR codes)
 - [ ] **Sauvegarde automatique** chiffrée (le même fichier que la sauvegarde manuelle, illisible sans ton mot de passe), après chaque modification importante et au plus une fois par heure, plus une fois par jour au minimum. Les 30 dernières versions sont gardées.
