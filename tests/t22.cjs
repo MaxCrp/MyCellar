@@ -94,6 +94,11 @@ const IPAD = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.
   const kb = await p.evaluate(() => ({ kbd: document.documentElement.classList.contains('kbd'), tabs: getComputedStyle(document.querySelector('.tabs')).display, bottom: getComputedStyle(document.querySelector('.csearch')).bottom }));
   ok('recherche : clavier, barre d’onglets cachée, champ au ras du clavier', kb.kbd && kb.tabs === 'none' && kb.bottom === '0px', JSON.stringify(kb));
   await p.screenshot({ path: D + '223-android-recherche.png' });
+  // Toucher la croix ou « Annuler » ne déplace pas la barre sous le doigt
+  const y0 = await p.evaluate(() => { document.querySelector('.csearch input').blur(); return document.querySelector('.csearch').getBoundingClientRect().top; }); await p.waitForTimeout(150);
+  await p.evaluate(() => document.querySelector('.csearch .cancel').focus()); await p.waitForTimeout(150);
+  ok('bouton touché (clavier fermé) : la barre ne bouge pas', await p.evaluate(() => !document.documentElement.classList.contains('kbd')));
+  await p.evaluate(() => document.querySelector('.csearch input').focus()); await p.waitForTimeout(100);
   await back(); s = await st();
   ok('retour : ferme la recherche', !s.search && await p.evaluate(() => !document.querySelector('.csearch')), JSON.stringify(s));
   ok('clavier fermé : barre d’onglets revenue', await p.evaluate(() => !document.documentElement.classList.contains('kbd') && getComputedStyle(document.querySelector('.tabs')).display !== 'none'));

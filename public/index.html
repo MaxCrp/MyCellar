@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#F7F3EC">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-Kf6HQjY8pb2eUgG0ju3Lr5Amq20glC8NK3lpawIjwE4='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-Kt16LmF5PiJ/YRXsKxYAdLsbMZaMEpGhx8d0NBVcmxw='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>MyCellar</title>
@@ -813,8 +813,10 @@ async function installApp() {
 /* ---------- Clavier sur Android (v2.1.4) ---------- */
 // Pendant la saisie, la barre d'onglets se cache et les champs du bas (recherche, sommelier) descendent au ras du clavier
 if (isAndroid) {
-  document.addEventListener('focusin', e => { if (e.target.closest?.('.csearch, .composer')) document.documentElement.classList.add('kbd'); });
-  document.addEventListener('focusout', () => setTimeout(() => { if (!document.activeElement?.closest?.('.csearch, .composer')) document.documentElement.classList.remove('kbd'); }, 50));
+  // Seulement pour un champ de saisie : un bouton (la croix, « Annuler ») ne doit pas déplacer la barre sous le doigt
+  const typing = el => !!el?.matches?.('input, textarea') && !!el.closest('.csearch, .composer');
+  document.addEventListener('focusin', e => { if (typing(e.target)) document.documentElement.classList.add('kbd'); });
+  document.addEventListener('focusout', () => setTimeout(() => { if (!typing(document.activeElement)) document.documentElement.classList.remove('kbd'); }, 50));
 }
 
 /* ---------- Bouton retour d'Android (v2.1.4) ----------

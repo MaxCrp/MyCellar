@@ -39,8 +39,10 @@ async function installApp() {
 /* ---------- Clavier sur Android (v2.1.4) ---------- */
 // Pendant la saisie, la barre d'onglets se cache et les champs du bas (recherche, sommelier) descendent au ras du clavier
 if (isAndroid) {
-  document.addEventListener('focusin', e => { if (e.target.closest?.('.csearch, .composer')) document.documentElement.classList.add('kbd'); });
-  document.addEventListener('focusout', () => setTimeout(() => { if (!document.activeElement?.closest?.('.csearch, .composer')) document.documentElement.classList.remove('kbd'); }, 50));
+  // Seulement pour un champ de saisie : un bouton (la croix, « Annuler ») ne doit pas déplacer la barre sous le doigt
+  const typing = el => !!el?.matches?.('input, textarea') && !!el.closest('.csearch, .composer');
+  document.addEventListener('focusin', e => { if (typing(e.target)) document.documentElement.classList.add('kbd'); });
+  document.addEventListener('focusout', () => setTimeout(() => { if (!typing(document.activeElement)) document.documentElement.classList.remove('kbd'); }, 50));
 }
 
 /* ---------- Bouton retour d'Android (v2.1.4) ----------
