@@ -81,7 +81,18 @@ function sheetBack() { sheetStack.pop(); paintSheet(); }
 const openSheet = html => showSheet(() => html);
 // Photo d'étiquette (v2.1.2) : une seule case ; iOS propose lui-même de prendre la photo, la photothèque ou un fichier
 const photoAction = (act, attrs, sub) => `<button class="big-action" data-act="${act}" ${attrs}>${ICON.camera}<div><b>Photo de l’étiquette</b><small>${sub} Prends-la ou choisis-la dans tes photos.</small></div></button>`;
-const photoInput = () => { const i = $('#f-photo3'); i.value = ''; i.click(); };
+const pickFile = sel => { const i = $(sel); i.value = ''; i.click(); };
+// Android (v2.1.5) : Chrome ouvre directement la galerie, sans l'appareil photo. On propose donc les deux.
+// Sur iPhone, le menu d'iOS les propose déjà : une seule case, inchangée.
+let camFor = 'label';
+function photoChooser(lib, target) {
+  camFor = target;
+  showSheet(() => `${head(target === 'taste' ? 'Photo' : 'Photo de l’étiquette')}<div class="btns">
+    <button class="btn primary wide" data-act="photoCam">${ICON.camera} Prendre une photo</button>
+    <button class="btn wide" data-act="photoLib" data-lib="${lib}">Choisir dans mes photos</button></div>`);
+}
+const photoInput = () => isAndroid ? photoChooser('#f-photo3', 'label') : pickFile('#f-photo3');
+const tastePhotoInput = () => isAndroid ? photoChooser('#f-photo2', 'taste') : pickFile('#f-photo2');
 // Croix des barres de recherche : visible dès qu'un texte est saisi, efface tout d'un coup
 const sx = v => `<button type="button" class="sx" data-act="searchClear" aria-label="Effacer la recherche"${v ? '' : ' hidden'}>${ICON.close}</button>`;
 const head = (title, extra = '') => `<div class="shead"><!--back--><h2>${title}</h2>${extra}<button class="icon-btn" data-act="close" aria-label="Fermer">${ICON.close}</button></div>`;
@@ -207,6 +218,8 @@ Object.assign(ACT, {
   go: t => { view = t.dataset.v; render(); window.scrollTo(0, view === 'somm' ? document.body.scrollHeight : 0); },
   close: () => { if (!guardTaste('close')) closeSheet(); },
   installApp: () => installApp(),
+  photoCam: () => { sheetBack(); pickFile('#f-cam'); },
+  photoLib: t => { const lib = t.dataset.lib; sheetBack(); pickFile(lib); },
   sheetback: () => { if (!guardTaste('back')) sheetBack(); },
   demoOnly: () => toast(DEMO_OFF),
   searchClear: t => {

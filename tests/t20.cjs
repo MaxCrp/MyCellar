@@ -24,7 +24,7 @@ const PNG = fs.readFileSync(__dirname + '/../src/static/icon-192.png');
   const sheet = () => p.evaluate(() => document.querySelector('.sheet')?.textContent || '');
   const choose = async (sel, file) => { const [fc] = await Promise.all([p.waitForEvent('filechooser'), p.click(sel)]); const id = await fc.element().evaluate(e => e.id); await fc.setFiles(file); await p.waitForTimeout(600); return id; };
 
-  ok('aucun champ n’impose l’appareil photo', await p.evaluate(() => !document.querySelector('input[type=file][capture]') && !!document.querySelector('#f-photo3')));
+  ok('aucun champ n’impose l’appareil photo', await p.evaluate(() => !document.querySelector('#f-photo3[capture], #f-photo2[capture]') && !!document.querySelector('#f-photo3')));
   // Nouveau vin : une seule case
   await p.evaluate(() => ACT.addWine()); await p.waitForTimeout(150);
   const n = await p.evaluate(() => ({ acts: document.querySelectorAll('.sheet [data-act=scanLabel]').length, cam: /Prendre une photo/.test(document.querySelector('.sheet').textContent), big: document.querySelector('.sheet [data-act=scanLabel]').classList.contains('big-action') }));

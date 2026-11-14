@@ -1,5 +1,14 @@
 [
  {
+  "version": "2.1.5",
+  "date": "2026-11-14",
+  "titre": "Photo sur Android",
+  "items": [
+   "Sur Android, toucher « Photo de l’étiquette » propose « Prendre une photo » (appareil photo) ou « Choisir dans mes photos » : Chrome ouvrait directement la galerie, sans l’appareil photo. Même choix pour la photo d’une dégustation.",
+   "Sur iPhone, rien ne change : le menu d’iOS propose déjà les deux."
+  ]
+ },
+ {
   "version": "2.1.4",
   "date": "2026-11-14",
   "titre": "MyCellar sur Android",

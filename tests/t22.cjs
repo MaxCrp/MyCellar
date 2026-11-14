@@ -112,6 +112,26 @@ const IPAD = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.
   // Export : téléchargement quand la feuille de partage n'accepte pas le fichier
   const [dl] = await Promise.all([p.waitForEvent('download', { timeout: 5000 }).catch(() => null), p.evaluate(() => { navigator.canShare = () => false; exportXlsx(); })]);
   ok('export Excel : fichier téléchargé', !!dl && /\.xlsx$/.test(dl.suggestedFilename()), dl?.suggestedFilename());
+  // Photo (v2.1.5) : Android propose « Prendre une photo » (appareil photo) ou « Choisir dans mes photos » (galerie)
+  const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
+  await p.evaluate(() => { closeSheet(); window.__got = []; window.onPhoto = f => __got.push('label:' + f?.name); window.onTastePhoto = f => __got.push('taste:' + f?.name); ACT.addWine(); }); await p.waitForTimeout(200);
+  await p.click('.sheet [data-act=scanLabel]'); await p.waitForTimeout(200);
+  const ch = await p.evaluate(() => ({ cam: !!document.querySelector('.sheet [data-act=photoCam]'), lib: !!document.querySelector('.sheet [data-act=photoLib]'), t: document.querySelector('.sheet')?.innerText || '' }));
+  ok('Android : « Prendre une photo » ou « Choisir dans mes photos »', ch.cam && ch.lib && ch.t.includes('Prendre une photo'), ch.t.slice(0, 80));
+  await p.screenshot({ path: D + '224-android-photo.png' });
+  const pick = async (act, name) => { const [fc] = await Promise.all([p.waitForEvent('filechooser'), p.click(`.sheet [data-act=${act}]`)]); const el = await fc.element().evaluate(e => ({ id: e.id, cap: e.getAttribute('capture') })); await fc.setFiles({ name, mimeType: 'image/png', buffer: PNG }); await p.waitForTimeout(200); return el; };
+  const c1 = await pick('photoCam', 'cam.png');
+  ok('« Prendre une photo » ouvre l’appareil photo', c1.cap === 'environment' && c1.id === 'f-cam', JSON.stringify(c1));
+  ok('le choix se ferme, on revient à la fiche du vin', await p.evaluate(() => sheetStack.length === 1 && !document.querySelector('.sheet [data-act=photoCam]')));
+  await p.click('.sheet [data-act=scanLabel]'); await p.waitForTimeout(200);
+  const c2 = await pick('photoLib', 'galerie.png');
+  ok('« Choisir dans mes photos » ouvre la galerie', c2.id === 'f-photo3' && !c2.cap, JSON.stringify(c2));
+  await p.evaluate(() => { closeSheet(); startTaste(S.wines.find(w => w.kind === 'vin').id); }); await p.waitForTimeout(300);
+  await p.click('.sheet [data-act=tphoto]'); await p.waitForTimeout(200);
+  await pick('photoCam', 'degust.png');
+  const got = await p.evaluate(() => __got);
+  ok('photos remises à la bonne lecture (étiquette, dégustation)', got.join() === 'label:cam.png,label:galerie.png,taste:degust.png', got.join());
+  await p.evaluate(() => closeSheet());
   ok('photo d’étiquette : sélecteur d’images sans prise de vue imposée', await p.evaluate(() => { const i = document.querySelector('#f-photo3'); return i.accept.includes('image/*') && !i.hasAttribute('capture'); }));
   ok('fenêtre adaptée au clavier d’Android (resizes-content)', await p.evaluate(() => document.querySelector('meta[name=viewport]').content.includes('interactive-widget=resizes-content')));
   ok('aucune erreur (Android)', !errs.length, errs.join(' | '));

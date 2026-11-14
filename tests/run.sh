@@ -10,4 +10,5 @@ sleep 1
 T="t1 t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 t16 t17 t18 t19 t20 t21"
 # Téléphone simulé : iPhone, puis toute la suite rejouée sur Android (v2.1.4)
 for t in $T t22 campagne; do echo "== $t"; node tests/$t.cjs; done
-for t in $T campagne; do echo "== $t (Android)"; MC_DEVICE=android node tests/$t.cjs; done
+# t20 vérifie la case photo unique d'iOS : sur Android, deux choix (vérifiés par t22)
+for t in ${T/ t20/} campagne; do echo "== $t (Android)"; MC_DEVICE=android node tests/$t.cjs; done

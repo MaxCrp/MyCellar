@@ -162,7 +162,7 @@ Object.assign(ACT, {
     await save(); paintWheel();
   },
   tctx: t => { const k = t.dataset.k; draft.taste[k] = draft.taste[k] === t.dataset.v ? null : t.dataset.v; refreshSheet(); },
-  tphoto: () => { const i = $('#f-photo2'); i.value = ''; i.click(); },
+  tphoto: () => tastePhotoInput(),
   tasteSave: async () => {
     const t = draft.taste, w = wine(t.wineId);
     if (t.blind && !t.wineId && !t.couleur && t.kind !== 'spirit') return toast('Choisis d’abord la couleur du vin mystère');

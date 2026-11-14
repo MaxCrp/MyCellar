@@ -36,6 +36,7 @@ document.addEventListener('change', e => {
   const t = e.target;
   if (t.id === 'f-photo3') return onPhoto(t.files[0]);
   if (t.id === 'f-photo2') return onTastePhoto(t.files[0]);
+  if (t.id === 'f-cam') return camFor === 'taste' ? onTastePhoto(t.files[0]) : onPhoto(t.files[0]);
   if (t.id === 'f-pdf') return onPdf(t.files[0]);
   if (t.id === 'f-backup') return onBackupFile(t.files[0]);
   if (t.id === 'f-csv') return onTastingCsv(t.files[0]);

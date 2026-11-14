@@ -41,7 +41,7 @@ const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true })
   await p.fill('.sheet input[data-k=lieu]', 'Le Bistrot du Jura'); await p.fill('.sheet input[data-k=prix]', '62');
   await p.fill('.sheet input[data-k=provenance]', 'Carte du restaurant'); await p.fill('.sheet input[data-k=plat]', 'Poulet aux morilles');
   await p.click('.sheet [data-act=tctx][data-k=accord][data-v=parfait]'); await p.waitForTimeout(100);
-  const [fc] = await Promise.all([p.waitForEvent('filechooser'), p.click('.sheet [data-act=tphoto]')]);
+  const [fc] = await Promise.all([p.waitForEvent('filechooser'), (async () => { await p.click('.sheet [data-act=tphoto]'); if (process.env.MC_DEVICE === 'android') await p.click('.sheet [data-act=photoLib]'); })()]);
   await fc.setFiles(D + '01-lock.png'); await p.waitForTimeout(500);
   await p.screenshot({ path: D + '63-form.png' });
   await p.click('.sheet button.btn.primary[data-act=tasteSave]'); await p.waitForTimeout(300);

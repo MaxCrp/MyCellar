@@ -694,6 +694,15 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 - [x] Tests automatiques sur un téléphone Android simulé (Pixel) : conditions d'installation (manifeste, icônes dont la version adaptée, fichier d'installation), noms du déverrouillage selon l'appareil, aucun « iPhone » affiché sur Android, bouton retour, recherche au-dessus du clavier, partage et export, photo. Toute la suite existante rejouée aussi en mode Android.
 - [ ] **Vérification sur un vrai téléphone Android** (par toi ou un ami) : installation, déverrouillage par empreinte, photo d'une étiquette, sauvegarde puis restauration d'une cave venue de l'iPhone. Une liste de contrôle courte est fournie à la livraison. *(à faire par l'utilisateur : liste de contrôle fournie à la livraison)*
 
+**v2.1.5** (correctif Android : photo ; bug bloquant signalé le 14 novembre 2026, corrigé directement ; livrée)
+
+*Constat* : sur Android, « Nouveau vin › Photo de l’étiquette » ouvre directement la galerie (Google Photos) : impossible de prendre la photo avec l'appareil photo. Chrome, contrairement à iOS, ne propose pas les deux dans son menu.
+
+- [x] Sur Android, toucher la case photo ouvre un petit choix : **« Prendre une photo »** (appareil photo, arrière) ou **« Choisir dans mes photos »** (galerie). Le choix se ferme et la lecture de la photo est inchangée.
+- [x] Partout où une photo est demandée : nouveau vin, fiche en modification, nouvelle dégustation (étiquette et photo de la dégustation), révélation à l'aveugle.
+- [x] Sur iPhone, rien ne change (une seule case, le menu d'iOS propose déjà les deux).
+- [x] Tests : les deux choix sur Android (appareil photo imposé pour l'un, galerie pour l'autre), photo remise à la bonne lecture ; iPhone inchangé.
+
 **v2.2** (sauvegarde automatique ; spécifiée et validée le 5 novembre 2026 : option b, Google Drive avec un Worker Cloudflare. *Passée en premier le 13 novembre 2026*, à la place des QR codes)
 - [ ] **Sauvegarde automatique** chiffrée (le même fichier que la sauvegarde manuelle, illisible sans ton mot de passe), après chaque modification importante et au plus une fois par heure, plus une fois par jour au minimum. Les 30 dernières versions sont gardées.
 - [ ] **Restauration** depuis la liste des versions, avec leur date.

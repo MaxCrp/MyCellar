@@ -82,7 +82,7 @@ const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true })
   await p.click('.shead [data-act=close]');
   // Scan étiquette simulé
   await p.click('[data-act=add]'); await p.click('.sheet [data-act=addWine]'); await p.waitForTimeout(100);
-  const [fc] = await Promise.all([p.waitForEvent('filechooser'), p.click('.sheet [data-act=scanLabel]')]);
+  const [fc] = await Promise.all([p.waitForEvent('filechooser'), (async () => { await p.click('.sheet [data-act=scanLabel]'); if (process.env.MC_DEVICE === 'android') await p.click('.sheet [data-act=photoLib]'); })()]);
   await fc.setFiles(__dirname + '/shots/02-cave.png'); await p.waitForTimeout(1200);
   await p.screenshot({ path: D + '24-scan.png' });
   console.log('calls', calls.length, calls.map(c => (c.tools ? 'web ' : '') + (c.output_config?.format ? 'schema' : 'text') + ' ' + c.model + ' fb=' + c.fallbacks).join(' | '));
