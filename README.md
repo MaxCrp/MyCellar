@@ -25,6 +25,7 @@ src/js/*.js         code, assemblé dans l'ordre des noms de fichiers
   50-tasting        dégustation rapide ou complète, contexte, roue des arômes
   55-deg            onglet Dégustations : journal, vue par vin, séances, liste d'envies
   60-ai             IA : sommelier, apogées, lecture d'étiquette, coûts
+  61-reanal         réanalyse groupée des apogées d'une cave (ajustement économe aux nouvelles conditions)
   62-ploc           import du PDF Ploc : lecture des fiches et du plan, sites, placement, avis du sommelier
   63-plocdeg        import des dégustations Ploc (CSV) : lecture, sommelier, séances
   66-export         export Excel (.xlsx généré sur l’appareil), inventaire imprimable

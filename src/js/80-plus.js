@@ -105,7 +105,8 @@ function spaceSheet(id, siteId) {
       <div class="fieldset"><div class="ft">Conditions de stockage</div>
         ${Object.entries(QUALITY).map(([k, d]) => `<label>${d.label}<select name="q_${k}"><option value="">Non renseigné</option>${Object.entries(d.opts).map(([v, l]) => `<option value="${v}" ${q[k] === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>${k === 'temp' ? `
           <div class="grid2"><label>Mini sur l’année (°C)<input name="tmin" inputmode="decimal" value="${sp.tmin ?? ''}" placeholder="Facultatif"></label><label>Maxi sur l’année (°C)<input name="tmax" inputmode="decimal" value="${sp.tmax ?? ''}" placeholder="Facultatif"></label></div>` : ''}`).join('')}
-        <p class="tiny" style="margin:0">Le sommelier en tient compte pour estimer la garde et conseiller où ranger chaque vin.</p></div>
+        <p class="tiny" style="margin:0">Le sommelier en tient compte pour estimer la garde et conseiller où ranger chaque vin.</p>
+        ${id && reanalPlanSize(id) ? `<button type="button" class="btn wide" style="margin-top:4px" data-act="reanalSpace" data-id="${id}">${ICON.spark} Réanalyser les apogées des ${plural(reanalPlanSize(id), 'vin', 'vins')} de cet espace</button>` : ''}</div>
       ${id ? `<label>Places cibles (réassort)<input name="target" inputmode="numeric" value="${esc(sp.target || '')}" placeholder="Facultatif"></label>` : ''}
       <button class="btn primary wide" type="submit">Enregistrer</button>
       ${id ? `<button class="btn danger wide" type="button" data-act="delSpace" data-id="${id}">Supprimer cet espace</button>` : ''}
@@ -126,11 +127,13 @@ FORMS.space = async (f, d) => {
   if (formErrors(f, [...(d.name ? [] : [['name', 'Donne un nom à cet espace']]), ...(d.target && !(Number.isInteger(tg) && tg >= 1 && tg <= 5000) ? [['target', 'Au moins 1 place, ou laisse vide']] : []),
     ...(bad(tmin) ? [['tmin', 'Entre −10 et 40 °C, ou laisse vide']] : []), ...(bad(tmax) ? [['tmax', 'Entre −10 et 40 °C, ou laisse vide']] : []),
     ...(!bad(tmin) && !bad(tmax) && tmin != null && tmax != null && tmin > tmax ? [['tmax', 'Le maxi doit être au moins égal au mini']] : [])])) return;
-  const id = f.dataset.id, q = {};
+  const id = f.dataset.id, q = {}, before = id ? condKey(space(id)) : null;
   for (const k of Object.keys(QUALITY)) if (d['q_' + k]) q[k] = d['q_' + k];
   const o = { name: d.name, siteId: d.siteId, use: d.use, q, target: int(d.target), tmin, tmax };
   if (id) Object.assign(space(id), o); else S.spaces.push({ id: uid(), ...o });
   await save(); sheetBack(); refreshSheet(); render(); toast('Espace enregistré');
+  // Conditions modifiées et vins rangés ici : proposer de réajuster leurs fenêtres (v2.1.8)
+  if (id && aiReady() && before !== condKey(space(id)) && reanalCount(id)) { reanalOpts = { manual: false }; showSheet(() => reanalSheet(id, true)); }
 };
 Object.assign(ACT, {
   sitesSheet: () => showSheet(sitesSheet),

@@ -3,8 +3,8 @@
    La politique de sécurité (CSP) limite les destinations possibles à ces deux API.
    Les vins gardés pour des amis ne sont jamais envoyés au sommelier. */
 const AI = {
-  anthropic: { label: 'Claude (Anthropic)', model: 'claude-sonnet-5-5', keyUrl: 'console.anthropic.com', url: 'https://api.anthropic.com/v1/messages' },
-  mistral: { label: 'Mistral (hébergé en Europe)', model: 'mistral-large-latest', keyUrl: 'console.mistral.ai', url: 'https://api.mistral.ai/v1/chat/completions' },
+  anthropic: { label: 'Claude (Anthropic)', model: 'claude-sonnet-5-5', light: 'claude-haiku-5-5', keyUrl: 'console.anthropic.com', url: 'https://api.anthropic.com/v1/messages' },
+  mistral: { label: 'Mistral (hébergé en Europe)', model: 'mistral-large-latest', light: 'mistral-small-latest', keyUrl: 'console.mistral.ai', url: 'https://api.mistral.ai/v1/chat/completions' },
 };
 const aiCfg = () => S?.settings.ai || {};
 const aiReady = () => !!aiCfg().key;
@@ -50,11 +50,12 @@ async function aiCall(opts) {
     throw e;
   }
 }
-async function aiCall0({ system, context = '', history = [], content, schema = null, maxTokens = 4000, effort = 'medium', web = false }) {
+async function aiCall0({ system, context = '', history = [], content, schema = null, maxTokens = 4000, effort = 'medium', web = false, light = false }) {
   if (!aiReady()) throw new AIError('Aucune clé IA configurée. Va dans Plus › Intelligence artificielle.');
   if (navigator.onLine === false) throw new AIError('Pas de connexion réseau.');
   budgetCheck();
-  const cfg = aiCfg(), model = aiModel();
+  // light : modèle économique pour les tâches simples et groupées (v2.1.8)
+  const cfg = aiCfg(), model = light ? AI[cfg.provider || 'anthropic'].light : aiModel();
   if (!aiClaude()) return mistralCall({ system, context, history, content, schema, maxTokens, model, cfg });
   const sys = [{ type: 'text', text: system }];
   if (context) sys.push({ type: 'text', text: context, cache_control: { type: 'ephemeral' } });
@@ -298,7 +299,7 @@ async function estimateApogee(wid, { quiet = false } = {}) {
     if (!j) throw new AIError('Estimation illisible. Réessaie.');
     const cw = cleanWindow(j.debut, j.pic, j.fin, w.millesime);
     if (!cw) throw new AIError('Estimation incohérente (années dans le désordre ou impossibles) : elle a été ignorée. Réessaie.');
-    w.apogee = { ...cw, why: String(j.justification || '').slice(0, 400), conf: j.confiance, src: 'ia', sources: r.sources.slice(0, 5), at: Date.now() };
+    w.apogee = { ...cw, why: String(j.justification || '').slice(0, 400), conf: j.confiance, src: 'ia', sources: r.sources.slice(0, 5), at: Date.now(), ...condStamp(w) };
     await save(); render(); if (sheetStack.length) refreshSheet();
     toast(`Fenêtre estimée : ${windowLabel(w.apogee)}`);
   } catch (e) {
@@ -315,7 +316,7 @@ async function estimateBatch(ws, onStep) {
     const r = await aiCall({ tag: 'apogee-lot', system: APO_SYS.replace(/Si un outil[\s\S]*?conclure\.\n/, '').replace(/Termine ta réponse[\s\S]*$/, 'Réponds pour chaque vin avec son numéro i.'), content: chunk.map((w, i) => `#${i}\n${wineBrief(w)}`).join('\n\n'), schema: BATCH_SCHEMA, maxTokens: 6000, effort: 'low' });
     for (const it of r.json.items || []) {
       const w = chunk[it.i], cw = w && cleanWindow(it.debut, it.pic, it.fin, w.millesime); if (!cw) continue;
-      w.apogee = { ...cw, src: 'ia', why: 'Estimation groupée, sans recherche web.', at: Date.now() };
+      w.apogee = { ...cw, src: 'ia', why: 'Estimation groupée, sans recherche web.', at: Date.now(), ...condStamp(w) };
       done++;
     }
     onStep?.(Math.min(ws.length, k + 30), ws.length);

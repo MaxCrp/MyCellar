@@ -109,6 +109,8 @@ function normalize(d) {
   d.settings.usage = { on: !!d.settings.usage?.on };
   if (!d.sites.length) d.sites.push({ id: uid(), name: 'Site 1', role: 'conso' });
   if (!d.spaces.length) d.spaces.push({ id: uid(), siteId: d.sites[0].id, name: 'Cave', use: 'conso', q: {} });
+  // Dernière réanalyse d'une cave (v2.1.8) : gardée pour pouvoir l'annuler
+  if (d.reanal && (typeof d.reanal !== 'object' || !Array.isArray(d.reanal.all) || !Array.isArray(d.reanal.changes))) d.reanal = null;
   // Températures de l'année (v2.1.7) : nombres entre −10 et 40 °C, mini ≤ maxi, sinon oubliées
   for (const sp of d.spaces) {
     if (!sp || typeof sp !== 'object') continue;
@@ -247,6 +249,16 @@ function spaceQuality(sp) {
 }
 // Conditions lisibles (sommelier, réglages) : « Variable lentement, au fil des saisons, de 5 à 23 °C »
 const tRange = sp => sp?.tmin != null && sp?.tmax != null ? `de ${sp.tmin} à ${sp.tmax} °C` : sp?.tmax != null ? `jusqu’à ${sp.tmax} °C` : sp?.tmin != null ? `au moins ${sp.tmin} °C` : '';
+// Cave principale d'un vin : l'espace qui contient le plus de ses bouteilles en cave (v2.1.8)
+function mainSpace(w) {
+  const n = new Map(); for (const b of wineBottles(w.id)) if (b.spaceId) n.set(b.spaceId, (n.get(b.spaceId) || 0) + 1);
+  let best = null, m = 0; for (const [k, v] of n) if (v > m) { best = k; m = v; }
+  return best ? space(best) : null;
+}
+// Trace des conditions avec lesquelles une fenêtre a été calculée : une réanalyse saute les vins déjà à jour
+const condKey = sp => sp ? JSON.stringify([sp.q?.temp || '', sp.q?.humid || '', sp.q?.light || '', sp.q?.vib || '', sp.tmin ?? '', sp.tmax ?? '']) : '';
+const condText = sp => sp ? (spaceConditions(sp) || 'conditions non renseignées') : 'conditions inconnues';
+const condStamp = w => { const sp = mainSpace(w); return sp ? { cond: condKey(sp), condTxt: condText(sp), condSpace: sp.id } : {}; };
 const spaceConditions = sp => Object.entries(sp?.q || {}).map(([k, v]) => { const l = QUALITY[k]?.opts[v]; return l && k === 'temp' && tRange(sp) ? `${l}, ${tRange(sp)}` : l; }).filter(Boolean).concat(!sp?.q?.temp && tRange(sp) ? [`Température ${tRange(sp)}`] : []).join(', ');
 const qualityLabel = n => n >= 5 ? 'Excellente' : n >= 4 ? 'Bonne' : n >= 2 ? 'Moyenne' : 'Faible';
 
@@ -378,7 +390,7 @@ function suggestSlots(spaceId, n, exclude = new Set(), wineId = null, occ = occu
 /* ---------- Coûts IA ---------- */
 const PRICES = { // dollars par million de tokens : entrée, sortie, lecture du cache, écriture du cache
   'claude-sonnet-5-5': [2, 10, 0.2, 2.5], 'claude-sonnet-5': [2, 10, 0.2, 2.5], 'claude-opus-5-5': [4, 20, 0.2, 5],
-  'claude-haiku-5-5': [0.1, 0.5, 0.01, 0.125], 'mistral': [2, 6, 2, 2],
+  'claude-haiku-5-5': [0.1, 0.5, 0.01, 0.125], 'mistral-small-latest': [0.1, 0.3, 0.1, 0.1], 'mistral': [2, 6, 2, 2],
 };
 const WEB_SEARCH_USD = 0.01;
 const priceOf = m => PRICES[m] || (m.startsWith('mistral') ? PRICES.mistral : m.includes('opus') ? PRICES['claude-opus-5-5'] : m.includes('haiku') ? PRICES['claude-haiku-5-5'] : PRICES['claude-sonnet-5-5']);

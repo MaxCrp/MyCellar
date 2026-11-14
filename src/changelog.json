@@ -1,5 +1,15 @@
 [
   {
+    "version": "2.1.8",
+    "date": "2026-11-14",
+    "titre": "Réanalyser les apogées d’une cave",
+    "items": [
+      "Réglages › Sites, espaces et meubles › un espace : « Réanalyser les apogées des vins de cet espace ». Quand tu modifies les conditions d’une cave qui contient des vins, l’app te le propose aussitôt.",
+      "Le sommelier ajuste les fenêtres existantes aux nouvelles conditions, par lots, sans recherche web et avec le modèle économique : une centaine de vins coûte environ un centime. Les vins déjà à jour sont sautés, les fenêtres saisies à la main ne sont pas touchées (sauf si tu le demandes), les vins sans fenêtre sont estimés.",
+      "Un récapitulatif montre chaque fenêtre de l’ancienne à la nouvelle, et « Annuler ces changements » remet les anciennes."
+    ]
+  },
+  {
     "version": "2.1.7",
     "date": "2026-11-14",
     "titre": "Cave à variation saisonnière",
