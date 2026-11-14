@@ -35,7 +35,7 @@ const STATUS = {
   inconnu: { label: 'Fenêtre inconnue', short: 'Inconnue', c: 'var(--st-inconnu)', hex: '#B9AFA6', tag: '' },
 };
 const QUALITY = {
-  temp: { label: 'Température', opts: { stable: 'Stable (10–14 °C)', variable: 'Variable' } },
+  temp: { label: 'Température', opts: { stable: 'Stable (10–14 °C)', saison: 'Variable lentement, au fil des saisons', variable: 'Variable rapidement (jour/nuit, chauffage…)' } },
   humid: { label: 'Hygrométrie', opts: { ok: 'Bonne (60–80 %)', sec: 'Trop sèche', humide: 'Trop humide' } },
   light: { label: 'Lumière', opts: { sombre: 'Obscurité', lumineux: 'Exposée à la lumière' } },
   vib: { label: 'Vibrations', opts: { non: 'Aucune', oui: 'Présentes (électroménager, passage)' } },
@@ -109,6 +109,12 @@ function normalize(d) {
   d.settings.usage = { on: !!d.settings.usage?.on };
   if (!d.sites.length) d.sites.push({ id: uid(), name: 'Site 1', role: 'conso' });
   if (!d.spaces.length) d.spaces.push({ id: uid(), siteId: d.sites[0].id, name: 'Cave', use: 'conso', q: {} });
+  // Températures de l'année (v2.1.7) : nombres entre −10 et 40 °C, mini ≤ maxi, sinon oubliées
+  for (const sp of d.spaces) {
+    if (!sp || typeof sp !== 'object') continue;
+    for (const k of ['tmin', 'tmax']) if (sp[k] != null && !(typeof sp[k] === 'number' && sp[k] >= -10 && sp[k] <= 40)) delete sp[k];
+    if (sp.tmin != null && sp.tmax != null && sp.tmin > sp.tmax) { delete sp.tmin; delete sp.tmax; }
+  }
   if (!d.sites.some(s => s.id === d.settings.site)) d.settings.site = d.sites[0].id;
   cleanData(d);
   // v1.7.4 : le propriétaire passe du vin à chaque bouteille (un vin « à Paul » donne des bouteilles « à Paul »)
@@ -227,11 +233,21 @@ const spiritsOn = () => !!S.settings.spirits;
 // Vins visibles selon les options : les spiritueux disparaissent si l'option est coupée
 const kindOn = w => w.kind !== 'spirit' || spiritsOn();
 const siteOfBottle = b => b.spaceId ? space(b.spaceId)?.siteId : null;
+// Note de température (v2.1.7) : une variation lente et saisonnière abîme peu ; c'est le maxi d'été qui compte
+function tempScore(sp) {
+  const t = sp?.q?.temp, max = sp?.tmax;
+  if (t === 'stable') return max != null && max > 18 ? 1 : 2;
+  if (t === 'saison') return max == null ? 1 : max <= 18 ? 2 : max <= 21 ? 1.5 : max <= 24 ? 1 : 0.5;
+  return 0;
+}
 function spaceQuality(sp) {
-  const q = sp?.q || {}; let n = 0;
-  if (q.temp === 'stable') n += 2; if (q.humid === 'ok') n++; if (q.light === 'sombre') n++; if (q.vib === 'non') n++;
+  const q = sp?.q || {}; let n = tempScore(sp);
+  if (q.humid === 'ok') n++; if (q.light === 'sombre') n++; if (q.vib === 'non') n++;
   return n;
 }
+// Conditions lisibles (sommelier, réglages) : « Variable lentement, au fil des saisons, de 5 à 23 °C »
+const tRange = sp => sp?.tmin != null && sp?.tmax != null ? `de ${sp.tmin} à ${sp.tmax} °C` : sp?.tmax != null ? `jusqu’à ${sp.tmax} °C` : sp?.tmin != null ? `au moins ${sp.tmin} °C` : '';
+const spaceConditions = sp => Object.entries(sp?.q || {}).map(([k, v]) => { const l = QUALITY[k]?.opts[v]; return l && k === 'temp' && tRange(sp) ? `${l}, ${tRange(sp)}` : l; }).filter(Boolean).concat(!sp?.q?.temp && tRange(sp) ? [`Température ${tRange(sp)}`] : []).join(', ');
 const qualityLabel = n => n >= 5 ? 'Excellente' : n >= 4 ? 'Bonne' : n >= 2 ? 'Moyenne' : 'Faible';
 
 /* ---------- Libellés ---------- */

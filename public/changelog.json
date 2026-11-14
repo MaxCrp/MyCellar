@@ -1,5 +1,15 @@
 [
  {
+  "version": "2.1.7",
+  "date": "2026-11-14",
+  "titre": "Cave à variation saisonnière",
+  "items": [
+   "Température d’un espace : trois choix, dont le nouveau « Variable lentement, au fil des saisons » pour une cave enterrée qui se réchauffe doucement l’été sans écarts d’un jour à l’autre. L’ancien « Variable » devient « Variable rapidement (jour/nuit, chauffage…) ».",
+   "Tu peux indiquer les températures mini et maxi de l’année. La qualité de la cave en tient compte : une variation lente abîme peu, c’est surtout le maxi d’été qui compte.",
+   "Le sommelier reçoit ces précisions pour estimer la garde de tes vins : une cave saisonnière qui monte à 23 °C raccourcit un peu la fenêtre, sans la pénaliser comme une pièce qui fait le yoyo. Pense à vérifier les conditions de tes espaces (Réglages › Sites, espaces et meubles)."
+  ]
+ },
+ {
   "version": "2.1.6",
   "date": "2026-11-14",
   "titre": "Transferts : la bouteille en un geste",

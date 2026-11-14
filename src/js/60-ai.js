@@ -275,7 +275,7 @@ Object.assign(ACT, {
 
 /* ---------- Fenêtre de dégustation (apogée) ---------- */
 const APO_SYS = `Tu es un sommelier expert du vieillissement des vins. On te donne un vin d’une cave personnelle et ses conditions de stockage.
-Estime sa fenêtre de dégustation : année de début (le vin devient agréable), année d’apogée, année de fin (au-delà il décline). Tiens compte du millésime, de l’appellation, du producteur, de la cuvée, du format (un magnum évolue plus lentement) et des conditions de stockage (une cave de qualité moyenne ou faible raccourcit la garde). S’il y a des notes de dégustation récentes, elles priment sur la théorie.
+Estime sa fenêtre de dégustation : année de début (le vin devient agréable), année d’apogée, année de fin (au-delà il décline). Tiens compte du millésime, de l’appellation, du producteur, de la cuvée, du format (un magnum évolue plus lentement) et des conditions de stockage (une cave de qualité moyenne ou faible raccourcit la garde ; une variation de température lente, au fil des saisons, abîme peu le vin : c’est surtout le temps passé au-dessus de 20 °C qui accélère son évolution et raccourcit un peu la fenêtre ; un maximum au-delà de 25 °C ou un minimum sous 0 °C est un vrai risque). S’il y a des notes de dégustation récentes, elles priment sur la théorie.
 Si un outil de recherche web est disponible, fais une ou deux recherches ciblées (critiques, fiches du producteur, appréciation du millésime) avant de conclure.
 Termine ta réponse par un bloc JSON : {"debut": année, "pic": année, "fin": année, "justification": "deux phrases maximum en français", "confiance": "haute|moyenne|faible"}.`;
 function wineBrief(w) {
@@ -284,7 +284,7 @@ function wineBrief(w) {
   return [`Vin : ${wineTitle(w)}`, `Couleur : ${COLORS[w.couleur]?.label || '?'}`, w.domaine && `Producteur : ${w.domaine}`, w.cuvee && `Cuvée : ${w.cuvee}`,
     w.appellation && `Appellation : ${w.appellation}`, (w.region || w.pays) && `Région : ${[w.region, w.pays].filter(Boolean).join(', ')}`, w.cepages && `Cépages : ${w.cepages}`,
     `Millésime : ${w.millesime || 'non millésimé'}`, w.format && w.format !== '75' && `Format : ${w.format} cl`,
-    sps.length && `Stockage : ${sps.map(s => `${s.name} (qualité ${qualityLabel(spaceQuality(s)).toLowerCase()} : ${Object.entries(s.q || {}).map(([k, v]) => QUALITY[k]?.opts[v]).filter(Boolean).join(', ') || 'conditions non renseignées'})`).join(' ; ')}`,
+    sps.length && `Stockage : ${sps.map(s => `${s.name} (qualité ${qualityLabel(spaceQuality(s)).toLowerCase()} : ${spaceConditions(s) || 'conditions non renseignées'})`).join(' ; ')}`,
     ts.length && `Dégustations : ${ts.map(t => `${t.at} ${t.note != null ? numFr(t.note) + '/20' : ''} ${t.full?.evolution ? '(' + t.full.evolution + ')' : ''} ${t.comment || ''}`.trim()).join(' ; ')}`,
     `Année actuelle : ${thisYear()}`].filter(Boolean).join('\n');
 }

@@ -712,6 +712,17 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 - [x] Le reste ne change pas : toucher le vin ouvre toujours son résumé ; la croix retire du transfert ; « Ajouter » pour les suggestions.
 - [x] Tests : épingle sur chaque ligne, saut vers la bonne case et le bon site, depuis une bouteille à emporter et depuis une suggestion.
 
+**v2.1.7** (cave à variation saisonnière ; demandée le 14 novembre 2026 ; livrée)
+
+*Constat* : la température d'un espace n'a que deux choix, « Stable (10–14 °C) » ou « Variable ». Une cave enterrée qui passe lentement de 5 °C l'hiver à 23 °C l'été (grande inertie, pas d'écart d'un jour à l'autre) est notée comme une pièce qui fait le yoyo chaque jour, alors que l'effet sur le vin est très différent : la variation lente abîme peu, c'est surtout le temps passé au chaud qui accélère l'évolution.
+
+- [x] **Trois choix de température** : « Stable (10–14 °C) », **« Variable lentement, au fil des saisons »** (nouveau), « Variable rapidement (jour/nuit, chauffage…) » (l'ancien « Variable », dont la valeur enregistrée est gardée).
+- [x] **Températures mini et maxi sur l'année** (°C, facultatives, entre −10 et 40, mini ≤ maxi), sous le choix de température.
+- [x] **Qualité de l'espace** (Excellente, Bonne, Moyenne, Faible) : la note de température tient compte de la variation saisonnière et du maxi d'été. Stable : 2 points (1 si le maxi dépasse 18 °C) ; saisonnière : 2 si le maxi ne dépasse pas 18 °C, 1,5 jusqu'à 21 °C, 1 jusqu'à 24 °C ou si le maxi n'est pas renseigné, 0,5 au-delà ; rapide : 0. Exemple : cave saisonnière 5–23 °C, humidité bonne, obscurité, sans vibrations : « Bonne ».
+- [x] **Sommelier** : la fiche envoyée pour estimer la fenêtre de dégustation précise la variation (« variable lentement, au fil des saisons, de 5 à 23 °C »), et sa consigne explique qu'une variation lente abîme peu, que c'est le temps passé au-dessus de 20 °C qui accélère l'évolution (fenêtre un peu raccourcie), et qu'un maxi au-dessus de 25 °C ou un mini sous 0 °C est un vrai risque.
+- [x] Conseils de rangement : la qualité ainsi calculée sert, comme aujourd'hui, à choisir la meilleure cave de garde.
+- [x] Tests : les trois choix, mini et maxi enregistrés et contrôlés, qualité calculée pour plusieurs cas (dont l'exemple ci-dessus), fiche envoyée au sommelier, ancien « Variable » relu sans changement.
+
 **v2.2** (sauvegarde automatique ; spécifiée et validée le 5 novembre 2026 : option b, Google Drive avec un Worker Cloudflare. *Passée en premier le 13 novembre 2026*, à la place des QR codes)
 - [ ] **Sauvegarde automatique** chiffrée (le même fichier que la sauvegarde manuelle, illisible sans ton mot de passe), après chaque modification importante et au plus une fois par heure, plus une fois par jour au minimum. Les 30 dernières versions sont gardées.
 - [ ] **Restauration** depuis la liste des versions, avec leur date.

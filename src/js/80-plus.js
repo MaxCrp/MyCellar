@@ -103,7 +103,8 @@ function spaceSheet(id, siteId) {
       ${isMulti() ? `<label>Site<select name="siteId">${S.sites.map(s => `<option value="${s.id}" ${s.id === sp.siteId ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}</select></label>` : `<input type="hidden" name="siteId" value="${sp.siteId || S.sites[0].id}">`}
       <label>Usage<select name="use"><option value="conso" ${sp.use === 'conso' ? 'selected' : ''}>Consommation (bouteilles prêtes à boire)</option><option value="garde" ${sp.use !== 'conso' ? 'selected' : ''}>Garde, vieillissement</option></select></label>
       <div class="fieldset"><div class="ft">Conditions de stockage</div>
-        ${Object.entries(QUALITY).map(([k, d]) => `<label>${d.label}<select name="q_${k}"><option value="">Non renseigné</option>${Object.entries(d.opts).map(([v, l]) => `<option value="${v}" ${q[k] === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>`).join('')}
+        ${Object.entries(QUALITY).map(([k, d]) => `<label>${d.label}<select name="q_${k}"><option value="">Non renseigné</option>${Object.entries(d.opts).map(([v, l]) => `<option value="${v}" ${q[k] === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>${k === 'temp' ? `
+          <div class="grid2"><label>Mini sur l’année (°C)<input name="tmin" inputmode="decimal" value="${sp.tmin ?? ''}" placeholder="Facultatif"></label><label>Maxi sur l’année (°C)<input name="tmax" inputmode="decimal" value="${sp.tmax ?? ''}" placeholder="Facultatif"></label></div>` : ''}`).join('')}
         <p class="tiny" style="margin:0">Le sommelier en tient compte pour estimer la garde et conseiller où ranger chaque vin.</p></div>
       ${id ? `<label>Places cibles (réassort)<input name="target" inputmode="numeric" value="${esc(sp.target || '')}" placeholder="Facultatif"></label>` : ''}
       <button class="btn primary wide" type="submit">Enregistrer</button>
@@ -119,10 +120,15 @@ FORMS.site = async (f, d) => {
 };
 FORMS.space = async (f, d) => {
   const tg = d.target ? num(d.target) : null;
-  if (formErrors(f, [...(d.name ? [] : [['name', 'Donne un nom à cet espace']]), ...(d.target && !(Number.isInteger(tg) && tg >= 1 && tg <= 5000) ? [['target', 'Au moins 1 place, ou laisse vide']] : [])])) return;
+  // Températures de l'année (v2.1.7) : facultatives, entre −10 et 40 °C, mini ≤ maxi
+  const deg = v => { if (!String(v ?? '').trim()) return null; const n = num(String(v).replace('−', '-')); return Number.isFinite(n) ? Math.round(n * 10) / 10 : NaN; };
+  const tmin = deg(d.tmin), tmax = deg(d.tmax), bad = v => v != null && !(v >= -10 && v <= 40);
+  if (formErrors(f, [...(d.name ? [] : [['name', 'Donne un nom à cet espace']]), ...(d.target && !(Number.isInteger(tg) && tg >= 1 && tg <= 5000) ? [['target', 'Au moins 1 place, ou laisse vide']] : []),
+    ...(bad(tmin) ? [['tmin', 'Entre −10 et 40 °C, ou laisse vide']] : []), ...(bad(tmax) ? [['tmax', 'Entre −10 et 40 °C, ou laisse vide']] : []),
+    ...(!bad(tmin) && !bad(tmax) && tmin != null && tmax != null && tmin > tmax ? [['tmax', 'Le maxi doit être au moins égal au mini']] : [])])) return;
   const id = f.dataset.id, q = {};
   for (const k of Object.keys(QUALITY)) if (d['q_' + k]) q[k] = d['q_' + k];
-  const o = { name: d.name, siteId: d.siteId, use: d.use, q, target: int(d.target) };
+  const o = { name: d.name, siteId: d.siteId, use: d.use, q, target: int(d.target), tmin, tmax };
   if (id) Object.assign(space(id), o); else S.spaces.push({ id: uid(), ...o });
   await save(); sheetBack(); refreshSheet(); render(); toast('Espace enregistré');
 };
