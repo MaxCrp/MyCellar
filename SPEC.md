@@ -660,6 +660,10 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 
 *Constat* : MyCellar s'installe déjà sur Android depuis Chrome (menu ⋮ › « Installer l'application ») : c'est la même web app, à la même adresse. Mais elle a été conçue et testée uniquement sur iPhone : textes « cet iPhone », déverrouillage nommé « Face ID » (qui n'existe pas sur Android), icône non adaptée, bouton retour d'Android non géré.
 
+*Détection de l'appareil*
+
+- [ ] L'app reconnaît au démarrage si elle tourne sur **iPhone ou iPad**, sur **Android** ou ailleurs (ordinateur), d'après l'identité que le navigateur annonce (l'iPad récent se présente comme un Mac : il est reconnu par son écran tactile). Elle sait aussi déjà si elle est installée ou ouverte dans le navigateur. Tout ce qui suit s'appuie sur cette détection ; en cas de doute, les textes neutres (« cet appareil », « Clé d'accès ») s'affichent.
+
 *Déverrouillage biométrique (remplace « Face ID » hors iPhone)*
 
 - [ ] Le nom suit l'appareil : **« Face ID »** sur iPhone (inchangé) ; **« Empreinte ou visage »** sur Android (avec une icône d'empreinte) ; **« Clé d'accès »** ailleurs. Partout où « Face ID » apparaît : écran de verrouillage, bouton « Déverrouiller avec… », Réglages › Sécurité, proposition au premier lancement, messages de confirmation et d'erreur.
