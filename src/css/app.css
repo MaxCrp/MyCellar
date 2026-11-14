@@ -420,3 +420,6 @@ input[type=range].unset::-moz-range-progress{background:#EAE2D6}
 .winscale{display:flex;justify-content:space-between;gap:8px;font-size:10.5px;color:var(--muted);margin:8px 4px 0}
 .winscale span:nth-child(2){text-align:center}
 .li .win{margin-top:6px}
+/* v2.1.4 : Android, clavier ouvert : la barre d'onglets se cache, les champs du bas descendent au ras du clavier */
+html.kbd .tabs{display:none}
+html.kbd .csearch,html.kbd .composer{bottom:0}

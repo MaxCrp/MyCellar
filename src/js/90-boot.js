@@ -58,8 +58,8 @@ FORMS.setup = async (f, d) => {
   await adopt({ raw, data: seedStructure(emptyData()), slots: { pw: await makePwSlot(raw, d.p1) } });
   await save(); navigator.storage?.persist?.(); await clearFails();
   enterApp('creation'); toast('Cave créée');
-  if (pkAvailable()) setTimeout(() => showSheet(() => `${head('Face ID')}<p>Veux-tu ouvrir ta cave avec Face ID plutôt qu’avec ton mot de passe ?</p>
-    <div class="btns"><button class="btn primary wide" data-act="pkOffer">${ICON.face} Activer Face ID</button><button class="btn ghost wide" data-act="close">Plus tard</button></div>`), 400);
+  if (pkAvailable()) setTimeout(() => showSheet(() => `${head(BIO)}<p>Veux-tu ouvrir ta cave ${BIO_AVEC} plutôt qu’avec ton mot de passe ?</p>
+    <div class="btns"><button class="btn primary wide" data-act="pkOffer">${bioIcon()} Activer</button><button class="btn ghost wide" data-act="close">Plus tard</button></div>`), 400);
 };
 FORMS.unlock = async (f, d) => {
   const fl = await getFails();
@@ -82,8 +82,8 @@ Object.assign(ACT, {
     } catch (e) { renderLock('unlock', e.name === 'NotAllowedError' ? '' : pkError(e)); }
   },
   pkOffer: async () => {
-    try { const { slot, secret } = await pkCreate(); await pkStore(slot, secret || await prfGet(slot)); closeSheet(); toast('Face ID activé'); }
-    catch (e) { sheetMsg('Face ID', pkError(e)); }
+    try { const { slot, secret } = await pkCreate(); await pkStore(slot, secret || await prfGet(slot)); closeSheet(); toast(`${BIO} activé`); }
+    catch (e) { if (e?.message === 'noprf') { S.settings.pkNo = true; await save(); } sheetMsg(BIO, pkError(e)); }
   },
   demo: async () => { S = normalize(demoData()); mode = 'demo'; enterApp(); },
 });

@@ -24,7 +24,7 @@ const AI = {
 };
 (async () => {
   const b = await chromium.launch();
-  const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const ctx = await b.newContext({ ...require('./ua.cjs'), viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const p = await ctx.newPage(), errs = [];
   let aiCalls = 0;
   p.on('pageerror', e => errs.push(e.message));

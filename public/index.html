@@ -2,14 +2,14 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="MyCellar">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#F7F3EC">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-mQ8KT89qCfL2la8OM6ew8QbsiiDgnvb7KxnDQtxYir8='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-Kf6HQjY8pb2eUgG0ju3Lr5Amq20glC8NK3lpawIjwE4='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.anthropic.com https://api.mistral.ai; worker-src 'self'; manifest-src 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>MyCellar</title>
@@ -436,6 +436,9 @@ input[type=range].unset::-moz-range-progress{background:#EAE2D6}
 .winscale{display:flex;justify-content:space-between;gap:8px;font-size:10.5px;color:var(--muted);margin:8px 4px 0}
 .winscale span:nth-child(2){text-align:center}
 .li .win{margin-top:6px}
+/* v2.1.4 : Android, clavier ouvert : la barre d'onglets se cache, les champs du bas descendent au ras du clavier */
+html.kbd .tabs{display:none}
+html.kbd .csearch,html.kbd .composer{bottom:0}
 
 </style>
 </head>
@@ -451,7 +454,7 @@ input[type=range].unset::-moz-range-progress{background:#EAE2D6}
 <input type="file" id="f-csv" accept=".csv,text/csv,text/plain,text/comma-separated-values" hidden>
 <script>
 'use strict';
-const CHANGELOG = [{"version":"2.1.3","date":"2026-11-13","titre":"Onglet Cave plus compact","items":["Sous « Plan / Liste », une barre montre chaque meuble du site en miniature : une pastille par place, à la couleur du vin. Touche une miniature pour aller directement au meuble, sans faire défiler tout le plan. Pendant le défilement, la miniature du meuble visible s’encadre.","Mode Liste : un bouton « Filtres » ouvre tous les filtres d’un coup (maturité, couleur, site, région, millésime, à qui). Chaque filtre indique combien de vins il donne ; les filtres actifs s’affichent sous le bouton, touche-en un pour le retirer.","La recherche passe dans une loupe ronde en bas à droite : le champ s’ouvre au-dessus du clavier, « Annuler » efface la recherche. L’en-tête gagne de la place.","« Transferts entre sites » et « Conseils de rangement » : une petite barre d’apogée sous chaque vin, sur la même échelle pour tout l’écran, avec un trait pour aujourd’hui."]},{"version":"2.1.2","date":"2026-11-06","titre":"Photo d’étiquette simplifiée","items":["Une seule case « Photo de l’étiquette » : l’iPhone propose lui-même de prendre la photo, de la choisir dans la photothèque ou dans Fichiers. Le bouton « Prendre une photo » en double est retiré.","Sur une fiche en modification, un seul bouton « Changer la photo »."]},{"version":"2.1.1","date":"2026-11-06","titre":"Photo depuis la photothèque","items":["Photo de l’étiquette : « Prendre une photo » ou « Choisir dans mes photos », pour une photo prise plus tôt. Le sommelier lit l’étiquette de la même façon.","Même choix pour une nouvelle dégustation et la révélation d’un vin à l’aveugle.","Sur une fiche en modification, tu peux reprendre ou remplacer la photo de l’étiquette.","Une photo dont le format n’est pas lisible est signalée clairement."]},{"version":"2.1","date":"2026-11-06","titre":"Partager, exporter, importer","items":["Import de tes dégustations Ploc (Réglages › Importer depuis Ploc › Dégustations) : le fichier CSV est lu sur ton iPhone, le sommelier démêle le nom de chaque vin (domaine, appellation, cuvée), tu vérifies et corriges avant l’import. Les dégustations d’une même date forment une séance ; sans doublon si tu relances l’import.","Carte des vins (Réglages › Partager et exporter) : prêts à boire, par site, par couleur ou choisis à la main, avec ou sans prix ; à partager en image ou en PDF.","Partager une dégustation en image ou en texte, depuis sa fiche.","Export Excel : un vrai fichier .xlsx créé sur l’iPhone, avec l’inventaire, les dégustations et les mouvements.","Inventaire imprimable par site, espace et meuble, avec le plan de chaque meuble (« Enregistrer en PDF » depuis l’impression)."]},{"version":"2.0","date":"2026-11-05","titre":"Comprendre sa cave","items":["Statistiques (Réglages › Ma cave) : ta cave par couleur, statut, région, pays, millésime, format et emplacement ; ta consommation sur 12 mois et tes vins les mieux notés ; tes achats par année. Touche une barre pour voir les vins.","Valeur actuelle : sur la fiche d’un vin, saisie à la main ou estimée par le sommelier (avec recherche web), avec une fourchette et l’écart avec le prix d’achat. L’estimation groupée annonce son coût avant de démarrer.","La valeur de la cave utilise la valeur estimée quand elle existe, sinon le prix d’achat.","Cadeaux (Réglages › Ma cave) : les vins reçus et offerts, par personne. L’app te prévient si tu t’apprêtes à offrir à quelqu’un un vin que tu lui as déjà offert.","Audit de ma cave (À boire, ou Sommelier) : équilibre, calendrier de maturité comparé à ton rythme, années d’embouteillage et années creuses, espaces presque pleins, puis la lecture du sommelier avec des suggestions d’achat."]},{"version":"1.7.5","date":"2026-11-05","titre":"Primeurs","items":["Le choix « En cave » ou « En primeur » est désormais bien visible sous la quantité, avec la date de livraison prévue.","Il est disponible partout où l’on ajoute des bouteilles : nouveau vin, « Mêmes bouteilles » et « Nouveau millésime ».","Réglages › Primeurs : un bouton « Ajouter un primeur », pour un vin de la cave (millésime suivant) ou un nouveau vin."]},{"version":"1.7.4","date":"2026-11-05","titre":"Millésimes, amis et caisses","items":["Nouveau millésime : depuis la fiche d’un vin ou « Racheter un vin », une saisie courte (millésime, quantité, source, prix) reprend tout le reste. La fenêtre est estimée pour le nouveau millésime. Un millésime déjà en cave reçoit les bouteilles, sans doublon.","La fiche d’un vin liste ses autres millésimes en cave.","Bouteilles d’un ami : le propriétaire est désormais fixé bouteille par bouteille. À l’ajout, « dont 6 pour Paul » ; après coup, « Répartir entre propriétaires » sur la fiche du vin, ou « Appartient à » sur une bouteille. Tes données ont été converties sans perte.","Le sommelier, À boire, les conseils et les transferts ne comptent que tes bouteilles.","Caisses et cartons : un seul vin par caisse. Depuis la caisse : sortir plusieurs bouteilles d’un coup, déplacer la caisse avec son contenu, l’ajouter au transfert (elle arrive avec ses bouteilles dedans), attribuer des bouteilles à un ami, modifier le vin ou l’achat."]},{"version":"1.7.3","date":"2026-11-05","titre":"Bouteilles à noter, sites en glissant","items":["Dégustations › À noter : toutes les bouteilles sorties sans fiche t’y attendent, au lieu de la seule dernière. Pour chacune : note rapide, fiche complète (date, plat et convives déjà remplis) ou « Sans fiche ».","Après une sortie, un nouveau choix : « Sortir sans fiche », sans rappel.","Le rappel du lendemain compte les bouteilles à noter, et « Plus tard » ne les oublie plus.","Les bouteilles bues ces 30 derniers jours sans dégustation ont été ajoutées à la liste.","Onglet Cave : glisse vers la gauche ou la droite pour changer de site. Des points sous le titre indiquent le site affiché."]},{"version":"1.7.2","date":"2026-11-05","titre":"Transferts dans les deux sens","items":["Transferts : une section par sens (vers la consommation, vers le stockage), chacune avec ses arrivées. Tu peux emporter tes achats à la campagne et rapporter des vins prêts à boire dans le même trajet.","Arrivées au stockage : les bouteilles vont dans le meilleur espace de garde, avec « Ranger maintenant ».","Suggestions vers le stockage : les vins à garder achetés récemment en ville. Et quand tu ajoutes un vin trop jeune en ville, l’app propose de l’emporter au prochain transfert.","Toucher une bouteille dans un transfert ou un conseil de rangement ouvre un résumé du vin : fenêtre, statut, bouteilles par site, dernière note.","À boire : touche une barre du graphique « À boire avant la fin de… » pour voir les bouteilles et leurs emplacements, avec accès direct à la case."]},{"version":"1.7.1","date":"2026-11-05","titre":"Recherche et sommelier","items":["La recherche de l’onglet Cave porte sur tous tes sites d’un coup. Les résultats s’affichent sous la barre, avec chaque emplacement : touche-en un pour y aller, la case clignote sur le plan.","Une seule bouteille trouvée ? La touche « Rechercher » du clavier t’y emmène directement.","« Voir sur le plan » depuis la fiche d’une bouteille, et l’épingle à côté de chaque emplacement sur la fiche d’un vin.","Une croix efface la recherche d’un coup, sur toutes les barres de recherche.","Sommelier : le bouton « Nouvelle conversation » est dans l’encart de saisie, toujours visible, et demande confirmation. La dernière réponse n’est plus cachée sous l’encart."]},{"version":"1.7","date":"2026-11-05","titre":"Import Ploc complet","items":["Import Ploc : les fiches sont reprises telles quelles (couleur, degré, fenêtre de garde, contenance, cépages). Le sommelier ne complète que les champs vides, et l’écran de vérification les signale.","Les bouteilles sont posées à leur case : le meuble est créé à l’identique du plan Ploc, ou associé à un meuble existant. Un aperçu du plan permet de vérifier la lecture.","Les caves Ploc sont rapprochées de tes sites, sur ton iPhone, sans envoyer la liste de tes sites à l’IA. Un site non reconnu est demandé une fois, et peut prendre le nom utilisé dans Ploc.","Le sommelier donne son avis sur chaque fenêtre de Ploc : s’il la juge décalée, il propose la sienne et tu choisis.","L’estimation de Ploc devient le prix d’achat, et la note sur 100 une dégustation sur 20. Les accords sont ajoutés aux notes du vin.","Plusieurs exports peuvent être importés à la suite, sans doublon.","Nouveau champ « Servir à » sur la fiche vin, affiché au moment de déguster. Le sommelier le voit, ainsi que les accords."]},{"version":"1.6.2","date":"2026-11-05","titre":"Fiabilité","items":["Un double appui sur un bouton ne crée plus deux bouteilles, deux sorties ou deux dégustations.","La fiche vin vérifie le millésime, le prix, le degré et la quantité, et explique sous le champ ce qui ne va pas. Un millésime sur deux chiffres est complété (« 19 » devient 2019), et les nombres comme « 1.234,50 » sont reconnus.","Les fenêtres de dégustation restent cohérentes (début, apogée, fin), qu’elles soient saisies ou proposées par le sommelier.","Une dégustation enregistrée sans toucher au curseur n’a plus de note, au lieu d’un 14/20 par défaut.","Rangement : l’app prévient quand les places manquent et propose l’espace le plus libre.","Spiritueux désactivés : leurs cases restent sur le plan, grisées.","Import Ploc, lecture d’étiquette et restauration de sauvegarde : contrôles et messages plus clairs.","Les très grandes caves restent économes en appels au sommelier."]},{"version":"1.6.1","date":"2026-11-04","titre":"Confort et corrections","items":["Les fenêtres ne clignotent plus et ne remontent plus en haut quand tu touches un choix (fiche de dégustation, rangement, liste d’envies, transfert…).","Fiche de dégustation : le bouton « OK » en haut disparaît, on enregistre avec le bouton du bas. Fermer une fiche commencée demande confirmation.","Dans la cave fictive, les réglages indisponibles (suivi d’utilisation, Face ID, Rester déverrouillé) expliquent pourquoi.","Réglages › Contenu : la ligne « Vins · Toujours actif » est retirée."]},{"version":"1.6","date":"2026-11-04","titre":"Retours d’utilisation et suivi des versions","items":["Suivi d’utilisation (désactivé par défaut, Réglages › Aide) : l’app note, sur ton iPhone uniquement, les écrans et les gestes, jamais tes vins ni tes notes. Tu peux consulter la synthèse et exporter un rapport à envoyer, avec ton avis.","« Signaler un problème » : décris ce qui s’est passé, l’app prépare un rapport avec les dernières minutes d’utilisation et les erreurs récentes. Raccourci aussi dans les messages d’erreur.","Mises à jour : « Plus d’infos » montre le contenu d’une nouvelle version avant de l’installer, une fenêtre « Nouveautés » s’affiche après, et l’historique des versions est dans Réglages › Aide."]},{"version":"1.5.2","date":"2026-11-04","titre":"Dégustation à l’aveugle et finitions","items":["Dégustation à l’aveugle : la fiche d’abord sur un « vin mystère », tes hypothèses, puis la révélation, la comparaison et l’analyse du sommelier.","Le bouton + est le même partout : « Nouvelle dégustation » ou « Nouveau vin ».","Présentation de l’app au premier lancement, à revoir dans Réglages › Aide.","Recherche dans « Racheter un vin ». L’import Ploc est désormais dans les réglages.","Nouvelles icônes : un bouchon pour « Déguster », un carnet pour les dégustations."]},{"version":"1.5","date":"2026-11-04","titre":"Dégustations et conseils de rangement","items":["Onglet Dégustations : le journal de tous tes vins dégustés, en cave ou ailleurs (restaurant, salon, domaine…), avec recherche, filtres et vue par vin.","Séances de dégustation avec classement, et liste d’envies avec « Acheté ».","Conseils de rangement dans À boire : vins à rapprocher, à mettre en garde, réassort de la cave de consommation.","Le sommelier propose d’ajuster la fenêtre d’un vin après une dégustation, et tient compte de tes vins bus ailleurs et de tes accords.","Les réglages passent sous l’icône engrenage."]},{"version":"1.0.1","date":"2026-11-04","titre":"Corrections","items":["L’app se rouvre correctement sur iPhone après un premier lancement.","La création de la cave ne pose plus de question : un site « Site 1 », renommable, et le mode plusieurs sites dans les réglages.","La vue Urgence de la page Cave est retirée : l’onglet À boire fait référence."]},{"version":"1.0","date":"2026-11-04","titre":"Première version","items":["Ta cave sur ton iPhone, chiffrée par ton mot de passe ou Face ID, et utilisable hors ligne.","Sites, espaces et meubles (armoire, rack, étagère, caisses, cartons) avec un plan visuel et une recherche.","Ajout par photo d’étiquette ou saisie, rangement suggéré, sorties, déplacements, transferts, primeurs, vins des amis.","Dégustation rapide ou complète avec la roue des arômes.","Sommelier pour les accords mets-vins, fenêtres de dégustation estimées, onglet À boire.","Option spiritueux, import Ploc, sauvegarde chiffrée."]}];
+const CHANGELOG = [{"version":"2.1.4","date":"2026-11-14","titre":"MyCellar sur Android","items":["L’app reconnaît l’appareil : sur Android, le déverrouillage sans mot de passe s’appelle « Empreinte ou visage » (Face ID reste sur iPhone), et les textes parlent de « ce téléphone ».","Bouton « Installer l’application » tant que MyCellar est ouverte dans le navigateur (Chrome sur Android, rappel « Partager › Sur l’écran d’accueil » sur iPhone).","Sur Android, le bouton retour ferme la fenêtre ouverte, puis revient à l’onglet Cave, au lieu de quitter l’app. Pendant la saisie, le champ de recherche et celui du sommelier restent juste au-dessus du clavier.","Icône adaptée aux formes d’Android ; pour un PDF, l’app rappelle de choisir « Enregistrer au format PDF ».","Données protégées : l’app demande au navigateur de ne jamais effacer ta cave ; l’état est affiché dans Réglages › Sauvegarde."]},{"version":"2.1.3","date":"2026-11-13","titre":"Onglet Cave plus compact","items":["Sous « Plan / Liste », une barre montre chaque meuble du site en miniature : une pastille par place, à la couleur du vin. Touche une miniature pour aller directement au meuble, sans faire défiler tout le plan. Pendant le défilement, la miniature du meuble visible s’encadre.","Mode Liste : un bouton « Filtres » ouvre tous les filtres d’un coup (maturité, couleur, site, région, millésime, à qui). Chaque filtre indique combien de vins il donne ; les filtres actifs s’affichent sous le bouton, touche-en un pour le retirer.","La recherche passe dans une loupe ronde en bas à droite : le champ s’ouvre au-dessus du clavier, « Annuler » efface la recherche. L’en-tête gagne de la place.","« Transferts entre sites » et « Conseils de rangement » : une petite barre d’apogée sous chaque vin, sur la même échelle pour tout l’écran, avec un trait pour aujourd’hui."]},{"version":"2.1.2","date":"2026-11-06","titre":"Photo d’étiquette simplifiée","items":["Une seule case « Photo de l’étiquette » : l’iPhone propose lui-même de prendre la photo, de la choisir dans la photothèque ou dans Fichiers. Le bouton « Prendre une photo » en double est retiré.","Sur une fiche en modification, un seul bouton « Changer la photo »."]},{"version":"2.1.1","date":"2026-11-06","titre":"Photo depuis la photothèque","items":["Photo de l’étiquette : « Prendre une photo » ou « Choisir dans mes photos », pour une photo prise plus tôt. Le sommelier lit l’étiquette de la même façon.","Même choix pour une nouvelle dégustation et la révélation d’un vin à l’aveugle.","Sur une fiche en modification, tu peux reprendre ou remplacer la photo de l’étiquette.","Une photo dont le format n’est pas lisible est signalée clairement."]},{"version":"2.1","date":"2026-11-06","titre":"Partager, exporter, importer","items":["Import de tes dégustations Ploc (Réglages › Importer depuis Ploc › Dégustations) : le fichier CSV est lu sur ton iPhone, le sommelier démêle le nom de chaque vin (domaine, appellation, cuvée), tu vérifies et corriges avant l’import. Les dégustations d’une même date forment une séance ; sans doublon si tu relances l’import.","Carte des vins (Réglages › Partager et exporter) : prêts à boire, par site, par couleur ou choisis à la main, avec ou sans prix ; à partager en image ou en PDF.","Partager une dégustation en image ou en texte, depuis sa fiche.","Export Excel : un vrai fichier .xlsx créé sur l’iPhone, avec l’inventaire, les dégustations et les mouvements.","Inventaire imprimable par site, espace et meuble, avec le plan de chaque meuble (« Enregistrer en PDF » depuis l’impression)."]},{"version":"2.0","date":"2026-11-05","titre":"Comprendre sa cave","items":["Statistiques (Réglages › Ma cave) : ta cave par couleur, statut, région, pays, millésime, format et emplacement ; ta consommation sur 12 mois et tes vins les mieux notés ; tes achats par année. Touche une barre pour voir les vins.","Valeur actuelle : sur la fiche d’un vin, saisie à la main ou estimée par le sommelier (avec recherche web), avec une fourchette et l’écart avec le prix d’achat. L’estimation groupée annonce son coût avant de démarrer.","La valeur de la cave utilise la valeur estimée quand elle existe, sinon le prix d’achat.","Cadeaux (Réglages › Ma cave) : les vins reçus et offerts, par personne. L’app te prévient si tu t’apprêtes à offrir à quelqu’un un vin que tu lui as déjà offert.","Audit de ma cave (À boire, ou Sommelier) : équilibre, calendrier de maturité comparé à ton rythme, années d’embouteillage et années creuses, espaces presque pleins, puis la lecture du sommelier avec des suggestions d’achat."]},{"version":"1.7.5","date":"2026-11-05","titre":"Primeurs","items":["Le choix « En cave » ou « En primeur » est désormais bien visible sous la quantité, avec la date de livraison prévue.","Il est disponible partout où l’on ajoute des bouteilles : nouveau vin, « Mêmes bouteilles » et « Nouveau millésime ».","Réglages › Primeurs : un bouton « Ajouter un primeur », pour un vin de la cave (millésime suivant) ou un nouveau vin."]},{"version":"1.7.4","date":"2026-11-05","titre":"Millésimes, amis et caisses","items":["Nouveau millésime : depuis la fiche d’un vin ou « Racheter un vin », une saisie courte (millésime, quantité, source, prix) reprend tout le reste. La fenêtre est estimée pour le nouveau millésime. Un millésime déjà en cave reçoit les bouteilles, sans doublon.","La fiche d’un vin liste ses autres millésimes en cave.","Bouteilles d’un ami : le propriétaire est désormais fixé bouteille par bouteille. À l’ajout, « dont 6 pour Paul » ; après coup, « Répartir entre propriétaires » sur la fiche du vin, ou « Appartient à » sur une bouteille. Tes données ont été converties sans perte.","Le sommelier, À boire, les conseils et les transferts ne comptent que tes bouteilles.","Caisses et cartons : un seul vin par caisse. Depuis la caisse : sortir plusieurs bouteilles d’un coup, déplacer la caisse avec son contenu, l’ajouter au transfert (elle arrive avec ses bouteilles dedans), attribuer des bouteilles à un ami, modifier le vin ou l’achat."]},{"version":"1.7.3","date":"2026-11-05","titre":"Bouteilles à noter, sites en glissant","items":["Dégustations › À noter : toutes les bouteilles sorties sans fiche t’y attendent, au lieu de la seule dernière. Pour chacune : note rapide, fiche complète (date, plat et convives déjà remplis) ou « Sans fiche ».","Après une sortie, un nouveau choix : « Sortir sans fiche », sans rappel.","Le rappel du lendemain compte les bouteilles à noter, et « Plus tard » ne les oublie plus.","Les bouteilles bues ces 30 derniers jours sans dégustation ont été ajoutées à la liste.","Onglet Cave : glisse vers la gauche ou la droite pour changer de site. Des points sous le titre indiquent le site affiché."]},{"version":"1.7.2","date":"2026-11-05","titre":"Transferts dans les deux sens","items":["Transferts : une section par sens (vers la consommation, vers le stockage), chacune avec ses arrivées. Tu peux emporter tes achats à la campagne et rapporter des vins prêts à boire dans le même trajet.","Arrivées au stockage : les bouteilles vont dans le meilleur espace de garde, avec « Ranger maintenant ».","Suggestions vers le stockage : les vins à garder achetés récemment en ville. Et quand tu ajoutes un vin trop jeune en ville, l’app propose de l’emporter au prochain transfert.","Toucher une bouteille dans un transfert ou un conseil de rangement ouvre un résumé du vin : fenêtre, statut, bouteilles par site, dernière note.","À boire : touche une barre du graphique « À boire avant la fin de… » pour voir les bouteilles et leurs emplacements, avec accès direct à la case."]},{"version":"1.7.1","date":"2026-11-05","titre":"Recherche et sommelier","items":["La recherche de l’onglet Cave porte sur tous tes sites d’un coup. Les résultats s’affichent sous la barre, avec chaque emplacement : touche-en un pour y aller, la case clignote sur le plan.","Une seule bouteille trouvée ? La touche « Rechercher » du clavier t’y emmène directement.","« Voir sur le plan » depuis la fiche d’une bouteille, et l’épingle à côté de chaque emplacement sur la fiche d’un vin.","Une croix efface la recherche d’un coup, sur toutes les barres de recherche.","Sommelier : le bouton « Nouvelle conversation » est dans l’encart de saisie, toujours visible, et demande confirmation. La dernière réponse n’est plus cachée sous l’encart."]},{"version":"1.7","date":"2026-11-05","titre":"Import Ploc complet","items":["Import Ploc : les fiches sont reprises telles quelles (couleur, degré, fenêtre de garde, contenance, cépages). Le sommelier ne complète que les champs vides, et l’écran de vérification les signale.","Les bouteilles sont posées à leur case : le meuble est créé à l’identique du plan Ploc, ou associé à un meuble existant. Un aperçu du plan permet de vérifier la lecture.","Les caves Ploc sont rapprochées de tes sites, sur ton iPhone, sans envoyer la liste de tes sites à l’IA. Un site non reconnu est demandé une fois, et peut prendre le nom utilisé dans Ploc.","Le sommelier donne son avis sur chaque fenêtre de Ploc : s’il la juge décalée, il propose la sienne et tu choisis.","L’estimation de Ploc devient le prix d’achat, et la note sur 100 une dégustation sur 20. Les accords sont ajoutés aux notes du vin.","Plusieurs exports peuvent être importés à la suite, sans doublon.","Nouveau champ « Servir à » sur la fiche vin, affiché au moment de déguster. Le sommelier le voit, ainsi que les accords."]},{"version":"1.6.2","date":"2026-11-05","titre":"Fiabilité","items":["Un double appui sur un bouton ne crée plus deux bouteilles, deux sorties ou deux dégustations.","La fiche vin vérifie le millésime, le prix, le degré et la quantité, et explique sous le champ ce qui ne va pas. Un millésime sur deux chiffres est complété (« 19 » devient 2019), et les nombres comme « 1.234,50 » sont reconnus.","Les fenêtres de dégustation restent cohérentes (début, apogée, fin), qu’elles soient saisies ou proposées par le sommelier.","Une dégustation enregistrée sans toucher au curseur n’a plus de note, au lieu d’un 14/20 par défaut.","Rangement : l’app prévient quand les places manquent et propose l’espace le plus libre.","Spiritueux désactivés : leurs cases restent sur le plan, grisées.","Import Ploc, lecture d’étiquette et restauration de sauvegarde : contrôles et messages plus clairs.","Les très grandes caves restent économes en appels au sommelier."]},{"version":"1.6.1","date":"2026-11-04","titre":"Confort et corrections","items":["Les fenêtres ne clignotent plus et ne remontent plus en haut quand tu touches un choix (fiche de dégustation, rangement, liste d’envies, transfert…).","Fiche de dégustation : le bouton « OK » en haut disparaît, on enregistre avec le bouton du bas. Fermer une fiche commencée demande confirmation.","Dans la cave fictive, les réglages indisponibles (suivi d’utilisation, Face ID, Rester déverrouillé) expliquent pourquoi.","Réglages › Contenu : la ligne « Vins · Toujours actif » est retirée."]},{"version":"1.6","date":"2026-11-04","titre":"Retours d’utilisation et suivi des versions","items":["Suivi d’utilisation (désactivé par défaut, Réglages › Aide) : l’app note, sur ton iPhone uniquement, les écrans et les gestes, jamais tes vins ni tes notes. Tu peux consulter la synthèse et exporter un rapport à envoyer, avec ton avis.","« Signaler un problème » : décris ce qui s’est passé, l’app prépare un rapport avec les dernières minutes d’utilisation et les erreurs récentes. Raccourci aussi dans les messages d’erreur.","Mises à jour : « Plus d’infos » montre le contenu d’une nouvelle version avant de l’installer, une fenêtre « Nouveautés » s’affiche après, et l’historique des versions est dans Réglages › Aide."]},{"version":"1.5.2","date":"2026-11-04","titre":"Dégustation à l’aveugle et finitions","items":["Dégustation à l’aveugle : la fiche d’abord sur un « vin mystère », tes hypothèses, puis la révélation, la comparaison et l’analyse du sommelier.","Le bouton + est le même partout : « Nouvelle dégustation » ou « Nouveau vin ».","Présentation de l’app au premier lancement, à revoir dans Réglages › Aide.","Recherche dans « Racheter un vin ». L’import Ploc est désormais dans les réglages.","Nouvelles icônes : un bouchon pour « Déguster », un carnet pour les dégustations."]},{"version":"1.5","date":"2026-11-04","titre":"Dégustations et conseils de rangement","items":["Onglet Dégustations : le journal de tous tes vins dégustés, en cave ou ailleurs (restaurant, salon, domaine…), avec recherche, filtres et vue par vin.","Séances de dégustation avec classement, et liste d’envies avec « Acheté ».","Conseils de rangement dans À boire : vins à rapprocher, à mettre en garde, réassort de la cave de consommation.","Le sommelier propose d’ajuster la fenêtre d’un vin après une dégustation, et tient compte de tes vins bus ailleurs et de tes accords.","Les réglages passent sous l’icône engrenage."]},{"version":"1.0.1","date":"2026-11-04","titre":"Corrections","items":["L’app se rouvre correctement sur iPhone après un premier lancement.","La création de la cave ne pose plus de question : un site « Site 1 », renommable, et le mode plusieurs sites dans les réglages.","La vue Urgence de la page Cave est retirée : l’onglet À boire fait référence."]},{"version":"1.0","date":"2026-11-04","titre":"Première version","items":["Ta cave sur ton iPhone, chiffrée par ton mot de passe ou Face ID, et utilisable hors ligne.","Sites, espaces et meubles (armoire, rack, étagère, caisses, cartons) avec un plan visuel et une recherche.","Ajout par photo d’étiquette ou saisie, rangement suggéré, sorties, déplacements, transferts, primeurs, vins des amis.","Dégustation rapide ou complète avec la roue des arômes.","Sommelier pour les accords mets-vins, fenêtres de dégustation estimées, onglet À boire.","Option spiritueux, import Ploc, sauvegarde chiffrée."]}];
 const APP_VERSION = CHANGELOG[0].version;
 
 /* ===== 00-core.js ===== */
@@ -636,10 +639,12 @@ async function shrinkImage(file, max = 1024, q = 0.78) {
 }
 const blobB64 = async blob => b64(await blob.arrayBuffer());
 
-/* ---------- Clé d'accès : Face ID via le trousseau iCloud ---------- */
+/* ---------- Clé d'accès : Face ID (trousseau iCloud), empreinte ou visage (gestionnaire de mots de passe de Google) ---------- */
 const pkAvailable = () => !!(window.PublicKeyCredential && navigator.credentials && window.isSecureContext);
 function pkError(e) {
-  if (e?.message === 'noprf') return 'Ce gestionnaire de clés d’accès ne permet pas de déverrouiller l’app (extension PRF non prise en charge). Supprime la clé créée et réessaie en l’enregistrant dans le trousseau iCloud.';
+  if (e?.message === 'noprf') return isApple ? 'Ce gestionnaire de clés d’accès ne permet pas de déverrouiller l’app (extension PRF non prise en charge). Supprime la clé créée et réessaie en l’enregistrant dans le trousseau iCloud.'
+    : isAndroid ? 'Ce téléphone ne permet pas encore d’ouvrir l’app avec l’empreinte ou le visage : il faut une version récente d’Android et de Chrome, et enregistrer la clé dans le gestionnaire de mots de passe de Google. Tu peux supprimer la clé créée ; ton mot de passe reste le moyen d’ouvrir ta cave.'
+    : 'Ce gestionnaire de clés d’accès ne permet pas de déverrouiller l’app (extension PRF non prise en charge). Ton mot de passe reste le moyen d’ouvrir ta cave.';
   if (e?.name === 'NotAllowedError') return 'Opération annulée ou expirée.';
   if (e?.name === 'SecurityError') return 'Les clés d’accès ne fonctionnent qu’à l’adresse https de l’app installée.';
   return 'La clé d’accès n’a pas pu être utilisée.';
@@ -735,8 +740,8 @@ async function applyCodeUpdate() {
 }
 function sheetCode() {
   if (code.status === 'sw') return openSheet(`<h2>Code remplacé</h2>
-    <p>Le fichier qui installe l’app sur ton iPhone (sw.js) a changé chez l’hébergeur. Une version légitime de l’app ne le modifie jamais : si tu n’es pas à l’origine de ce changement, ton compte d’hébergement a probablement été compromis.</p>
-    <p class="small">Depuis un ordinateur : consulte l’historique du dépôt, remets les fichiers d’origine, change le mot de passe du compte. Ensuite, sur l’iPhone, supprime l’app, efface les données du site dans Réglages › Safari, réinstalle-la et restaure ta dernière sauvegarde.</p>
+    <p>Le fichier qui installe l’app sur ${DEV_TON} (sw.js) a changé chez l’hébergeur. Une version légitime de l’app ne le modifie jamais : si tu n’es pas à l’origine de ce changement, ton compte d’hébergement a probablement été compromis.</p>
+    <p class="small">Depuis un ordinateur : consulte l’historique du dépôt, remets les fichiers d’origine, change le mot de passe du compte. Ensuite, sur ${DEV}, supprime l’app, efface les données du site (${isAndroid ? 'Chrome › Paramètres › Paramètres des sites' : 'Réglages › Safari'}), réinstalle-la et restaure ta dernière sauvegarde.</p>
     <button class="btn wide" data-act="close">Fermer</button>`);
   showSheet(sheetCodeHtml);
   if (code.status === 'update' && code.news == null) loadNews();
@@ -763,6 +768,90 @@ let view = 'cave', draft = null, wheelState = null, chatBusy = false, pendingImp
 async function save() {
   if (mode !== 'app' || !dek || !slots) return;
   await store.set('vault', await seal());
+}
+
+
+/* ===== 01-device.js ===== */
+/* ---------- Appareil (v2.1.4) ----------
+   iPhone, iPad, Android ou autre, d'après l'identité annoncée par le navigateur (un iPad récent se dit « Macintosh » :
+   on le reconnaît à son écran tactile). Sert à adapter les textes et quelques réglages, jamais à la sécurité.
+   En cas de doute : textes neutres (« cet appareil », « Clé d'accès »). */
+const DEVICE = (() => {
+  const ua = navigator.userAgent || '';
+  if (/iPhone|iPod/.test(ua)) return 'iphone';
+  if (/iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 0)) return 'ipad';
+  if (/Android/i.test(ua)) return 'android';
+  return 'autre';
+})();
+const isApple = DEVICE === 'iphone' || DEVICE === 'ipad', isAndroid = DEVICE === 'android';
+const DEV = { iphone: 'cet iPhone', ipad: 'cet iPad', android: 'ce téléphone', autre: 'cet appareil' }[DEVICE];
+const DEV_TON = { iphone: 'ton iPhone', ipad: 'ton iPad', android: 'ton téléphone', autre: 'ton appareil' }[DEVICE];
+// Déverrouillage par clé d'accès : Face ID sur iPhone et iPad, empreinte ou visage sur Android
+const BIO = isApple ? 'Face ID' : isAndroid ? 'Empreinte ou visage' : 'Clé d’accès';
+const BIO_AVEC = isApple ? 'avec Face ID' : isAndroid ? 'avec ton empreinte ou ton visage' : 'avec une clé d’accès';
+const BACKUP_DEST = isApple ? 'Fichiers ou iCloud Drive' : isAndroid ? 'Téléchargements ou Google Drive' : 'le dossier de ton choix';
+const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+
+/* ---------- Installation (v2.1.4) ---------- */
+// Chrome sur Android prévient quand l'app peut être installée : on garde l'événement pour notre bouton
+let installEvt = null;
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
+addEventListener('appinstalled', () => { installEvt = null; if (typeof toast === 'function') toast('MyCellar est installée'); });
+function installHelpHtml() {
+  if (isApple) return `<p>Dans Safari, touche <b>Partager</b> (le carré avec une flèche), puis <b>« Sur l’écran d’accueil »</b>. MyCellar s’ouvrira ensuite en plein écran, comme une app, et fonctionnera sans réseau.</p>`;
+  if (isAndroid) return `<p>Dans Chrome, touche le menu <b>⋮</b> en haut à droite, puis <b>« Installer l’application »</b> (ou « Ajouter à l’écran d’accueil »). MyCellar s’ouvrira ensuite en plein écran, comme une app, et fonctionnera sans réseau.</p>`;
+  return `<p>Dans le menu de ton navigateur, cherche <b>« Installer »</b> ou <b>« Ajouter à l’écran d’accueil »</b>.</p>`;
+}
+async function installApp() {
+  if (installEvt) {
+    const e = installEvt; installEvt = null;
+    try { e.prompt(); const r = await e.userChoice; if (r?.outcome === 'accepted') return; } catch {}
+  }
+  showSheet(() => `${head('Installer l’application')}${installHelpHtml()}<button class="btn wide" data-act="close">OK</button>`);
+}
+
+/* ---------- Clavier sur Android (v2.1.4) ---------- */
+// Pendant la saisie, la barre d'onglets se cache et les champs du bas (recherche, sommelier) descendent au ras du clavier
+if (isAndroid) {
+  document.addEventListener('focusin', e => { if (e.target.closest?.('.csearch, .composer')) document.documentElement.classList.add('kbd'); });
+  document.addEventListener('focusout', () => setTimeout(() => { if (!document.activeElement?.closest?.('.csearch, .composer')) document.documentElement.classList.remove('kbd'); }, 50));
+}
+
+/* ---------- Bouton retour d'Android (v2.1.4) ----------
+   Une entrée d'historique « garde » existe tant que quelque chose peut être fermé (fenêtre, recherche, autre onglet).
+   Le retour ferme alors cette chose ; depuis l'onglet Cave sans rien d'ouvert, il quitte l'app. Sans effet ailleurs. */
+let backArmed = false, backSkip = false, backTimer = 0;
+const backNeed = () => (mode === 'app' || mode === 'demo') && !!(sheetStack.length || view !== 'cave' || caveSearchOpen);
+function syncBack() {
+  if (!isAndroid) return;
+  clearTimeout(backTimer);
+  backTimer = setTimeout(() => {
+    if (backSkip) return;   // un retour est en cours : on reprendra après
+    const need = backNeed();
+    if (need && !backArmed) { history.pushState({ mcBack: 1 }, ''); backArmed = true; }
+    else if (!need && backArmed) { backArmed = false; backSkip = true; history.back(); }
+  }, 0);
+}
+addEventListener('popstate', () => {
+  if (!isAndroid) return;
+  if (backSkip) { backSkip = false; return syncBack(); }
+  if (!backArmed) return;
+  backArmed = false;
+  if (mode === 'app' || mode === 'demo') {
+    if (sheetStack.length > 1) ACT.sheetback();
+    else if (sheetStack.length) ACT.close();
+    else if (view === 'cave' && caveSearchOpen) ACT.searchCancel();
+    else if (view !== 'cave') { view = 'cave'; render(); window.scrollTo(0, 0); }
+  }
+  syncBack();
+});
+
+/* ---------- Données à garder (v2.1.4) ---------- */
+// Demande au navigateur de ne jamais effacer les données de l'app (la cave n'existe que sur l'appareil)
+let persisted = null;
+async function askPersist() {
+  try { persisted = await navigator.storage?.persisted?.() || await navigator.storage?.persist?.() || false; } catch { persisted = false; }
+  return persisted;
 }
 
 
@@ -1173,6 +1262,7 @@ const ICON = {
   up: sv('<path d="M12 20V9M7 14l5-5 5 5M5 4h14"/>'),
   info: sv('<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/>'),
   star: sv('<path d="M12 4l2.4 5 5.4.6-4 3.7 1.1 5.4L12 16l-4.9 2.7L8.2 13.3l-4-3.7 5.4-.6z"/>'),
+  finger: sv('<path d="M12 11v3.5a6 6 0 0 1-1.6 4M8.6 6.2A6 6 0 0 1 18 11v1.5M6 9.5A6 6 0 0 0 6 11v3a9 9 0 0 1-.8 3.6M9 11a3 3 0 0 1 6 0v3a10 10 0 0 1-1.2 4.7M17.6 16.5a14 14 0 0 1-.9 3"/>'),
   face: sv('<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M9 9v1.5M15 9v1.5M12 9v4h-1M9 16c1.6 1.2 4.4 1.2 6 0"/>'),
   notes: sv('<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v18"/><path d="M12 8h4M12 11.5h4M12 15h2.5"/><path d="M5 7H3.5M5 12H3.5M5 17H3.5"/>'),
   cork: sv('<g transform="rotate(-38 12 12)"><path d="M5.6 6.8h11.2a3.6 5.2 0 0 1 0 10.4H5.6"/><ellipse cx="5.6" cy="12" rx="3.6" ry="5.2" fill="currentColor" fill-opacity=".28"/><path d="M11 9.8h.01M14.6 12.4h.01M11.6 14.6h.01M16.8 9.6h.01M9.2 12.4h.01M17.4 14.6h.01" stroke-width="2.4"/></g>'),
@@ -1184,6 +1274,7 @@ const LOGO = `<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" heigh
    Chaque feuille est une fonction qui renvoie son HTML : la pile permet de revenir à la feuille
    précédente, et refreshSheet() la redessine après un changement d'état. */
 let sheetStack = [];
+const bioIcon = () => isAndroid ? ICON.finger : ICON.face;
 function showSheet(fn, { replace = false, full = false } = {}) {
   if (replace) sheetStack.pop();
   // La fenêtre recouverte garde sa position de défilement, retrouvée au retour
@@ -1211,10 +1302,10 @@ function paintSheet(keepScroll) {
   }
   afterSheet(); paintPhotos(sh);
   if (y) sh.scrollTop = y;
-  uScreenCheck();
+  uScreenCheck(); syncBack();
 }
 const refreshSheet = () => paintSheet(true);
-function closeSheet() { sheetStack = []; $('#layer').innerHTML = ''; uScreenCheck(); }
+function closeSheet() { sheetStack = []; $('#layer').innerHTML = ''; uScreenCheck(); syncBack(); }
 function sheetBack() { sheetStack.pop(); paintSheet(); }
 // Feuille ponctuelle (message, confirmation)
 const openSheet = html => showSheet(() => html);
@@ -1264,17 +1355,17 @@ function renderLock(kind, err = '') {
     <div class="lock-mark">${LOGO}</div>
     <h1 class="lock-title">MyCellar</h1>
     ${kind === 'setup' ? `
-      <p class="lock-text">Ta cave reste sur cet iPhone, chiffrée avec un mot de passe que toi seul connais. Il ne peut pas être récupéré : range-le dans ton gestionnaire de mots de passe.</p>
+      <p class="lock-text">Ta cave reste sur ${DEV}, chiffrée avec un mot de passe que toi seul connais. Il ne peut pas être récupéré : range-le dans ton gestionnaire de mots de passe.</p>
       <form id="f-setup" class="lock-form" data-form="setup" autocomplete="on">${USERFIELD}
         <label>Mot de passe (10 caractères minimum)<input type="password" name="p1" autocomplete="new-password" required></label>
         <label>Confirmation<input type="password" name="p2" autocomplete="new-password" required></label>
         ${e}<button class="btn primary" type="submit">Créer ma cave</button>
       </form>
-      <div class="lock-links"><button class="link" data-act="demo">Essayer avec une cave fictive</button><button class="link" data-act="import">Restaurer une sauvegarde</button></div>`
+      <div class="lock-links"><button class="link" data-act="demo">Essayer avec une cave fictive</button><button class="link" data-act="import">Restaurer une sauvegarde</button>${isStandalone() ? '' : '<button class="link" data-act="installApp">Installer l’application sur cet appareil</button>'}</div>`
     : `
-      <p class="lock-text">${pk ? 'Déverrouille avec Face ID, ou avec ton mot de passe.' : 'Saisis ton mot de passe pour ouvrir ta cave.'}</p>
+      <p class="lock-text">${pk ? `Déverrouille ${BIO_AVEC}, ou avec ton mot de passe.` : 'Saisis ton mot de passe pour ouvrir ta cave.'}</p>
       ${e}
-      ${pk ? `<button class="btn primary wide" data-act="pkunlock">${ICON.face} Déverrouiller avec Face ID</button><p class="or">ou</p>` : ''}
+      ${pk ? `<button class="btn primary wide" data-act="pkunlock">${bioIcon()} Déverrouiller ${BIO_AVEC}</button><p class="or">ou</p>` : ''}
       <form id="f-unlock" class="lock-form" data-form="unlock">${USERFIELD}
         <label>Mot de passe<input type="password" name="p1" autocomplete="current-password" required></label>
         <button class="btn ${pk ? '' : 'primary'}" type="submit">${pk ? 'Utiliser le mot de passe' : 'Déverrouiller'}</button>
@@ -1283,7 +1374,7 @@ function renderLock(kind, err = '') {
     ${!persistent ? '<p class="banner">Aperçu : rien n’est conservé dans cet environnement.</p>' : ''}
   </main>`;
 }
-function enterApp(via) { view = 'cave'; render(); window.scrollTo(0, 0); if (mode === 'app') { uStart(via); afterEnter(via); } }
+function enterApp(via) { view = 'cave'; render(); window.scrollTo(0, 0); if (mode === 'app') { uStart(via); afterEnter(via); askPersist(); } }
 function lockNow() {
   if (mode === 'demo') { wipeKeys(); return boot(); }
   uStop(hiddenAt ? 'auto' : 'manuel'); lockHasPk = !!slots?.pk; wipeKeys(); closeSheet(); renderLock('unlock');
@@ -1305,7 +1396,7 @@ function banners() {
   if (old.length && S.dismissed.todoDay !== today() && (view === 'cave' || view === 'boire')) out.push(`<div class="banner green">${todo.length === 1 ? `<b>${esc(wineTitle(wine(todo[0].wineId)))}</b> : tu l’as ouvert récemment. Une note pour t’en souvenir ?` : `<b>${plural(todo.length, 'bouteille sortie', 'bouteilles sorties')} à noter</b>. Une note pour t’en souvenir ?`}
     <div class="row" style="gap:8px"><button class="btn small green" data-act="rateNow">Noter</button><button class="btn small ghost" data-act="rateLater">Plus tard</button></div></div>`);
   const le = S.settings.lastExport;
-  if (mode === 'app' && view === 'cave' && S.wines.length && (!le || Date.now() - le > 7 * 864e5) && S.dismissed.backup !== monthKey() + today()) out.push(`<div class="banner">${le ? 'Ta dernière sauvegarde date de plus d’une semaine.' : 'Ta cave n’est pas encore sauvegardée.'} Les données ne sont que sur cet iPhone.
+  if (mode === 'app' && view === 'cave' && S.wines.length && (!le || Date.now() - le > 7 * 864e5) && S.dismissed.backup !== monthKey() + today()) out.push(`<div class="banner">${le ? 'Ta dernière sauvegarde date de plus d’une semaine.' : 'Ta cave n’est pas encore sauvegardée.'} Les données ne sont que sur ${DEV}${persisted === false ? ', et le navigateur ne garantit pas de les garder' : ''}.
     <div class="row" style="gap:8px"><button class="btn small primary" data-act="export">Sauvegarder</button><button class="btn small ghost" data-act="backupLater">Plus tard</button></div></div>`);
   return out.join('');
 }
@@ -1327,7 +1418,7 @@ function render() {
       ${tab('boire', 'À boire', ICON.boire)}${tab('somm', 'Sommelier', ICON.somm)}</nav>`;
   paintPhotos(app);
   for (const r of $$('input[type=range]', app)) setRangeFill(r);
-  afterRender(); uScreenCheck();
+  afterRender(); uScreenCheck(); syncBack();
   if (keepY) window.scrollTo(0, keepY);
 }
 function afterRender() {
@@ -1345,6 +1436,7 @@ let chatScroll = false;
 Object.assign(ACT, {
   go: t => { view = t.dataset.v; render(); window.scrollTo(0, view === 'somm' ? document.body.scrollHeight : 0); },
   close: () => { if (!guardTaste('close')) closeSheet(); },
+  installApp: () => installApp(),
   sheetback: () => { if (!guardTaste('back')) sheetBack(); },
   demoOnly: () => toast(DEMO_OFF),
   searchClear: t => {
@@ -4443,6 +4535,7 @@ function printInventory() {
   let el = $('#print'); if (!el) { el = document.createElement('div'); el.id = 'print'; document.body.appendChild(el); }
   el.innerHTML = printInventoryHtml();
   closeSheet();
+  if (isAndroid) toast('Pour un PDF : choisis « Enregistrer au format PDF » comme imprimante');
   setTimeout(() => { try { window.print(); } catch { toast('Impression indisponible sur cet appareil'); } }, 80);
 }
 Object.assign(ACT, {
@@ -4538,6 +4631,7 @@ async function cardImage(ws) {
 function printHtml(html) {
   let el = $('#print'); if (!el) { el = document.createElement('div'); el.id = 'print'; document.body.appendChild(el); }
   el.innerHTML = html; closeSheet();
+  if (isAndroid) toast('Pour un PDF : choisis « Enregistrer au format PDF » comme imprimante');
   setTimeout(() => { try { window.print(); } catch { toast('Impression indisponible sur cet appareil'); } }, 80);
 }
 /* Fiche de dégustation : image et texte */
@@ -4778,15 +4872,17 @@ function vPlus() {
       ${setRow('exportXlsx', 'Exporter en Excel', 'Inventaire, dégustations, mouvements')}
       ${setRow('printInventory', 'Inventaire imprimable', 'Par site et meuble, avec les plans (PDF)')}
     </div>
+    ${isStandalone() ? '' : `<div class="sect">Application</div><div class="card" style="padding:0 12px">${setRow('installApp', 'Installer l’application', 'Sur l’écran d’accueil, en plein écran, sans réseau')}</div>`}
     <div class="sect">Sauvegarde</div>
     <div class="card" style="padding:0 12px">
       <button class="set" data-act="export"><div class="it"><b>Sauvegarder</b><small>${lastExp ? 'Dernière : ' + esc(fmtDate(new Date(lastExp).toISOString())) : 'Jamais sauvegardée'}${old && S.wines.length ? ' · <span style="color:var(--bx);font-weight:600">à faire</span>' : ''}</small></div><span class="chev">${ICON.up}</span></button>
       ${setRow('import', 'Restaurer une sauvegarde', 'Remplace la cave de cet appareil')}
+      ${mode === 'app' ? `<div class="set"><div class="it"><b>Données protégées</b><small>${persisted === true ? 'Le navigateur ne les effacera pas' : persisted === false ? 'Non garanti par le navigateur : sauvegarde souvent' : 'Vérification…'}</small></div>${persisted === true ? `<span style="color:var(--green)">${ICON.check}</span>` : ''}</div>` : ''}
     </div>
     <div class="sect">Sécurité</div>
     <div class="card" style="padding:0 12px">
-      ${pkAvailable() ? `<div class="set"><div class="it"><b>Face ID</b><small>Déverrouiller sans mot de passe</small>${whyOff(mode === 'demo')}</div>${sw('setPk', !!slots?.pk, false, mode === 'demo')}</div>` : ''}
-      <div class="set"><div class="it"><b>Rester déverrouillé</b><small>Ouvre la cave sans mot de passe sur cet iPhone</small>${whyOff(mode === 'demo')}</div>${sw('setStay', S.settings.stay, false, mode === 'demo')}</div>
+      ${pkAvailable() ? `<div class="set"><div class="it"><b>${BIO}</b><small>${S.settings.pkNo && !slots?.pk ? 'Pas encore pris en charge par ' + DEV : 'Déverrouiller sans mot de passe'}</small>${whyOff(mode === 'demo')}</div>${sw('setPk', !!slots?.pk, false, mode === 'demo')}</div>` : ''}
+      <div class="set"><div class="it"><b>Rester déverrouillé</b><small>Ouvre la cave sans mot de passe sur ${DEV}</small>${whyOff(mode === 'demo')}</div>${sw('setStay', S.settings.stay, false, mode === 'demo')}</div>
       ${S.settings.stay ? '' : `<label class="set" style="display:flex"><div class="it"><b>Verrouillage automatique</b><small>Après un passage en arrière-plan</small></div>
         <select data-ch="setLock" style="width:auto;min-height:34px;padding:4px 30px 4px 10px;font-size:14px">${[[2, '2 min'], [5, '5 min'], [15, '15 min'], [60, '1 h'], [0, 'Jamais']].map(([v, l]) => `<option value="${v}" ${S.settings.lockMin === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>`}
       ${mode === 'app' ? setRow('chpw', 'Changer le mot de passe', '') : ''}
@@ -4931,18 +5027,18 @@ CHANGES.setCocktails = async el => { S.settings.cocktails = el.checked; await sa
 CHANGES.setLock = async el => { S.settings.lockMin = +el.value; await save(); };
 CHANGES.setStay = async el => {
   if (mode !== 'app') return;
-  if (el.checked && !confirm('Rester déverrouillé ? Toute personne qui a ton iPhone en main pourra ouvrir ta cave. Tes sauvegardes restent protégées par ton mot de passe.')) { el.checked = false; return; }
+  if (el.checked && !confirm('Rester déverrouillé ? Toute personne qui a ${DEV_TON} en main pourra ouvrir ta cave. Tes sauvegardes restent protégées par ton mot de passe.')) { el.checked = false; return; }
   S.settings.stay = el.checked;
   if (el.checked) await devEnable(); else await devDisable();
   await save(); render();
 };
 CHANGES.setPk = async el => {
   if (mode !== 'app') return;
-  if (!el.checked) { if (!confirm('Désactiver Face ID ?')) { el.checked = true; return; } const { pk, ...rest } = slots; slots = rest; await save(); return toast('Face ID désactivé'); }
+  if (!el.checked) { if (!confirm(`Désactiver le déverrouillage ${BIO_AVEC} ?`)) { el.checked = true; return; } const { pk, ...rest } = slots; slots = rest; await save(); return toast(`${BIO} désactivé`); }
   try {
     const { slot, secret } = await pkCreate();
-    await pkStore(slot, secret || await prfGet(slot)); toast('Face ID activé');
-  } catch (e) { el.checked = false; sheetMsg('Face ID', pkError(e)); }
+    await pkStore(slot, secret || await prfGet(slot)); delete S.settings.pkNo; await save(); toast(`${BIO} activé`);
+  } catch (e) { el.checked = false; if (e?.message === 'noprf') { S.settings.pkNo = true; await save(); } sheetMsg(BIO, pkError(e)); }
 };
 
 /* ---------- Réglages : IA ---------- */
@@ -4963,7 +5059,7 @@ function aiSheet() {
     <h3>Dépense</h3>
     ${months.length ? `<dl class="kv">${months.map(([k, m]) => `<dt>${esc(new Date(k + '-15').toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }))}</dt><dd>${fmtE2.format(m.usd * (S.settings.rate || 0.92))} · ${m.n} appel${m.n > 1 ? 's' : ''}</dd>`).join('')}</dl>` : '<p class="small">Aucun appel pour l’instant.</p>'}
     <p class="small">Crée la clé sur ${esc(P.keyUrl)} et fixe-lui aussi un plafond de dépense chez le fournisseur. Ordre de grandeur avec Claude Sonnet 5.5 : 1 à 2 centimes par conseil, 1 centime par étiquette, 3 à 5 centimes par apogée avec recherche web. Les montants affichés ici sont estimés à partir de l’usage renvoyé par l’API.</p>
-    <p class="small">Ce qui est envoyé : la liste de tes vins disponibles (sans les vins de tes amis), tes notes de dégustation et ta question. La clé reste chiffrée sur cet iPhone.</p>`;
+    <p class="small">Ce qui est envoyé : la liste de tes vins disponibles (sans les vins de tes amis), tes notes de dégustation et ta question. La clé reste chiffrée sur ${DEV}.</p>`;
 }
 CHANGES.aiProv = el => { $('#ai-model').placeholder = AI[el.value].model; $('#ai-model').value = ''; };
 FORMS.ai = async (f, d) => {
@@ -5578,7 +5674,7 @@ function usageSheet() {
   const li = (l, v) => `<dt>${esc(l)}</dt><dd>${esc(String(v))}</dd>`;
   const dur = x => x >= 60 ? `${Math.floor(x / 60)} min ${String(Math.round(x % 60)).padStart(2, '0')}` : `${Math.round(x)} s`;
   return `${head('Suivi d’utilisation')}
-    <div class="card row"><div class="grow"><b style="font-size:15px">Noter mon utilisation</b><div class="small">Sur cet iPhone uniquement, chiffré, jamais envoyé sans toi.</div>${whyOff(mode === 'demo')}</div>${sw('setUsage', on, false, mode === 'demo')}</div>
+    <div class="card row"><div class="grow"><b style="font-size:15px">Noter mon utilisation</b><div class="small">Sur ${DEV} uniquement, chiffré, jamais envoyé sans toi.</div>${whyOff(mode === 'demo')}</div>${sw('setUsage', on, false, mode === 'demo')}</div>
     <p class="small">Ce qui est noté : les écrans affichés et le temps passé, les boutons touchés, le nom des champs modifiés, les erreurs, les appels au sommelier (durée, coût). Jamais tes vins, tes notes, tes commentaires, tes prix ni tes questions.</p>
     ${s?.sessions.n ? `<h3>Synthèse</h3><p class="small" style="margin-top:-4px">Du ${esc(fmtDate(s.period.from))} au ${esc(fmtDate(s.period.to))} · ${plural(n, 'événement', 'événements')}</p>
       <dl class="kv">${li('Ouvertures de l’app', s.sessions.n)}${li('Durée médiane d’une ouverture', dur(s.sessions.medianSeconds))}${li('Gestes médians par ouverture', s.sessions.medianGestures)}</dl>
@@ -5770,8 +5866,8 @@ FORMS.setup = async (f, d) => {
   await adopt({ raw, data: seedStructure(emptyData()), slots: { pw: await makePwSlot(raw, d.p1) } });
   await save(); navigator.storage?.persist?.(); await clearFails();
   enterApp('creation'); toast('Cave créée');
-  if (pkAvailable()) setTimeout(() => showSheet(() => `${head('Face ID')}<p>Veux-tu ouvrir ta cave avec Face ID plutôt qu’avec ton mot de passe ?</p>
-    <div class="btns"><button class="btn primary wide" data-act="pkOffer">${ICON.face} Activer Face ID</button><button class="btn ghost wide" data-act="close">Plus tard</button></div>`), 400);
+  if (pkAvailable()) setTimeout(() => showSheet(() => `${head(BIO)}<p>Veux-tu ouvrir ta cave ${BIO_AVEC} plutôt qu’avec ton mot de passe ?</p>
+    <div class="btns"><button class="btn primary wide" data-act="pkOffer">${bioIcon()} Activer</button><button class="btn ghost wide" data-act="close">Plus tard</button></div>`), 400);
 };
 FORMS.unlock = async (f, d) => {
   const fl = await getFails();
@@ -5794,8 +5890,8 @@ Object.assign(ACT, {
     } catch (e) { renderLock('unlock', e.name === 'NotAllowedError' ? '' : pkError(e)); }
   },
   pkOffer: async () => {
-    try { const { slot, secret } = await pkCreate(); await pkStore(slot, secret || await prfGet(slot)); closeSheet(); toast('Face ID activé'); }
-    catch (e) { sheetMsg('Face ID', pkError(e)); }
+    try { const { slot, secret } = await pkCreate(); await pkStore(slot, secret || await prfGet(slot)); closeSheet(); toast(`${BIO} activé`); }
+    catch (e) { if (e?.message === 'noprf') { S.settings.pkNo = true; await save(); } sheetMsg(BIO, pkError(e)); }
   },
   demo: async () => { S = normalize(demoData()); mode = 'demo'; enterApp(); },
 });
@@ -5849,13 +5945,13 @@ boot();
 /* ---------- Présentation de l'app (premier lancement, puis Réglages › Aide) ----------
    Le fait de l'avoir vue est rangé hors du coffre (« introSeen ») : ce n'est pas une donnée sensible. */
 const INTRO = [
-  ['logo', 'Bienvenue dans MyCellar', 'Ta cave à vin sur ton iPhone, avec un sommelier qui la connaît. Tes données restent sur l’appareil, chiffrées par ton mot de passe.'],
+  ['logo', 'Bienvenue dans MyCellar', `Ta cave à vin sur ${DEV_TON}, avec un sommelier qui la connaît. Tes données restent sur l’appareil, chiffrées par ton mot de passe.`],
   ['cave', 'Décris ta cave', 'Sites, espaces et meubles : armoire, rack, étagère, caisses, cartons. Le plan affiche chaque bouteille à sa place, et la recherche la retrouve d’un coup d’œil.'],
   ['camera', 'Ajoute tes bouteilles', 'Touche + puis « Nouveau vin » : photographie l’étiquette et la fiche se remplit, ou saisis-la à la main. L’app te propose une place libre. Tu viens de Ploc ? L’import se trouve dans les réglages.'],
   ['boire', 'Bois au bon moment', 'Chaque vin a sa fenêtre de dégustation. L’onglet À boire montre les priorités, et te conseille quoi rapprocher ou mettre en garde.'],
   ['somm', 'Ton sommelier', 'Décris ton plat : il choisit dans ta cave, et t’indique la température, le carafage et l’emplacement exact. Il fonctionne avec ta propre clé API (environ 1 € par mois), à ajouter dans les réglages.'],
   ['notes', 'Tes dégustations', 'Note les vins de ta cave ou bus ailleurs, en séance ou à l’aveugle, avec la roue des arômes. Garde tes coups de cœur dans la liste d’envies.'],
-  ['up', 'Pense à sauvegarder', 'Ta cave n’existe que sur cet iPhone. Exporte régulièrement une sauvegarde chiffrée vers Fichiers ou iCloud Drive : Réglages › Sauvegarder.'],
+  ['up', 'Pense à sauvegarder', `Ta cave n’existe que sur ${DEV}. Exporte régulièrement une sauvegarde chiffrée vers ${BACKUP_DEST} : Réglages › Sauvegarder.`],
   ['info', 'Aide à améliorer l’app', 'Tu testes MyCellar en avant-première ? Active le suivi d’utilisation dans Réglages › Aide : il note tes gestes, jamais tes vins. Tu pourras envoyer le rapport avec ton avis, ou signaler un problème.'],
 ];
 let introAt = null, introInApp = false;

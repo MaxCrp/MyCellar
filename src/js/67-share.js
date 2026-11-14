@@ -84,6 +84,7 @@ async function cardImage(ws) {
 function printHtml(html) {
   let el = $('#print'); if (!el) { el = document.createElement('div'); el.id = 'print'; document.body.appendChild(el); }
   el.innerHTML = html; closeSheet();
+  if (isAndroid) toast('Pour un PDF : choisis « Enregistrer au format PDF » comme imprimante');
   setTimeout(() => { try { window.print(); } catch { toast('Impression indisponible sur cet appareil'); } }, 80);
 }
 /* Fiche de dégustation : image et texte */

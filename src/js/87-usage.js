@@ -151,7 +151,7 @@ function usageSheet() {
   const li = (l, v) => `<dt>${esc(l)}</dt><dd>${esc(String(v))}</dd>`;
   const dur = x => x >= 60 ? `${Math.floor(x / 60)} min ${String(Math.round(x % 60)).padStart(2, '0')}` : `${Math.round(x)} s`;
   return `${head('Suivi d’utilisation')}
-    <div class="card row"><div class="grow"><b style="font-size:15px">Noter mon utilisation</b><div class="small">Sur cet iPhone uniquement, chiffré, jamais envoyé sans toi.</div>${whyOff(mode === 'demo')}</div>${sw('setUsage', on, false, mode === 'demo')}</div>
+    <div class="card row"><div class="grow"><b style="font-size:15px">Noter mon utilisation</b><div class="small">Sur ${DEV} uniquement, chiffré, jamais envoyé sans toi.</div>${whyOff(mode === 'demo')}</div>${sw('setUsage', on, false, mode === 'demo')}</div>
     <p class="small">Ce qui est noté : les écrans affichés et le temps passé, les boutons touchés, le nom des champs modifiés, les erreurs, les appels au sommelier (durée, coût). Jamais tes vins, tes notes, tes commentaires, tes prix ni tes questions.</p>
     ${s?.sessions.n ? `<h3>Synthèse</h3><p class="small" style="margin-top:-4px">Du ${esc(fmtDate(s.period.from))} au ${esc(fmtDate(s.period.to))} · ${plural(n, 'événement', 'événements')}</p>
       <dl class="kv">${li('Ouvertures de l’app', s.sessions.n)}${li('Durée médiane d’une ouverture', dur(s.sessions.medianSeconds))}${li('Gestes médians par ouverture', s.sessions.medianGestures)}</dl>

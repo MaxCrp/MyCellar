@@ -45,15 +45,17 @@ function vPlus() {
       ${setRow('exportXlsx', 'Exporter en Excel', 'Inventaire, dégustations, mouvements')}
       ${setRow('printInventory', 'Inventaire imprimable', 'Par site et meuble, avec les plans (PDF)')}
     </div>
+    ${isStandalone() ? '' : `<div class="sect">Application</div><div class="card" style="padding:0 12px">${setRow('installApp', 'Installer l’application', 'Sur l’écran d’accueil, en plein écran, sans réseau')}</div>`}
     <div class="sect">Sauvegarde</div>
     <div class="card" style="padding:0 12px">
       <button class="set" data-act="export"><div class="it"><b>Sauvegarder</b><small>${lastExp ? 'Dernière : ' + esc(fmtDate(new Date(lastExp).toISOString())) : 'Jamais sauvegardée'}${old && S.wines.length ? ' · <span style="color:var(--bx);font-weight:600">à faire</span>' : ''}</small></div><span class="chev">${ICON.up}</span></button>
       ${setRow('import', 'Restaurer une sauvegarde', 'Remplace la cave de cet appareil')}
+      ${mode === 'app' ? `<div class="set"><div class="it"><b>Données protégées</b><small>${persisted === true ? 'Le navigateur ne les effacera pas' : persisted === false ? 'Non garanti par le navigateur : sauvegarde souvent' : 'Vérification…'}</small></div>${persisted === true ? `<span style="color:var(--green)">${ICON.check}</span>` : ''}</div>` : ''}
     </div>
     <div class="sect">Sécurité</div>
     <div class="card" style="padding:0 12px">
-      ${pkAvailable() ? `<div class="set"><div class="it"><b>Face ID</b><small>Déverrouiller sans mot de passe</small>${whyOff(mode === 'demo')}</div>${sw('setPk', !!slots?.pk, false, mode === 'demo')}</div>` : ''}
-      <div class="set"><div class="it"><b>Rester déverrouillé</b><small>Ouvre la cave sans mot de passe sur cet iPhone</small>${whyOff(mode === 'demo')}</div>${sw('setStay', S.settings.stay, false, mode === 'demo')}</div>
+      ${pkAvailable() ? `<div class="set"><div class="it"><b>${BIO}</b><small>${S.settings.pkNo && !slots?.pk ? 'Pas encore pris en charge par ' + DEV : 'Déverrouiller sans mot de passe'}</small>${whyOff(mode === 'demo')}</div>${sw('setPk', !!slots?.pk, false, mode === 'demo')}</div>` : ''}
+      <div class="set"><div class="it"><b>Rester déverrouillé</b><small>Ouvre la cave sans mot de passe sur ${DEV}</small>${whyOff(mode === 'demo')}</div>${sw('setStay', S.settings.stay, false, mode === 'demo')}</div>
       ${S.settings.stay ? '' : `<label class="set" style="display:flex"><div class="it"><b>Verrouillage automatique</b><small>Après un passage en arrière-plan</small></div>
         <select data-ch="setLock" style="width:auto;min-height:34px;padding:4px 30px 4px 10px;font-size:14px">${[[2, '2 min'], [5, '5 min'], [15, '15 min'], [60, '1 h'], [0, 'Jamais']].map(([v, l]) => `<option value="${v}" ${S.settings.lockMin === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>`}
       ${mode === 'app' ? setRow('chpw', 'Changer le mot de passe', '') : ''}
@@ -198,18 +200,18 @@ CHANGES.setCocktails = async el => { S.settings.cocktails = el.checked; await sa
 CHANGES.setLock = async el => { S.settings.lockMin = +el.value; await save(); };
 CHANGES.setStay = async el => {
   if (mode !== 'app') return;
-  if (el.checked && !confirm('Rester déverrouillé ? Toute personne qui a ton iPhone en main pourra ouvrir ta cave. Tes sauvegardes restent protégées par ton mot de passe.')) { el.checked = false; return; }
+  if (el.checked && !confirm('Rester déverrouillé ? Toute personne qui a ${DEV_TON} en main pourra ouvrir ta cave. Tes sauvegardes restent protégées par ton mot de passe.')) { el.checked = false; return; }
   S.settings.stay = el.checked;
   if (el.checked) await devEnable(); else await devDisable();
   await save(); render();
 };
 CHANGES.setPk = async el => {
   if (mode !== 'app') return;
-  if (!el.checked) { if (!confirm('Désactiver Face ID ?')) { el.checked = true; return; } const { pk, ...rest } = slots; slots = rest; await save(); return toast('Face ID désactivé'); }
+  if (!el.checked) { if (!confirm(`Désactiver le déverrouillage ${BIO_AVEC} ?`)) { el.checked = true; return; } const { pk, ...rest } = slots; slots = rest; await save(); return toast(`${BIO} désactivé`); }
   try {
     const { slot, secret } = await pkCreate();
-    await pkStore(slot, secret || await prfGet(slot)); toast('Face ID activé');
-  } catch (e) { el.checked = false; sheetMsg('Face ID', pkError(e)); }
+    await pkStore(slot, secret || await prfGet(slot)); delete S.settings.pkNo; await save(); toast(`${BIO} activé`);
+  } catch (e) { el.checked = false; if (e?.message === 'noprf') { S.settings.pkNo = true; await save(); } sheetMsg(BIO, pkError(e)); }
 };
 
 /* ---------- Réglages : IA ---------- */
@@ -230,7 +232,7 @@ function aiSheet() {
     <h3>Dépense</h3>
     ${months.length ? `<dl class="kv">${months.map(([k, m]) => `<dt>${esc(new Date(k + '-15').toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }))}</dt><dd>${fmtE2.format(m.usd * (S.settings.rate || 0.92))} · ${m.n} appel${m.n > 1 ? 's' : ''}</dd>`).join('')}</dl>` : '<p class="small">Aucun appel pour l’instant.</p>'}
     <p class="small">Crée la clé sur ${esc(P.keyUrl)} et fixe-lui aussi un plafond de dépense chez le fournisseur. Ordre de grandeur avec Claude Sonnet 5.5 : 1 à 2 centimes par conseil, 1 centime par étiquette, 3 à 5 centimes par apogée avec recherche web. Les montants affichés ici sont estimés à partir de l’usage renvoyé par l’API.</p>
-    <p class="small">Ce qui est envoyé : la liste de tes vins disponibles (sans les vins de tes amis), tes notes de dégustation et ta question. La clé reste chiffrée sur cet iPhone.</p>`;
+    <p class="small">Ce qui est envoyé : la liste de tes vins disponibles (sans les vins de tes amis), tes notes de dégustation et ta question. La clé reste chiffrée sur ${DEV}.</p>`;
 }
 CHANGES.aiProv = el => { $('#ai-model').placeholder = AI[el.value].model; $('#ai-model').value = ''; };
 FORMS.ai = async (f, d) => {

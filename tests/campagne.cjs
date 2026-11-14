@@ -52,7 +52,7 @@ async function mockAI(page) {
   });
 }
 async function newPage(b, opts = {}) {
-  const ctx = await b.newContext({ viewport: { width: opts.w || 390, height: 844 }, isMobile: true, hasTouch: true, acceptDownloads: true });
+  const ctx = await b.newContext({ ...require('./ua.cjs'), viewport: { width: opts.w || 390, height: 844 }, isMobile: true, hasTouch: true, acceptDownloads: true });
   const p = await ctx.newPage();
   p.__errs = [];
   p.on('pageerror', e => p.__errs.push(e.message));

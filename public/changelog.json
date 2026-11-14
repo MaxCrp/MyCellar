@@ -1,5 +1,17 @@
 [
  {
+  "version": "2.1.4",
+  "date": "2026-11-14",
+  "titre": "MyCellar sur Android",
+  "items": [
+   "L’app reconnaît l’appareil : sur Android, le déverrouillage sans mot de passe s’appelle « Empreinte ou visage » (Face ID reste sur iPhone), et les textes parlent de « ce téléphone ».",
+   "Bouton « Installer l’application » tant que MyCellar est ouverte dans le navigateur (Chrome sur Android, rappel « Partager › Sur l’écran d’accueil » sur iPhone).",
+   "Sur Android, le bouton retour ferme la fenêtre ouverte, puis revient à l’onglet Cave, au lieu de quitter l’app. Pendant la saisie, le champ de recherche et celui du sommelier restent juste au-dessus du clavier.",
+   "Icône adaptée aux formes d’Android ; pour un PDF, l’app rappelle de choisir « Enregistrer au format PDF ».",
+   "Données protégées : l’app demande au navigateur de ne jamais effacer ta cave ; l’état est affiché dans Réglages › Sauvegarde."
+  ]
+ },
+ {
   "version": "2.1.3",
   "date": "2026-11-13",
   "titre": "Onglet Cave plus compact",

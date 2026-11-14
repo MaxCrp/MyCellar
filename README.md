@@ -15,6 +15,7 @@ src/index.html      gabarit de la page (CSP, conteneurs)
 src/css/app.css     styles
 src/js/*.js         code, assemblé dans l'ordre des noms de fichiers
   00-core           utilitaires, stockage, chiffrement, Face ID, vérification du code
+  01-device         appareil (iPhone, iPad, Android), installation, bouton retour d'Android, stockage persistant
   10-data           référentiels (couleurs, formats, meubles, arômes), modèle, emplacements
   20-ui             icônes, feuilles, verrou, rendu principal
   30-cave           vue Cave : plan, liste, recherche, meubles
@@ -69,3 +70,9 @@ Le script est intégré dans la page et la politique de sécurité (CSP) n'autor
 Ouvre l'adresse Cloudflare Pages dans Safari, puis *Partager* › *Sur l'écran d'accueil*. Lance ensuite l'app depuis l'écran d'accueil : les données d'une app installée ne sont pas effacées par Safari.
 
 Pense à sauvegarder régulièrement (Plus › Sauvegarder, vers « Fichiers » › iCloud Drive). Sans sauvegarde, la cave n'existe que sur cet iPhone.
+
+## Installer sur Android
+
+Ouvre la même adresse dans **Chrome**, puis menu **⋮** › *Installer l'application* (ou *Ajouter à l'écran d'accueil*) ; l'app propose aussi un bouton « Installer l'application » tant qu'elle est ouverte dans le navigateur. Le déverrouillage sans mot de passe s'appelle « Empreinte ou visage » : la clé d'accès est rangée dans le gestionnaire de mots de passe de Google (il faut un Android et un Chrome récents). Le bouton retour ferme la fenêtre ouverte, puis revient à l'onglet Cave.
+
+Chaque appareil a sa propre cave, chiffrée : pour retrouver celle de l'iPhone, sauvegarde-la sur l'iPhone, envoie le fichier sur le téléphone Android et choisis « Restaurer une sauvegarde » au premier lancement, avec le même mot de passe. La clé API du sommelier se saisit aussi sur chaque appareil.

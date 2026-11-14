@@ -3,7 +3,7 @@ const { chromium } = require('playwright');
 const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true });
 (async () => {
   const b = await chromium.launch();
-  const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, acceptDownloads: true });
+  const ctx = await b.newContext({ ...require('./ua.cjs'), viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, acceptDownloads: true });
   const p = await ctx.newPage();
   const errs = [];
   p.on('pageerror', e => errs.push('PAGEERR ' + e.message));
@@ -45,7 +45,7 @@ const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true })
   const [dl] = await Promise.all([p.waitForEvent('download'), p.click('[data-act=export]')]);
   const file = __dirname + '/backup.json'; await dl.saveAs(file);
   // restauration dans un navigateur vierge
-  const ctx2 = await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true });
+  const ctx2 = await b.newContext({ ...require('./ua.cjs'), viewport: { width: 390, height: 844 }, isMobile: true });
   const q = await ctx2.newPage(); q.on('pageerror', e => errs.push('PAGEERR2 ' + e.message)); q.on('dialog', d => d.accept());
   await q.goto('http://localhost:8765/'); await q.waitForTimeout(600); if (await q.$('#intro')) await q.click('#intro [data-act=introDone]');
   const [fc] = await Promise.all([q.waitForEvent('filechooser'), q.click('[data-act=import]')]);

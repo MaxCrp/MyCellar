@@ -32,6 +32,7 @@ const ICON = {
   up: sv('<path d="M12 20V9M7 14l5-5 5 5M5 4h14"/>'),
   info: sv('<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/>'),
   star: sv('<path d="M12 4l2.4 5 5.4.6-4 3.7 1.1 5.4L12 16l-4.9 2.7L8.2 13.3l-4-3.7 5.4-.6z"/>'),
+  finger: sv('<path d="M12 11v3.5a6 6 0 0 1-1.6 4M8.6 6.2A6 6 0 0 1 18 11v1.5M6 9.5A6 6 0 0 0 6 11v3a9 9 0 0 1-.8 3.6M9 11a3 3 0 0 1 6 0v3a10 10 0 0 1-1.2 4.7M17.6 16.5a14 14 0 0 1-.9 3"/>'),
   face: sv('<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M9 9v1.5M15 9v1.5M12 9v4h-1M9 16c1.6 1.2 4.4 1.2 6 0"/>'),
   notes: sv('<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v18"/><path d="M12 8h4M12 11.5h4M12 15h2.5"/><path d="M5 7H3.5M5 12H3.5M5 17H3.5"/>'),
   cork: sv('<g transform="rotate(-38 12 12)"><path d="M5.6 6.8h11.2a3.6 5.2 0 0 1 0 10.4H5.6"/><ellipse cx="5.6" cy="12" rx="3.6" ry="5.2" fill="currentColor" fill-opacity=".28"/><path d="M11 9.8h.01M14.6 12.4h.01M11.6 14.6h.01M16.8 9.6h.01M9.2 12.4h.01M17.4 14.6h.01" stroke-width="2.4"/></g>'),
@@ -43,6 +44,7 @@ const LOGO = `<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" heigh
    Chaque feuille est une fonction qui renvoie son HTML : la pile permet de revenir à la feuille
    précédente, et refreshSheet() la redessine après un changement d'état. */
 let sheetStack = [];
+const bioIcon = () => isAndroid ? ICON.finger : ICON.face;
 function showSheet(fn, { replace = false, full = false } = {}) {
   if (replace) sheetStack.pop();
   // La fenêtre recouverte garde sa position de défilement, retrouvée au retour
@@ -70,10 +72,10 @@ function paintSheet(keepScroll) {
   }
   afterSheet(); paintPhotos(sh);
   if (y) sh.scrollTop = y;
-  uScreenCheck();
+  uScreenCheck(); syncBack();
 }
 const refreshSheet = () => paintSheet(true);
-function closeSheet() { sheetStack = []; $('#layer').innerHTML = ''; uScreenCheck(); }
+function closeSheet() { sheetStack = []; $('#layer').innerHTML = ''; uScreenCheck(); syncBack(); }
 function sheetBack() { sheetStack.pop(); paintSheet(); }
 // Feuille ponctuelle (message, confirmation)
 const openSheet = html => showSheet(() => html);
@@ -123,17 +125,17 @@ function renderLock(kind, err = '') {
     <div class="lock-mark">${LOGO}</div>
     <h1 class="lock-title">MyCellar</h1>
     ${kind === 'setup' ? `
-      <p class="lock-text">Ta cave reste sur cet iPhone, chiffrée avec un mot de passe que toi seul connais. Il ne peut pas être récupéré : range-le dans ton gestionnaire de mots de passe.</p>
+      <p class="lock-text">Ta cave reste sur ${DEV}, chiffrée avec un mot de passe que toi seul connais. Il ne peut pas être récupéré : range-le dans ton gestionnaire de mots de passe.</p>
       <form id="f-setup" class="lock-form" data-form="setup" autocomplete="on">${USERFIELD}
         <label>Mot de passe (10 caractères minimum)<input type="password" name="p1" autocomplete="new-password" required></label>
         <label>Confirmation<input type="password" name="p2" autocomplete="new-password" required></label>
         ${e}<button class="btn primary" type="submit">Créer ma cave</button>
       </form>
-      <div class="lock-links"><button class="link" data-act="demo">Essayer avec une cave fictive</button><button class="link" data-act="import">Restaurer une sauvegarde</button></div>`
+      <div class="lock-links"><button class="link" data-act="demo">Essayer avec une cave fictive</button><button class="link" data-act="import">Restaurer une sauvegarde</button>${isStandalone() ? '' : '<button class="link" data-act="installApp">Installer l’application sur cet appareil</button>'}</div>`
     : `
-      <p class="lock-text">${pk ? 'Déverrouille avec Face ID, ou avec ton mot de passe.' : 'Saisis ton mot de passe pour ouvrir ta cave.'}</p>
+      <p class="lock-text">${pk ? `Déverrouille ${BIO_AVEC}, ou avec ton mot de passe.` : 'Saisis ton mot de passe pour ouvrir ta cave.'}</p>
       ${e}
-      ${pk ? `<button class="btn primary wide" data-act="pkunlock">${ICON.face} Déverrouiller avec Face ID</button><p class="or">ou</p>` : ''}
+      ${pk ? `<button class="btn primary wide" data-act="pkunlock">${bioIcon()} Déverrouiller ${BIO_AVEC}</button><p class="or">ou</p>` : ''}
       <form id="f-unlock" class="lock-form" data-form="unlock">${USERFIELD}
         <label>Mot de passe<input type="password" name="p1" autocomplete="current-password" required></label>
         <button class="btn ${pk ? '' : 'primary'}" type="submit">${pk ? 'Utiliser le mot de passe' : 'Déverrouiller'}</button>
@@ -142,7 +144,7 @@ function renderLock(kind, err = '') {
     ${!persistent ? '<p class="banner">Aperçu : rien n’est conservé dans cet environnement.</p>' : ''}
   </main>`;
 }
-function enterApp(via) { view = 'cave'; render(); window.scrollTo(0, 0); if (mode === 'app') { uStart(via); afterEnter(via); } }
+function enterApp(via) { view = 'cave'; render(); window.scrollTo(0, 0); if (mode === 'app') { uStart(via); afterEnter(via); askPersist(); } }
 function lockNow() {
   if (mode === 'demo') { wipeKeys(); return boot(); }
   uStop(hiddenAt ? 'auto' : 'manuel'); lockHasPk = !!slots?.pk; wipeKeys(); closeSheet(); renderLock('unlock');
@@ -164,7 +166,7 @@ function banners() {
   if (old.length && S.dismissed.todoDay !== today() && (view === 'cave' || view === 'boire')) out.push(`<div class="banner green">${todo.length === 1 ? `<b>${esc(wineTitle(wine(todo[0].wineId)))}</b> : tu l’as ouvert récemment. Une note pour t’en souvenir ?` : `<b>${plural(todo.length, 'bouteille sortie', 'bouteilles sorties')} à noter</b>. Une note pour t’en souvenir ?`}
     <div class="row" style="gap:8px"><button class="btn small green" data-act="rateNow">Noter</button><button class="btn small ghost" data-act="rateLater">Plus tard</button></div></div>`);
   const le = S.settings.lastExport;
-  if (mode === 'app' && view === 'cave' && S.wines.length && (!le || Date.now() - le > 7 * 864e5) && S.dismissed.backup !== monthKey() + today()) out.push(`<div class="banner">${le ? 'Ta dernière sauvegarde date de plus d’une semaine.' : 'Ta cave n’est pas encore sauvegardée.'} Les données ne sont que sur cet iPhone.
+  if (mode === 'app' && view === 'cave' && S.wines.length && (!le || Date.now() - le > 7 * 864e5) && S.dismissed.backup !== monthKey() + today()) out.push(`<div class="banner">${le ? 'Ta dernière sauvegarde date de plus d’une semaine.' : 'Ta cave n’est pas encore sauvegardée.'} Les données ne sont que sur ${DEV}${persisted === false ? ', et le navigateur ne garantit pas de les garder' : ''}.
     <div class="row" style="gap:8px"><button class="btn small primary" data-act="export">Sauvegarder</button><button class="btn small ghost" data-act="backupLater">Plus tard</button></div></div>`);
   return out.join('');
 }
@@ -186,7 +188,7 @@ function render() {
       ${tab('boire', 'À boire', ICON.boire)}${tab('somm', 'Sommelier', ICON.somm)}</nav>`;
   paintPhotos(app);
   for (const r of $$('input[type=range]', app)) setRangeFill(r);
-  afterRender(); uScreenCheck();
+  afterRender(); uScreenCheck(); syncBack();
   if (keepY) window.scrollTo(0, keepY);
 }
 function afterRender() {
@@ -204,6 +206,7 @@ let chatScroll = false;
 Object.assign(ACT, {
   go: t => { view = t.dataset.v; render(); window.scrollTo(0, view === 'somm' ? document.body.scrollHeight : 0); },
   close: () => { if (!guardTaste('close')) closeSheet(); },
+  installApp: () => installApp(),
   sheetback: () => { if (!guardTaste('back')) sheetBack(); },
   demoOnly: () => toast(DEMO_OFF),
   searchClear: t => {

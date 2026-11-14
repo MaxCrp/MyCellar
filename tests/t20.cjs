@@ -7,7 +7,7 @@ const ok = (label, cond, det = '') => { console.log(`${cond ? 'OK ' : 'KO '} ${l
 const PNG = fs.readFileSync(__dirname + '/../src/static/icon-192.png');
 (async () => {
   const b = await chromium.launch();
-  const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const ctx = await b.newContext({ ...require('./ua.cjs'), viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const p = await ctx.newPage(), errs = [];
   p.on('pageerror', e => errs.push(e.message));
   p.on('dialog', d => d.accept());

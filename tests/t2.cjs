@@ -3,7 +3,7 @@ const { chromium } = require('playwright');
 const D = __dirname + '/shots/'; require('fs').mkdirSync(D, { recursive: true });
 (async () => {
   const b = await chromium.launch();
-  const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+  const ctx = await b.newContext({ ...require('./ua.cjs'), viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
   const p = await ctx.newPage();
   const errs = [], calls = [];
   p.on('pageerror', e => errs.push('PAGEERR ' + e.message));

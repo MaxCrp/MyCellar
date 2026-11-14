@@ -179,10 +179,12 @@ async function shrinkImage(file, max = 1024, q = 0.78) {
 }
 const blobB64 = async blob => b64(await blob.arrayBuffer());
 
-/* ---------- Clé d'accès : Face ID via le trousseau iCloud ---------- */
+/* ---------- Clé d'accès : Face ID (trousseau iCloud), empreinte ou visage (gestionnaire de mots de passe de Google) ---------- */
 const pkAvailable = () => !!(window.PublicKeyCredential && navigator.credentials && window.isSecureContext);
 function pkError(e) {
-  if (e?.message === 'noprf') return 'Ce gestionnaire de clés d’accès ne permet pas de déverrouiller l’app (extension PRF non prise en charge). Supprime la clé créée et réessaie en l’enregistrant dans le trousseau iCloud.';
+  if (e?.message === 'noprf') return isApple ? 'Ce gestionnaire de clés d’accès ne permet pas de déverrouiller l’app (extension PRF non prise en charge). Supprime la clé créée et réessaie en l’enregistrant dans le trousseau iCloud.'
+    : isAndroid ? 'Ce téléphone ne permet pas encore d’ouvrir l’app avec l’empreinte ou le visage : il faut une version récente d’Android et de Chrome, et enregistrer la clé dans le gestionnaire de mots de passe de Google. Tu peux supprimer la clé créée ; ton mot de passe reste le moyen d’ouvrir ta cave.'
+    : 'Ce gestionnaire de clés d’accès ne permet pas de déverrouiller l’app (extension PRF non prise en charge). Ton mot de passe reste le moyen d’ouvrir ta cave.';
   if (e?.name === 'NotAllowedError') return 'Opération annulée ou expirée.';
   if (e?.name === 'SecurityError') return 'Les clés d’accès ne fonctionnent qu’à l’adresse https de l’app installée.';
   return 'La clé d’accès n’a pas pu être utilisée.';
@@ -278,8 +280,8 @@ async function applyCodeUpdate() {
 }
 function sheetCode() {
   if (code.status === 'sw') return openSheet(`<h2>Code remplacé</h2>
-    <p>Le fichier qui installe l’app sur ton iPhone (sw.js) a changé chez l’hébergeur. Une version légitime de l’app ne le modifie jamais : si tu n’es pas à l’origine de ce changement, ton compte d’hébergement a probablement été compromis.</p>
-    <p class="small">Depuis un ordinateur : consulte l’historique du dépôt, remets les fichiers d’origine, change le mot de passe du compte. Ensuite, sur l’iPhone, supprime l’app, efface les données du site dans Réglages › Safari, réinstalle-la et restaure ta dernière sauvegarde.</p>
+    <p>Le fichier qui installe l’app sur ${DEV_TON} (sw.js) a changé chez l’hébergeur. Une version légitime de l’app ne le modifie jamais : si tu n’es pas à l’origine de ce changement, ton compte d’hébergement a probablement été compromis.</p>
+    <p class="small">Depuis un ordinateur : consulte l’historique du dépôt, remets les fichiers d’origine, change le mot de passe du compte. Ensuite, sur ${DEV}, supprime l’app, efface les données du site (${isAndroid ? 'Chrome › Paramètres › Paramètres des sites' : 'Réglages › Safari'}), réinstalle-la et restaure ta dernière sauvegarde.</p>
     <button class="btn wide" data-act="close">Fermer</button>`);
   showSheet(sheetCodeHtml);
   if (code.status === 'update' && code.news == null) loadNews();
