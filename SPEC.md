@@ -703,6 +703,15 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 - [x] Sur iPhone, rien ne change (une seule case, le menu d'iOS propose déjà les deux).
 - [x] Tests : les deux choix sur Android (appareil photo imposé pour l'un, galerie pour l'autre), photo remise à la bonne lecture ; iPhone inchangé.
 
+**v2.1.6** (transferts : trouver la bouteille en cave ; demandée le 14 novembre 2026 ; livrée)
+
+*Constat* : au moment de faire un transfert, il faut ouvrir le résumé de chaque vin pour savoir où prendre la bouteille.
+
+- [x] Dans « Transferts entre sites », chaque ligne (bouteilles à emporter, dans chaque sens, et suggestions) a la petite **épingle** « Voir dans la cave », comme dans les résultats de recherche.
+- [x] La toucher ferme la fenêtre et amène directement à la bouteille : bon site, plan, case qui clignote (ou la caisse qui s'ouvre si la bouteille est dans une caisse, ou le bloc « non placées »).
+- [x] Le reste ne change pas : toucher le vin ouvre toujours son résumé ; la croix retire du transfert ; « Ajouter » pour les suggestions.
+- [x] Tests : épingle sur chaque ligne, saut vers la bonne case et le bon site, depuis une bouteille à emporter et depuis une suggestion.
+
 **v2.2** (sauvegarde automatique ; spécifiée et validée le 5 novembre 2026 : option b, Google Drive avec un Worker Cloudflare. *Passée en premier le 13 novembre 2026*, à la place des QR codes)
 - [ ] **Sauvegarde automatique** chiffrée (le même fichier que la sauvegarde manuelle, illisible sans ton mot de passe), après chaque modification importante et au plus une fois par heure, plus une fois par jour au minimum. Les 30 dernières versions sont gardées.
 - [ ] **Restauration** depuis la liste des versions, avec leur date.

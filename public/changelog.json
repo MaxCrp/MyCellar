@@ -1,5 +1,13 @@
 [
  {
+  "version": "2.1.6",
+  "date": "2026-11-14",
+  "titre": "Transferts : la bouteille en un geste",
+  "items": [
+   "Dans « Transferts entre sites », chaque bouteille à emporter et chaque suggestion a une petite épingle : touche-la pour aller directement à la bouteille dans la cave (bon site, case qui clignote, ou caisse qui s’ouvre), sans ouvrir la fiche."
+  ]
+ },
+ {
   "version": "2.1.5",
   "date": "2026-11-14",
   "titre": "Photo sur Android",

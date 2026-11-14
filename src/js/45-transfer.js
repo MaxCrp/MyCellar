@@ -26,7 +26,7 @@ function transferSection(s, list) {
   const stock = s.role === 'stock', sugg = transferSuggestions(s.id), [f, t] = listScale();
   const row = b => { const w = wine(b.wineId), st = status(w);
     return `<div class="li"><button class="lb" data-act="tBrief" data-b="${b.id}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${st && st !== 'inconnu' ? esc(STATUS[st].short) + ' · ' : ''}${esc(locLabel(b, true))}${S.transfer.units?.[b.unitId] ? ' · voyage dans sa caisse' : ''}</small>${miniWin(w, f, t)}</div></button>
-      <button class="icon-btn" data-act="toTransfer" data-b="${b.id}" aria-label="Retirer du transfert">${ICON.close}</button></div>`; };
+      <button class="icon-btn" data-act="caveJump" data-b="${b.id}" aria-label="Voir dans la cave">${ICON.pin}</button><button class="icon-btn" data-act="toTransfer" data-b="${b.id}" aria-label="Retirer du transfert">${ICON.close}</button></div>`; };
   return `<div class="sect" data-tsect="${s.id}">Vers ${esc(s.name)} · ${roleLabel(s)}${list.length ? ' · ' + plural(list.length, 'bouteille', 'bouteilles') : ''}</div>
     ${list.length ? `<div class="list">${list.map(row).join('')}</div>
       <button class="btn primary wide" style="margin-top:10px" data-act="transferDone" data-to="${s.id}">${ICON.check} Arrivées à ${esc(s.name)}</button>`
@@ -34,7 +34,7 @@ function transferSection(s, list) {
     ${sugg.length ? `<p class="small" style="margin:12px 4px 0">${stock ? 'Suggestions : vins à garder, ajoutés récemment sur un autre site.' : 'Suggestions : vins prêts à boire stockés ailleurs.'}</p>
       <div class="list" style="margin-top:6px">${sugg.slice(0, 6).map(g => { const w = wine(g.b.wineId), st = status(w);
         return `<div class="li"><button class="lb" data-act="tBrief" data-b="${g.b.id}"><span class="dot" style="background:${wineColor(w)}"></span><div class="it"><b class="ell">${esc(wineTitle(w))}</b><small class="ell">${esc(STATUS[st]?.short || '')} · ${esc(locLabel(g.b, true))}</small>${miniWin(w, f, t)}</div></button>
-          <button class="btn small" data-act="tAdd" data-ids="${g.ids.join(',')}" data-to="${s.id}">Ajouter${g.ids.length > 1 ? ' ×' + g.ids.length : ''}</button></div>`; }).join('')}</div>` : ''}`;
+          <button class="icon-btn" data-act="caveJump" data-b="${g.b.id}" aria-label="Voir dans la cave">${ICON.pin}</button><button class="btn small" data-act="tAdd" data-ids="${g.ids.join(',')}" data-to="${s.id}">Ajouter${g.ids.length > 1 ? ' ×' + g.ids.length : ''}</button></div>`; }).join('')}</div>` : ''}`;
 }
 // Suggestions : vers la consommation, un vin prêt à boire stocké ailleurs (une bouteille) ;
 // vers le stockage, les bouteilles d'un vin à garder (« trop tôt » ou fenêtre inconnue), les plus récentes d'abord
