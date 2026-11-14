@@ -1,0 +1,48 @@
+// v2.2 : service d'autorisation (worker/mycellar-auth.js), avec un faux Google
+import worker from '../worker/mycellar-auth.js';
+let fail = 0;
+const ok = (label, cond, det = '') => { console.log(`${cond ? 'OK ' : 'KO '} ${label}${det ? ' · ' + det : ''}`); if (!cond) fail++; };
+const env = { CLIENT_ID: 'cid.apps.googleusercontent.com', CLIENT_SECRET: 'TOP-SECRET', ALLOWED_ORIGIN: 'https://app.example', REDIRECT_URI: 'https://app.example/' };
+const sent = [];
+globalThis.fetch = async (url, o) => {
+  const p = Object.fromEntries(new URLSearchParams(o.body)); sent.push({ url, p });
+  if (p.refresh_token === 'REVOKED') return new Response(JSON.stringify({ error: 'invalid_grant', error_description: 'x' }), { status: 400 });
+  if (p.grant_type === 'authorization_code') return new Response(JSON.stringify({ access_token: 'AT', expires_in: 3599, refresh_token: 'RT', id_token: 'ID', scope: 's' }), { status: 200 });
+  return new Response(JSON.stringify({ access_token: 'AT2', expires_in: 3599 }), { status: 200 });
+};
+const call = (path, body, { origin = 'https://app.example', method = 'POST' } = {}) => worker.fetch(new Request('https://auth.example' + path, { method, headers: { origin, 'content-type': 'application/json' }, body: method === 'POST' ? (typeof body === 'string' ? body : JSON.stringify(body)) : undefined }), env);
+const V = 'a'.repeat(43);
+
+let r = await call('/token', { code: 'C', code_verifier: V }); let j = await r.json();
+ok('échange du code : jetons rendus', r.status === 200 && j.access_token === 'AT' && j.refresh_token === 'RT');
+ok('seuls les jetons utiles sont rendus (pas d’identité)', !('id_token' in j) && !('scope' in j));
+ok('secret et adresse de retour ajoutés par le service, adresse fixée', sent[0].p.client_secret === 'TOP-SECRET' && sent[0].p.redirect_uri === env.REDIRECT_URI && sent[0].p.code_verifier === V && sent[0].url === 'https://oauth2.googleapis.com/token');
+ok('le secret n’apparaît jamais dans la réponse', !JSON.stringify(j).includes('TOP-SECRET'));
+ok('CORS : seulement l’adresse de l’app', r.headers.get('access-control-allow-origin') === 'https://app.example' && r.headers.get('cache-control') === 'no-store');
+await call('/token', { code: 'C', code_verifier: V, redirect_uri: 'https://pirate.example/' });
+ok('une adresse de retour envoyée par l’appelant est ignorée', sent.at(-1).p.redirect_uri === env.REDIRECT_URI);
+r = await call('/refresh', { refresh_token: 'RT' }); j = await r.json();
+ok('renouvellement du jeton d’accès', r.status === 200 && j.access_token === 'AT2' && sent.at(-1).p.grant_type === 'refresh_token');
+r = await call('/refresh', { refresh_token: 'REVOKED' }); j = await r.json();
+ok('autorisation retirée : « invalid_grant » transmis', r.status === 400 && j.error === 'invalid_grant');
+const n = sent.length;
+r = await call('/token', { code: 'C', code_verifier: V }, { origin: 'https://pirate.example' });
+ok('autre origine : refusée, sans appel à Google', r.status === 403 && sent.length === n && !r.headers.get('access-control-allow-origin'));
+r = await call('/token', { code: 'C', code_verifier: V }, { origin: '' });
+ok('sans origine : refusée', r.status === 403);
+r = await worker.fetch(new Request('https://auth.example/token', { method: 'OPTIONS', headers: { origin: 'https://app.example' } }), env);
+ok('pré-vérification CORS acceptée pour l’app', r.status === 204 && r.headers.get('access-control-allow-methods') === 'POST');
+r = await call('/autre', { a: 1 }); ok('route inconnue : 404', r.status === 404);
+r = await call('/token', null, { method: 'GET' }); ok('méthode GET : 404', r.status === 404);
+r = await call('/token', 'x'.repeat(5000)); ok('corps trop gros : 413', r.status === 413);
+r = await call('/token', '{pas du json'); ok('JSON invalide : 400', r.status === 400);
+r = await call('/token', { code: 'C', code_verifier: 'court' }); ok('vérificateur PKCE invalide : 400', r.status === 400);
+r = await call('/token', { code: '', code_verifier: V }); ok('code vide : 400', r.status === 400);
+r = await call('/refresh', { refresh_token: 42 }); ok('jeton non textuel : 400', r.status === 400);
+ok('aucun appel à Google pour les demandes invalides', sent.length === n);
+r = await worker.fetch(new Request('https://auth.example/token', { method: 'POST', headers: { origin: 'https://app.example' }, body: JSON.stringify({ code: 'C', code_verifier: V }) }), { ...env, CLIENT_SECRET: '' });
+ok('service mal configuré : 500 explicite', r.status === 500 && (await r.json()).error === 'not_configured');
+globalThis.fetch = async () => { throw new Error('réseau'); };
+r = await call('/refresh', { refresh_token: 'RT' }); ok('Google injoignable : 502', r.status === 502);
+console.log(fail ? `${fail} échec(s)` : 'Tout est bon');
+process.exit(fail ? 1 : 0);

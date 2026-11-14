@@ -119,7 +119,7 @@ async function adopt(o) { dekRaw = o.raw; dek = await importDek(o.raw); slots = 
 function wipeKeys() {
   dekRaw?.fill(0); dekRaw = null; dek = null; slots = null; S = null;
   for (const u of photoUrls.values()) URL.revokeObjectURL(u);
-  photoUrls.clear(); draft = null; wheelState = null; chatBusy = false;
+  photoUrls.clear(); draft = null; wheelState = null; chatBusy = false; gdWipe();
   try {
     const t = $('#toast'); if (t) { t.textContent = ''; t.classList.remove('show'); }
     $$('input[type=file]').forEach(i => { i.value = ''; });
@@ -308,4 +308,5 @@ let view = 'cave', draft = null, wheelState = null, chatBusy = false, pendingImp
 async function save() {
   if (mode !== 'app' || !dek || !slots) return;
   await store.set('vault', await seal());
+  bkTouch();   // sauvegarde automatique (v2.2) : envoi quelques minutes plus tard
 }

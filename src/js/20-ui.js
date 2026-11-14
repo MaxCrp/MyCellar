@@ -142,9 +142,10 @@ function renderLock(kind, err = '') {
         <label>Confirmation<input type="password" name="p2" autocomplete="new-password" required></label>
         ${e}<button class="btn primary" type="submit">Créer ma cave</button>
       </form>
-      <div class="lock-links"><button class="link" data-act="demo">Essayer avec une cave fictive</button><button class="link" data-act="import">Restaurer une sauvegarde</button>${isStandalone() ? '' : '<button class="link" data-act="installApp">Installer l’application sur cet appareil</button>'}</div>`
+      <div class="lock-links"><button class="link" data-act="demo">Essayer avec une cave fictive</button><button class="link" data-act="import">Restaurer une sauvegarde</button>${gdConfigured() ? '<button class="link" data-act="gdRestoreStart">Restaurer depuis Google Drive</button>' : ''}${isStandalone() ? '' : '<button class="link" data-act="installApp">Installer l’application sur cet appareil</button>'}</div>`
     : `
       <p class="lock-text">${pk ? `Déverrouille ${BIO_AVEC}, ou avec ton mot de passe.` : 'Saisis ton mot de passe pour ouvrir ta cave.'}</p>
+      ${gd.ret ? '<p class="banner">Retour de Google : déverrouille ta cave pour terminer la connexion à Google Drive.</p>' : ''}
       ${e}
       ${pk ? `<button class="btn primary wide" data-act="pkunlock">${bioIcon()} Déverrouiller ${BIO_AVEC}</button><p class="or">ou</p>` : ''}
       <form id="f-unlock" class="lock-form" data-form="unlock">${USERFIELD}
@@ -155,7 +156,7 @@ function renderLock(kind, err = '') {
     ${!persistent ? '<p class="banner">Aperçu : rien n’est conservé dans cet environnement.</p>' : ''}
   </main>`;
 }
-function enterApp(via) { view = 'cave'; render(); window.scrollTo(0, 0); if (mode === 'app') { uStart(via); afterEnter(via); askPersist(); } }
+function enterApp(via) { view = 'cave'; render(); window.scrollTo(0, 0); if (mode === 'app') { uStart(via); afterEnter(via); askPersist(); gdOnEnter(); } }
 function lockNow() {
   if (mode === 'demo') { wipeKeys(); return boot(); }
   uStop(hiddenAt ? 'auto' : 'manuel'); lockHasPk = !!slots?.pk; wipeKeys(); closeSheet(); renderLock('unlock');
@@ -177,7 +178,9 @@ function banners() {
   if (old.length && S.dismissed.todoDay !== today() && (view === 'cave' || view === 'boire')) out.push(`<div class="banner green">${todo.length === 1 ? `<b>${esc(wineTitle(wine(todo[0].wineId)))}</b> : tu l’as ouvert récemment. Une note pour t’en souvenir ?` : `<b>${plural(todo.length, 'bouteille sortie', 'bouteilles sorties')} à noter</b>. Une note pour t’en souvenir ?`}
     <div class="row" style="gap:8px"><button class="btn small green" data-act="rateNow">Noter</button><button class="btn small ghost" data-act="rateLater">Plus tard</button></div></div>`);
   const le = S.settings.lastExport;
-  if (mode === 'app' && view === 'cave' && S.wines.length && (!le || Date.now() - le > 7 * 864e5) && S.dismissed.backup !== monthKey() + today()) out.push(`<div class="banner">${le ? 'Ta dernière sauvegarde date de plus d’une semaine.' : 'Ta cave n’est pas encore sauvegardée.'} Les données ne sont que sur ${DEV}${persisted === false ? ', et le navigateur ne garantit pas de les garder' : ''}.
+  if (mode === 'app' && view === 'cave' && gdConfigured() && bkState().reconnect) out.push(`<div class="banner"><b>Sauvegarde automatique arrêtée</b> : l’autorisation Google a expiré ou a été retirée.
+    <div class="row" style="gap:8px"><button class="btn small primary" data-act="bkSheet">Reconnecter</button></div></div>`);
+  else if (mode === 'app' && view === 'cave' && S.wines.length && !autoBkOk() && (!le || Date.now() - le > 7 * 864e5) && S.dismissed.backup !== monthKey() + today()) out.push(`<div class="banner">${le ? 'Ta dernière sauvegarde date de plus d’une semaine.' : 'Ta cave n’est pas encore sauvegardée.'} Les données ne sont que sur ${DEV}${persisted === false ? ', et le navigateur ne garantit pas de les garder' : ''}.
     <div class="row" style="gap:8px"><button class="btn small primary" data-act="export">Sauvegarder</button><button class="btn small ghost" data-act="backupLater">Plus tard</button></div></div>`);
   return out.join('');
 }

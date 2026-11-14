@@ -1,5 +1,17 @@
 [
   {
+    "version": "2.2",
+    "date": "2026-11-14",
+    "titre": "Sauvegarde automatique sur Google Drive",
+    "items": [
+      "Réglages › Sauvegarde › Sauvegarde automatique : connecte ton Google Drive une fois, et ta cave s’y sauvegarde toute seule, chiffrée avec ton mot de passe, quelques minutes après chaque modification ou quand tu quittes l’app. Une nouvelle version par heure au plus, 30 versions gardées.",
+      "Les sauvegardes vont dans un dossier caché propre à MyCellar : l’app ne voit rien d’autre de ton Drive. Chacun connecte son propre compte Google.",
+      "État visible : dernière sauvegarde réussie, ou l’échec et sa raison. « Restaurer une version » liste les sauvegardes avec leur date. Le rappel de sauvegarde ne s’affiche plus quand tout fonctionne.",
+      "Sur un nouvel appareil : « Restaurer depuis Google Drive » dès le premier lancement.",
+      "Cette fonction s’active quand la personne qui héberge l’app a fait la mise en place (une fois)."
+    ]
+  },
+  {
     "version": "2.1.8",
     "date": "2026-11-14",
     "titre": "Réanalyser les apogées d’une cave",

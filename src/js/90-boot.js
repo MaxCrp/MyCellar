@@ -113,6 +113,7 @@ async function boot() {
     if (raw) { try { await adopt(await openVault(vault, { raw })); return enterApp('appareil'); } catch { await devDisable(); } }
   }
   renderLock(vault ? 'unlock' : 'setup');
+  if (!vault && gd.ret) return gdSetupReturn();   // retour de Google : restaurer depuis Google Drive
   if (!vault && !(await store.get('introSeen'))) showIntro(0, false);
 }
 if (location.search.includes('u=')) history.replaceState({}, '', location.pathname);

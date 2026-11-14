@@ -8,7 +8,8 @@
    (sinon la plus récente est mise à jour), 30 versions gardées. Rien n'est envoyé si la cave n'a pas changé. */
 const GD_SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
 const GD_API = 'https://www.googleapis.com/drive/v3/files', GD_UP = 'https://www.googleapis.com/upload/drive/v3/files';
-const GD_KEEP = 30, GD_HOUR = 3600e3, GD_SIMPLE_MAX = 4.5e6;
+const GD_KEEP = 30, GD_HOUR = 3600e3;
+let GD_SIMPLE_MAX = 4.5e6;   // au-delà : envoi en deux temps (abaissé par les tests)
 let BK_DELAY = 120e3;   // attente après une modification avant d'envoyer (raccourcie par les tests)
 const gd = { refresh: null, access: null, exp: 0, busy: false, timer: 0, ret: null, restoreFiles: null };
 const gdConfigured = () => !!(GDRIVE_CFG.clientId && GDRIVE_CFG.workerUrl);
@@ -60,7 +61,6 @@ async function gdTakeReturn(purpose) {
   gd.access = j.access_token; gd.exp = Date.now() + (j.expires_in || 3000) * 1000;
   return j.refresh_token;
 }
-const gdWaiting = purpose => !!gd.ret && (!purpose || true);
 async function gdWorker(path, body) {
   let r;
   try { r = await fetch(GDRIVE_CFG.workerUrl.replace(/\/$/, '') + path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }); }
@@ -182,7 +182,13 @@ async function gdOnEnter() {
   if (dirty || !st.checked || Date.now() - st.checked > 24 * GD_HOUR) gd.timer = setTimeout(() => runBackup(), 5000);
 }
 // Une restauration change la clé de la cave : l'autorisation est rechiffrée avec la nouvelle
-async function gdAfterAdopt(tok) { if (tok) { gd.refresh = tok; await gdStoreToken(tok); await store.del('gdFp'); } }
+async function gdAfterAdopt(tok) {
+  if (!tok) return;
+  gd.refresh = tok; await gdStoreToken(tok);
+  // Restaurée depuis le Drive : ce contenu y est déjà, inutile de le renvoyer
+  if (gd.fromDrive) await store.set('gdFp', await bkPrint()); else await store.del('gdFp');
+  gd.fromDrive = false;
+}
 document.addEventListener('visibilitychange', () => { if (document.hidden && mode === 'app' && gdOn()) store.get('gdDirty').then(d => { if (d) runBackup(); }).catch(() => {}); });
 const autoBkOk = () => gdOn() && bkState().last && Date.now() - Math.max(bkState().last, bkState().checked || 0) < 7 * 24 * GD_HOUR && !bkState().err;
 
@@ -243,7 +249,7 @@ Object.assign(ACT, {
   gdVersions: () => gdOpenVersions(),
   gdPick: async t => {
     t.disabled = true;
-    try { const txt = await gdDownload(t.dataset.id); sheetBack(); await onBackupFile(new File([txt], 'sauvegarde.json', { type: 'application/json' })); }
+    try { const txt = await gdDownload(t.dataset.id); gd.fromDrive = true; sheetBack(); await onBackupFile(new File([txt], 'sauvegarde.json', { type: 'application/json' })); }
     catch (e) { t.disabled = false; sheetMsg('Google Drive', e.message || String(e)); }
   },
   gdDisconnect: async () => {

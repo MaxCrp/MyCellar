@@ -1,7 +1,7 @@
 // Petit serveur statique qui imite Cloudflare (Workers et Pages) : « /index.html » est redirigé vers « / ».
 // C'est cette redirection qui cassait le service worker sur iPhone. Usage : node tests/serve.cjs [port]
 const http = require('http'), fs = require('fs'), path = require('path');
-const root = path.join(__dirname, '..', 'public'), port = +process.argv[2] || 8765;
+const root = process.argv[3] ? path.resolve(process.argv[3]) : path.join(__dirname, '..', 'public'), port = +process.argv[2] || 8765;   // [port] [dossier]
 const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.png': 'image/png', '.webmanifest': 'application/manifest+json', '.json': 'application/json' };
 http.createServer((req, res) => {
   const u = new URL(req.url, 'http://x');

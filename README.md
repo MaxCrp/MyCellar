@@ -35,6 +35,7 @@ src/js/*.js         code, assemblé dans l'ordre des noms de fichiers
   82-stats          statistiques, valeur actuelle des vins
   83-gifts          cadeaux reçus et offerts
   84-audit          audit de cave
+  85-backup         sauvegarde automatique sur Google Drive (dossier caché de l'app, autorisation via worker/)
   85-demo           cave fictive
   87-usage          suivi d'utilisation, rapport, signaler un problème
   88-versions       numéro de version, nouveautés, historique, « Plus d’infos » avant une mise à jour
@@ -77,3 +78,7 @@ Pense à sauvegarder régulièrement (Plus › Sauvegarder, vers « Fichiers » 
 Ouvre la même adresse dans **Chrome**, puis menu **⋮** › *Installer l'application* (ou *Ajouter à l'écran d'accueil*) ; l'app propose aussi un bouton « Installer l'application » tant qu'elle est ouverte dans le navigateur. Le déverrouillage sans mot de passe s'appelle « Empreinte ou visage » : la clé d'accès est rangée dans le gestionnaire de mots de passe de Google (il faut un Android et un Chrome récents). Le bouton retour ferme la fenêtre ouverte, puis revient à l'onglet Cave.
 
 Chaque appareil a sa propre cave, chiffrée : pour retrouver celle de l'iPhone, sauvegarde-la sur l'iPhone, envoie le fichier sur le téléphone Android et choisis « Restaurer une sauvegarde » au premier lancement, avec le même mot de passe. La clé API du sommelier se saisit aussi sur chaque appareil.
+
+## Sauvegarde automatique (Google Drive)
+
+À mettre en place une fois : voir `docs/sauvegarde-google-drive.md` (projet Google Cloud, Worker Cloudflare `worker/mycellar-auth.js`, puis `src/backup-config.json`). Tant que `src/backup-config.json` est vide, la fonction reste masquée et la CSP n'autorise aucun service Google.

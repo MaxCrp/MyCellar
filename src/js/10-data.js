@@ -109,6 +109,9 @@ function normalize(d) {
   d.settings.usage = { on: !!d.settings.usage?.on };
   if (!d.sites.length) d.sites.push({ id: uid(), name: 'Site 1', role: 'conso' });
   if (!d.spaces.length) d.spaces.push({ id: uid(), siteId: d.sites[0].id, name: 'Cave', use: 'conso', q: {} });
+  // État de la sauvegarde automatique (v2.2) : nombres et texte seulement
+  { const b = d.settings.autoBk, n = v => typeof v === 'number' && isFinite(v) ? v : undefined;
+    d.settings.autoBk = b && typeof b === 'object' ? { last: n(b.last), checked: n(b.checked), errAt: n(b.errAt), size: n(b.size), since: n(b.since), err: typeof b.err === 'string' ? b.err.slice(0, 300) : null, reconnect: b.reconnect === true || undefined } : {}; }
   // Dernière réanalyse d'une cave (v2.1.8) : gardée pour pouvoir l'annuler
   if (d.reanal && (typeof d.reanal !== 'object' || !Array.isArray(d.reanal.all) || !Array.isArray(d.reanal.changes))) d.reanal = null;
   // Températures de l'année (v2.1.7) : nombres entre −10 et 40 °C, mini ≤ maxi, sinon oubliées

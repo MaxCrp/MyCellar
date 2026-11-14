@@ -48,8 +48,9 @@ function vPlus() {
     ${isStandalone() ? '' : `<div class="sect">Application</div><div class="card" style="padding:0 12px">${setRow('installApp', 'Installer l’application', 'Sur l’écran d’accueil, en plein écran, sans réseau')}</div>`}
     <div class="sect">Sauvegarde</div>
     <div class="card" style="padding:0 12px">
-      <button class="set" data-act="export"><div class="it"><b>Sauvegarder</b><small>${lastExp ? 'Dernière : ' + esc(fmtDate(new Date(lastExp).toISOString())) : 'Jamais sauvegardée'}${old && S.wines.length ? ' · <span style="color:var(--bx);font-weight:600">à faire</span>' : ''}</small></div><span class="chev">${ICON.up}</span></button>
+      <button class="set" data-act="export"><div class="it"><b>Sauvegarder</b><small>${lastExp ? 'Dernière : ' + esc(fmtDate(new Date(lastExp).toISOString())) : 'Jamais sauvegardée'}${old && S.wines.length && !autoBkOk() ? ' · <span style="color:var(--bx);font-weight:600">à faire</span>' : ''}</small></div><span class="chev">${ICON.up}</span></button>
       ${setRow('import', 'Restaurer une sauvegarde', 'Remplace la cave de cet appareil')}
+      ${mode === 'app' ? setRow('bkSheet', 'Sauvegarde automatique', bkSummary()) : `<div class="set"><div class="it"><b>Sauvegarde automatique</b><small>Google Drive</small>${whyOff(true)}</div></div>`}
       ${mode === 'app' ? `<div class="set"><div class="it"><b>Données protégées</b><small>${persisted === true ? 'Le navigateur ne les effacera pas' : persisted === false ? 'Non garanti par le navigateur : sauvegarde souvent' : 'Vérification…'}</small></div>${persisted === true ? `<span style="color:var(--green)">${ICON.check}</span>` : ''}</div>` : ''}
     </div>
     <div class="sect">Sécurité</div>
@@ -291,7 +292,7 @@ async function onBackupFile(file) {
 FORMS.import = async (f, d) => {
   const btn = f.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Déchiffrement…';
   try {
-    const o = await openVault(pendingImport, { pass: d.p });
+    const o = await openVault(pendingImport, { pass: d.p }), keepTok = gd.refresh || gdRestoreTok;
     if (mode === 'app' && S.wines.length && !confirm('Remplacer la cave actuelle de cet appareil par cette sauvegarde ?')) { btn.disabled = false; btn.textContent = 'Restaurer'; return; }
     for (const k of await store.keys()) if (String(k).startsWith('ph:')) await store.del(k);
     for (const [id, e] of Object.entries(pendingImport.photos || {})) await store.set('ph:' + id, e);
@@ -299,6 +300,7 @@ FORMS.import = async (f, d) => {
     await adopt({ raw: o.raw, data: o.data, slots: { pw: pendingImport.slots.pw } });
     S.settings.stay = false; S.settings.lastExport = pendingImport.savedAt || Date.now();
     await save(); navigator.storage?.persist?.(); pendingImport = null;
+    await gdAfterAdopt(keepTok); gdRestoreTok = null;
     closeSheet(); enterApp('restauration'); toast('Cave restaurée');
   } catch (e) {
     btn.disabled = false; btn.textContent = 'Restaurer'; const er = $('#ierr'); er.hidden = false;
