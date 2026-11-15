@@ -4,3 +4,5 @@ node_modules/
 tests/shots/*.json
 tests/.gd-build/
 tests/.gd-config.json
+tests/.gd-off/
+tests/.gd-config-vide.json

@@ -13,7 +13,12 @@ const PASS = 'ma cave secrète drive';
 (async () => {
   fs.writeFileSync(CFG, JSON.stringify({ clientId: CLIENT, workerUrl: WORKER }));
   execFileSync('node', ['build.mjs'], { cwd: ROOT, env: { ...process.env, MC_OUT: OUT, MC_BACKUP_CONFIG: CFG }, stdio: 'pipe' });
-  const html = fs.readFileSync(path.join(OUT, 'index.html'), 'utf8'), pub = fs.readFileSync(path.join(ROOT, 'public', 'index.html'), 'utf8');
+  // Construction sans configuration : la CSP ne doit ouvrir aucun service Google
+  const OFF = path.join(__dirname, '.gd-off'), CFG0 = path.join(__dirname, '.gd-config-vide.json');
+  fs.writeFileSync(CFG0, '{}');
+  execFileSync('node', ['build.mjs'], { cwd: ROOT, env: { ...process.env, MC_OUT: OFF, MC_BACKUP_CONFIG: CFG0 }, stdio: 'pipe' });
+  const html = fs.readFileSync(path.join(OUT, 'index.html'), 'utf8'), pub = fs.readFileSync(path.join(OFF, 'index.html'), 'utf8');
+  fs.rmSync(OFF, { recursive: true, force: true }); fs.rmSync(CFG0, { force: true });
   const csp = s => (s.match(/connect-src ([^;]*);/) || [])[1] || '';
   ok('CSP : Google Drive et le service ouverts seulement quand la sauvegarde est branchée', csp(html).includes('https://www.googleapis.com') && csp(html).includes(WORKER) && !csp(pub).includes('googleapis'), csp(html));
   const srv = spawn('node', [path.join(__dirname, 'serve.cjs'), '8766', OUT], { stdio: 'ignore' });
