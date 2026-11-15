@@ -132,4 +132,17 @@ if ('serviceWorker' in navigator && window.isSecureContext) {
   }).catch(() => {});
   navigator.serviceWorker.addEventListener('controllerchange', swAlarm);
 }
-boot();
+// Pages publiques (v2.2.2) : règles de confidentialité et conditions d'utilisation. Dans l'app installée, le service
+// worker sert l'app pour toute navigation : on va alors chercher la page sur le réseau et on l'affiche, sans ouvrir la cave.
+const DOC_PAGE = /\/(confidentialite|conditions)(\.html)?$/.exec(location.pathname);   // Cloudflare retire « .html »
+async function showDocPage() {
+  try {
+    const t = await (await fetch(DOC_PAGE[1] + '.html?fresh', { cache: 'no-store' })).text();
+    const m = new DOMParser().parseFromString(t, 'text/html').querySelector('#doc');
+    if (!m) throw 0;
+    m.querySelectorAll('script, iframe, object, embed, form').forEach(e => e.remove());
+    app.innerHTML = `<main class="docpage">${m.innerHTML}</main>`;
+    document.title = (m.querySelector('h1')?.textContent || 'MyCellar') + ' · MyCellar';
+  } catch { app.innerHTML = '<main class="docpage"><h1>MyCellar</h1><p>Cette page n’a pas pu être chargée. Vérifie ta connexion.</p></main>'; }
+}
+if (DOC_PAGE) showDocPage(); else boot();

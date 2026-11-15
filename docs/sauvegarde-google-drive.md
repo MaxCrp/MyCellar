@@ -19,6 +19,12 @@ Dans ce qui suit, remplace `https://TON-APP.pages.dev` par l'adresse réelle de 
 Google a réorganisé cette partie : l'assistant de départ ne demande que les informations de base, les autres réglages sont sur des pages à part, dans le menu de gauche de **Google Auth Platform** (menu ☰ › *Google Auth Platform* ; « API et services › Écran de consentement OAuth » y mène aussi).
 
 1. **Premiers pas** (assistant) : nom de l'application `MyCellar`, adresse e-mail d'assistance, type d'utilisateurs **Externe**, coordonnées du développeur, acceptation des règles.
+   Puis page **Branding**, rubrique « Domaine de l'application » (nécessaire pour publier) :
+   - Page d'accueil de l'application : `https://TON-APP.pages.dev/`
+   - Lien vers les règles de confidentialité : `https://TON-APP.pages.dev/confidentialite`
+   - Lien vers les conditions d'utilisation : `https://TON-APP.pages.dev/conditions`
+   - **Domaines autorisés** › Ajouter un domaine : `TON-APP.pages.dev` (sans https ni « / »). Enregistre.
+   Ces deux pages font partie de MyCellar depuis la v2.2.2.
 2. Page **Audience** : l'état de publication est « En test ». Touche **Publier l'application**, confirme : il doit passer à **En production**. *Indispensable* : en test, seuls les « utilisateurs test » peuvent se connecter, et Google coupe l'autorisation tous les 7 jours (la sauvegarde s'arrêterait). Avec le seul droit `drive.appdata` (non sensible), aucune vérification par Google n'est exigée. L'app reste limitée à 100 utilisateurs tant qu'elle n'est pas vérifiée : largement assez pour toi et tes amis. Google peut afficher « application non validée » à la connexion : touche « Paramètres avancés › Accéder à MyCellar ».
 3. Page **Accès aux données** (*facultatif, recommandé*) : **Ajouter ou supprimer des champs d'application**, cherche `drive.appdata` (ou colle `https://www.googleapis.com/auth/drive.appdata` dans l'ajout manuel), coche, **Mettre à jour**, **Enregistrer**. Sans cette déclaration, la connexion fonctionne quand même (l'app demande ce droit elle-même) ; la déclarer rend juste l'écran de Google plus clair. C'est le **seul** droit demandé : l'app ne voit rien d'autre du Drive.
 

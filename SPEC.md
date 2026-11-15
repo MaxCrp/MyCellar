@@ -777,6 +777,14 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 - [x] Si un lot dépasse encore, il est coupé en deux et relancé (jusqu'à des lots de 3 vins), au lieu d'échouer.
 - [x] Tests : limite suffisante, lot coupé et réanalyse menée au bout avec un sommelier simulé qui coupe les réponses trop longues.
 
+**v2.2.2** (pages publiques pour Google ; demandées le 15 novembre 2026 pendant la mise en place de la v2.2, nécessaires pour publier l'application OAuth ; livrée)
+
+- [x] **Règles de confidentialité** (`/confidentialite`) : données sur l'appareil et chiffrées, sauvegarde Google Drive (droit drive.appdata seul, fichiers chiffrés, service d'autorisation sans stockage, utilisation limitée conforme aux règles des API Google, révocation et suppression), sommelier (envois au fournisseur choisi avec ta clé), absence de suivi, contact.
+- [x] **Conditions d'utilisation** (`/conditions`) : usage privé et gratuit, mot de passe irrécupérable, services tiers facultatifs, sans garantie.
+- [x] Pages lisibles sans l'app, et affichées par l'app elle-même quand elle est installée (le service worker sert l'app pour toute navigation), sans ouvrir la cave. Adresses avec ou sans « .html ».
+- [x] Marche à suivre : champs « Domaine de l'application » et « Domaines autorisés » de la page Branding.
+- [x] Tests : t27.
+
 **En réserve : QR codes sur les meubles** (spécifiée le 5 novembre 2026 ; *mise de côté le 13 novembre 2026* : peu de valeur ajoutée telle que définie, il suffit d'ouvrir l'app et de choisir la cave. Sans numéro de release ; à reprendre seulement sur demande, éventuellement repensée)
 - [ ] **Étiquettes** : pour chaque meuble ou caisse, une étiquette QR avec son nom, à imprimer (planche d'étiquettes en PDF, une ou plusieurs par page).
 - [ ] **Scan dans l'app** : un bouton « Scanner » (onglet Cave) ouvre l'appareil photo. Le meuble scanné s'affiche directement sur le plan, avec son contenu et les actions habituelles (ranger ici, sortir, caisse entière…).

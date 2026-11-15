@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Règles de confidentialité · MyCellar</title>
+<style>
+:root{--bg:#F7F3EC;--ink:#2A1F1D;--muted:#7D716B;--bx:#6E1E2F;--line:#E7DFD4;color-scheme:light}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,"Segoe UI",Roboto,Arial,sans-serif}
+main{max-width:680px;margin:0 auto;padding:32px max(20px,env(safe-area-inset-left)) 48px}
+h1{font-size:28px;margin:0 0 4px;letter-spacing:-.01em}h2{font-size:18px;margin:28px 0 6px;color:var(--bx)}
+p,li{margin:6px 0}.muted{color:var(--muted);font-size:14px}a{color:var(--bx)}
+</style></head><body><main id="doc">
+<h1>Règles de confidentialité</h1>
+<p class="muted">MyCellar · mise à jour le 15 novembre 2026</p>
+<p>MyCellar est une application personnelle de gestion de cave à vin, utilisée à titre privé, sans publicité et sans but commercial.</p>
+<h2>Tes données restent sur ton appareil</h2>
+<p>Ta cave (vins, bouteilles, dégustations, photos, réglages) est enregistrée uniquement sur ton appareil, chiffrée (AES-GCM) avec une clé protégée par ton mot de passe. Aucun serveur de MyCellar ne reçoit, ne stocke ni ne lit ces données. Le mot de passe ne quitte jamais l’appareil et ne peut pas être récupéré.</p>
+<h2>Sauvegarde automatique sur Google Drive (facultative)</h2>
+<ul>
+<li>Si tu la connectes, MyCellar demande uniquement le droit <b>drive.appdata</b> : créer, lire et supprimer ses <b>propres</b> fichiers dans un dossier caché de ton Google Drive, réservé à l’application. MyCellar n’a accès à aucun autre fichier de ton Drive.</li>
+<li>Ces fichiers sont tes sauvegardes, chiffrées avec ton mot de passe avant l’envoi : ni Google ni la personne qui héberge MyCellar ne peuvent les lire. Ils vont directement de ton appareil vers ton Drive.</li>
+<li>L’autorisation Google est gardée chiffrée sur ton appareil. Un petit service d’autorisation (Cloudflare Worker) échange et renouvelle cette autorisation avec le secret de l’application ; il ne conserve, ne journalise et ne transmet aucune donnée, et ne voit jamais tes sauvegardes.</li>
+<li>Les données reçues des API Google servent uniquement à enregistrer et restaurer tes sauvegardes. Elles ne sont ni vendues, ni partagées, ni utilisées à d’autres fins, ni lues par une personne. L’utilisation des informations reçues des API Google respecte les <a href="https://developers.google.com/terms/api-services-user-data-policy">Règles relatives aux données utilisateur des services d’API Google</a>, y compris les exigences d’utilisation limitée.</li>
+<li>Tu peux tout arrêter à tout moment : Réglages › Sauvegarde › Déconnecter Google Drive, ou depuis ton compte Google (myaccount.google.com/permissions). Les sauvegardes s’effacent depuis Google Drive › Paramètres › Gérer les applications › MyCellar.</li>
+</ul>
+<h2>Sommelier (intelligence artificielle, facultatif)</h2>
+<p>Si tu ajoutes ta propre clé d’API, les questions au sommelier partent directement de ton appareil vers le fournisseur choisi (Anthropic ou Mistral), avec ce qui est nécessaire pour répondre : la liste de tes vins disponibles (sans les vins gardés pour des amis), tes notes de dégustation, ta question ou une photo d’étiquette. Ces envois sont soumis aux règles de ce fournisseur. Sans clé, rien n’est envoyé.</p>
+<h2>Pas de suivi</h2>
+<p>Ni cookie, ni publicité, ni outil de mesure d’audience. Le « suivi d’utilisation » proposé dans les réglages reste sur ton appareil, chiffré, et n’est jamais envoyé sans ton action.</p>
+<h2>Contact</h2>
+<p>Pour toute question : l’adresse e-mail d’assistance indiquée par Google au moment de la connexion, ou la personne qui t’a donné accès à MyCellar.</p>
+<p class="muted"><a href="./conditions.html">Conditions d’utilisation</a></p>
+</main></body></html>
