@@ -3,7 +3,7 @@
 Gestion de cave à vin sur iPhone, avec un sommelier IA intégré. L'app s'installe depuis Safari sur l'écran d'accueil (PWA) et fonctionne hors ligne, sauf pour l'IA.
 
 - **Données** : uniquement sur l'appareil (IndexedDB), chiffrées avec ton mot de passe (AES-GCM, clé dérivée par PBKDF2). Déverrouillage possible avec Face ID.
-- **Code** : statique, hébergé sur Cloudflare Pages. L'app vérifie l'empreinte du code et demande ton accord avant toute mise à jour.
+- **Code** : statique, hébergé sur Cloudflare, à l'adresse https://mycellar.dash-cloudflare-com-4uegc.workers.dev/. L'app vérifie l'empreinte du code et demande ton accord avant toute mise à jour.
 - **IA** : appels directs depuis l'iPhone vers Anthropic (Claude Sonnet 5.5 par défaut) ou Mistral, avec ta propre clé API, rangée dans le coffre chiffré.
 
 La spécification complète est dans [SPEC.md](SPEC.md). Les maquettes sont dans [docs/](docs/).
@@ -60,7 +60,10 @@ Le script est intégré dans la page et la politique de sécurité (CSP) n'autor
 
 `src/static/sw.js` ne doit pas changer d’une version à l’autre : si l’hébergeur le remplace, l’app y voit une alerte de sécurité. Il ne met en cache que `./`, jamais `./index.html`, car Cloudflare redirige `/index.html` vers `/` et Safari refuse une page en cache issue d’une redirection. `tests/serve.cjs` imite ce comportement.
 
-## Déployer sur Cloudflare Pages
+## Déployer sur Cloudflare
+
+L'app est publiée à l'adresse **https://mycellar.dash-cloudflare-com-4uegc.workers.dev/** (Cloudflare, sous-domaine workers.dev), à chaque push sur `master`. Pour une nouvelle installation, avec Cloudflare Pages :
+
 
 1. Dans Cloudflare : *Workers & Pages* › *Create* › *Pages* › *Connect to Git*, puis choisis ce dépôt.
 2. Branche de production : `master`.
@@ -69,7 +72,7 @@ Le script est intégré dans la page et la politique de sécurité (CSP) n'autor
 
 ## Installer sur l'iPhone
 
-Ouvre l'adresse Cloudflare Pages dans Safari, puis *Partager* › *Sur l'écran d'accueil*. Lance ensuite l'app depuis l'écran d'accueil : les données d'une app installée ne sont pas effacées par Safari.
+Ouvre https://mycellar.dash-cloudflare-com-4uegc.workers.dev/ dans Safari, puis *Partager* › *Sur l'écran d'accueil*. Lance ensuite l'app depuis l'écran d'accueil : les données d'une app installée ne sont pas effacées par Safari.
 
 Pense à sauvegarder régulièrement (Plus › Sauvegarder, vers « Fichiers » › iCloud Drive). Sans sauvegarde, la cave n'existe que sur cet iPhone.
 

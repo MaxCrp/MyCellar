@@ -6,8 +6,8 @@
    Variables du Worker (Settings › Variables and Secrets) :
      CLIENT_ID       identifiant OAuth « Application Web » (…apps.googleusercontent.com)
      CLIENT_SECRET   secret de cet identifiant (type « Secret », jamais en clair)
-     ALLOWED_ORIGIN  adresse de l'app, sans « / » final (ex. https://mycellar.pages.dev) ; plusieurs : séparées par des virgules
-     REDIRECT_URI    adresse de retour déclarée chez Google, exactement (ex. https://mycellar.pages.dev/)
+     ALLOWED_ORIGIN  adresse de l'app, sans « / » final (ici : https://mycellar.dash-cloudflare-com-4uegc.workers.dev) ; plusieurs : séparées par des virgules
+     REDIRECT_URI    adresse de retour déclarée chez Google, exactement (ici : https://mycellar.dash-cloudflare-com-4uegc.workers.dev/)
    Routes : POST /token { code, code_verifier }   POST /refresh { refresh_token } */
 const GOOGLE_TOKEN = 'https://oauth2.googleapis.com/token';
 const MAX_BODY = 4096;
