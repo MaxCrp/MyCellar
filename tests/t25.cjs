@@ -18,6 +18,7 @@ const ok = (label, cond, det = '') => { console.log(`${cond ? 'OK ' : 'KO '} ${l
     let json;
     if (/fenêtre de dégustation actuelle/.test(sys)) {
       const rows = user.split('\n').filter(l => /^#\d+ \|/.test(l));
+      if (globalThis.CUT && rows.length > 20) return route.fulfill({ status: 200, headers: { ...cors, 'content-type': 'application/json' }, body: JSON.stringify({ model: body.model, stop_reason: 'max_tokens', content: [{ type: 'text', text: '{"items":[' }], usage: { input_tokens: 800, output_tokens: 4000 } }) });
       json = { resume: 'Cave plus chaude l’été : fins avancées d’un an.', items: rows.map(l => { const i = +l.match(/^#(\d+)/)[1], m = l.match(/fenêtre (\d+|\?)-(\d+|\?)-(\d+)/);
         const deb = m[1] === '?' ? null : +m[1], pic = m[2] === '?' ? null : +m[2], fin = +m[3];
         return / Domaine Lot 0 \|/.test(l) ? { i, debut: deb || fin - 3, pic: pic || fin - 1, fin } : { i, debut: deb || fin - 3, pic: pic || fin - 2, fin: fin - 1 }; }) };
@@ -74,7 +75,7 @@ const ok = (label, cond, det = '') => { console.log(`${cond ? 'OK ' : 'KO '} ${l
   const per = adj.map(c => { const rows = c.user.split('\n').filter(l => /^#\d+ \|/.test(l)); return Math.max(...rows.map(r => r.length)); });
   ok('une ligne courte par vin (moins de 160 caractères)', per.every(n => n < 160), per.join(','));
   ok('dernière dégustation indiquée sur la ligne du vin', adj.some(c => /dégusté 2026-10 16,5\/20 apoint/.test(c.user)));
-  ok('réponse bornée (jetons de sortie proportionnels au lot)', adj.every(c => c.max <= 300 + 40 * 40));
+  ok('plafond de réponse assez large (réflexion du modèle comprise)', adj.every(c => c.max >= 4000), adj.map(c => c.max).join(','));
   ok('vins sans fenêtre : estimation groupée habituelle', est.length === 1 && t.none.every(id => true));
   const res = await p.evaluate(t => ({ sheet: document.querySelector('.sheet')?.textContent || '', manual: wine(t.manual).apogee, none: t.none.map(id => wine(id).apogee?.fin), why: S.wines.find(w => w.domaine === 'Domaine Lot 5').apogee.why,
     stamp: S.wines.find(w => w.domaine === 'Domaine Lot 5').apogee.cond === condKey(space(t.sp)), spent: S.usage[monthKey()]?.usd || 0 }), t);
@@ -101,9 +102,16 @@ const ok = (label, cond, det = '') => { console.log(`${cond ? 'OK ' : 'KO '} ${l
   const u = await p.evaluate(() => { const w = S.wines.find(x => x.domaine === 'Domaine Lot 5'); return { fin: w.apogee.fin, src: w.apogee.src, reanal: S.reanal }; });
   ok('« Annuler ces changements » remet les anciennes fenêtres', u.fin === 2032 + 5 && u.reanal === null, JSON.stringify(u));
 
+  // Réponse trop longue malgré tout : le lot est coupé en deux et relancé (v2.2.1)
+  globalThis.CUT = true; const nc = calls.length;
+  await p.evaluate(t => { for (const w of S.wines) if (w.apogee?.cond) w.apogee.cond = 'ancien'; reanalOpts = { manual: false }; showSheet(() => reanalSheet(t.sp)); }, t); await p.waitForTimeout(200);
+  await p.click('.sheet [data-act=reanalGo]'); await p.waitForTimeout(3000);
+  const cut = calls.slice(nc).filter(c => /fenêtre de dégustation actuelle/.test(c.sys)).map(c => (c.user.match(/^#\d+ \|/gm) || []).length);
+  ok('réponse trop longue : lot coupé en deux et relancé, réanalyse menée au bout', await p.evaluate(() => /Fenêtres réajustées/.test(document.querySelector('.sheet')?.textContent || '')) && cut.some(n => n === 40) && cut.every(n => n === 40 || n <= 20), cut.join(','));
+  globalThis.CUT = false; await p.evaluate(() => closeSheet());
   // Plafond mensuel atteint : rien n'est envoyé
   const n1 = calls.length;
-  await p.evaluate(t => { S.settings.ai.budget = 0.0001; reanalOpts = { manual: false }; showSheet(() => reanalSheet(t.sp)); }, t); await p.waitForTimeout(200);
+  await p.evaluate(t => { S.settings.ai.budget = 0.0001; for (const w of S.wines) if (w.apogee?.cond) w.apogee.cond = 'ancien'; reanalOpts = { manual: false }; showSheet(() => reanalSheet(t.sp)); }, t); await p.waitForTimeout(200);
   await p.click('.sheet [data-act=reanalGo]'); await p.waitForTimeout(800);
   ok('plafond mensuel atteint : arrêt avec un message, aucun appel', calls.length === n1 && await p.evaluate(() => /Plafond mensuel/.test(document.querySelector('.sheet')?.textContent || '')));
   await p.evaluate(() => { closeSheet(); S.settings.ai.budget = 0; });

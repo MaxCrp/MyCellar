@@ -11,7 +11,7 @@ const aiReady = () => !!aiCfg().key;
 const aiClaude = () => (aiCfg().provider || 'anthropic') === 'anthropic';
 const aiModel = () => aiCfg().model || AI[aiCfg().provider || 'anthropic'].model;
 let aiNoFallback = false;
-class AIError extends Error {}
+class AIError extends Error { constructor(msg, code = '') { super(msg); this.code = code; } }
 
 async function apiError(r) {
   let detail = '';
@@ -87,7 +87,7 @@ async function aiCall0({ system, context = '', history = [], content, schema = n
     }
     if (j.stop_reason === 'refusal') throw new AIError('Le modèle a refusé de répondre à cette demande. Reformule-la.');
     if (j.stop_reason === 'pause_turn') { body.messages = [...msgs, { role: 'assistant', content: j.content }]; continue; }
-    if (j.stop_reason === 'max_tokens') throw new AIError('Réponse trop longue, interrompue. Réessaie avec une demande plus courte.');
+    if (j.stop_reason === 'max_tokens') throw new AIError('Réponse trop longue, interrompue. Réessaie avec une demande plus courte.', 'max_tokens');
     break;
   }
   if (mode === 'app') save();

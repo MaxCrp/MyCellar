@@ -769,6 +769,14 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 - [x] **Nouvel appareil** : « Restaurer depuis Google Drive » au premier lancement, puis le mot de passe de la cave.
 - [x] Tests : envoi, rotation des versions, restauration, absence de réseau, jeton expiré (service simulé). *Réalisé* : t26 (Google, Drive et service simulés, 33 vérifications) et `tests/worker.mjs` (service d'autorisation, 21 vérifications).
 
+**v2.2.1** (correctif : réanalyse des apogées ; bug bloquant signalé le 15 novembre 2026 par un rapport de problème, corrigé directement ; livrée)
+
+*Constat* : « Réanalyser les apogées » s'arrêtait sur « Réponse trop longue, interrompue ». La limite de longueur de réponse (environ 40 jetons par vin) ne laissait pas de place à la réflexion du modèle, qui compte dans cette limite.
+
+- [x] Limite de réponse relevée (4 000 jetons plus 120 par vin) : elle ne coûte rien en soi, seuls les jetons produits sont facturés.
+- [x] Si un lot dépasse encore, il est coupé en deux et relancé (jusqu'à des lots de 3 vins), au lieu d'échouer.
+- [x] Tests : limite suffisante, lot coupé et réanalyse menée au bout avec un sommelier simulé qui coupe les réponses trop longues.
+
 **En réserve : QR codes sur les meubles** (spécifiée le 5 novembre 2026 ; *mise de côté le 13 novembre 2026* : peu de valeur ajoutée telle que définie, il suffit d'ouvrir l'app et de choisir la cave. Sans numéro de release ; à reprendre seulement sur demande, éventuellement repensée)
 - [ ] **Étiquettes** : pour chaque meuble ou caisse, une étiquette QR avec son nom, à imprimer (planche d'étiquettes en PDF, une ou plusieurs par page).
 - [ ] **Scan dans l'app** : un bouton « Scanner » (onglet Cave) ouvre l'appareil photo. Le meuble scanné s'affiche directement sur le plan, avec son contenu et les actions habituelles (ranger ici, sortir, caisse entière…).

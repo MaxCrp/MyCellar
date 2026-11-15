@@ -52,9 +52,19 @@ async function reanalRun(spaceId, withManual, onStep) {
   const plan = reanalPlan(spaceId, withManual), sp = plan.sp, changes = [], key = condKey(sp), stamp = { cond: key, condTxt: condText(sp), condSpace: sp.id };
   const day = fmtDate(today());
   let resume = '', done = 0, total = plan.adjust.length + plan.missing.length;
+  // Plafond de réponse large (le modèle réfléchit avant de répondre, et ces jetons comptent) : seuls les jetons
+  // réellement produits sont facturés. Si un lot dépasse quand même, il est coupé en deux et relancé (v2.2.1).
+  const ask = async lot => {
+    try { return { lot, r: await aiCall({ tag: 'apogee-cave', system: REANAL_SYS, content: reanalPrompt(sp, lot), schema: REANAL_SCHEMA, maxTokens: 4000 + lot.length * 120, effort: 'low', light: true }) }; }
+    catch (e) {
+      if (e.code !== 'max_tokens' || lot.length < 4) throw e;
+      const h = Math.ceil(lot.length / 2), a = await ask(lot.slice(0, h)), b = await ask(lot.slice(h));
+      return { parts: [a, b] };
+    }
+  };
+  const flat = x => x.parts ? x.parts.flatMap(flat) : [x];
   for (let k = 0; k < plan.adjust.length; k += REANAL_LOT) {
-    const lot = plan.adjust.slice(k, k + REANAL_LOT);
-    const r = await aiCall({ tag: 'apogee-cave', system: REANAL_SYS, content: reanalPrompt(sp, lot), schema: REANAL_SCHEMA, maxTokens: 300 + lot.length * 40, effort: 'low', light: true });
+   for (const { lot, r } of flat(await ask(plan.adjust.slice(k, k + REANAL_LOT)))) {
     resume ||= String(r.json.resume || '').slice(0, 300);
     for (const it of r.json.items || []) {
       const w = lot[it.i], cw = w && cleanWindow(it.debut, it.pic, it.fin, w.millesime); if (!cw) continue;
@@ -63,6 +73,7 @@ async function reanalRun(spaceId, withManual, onStep) {
       changes.push({ wid: w.id, prev, next: { debut: cw.debut, pic: cw.pic, fin: cw.fin } });
     }
     done += lot.length; onStep?.(done, total);
+   }
   }
   // Vins sans fenêtre : estimation groupée habituelle (elle note aussi les conditions)
   let estimated = 0;

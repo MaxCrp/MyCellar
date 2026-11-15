@@ -1,5 +1,13 @@
 [
  {
+  "version": "2.2.1",
+  "date": "2026-11-15",
+  "titre": "Réanalyse des apogées corrigée",
+  "items": [
+   "« Réanalyser les apogées » d’une cave s’arrêtait sur « Réponse trop longue » : la réponse du sommelier avait une limite trop serrée. Elle est relevée (sans surcoût : seuls les mots réellement écrits sont facturés), et si un lot de vins est encore trop long, il est coupé en deux et relancé automatiquement."
+  ]
+ },
+ {
   "version": "2.2",
   "date": "2026-11-14",
   "titre": "Sauvegarde automatique sur Google Drive",
