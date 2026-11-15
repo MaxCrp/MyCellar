@@ -765,7 +765,7 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 - [x] **Destination (validée : option b)** : le Google Drive de chaque utilisateur, dans le dossier caché de l'app (`appDataFolder`, droit `drive.appdata`). Chacun se connecte avec son propre compte Google : les sauvegardes sont distinctes par construction.
 - [x] **Connexion** : Réglages › Sauvegarde › « Connecter Google Drive », une seule fois par appareil. L'autorisation de longue durée est rangée dans le coffre chiffré de l'app.
 - [x] **Worker Cloudflare** : il échange et renouvelle l'autorisation avec le secret du projet Google, et ne garde rien. Les fichiers vont directement de l'iPhone au Drive. Le code du Worker est livré dans le dépôt (`worker/`), avec sa marche à suivre.
-- [ ] **Mise en place (à faire par toi, une fois)** : un projet Google Cloud, l'écran de consentement en statut « En production », un identifiant OAuth « Application Web » avec l'adresse de l'app, et le Worker avec le secret. Marche à suivre pas à pas : `docs/sauvegarde-google-drive.md`. *En attente* : à faire par l'utilisateur, puis renseigner `src/backup-config.json` (identifiant OAuth et adresse du Worker, non secrets).
+- [x] **Mise en place (à faire par toi, une fois)** *(faite le 15 novembre 2026 : projet Google « MyCellar » en production, client OAuth Web, Worker `mycellar-auth` ; branchée en v2.2.3)* : un projet Google Cloud, l'écran de consentement en statut « En production », un identifiant OAuth « Application Web » avec l'adresse de l'app, et le Worker avec le secret. Marche à suivre pas à pas : `docs/sauvegarde-google-drive.md`. *En attente* : à faire par l'utilisateur, puis renseigner `src/backup-config.json` (identifiant OAuth et adresse du Worker, non secrets).
 - [x] **Nouvel appareil** : « Restaurer depuis Google Drive » au premier lancement, puis le mot de passe de la cave.
 - [x] Tests : envoi, rotation des versions, restauration, absence de réseau, jeton expiré (service simulé). *Réalisé* : t26 (Google, Drive et service simulés, 33 vérifications) et `tests/worker.mjs` (service d'autorisation, 21 vérifications).
 
@@ -784,6 +784,12 @@ Ordre proposé : v2.0 (comprendre sa cave), v2.1 (partager et exporter), v2.2 (Q
 - [x] Pages lisibles sans l'app, et affichées par l'app elle-même quand elle est installée (le service worker sert l'app pour toute navigation), sans ouvrir la cave. Adresses avec ou sans « .html ».
 - [x] Marche à suivre : champs « Domaine de l'application » et « Domaines autorisés » de la page Branding.
 - [x] Tests : t27.
+
+**v2.2.3** (sauvegarde automatique branchée ; 15 novembre 2026 ; livrée)
+
+- [x] `src/backup-config.json` renseigné : identifiant OAuth du projet et adresse du Worker `https://mycellar-auth.dash-cloudflare-com-4uegc.workers.dev`. La politique de sécurité de l'app autorise désormais Google Drive, l'adresse de révocation de Google et ce Worker.
+- [x] Toute la suite de tests rejouée avec la sauvegarde branchée.
+- [ ] **Vérification sur l'iPhone** (par l'utilisateur) : connexion depuis l'app installée (aller-retour vers Google), première sauvegarde, liste des versions.
 
 **En réserve : QR codes sur les meubles** (spécifiée le 5 novembre 2026 ; *mise de côté le 13 novembre 2026* : peu de valeur ajoutée telle que définie, il suffit d'ouvrir l'app et de choisir la cave. Sans numéro de release ; à reprendre seulement sur demande, éventuellement repensée)
 - [ ] **Étiquettes** : pour chaque meuble ou caisse, une étiquette QR avec son nom, à imprimer (planche d'étiquettes en PDF, une ou plusieurs par page).

@@ -1,5 +1,15 @@
 [
   {
+    "version": "2.2.3",
+    "date": "2026-11-15",
+    "titre": "Sauvegarde automatique activée",
+    "items": [
+      "La sauvegarde automatique sur Google Drive est maintenant disponible : Réglages › Sauvegarde › Sauvegarde automatique › « Connecter Google Drive ». Choisis ton compte Google, accepte, puis déverrouille ta cave au retour dans l’app.",
+      "Si Google affiche « Google n’a pas validé cette application », touche « Paramètres avancés », puis « Accéder à MyCellar » : c’est normal pour une app privée.",
+      "Sur un nouvel appareil : « Restaurer depuis Google Drive » au premier lancement."
+    ]
+  },
+  {
     "version": "2.2.2",
     "date": "2026-11-15",
     "titre": "Règles de confidentialité",
